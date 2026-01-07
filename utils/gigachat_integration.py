@@ -135,7 +135,7 @@ class GigaChatModel(BaseChatModel):
 
         return ChatResult(generations=[generation])
 
-    def _stream(
+    async def _astream(
         self,
         messages: List[BaseMessage],
         stop: Optional[List[str]] = None,
@@ -143,8 +143,34 @@ class GigaChatModel(BaseChatModel):
         **kwargs: Any,
     ):
         """
-        Stream response from GigaChat (not implemented in this basic version).
+        Async stream response from GigaChat.
         """
-        # For now, just call the non-streaming version
-        result = self._generate(messages, stop, run_manager, **kwargs)
-        yield ChatGenerationChunk(message=result.generations[0].message)
+        # Convert LangChain messages to GigaChat format
+        gigachat_messages = []
+        for msg in messages:
+            if isinstance(msg, HumanMessage):
+                gigachat_messages.append(Messages(role="user", content=msg.content))
+            elif isinstance(msg, AIMessage):
+                gigachat_messages.append(Messages(role="assistant", content=msg.content))
+            elif isinstance(msg, SystemMessage):
+                gigachat_messages.append(Messages(role="system", content=msg.content))
+            else:
+                # For other message types, treat as human message
+                gigachat_messages.append(Messages(role="user", content=str(msg.content)))
+
+        # Create the chat request
+        chat_kwargs = {
+            "messages": gigachat_messages,
+            "model": self.model,
+            "temperature": self.temperature,
+            "stream": True,  # Enable streaming
+        }
+        chat_kwargs.update(kwargs)
+
+        chat_request = Chat(**chat_kwargs)
+
+        # Make the streaming API call
+        async for chunk in self._client.astream(chat_request):
+            content = chunk.choices[0].delta.content
+            if content:
+                yield ChatGenerationChunk(message=AIMessage(content=content))

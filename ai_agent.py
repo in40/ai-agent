@@ -18,7 +18,7 @@ class AIAgent:
         self.prompt_generator = PromptGenerator()
         self.response_generator = ResponseGenerator()
     
-    def process_request(self, user_request):
+    def process_request(self, user_request, attached_files=None):
         """
         Process a natural language request from the user through all components
         """
@@ -38,7 +38,7 @@ class AIAgent:
             # Step 2: Generate SQL query using first LLM
             if ENABLE_SCREEN_LOGGING:
                 logger.info("Generating SQL query...")
-            sql_query = self.sql_generator.generate_sql(user_request, schema_dump)
+            sql_query = self.sql_generator.generate_sql(user_request, schema_dump, attached_files)
             if ENABLE_SCREEN_LOGGING:
                 logger.info(f"Generated SQL: {sql_query}")
 
@@ -53,7 +53,7 @@ class AIAgent:
             if ENABLE_SCREEN_LOGGING:
                 logger.info("Generating prompt for response LLM...")
             response_prompt = self.prompt_generator.generate_prompt_for_response_llm(
-                user_request, db_results
+                user_request, db_results, attached_files
             )
             if ENABLE_SCREEN_LOGGING:
                 logger.info(f"Generated response prompt: {response_prompt[:100]}...")  # Truncate for log readability
@@ -62,7 +62,7 @@ class AIAgent:
             if ENABLE_SCREEN_LOGGING:
                 logger.info("Generating natural language response...")
             final_response = self.response_generator.generate_natural_language_response(
-                response_prompt
+                response_prompt, attached_files
             )
             if ENABLE_SCREEN_LOGGING:
                 logger.info(f"Final response: {final_response[:100]}...")  # Truncate for log readability
@@ -97,3 +97,10 @@ class AIAgent:
         Test the database connection
         """
         return self.db_manager.test_connection()
+
+    def refresh_schema(self):
+        """
+        Force a refresh of the database schema cache
+        """
+        self.db_manager.clear_schema_cache()
+        logger.info("Database schema cache refreshed")

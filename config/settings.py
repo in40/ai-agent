@@ -1,6 +1,24 @@
 import os
 from dotenv import load_dotenv
 
+def str_to_bool(value, default=False):
+    """
+    Convert string value to boolean.
+    Handles both 'y'/'n' and 'true'/'false' formats.
+    """
+    if value is None:
+        return default
+    if isinstance(value, bool):
+        return value
+    value = value.lower().strip()
+    if value in ('true', '1', 'yes', 'y'):
+        return True
+    elif value in ('false', '0', 'no', 'n'):
+        return False
+    else:
+        # If the value doesn't match known boolean strings, return default
+        return default
+
 # Load environment variables
 load_dotenv()
 
@@ -37,10 +55,10 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 GIGACHAT_CREDENTIALS = os.getenv("GIGACHAT_CREDENTIALS")
 GIGACHAT_SCOPE = os.getenv("GIGACHAT_SCOPE", "GIGACHAT_API_PERS")
 GIGACHAT_ACCESS_TOKEN = os.getenv("GIGACHAT_ACCESS_TOKEN")
-GIGACHAT_VERIFY_SSL_CERTS = os.getenv("GIGACHAT_VERIFY_SSL_CERTS", "true").lower() == "true"
+GIGACHAT_VERIFY_SSL_CERTS = str_to_bool(os.getenv("GIGACHAT_VERIFY_SSL_CERTS"), True)
 
 # Security Configuration
-TERMINATE_ON_POTENTIALLY_HARMFUL_SQL = os.getenv("TERMINATE_ON_POTENTIALLY_HARMFUL_SQL", "false").lower() == "true"
+TERMINATE_ON_POTENTIALLY_HARMFUL_SQL = str_to_bool(os.getenv("TERMINATE_ON_POTENTIALLY_HARMFUL_SQL"), False)
 
 # Logging Configuration
-ENABLE_SCREEN_LOGGING = os.getenv("ENABLE_SCREEN_LOGGING", "false").lower() == "true"
+ENABLE_SCREEN_LOGGING = str_to_bool(os.getenv("ENABLE_SCREEN_LOGGING"), False)

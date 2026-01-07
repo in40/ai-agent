@@ -1,6 +1,8 @@
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
+from pydantic import BaseModel, Field
+from langchain_core.output_parsers import PydanticOutputParser
 from config.settings import (
     SQL_LLM_PROVIDER, SQL_LLM_MODEL, SQL_LLM_HOSTNAME, SQL_LLM_PORT,
     SQL_LLM_API_PATH, OPENAI_API_KEY, GIGACHAT_CREDENTIALS, GIGACHAT_SCOPE,
@@ -9,8 +11,15 @@ from config.settings import (
 from utils.prompt_manager import PromptManager
 import json
 import logging
+import re
+import time
+from tenacity import retry, stop_after_attempt, wait_exponential
 
 logger = logging.getLogger(__name__)
+
+class SQLOutput(BaseModel):
+    """Structured output for SQL generation"""
+    sql_query: str = Field(description="The generated SQL query")
 
 class SQLGenerator:
     def __init__(self):
@@ -78,35 +87,67 @@ class SQLGenerator:
             ("human", "{user_request}")
         ])
 
+        # Create the output parser (keeping it for potential future use)
         self.output_parser = StrOutputParser()
+
+        # Create the chain with the parser
         self.chain = self.prompt | self.llm | self.output_parser
     
-    def generate_sql(self, user_request, schema_dump):
+    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
+    def generate_sql(self, user_request, schema_dump, attached_files=None):
         """
         Generate SQL query based on user request and database schema
         """
         # Format the schema dump as a string for the prompt
         schema_str = self.format_schema_dump(schema_dump)
 
-        # Log the request
-        if ENABLE_SCREEN_LOGGING:
-            logger.info(f"SQLGenerator request - User request: {user_request[:100]}...")  # Truncate for log readability
-            logger.info(f"SQLGenerator request - Schema (first 200 chars): {schema_str[:200]}...")
+        try:
+            # Log the full request to LLM, including all roles and prompts
+            if ENABLE_SCREEN_LOGGING:
+                # Get the full prompt with all messages (system and human) without invoking the LLM
+                full_prompt = self.prompt.format_messages(
+                    user_request=user_request,
+                    schema_dump=schema_str
+                )
+                logger.info("SQLGenerator full LLM request:")
+                for i, message in enumerate(full_prompt):
+                    if message.type == "system":
+                        logger.info(f"  System Message {i+1}: {message.content[:500]}...")  # Limit system message length
+                    else:
+                        logger.info(f"  Message {i+1} ({message.type}): {message.content}")
 
-        # Generate the SQL query
-        response = self.chain.invoke({
-            "user_request": user_request,
-            "schema_dump": schema_str
-        })
+                # Log any attached files
+                if attached_files:
+                    logger.info(f"  Attached files: {len(attached_files)} file(s)")
+                    for idx, file_info in enumerate(attached_files):
+                        logger.info(f"    File {idx+1}: {file_info.get('filename', 'Unknown')} ({file_info.get('size', 'Unknown')} bytes)")
 
-        # Log the response
-        if ENABLE_SCREEN_LOGGING:
-            logger.info(f"SQLGenerator response: {response[:200]}...")  # Truncate for log readability
+            # Generate the SQL query
+            response = self.chain.invoke({
+                "user_request": user_request,
+                "schema_dump": schema_str
+            })
 
-        # Clean up the response to extract just the SQL
-        sql_query = self.clean_sql_response(response)
+            # Log the response
+            if ENABLE_SCREEN_LOGGING:
+                logger.info(f"SQLGenerator response: {response}")
 
-        return sql_query
+            # Try to parse as structured output first
+            try:
+                # Attempt to parse the response with the Pydantic parser
+                parser = PydanticOutputParser(pydantic_object=SQLOutput)
+                structured_response = parser.parse(response)
+                sql_query = structured_response.sql_query
+            except Exception:
+                # Fallback to cleaning the string response if structured parsing fails
+                sql_query = self.clean_sql_response(response)
+
+            return sql_query
+
+        except Exception as e:
+            logger.error(f"Error generating SQL: {e}")
+            # Re-raise the exception to trigger the retry
+            raise
     
     def format_schema_dump(self, schema_dump):
         """

@@ -1,6 +1,8 @@
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
+from pydantic import BaseModel, Field
+from langchain_core.output_parsers import PydanticOutputParser
 from config.settings import (
     RESPONSE_LLM_PROVIDER, RESPONSE_LLM_MODEL, RESPONSE_LLM_HOSTNAME,
     RESPONSE_LLM_PORT, RESPONSE_LLM_API_PATH, OPENAI_API_KEY,
@@ -8,8 +10,13 @@ from config.settings import (
 )
 from utils.prompt_manager import PromptManager
 import logging
+from tenacity import retry, stop_after_attempt, wait_exponential
 
 logger = logging.getLogger(__name__)
+
+class ResponseOutput(BaseModel):
+    """Structured output for response generation"""
+    response_text: str = Field(description="The generated natural language response")
 
 class ResponseGenerator:
     def __init__(self):
@@ -63,23 +70,53 @@ class ResponseGenerator:
             ("human", "{generated_prompt}")
         ])
 
+        # Create the output parser (keeping it for potential future use)
         self.output_parser = StrOutputParser()
+
+        # Create the chain with the parser
         self.chain = self.prompt | self.llm | self.output_parser
     
-    def generate_natural_language_response(self, generated_prompt):
+    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
+    def generate_natural_language_response(self, generated_prompt, attached_files=None):
         """
         Generate a natural language response based on the generated prompt
         """
-        # Log the request
-        if ENABLE_SCREEN_LOGGING:
-            logger.info(f"ResponseGenerator request: {generated_prompt[:100]}...")  # Truncate for log readability
+        try:
+            # Log the full request to LLM, including all roles and prompts
+            if ENABLE_SCREEN_LOGGING:
+                # Get the full prompt with all messages (system and human) without invoking the LLM
+                full_prompt = self.prompt.format_messages(generated_prompt=generated_prompt)
+                logger.info("ResponseGenerator full LLM request:")
+                for i, message in enumerate(full_prompt):
+                    logger.info(f"  Message {i+1} ({message.type}): {message.content}")
 
-        response = self.chain.invoke({
-            "generated_prompt": generated_prompt
-        })
+                # Log any attached files
+                if attached_files:
+                    logger.info(f"  Attached files: {len(attached_files)} file(s)")
+                    for idx, file_info in enumerate(attached_files):
+                        logger.info(f"    File {idx+1}: {file_info.get('filename', 'Unknown')} ({file_info.get('size', 'Unknown')} bytes)")
 
-        # Log the response
-        if ENABLE_SCREEN_LOGGING:
-            logger.info(f"ResponseGenerator response: {response[:200]}...")  # Truncate for log readability
+            response = self.chain.invoke({
+                "generated_prompt": generated_prompt
+            })
 
-        return response
+            # Log the response
+            if ENABLE_SCREEN_LOGGING:
+                logger.info(f"ResponseGenerator response: {response}")
+
+            # Try to parse as structured output first
+            try:
+                # Attempt to parse the response with the Pydantic parser
+                parser = PydanticOutputParser(pydantic_object=ResponseOutput)
+                structured_response = parser.parse(response)
+                response_text = structured_response.response_text
+            except Exception:
+                # Fallback to returning the string response if structured parsing fails
+                response_text = response
+
+            return response_text
+
+        except Exception as e:
+            logger.error(f"Error generating response: {e}")
+            # Re-raise the exception to trigger the retry
+            raise

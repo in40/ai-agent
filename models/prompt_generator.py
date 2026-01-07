@@ -81,17 +81,32 @@ class PromptGenerator:
         self.output_parser = StrOutputParser()
         self.chain = self.prompt | self.llm | self.output_parser
     
-    def generate_prompt_for_response_llm(self, user_request, db_results):
+    def generate_prompt_for_response_llm(self, user_request, db_results, attached_files=None):
         """
         Generate a detailed prompt for the response LLM based on user request and database results
         """
         # Format the database results as a string
         results_str = self.format_db_results(db_results)
 
-        # Log the request
+        # Log the full request to LLM, including all roles and prompts
         if ENABLE_SCREEN_LOGGING:
-            logger.info(f"PromptGenerator request - User request: {user_request[:100]}...")  # Truncate for log readability
-            logger.info(f"PromptGenerator request - DB results (first 200 chars): {results_str[:200]}...")
+            # Get the full prompt with all messages (system and human) without invoking the LLM
+            full_prompt = self.prompt.format_messages(
+                user_request=user_request,
+                db_results=results_str
+            )
+            logger.info("PromptGenerator full LLM request:")
+            for i, message in enumerate(full_prompt):
+                if message.type == "system":
+                    logger.info(f"  System Message {i+1}: {message.content[:500]}...")  # Limit system message length
+                else:
+                    logger.info(f"  Message {i+1} ({message.type}): {message.content}")
+
+            # Log any attached files
+            if attached_files:
+                logger.info(f"  Attached files: {len(attached_files)} file(s)")
+                for idx, file_info in enumerate(attached_files):
+                    logger.info(f"    File {idx+1}: {file_info.get('filename', 'Unknown')} ({file_info.get('size', 'Unknown')} bytes)")
 
         # Generate the prompt for the response LLM
         response = self.chain.invoke({
@@ -101,7 +116,7 @@ class PromptGenerator:
 
         # Log the response
         if ENABLE_SCREEN_LOGGING:
-            logger.info(f"PromptGenerator response: {response[:200]}...")  # Truncate for log readability
+            logger.info(f"PromptGenerator response: {response}")
 
         return response
     
