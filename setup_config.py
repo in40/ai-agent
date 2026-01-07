@@ -329,9 +329,18 @@ def main():
         validator=lambda x: (True, "") if not x or len(x) >= 10 else (False, "Access token should be at least 10 characters or empty")
     )
 
+    # Convert boolean values from existing config to y/N format for the default
+    existing_ssl_value = existing_values.get("GIGACHAT_VERIFY_SSL_CERTS", "Y")
+    if existing_ssl_value.lower() in ['true', 'false']:
+        # Convert boolean string to y/N format
+        ssl_default = "Y" if existing_ssl_value.lower() == 'true' else "N"
+    else:
+        # Value is already in y/N format
+        ssl_default = existing_ssl_value if existing_ssl_value in ['Y', 'N', 'y', 'n'] else "Y"
+
     gigachat_verify_ssl_certs = get_user_input(
         "Verify SSL certificates for GigaChat? (Y/n)",
-        default_value=existing_values.get("GIGACHAT_VERIFY_SSL_CERTS", "Y"),
+        default_value=ssl_default,
         validator=lambda x: (True, "") if x.lower() in ['y', 'n', 'yes', 'no'] else (False, "Please enter y or n")
     )
 
@@ -475,9 +484,18 @@ def main():
 
     print("\nLogging Configuration:")
     print("-" * 20)
+    # Convert boolean values from existing config to y/N format for the default
+    existing_logging_value = existing_values.get("ENABLE_SCREEN_LOGGING", "N")
+    if existing_logging_value.lower() in ['true', 'false']:
+        # Convert boolean string to y/N format
+        logging_default = "Y" if existing_logging_value.lower() == 'true' else "N"
+    else:
+        # Value is already in y/N format
+        logging_default = existing_logging_value if existing_logging_value in ['Y', 'N', 'y', 'n'] else "N"
+
     enable_screen_logging = get_user_input(
         "Enable screen logging? (y/N)",
-        default_value=existing_values.get("ENABLE_SCREEN_LOGGING", "N"),
+        default_value=logging_default,
         validator=lambda x: (True, "") if x.lower() in ['y', 'n', 'yes', 'no'] else (False, "Please enter y or n")
     )
 
@@ -498,7 +516,7 @@ OPENAI_API_KEY={openai_api_key}
 GIGACHAT_CREDENTIALS={gigachat_credentials}
 GIGACHAT_SCOPE={gigachat_scope}
 GIGACHAT_ACCESS_TOKEN={gigachat_access_token}
-GIGACHAT_VERIFY_SSL_CERTS={gigachat_verify_ssl_certs.lower() in ['y', 'yes']}
+GIGACHAT_VERIFY_SSL_CERTS={gigachat_verify_ssl_certs}
 
 # LLM Model Configuration
 SQL_LLM_PROVIDER={sql_llm_provider}
@@ -521,7 +539,7 @@ PROMPT_LLM_API_PATH={prompt_llm_api_path}
 TERMINATE_ON_POTENTIALLY_HARMFUL_SQL=false
 
 # Logging Configuration
-ENABLE_SCREEN_LOGGING={enable_screen_logging.lower() in ['y', 'yes']}
+ENABLE_SCREEN_LOGGING={enable_screen_logging}
 """
 
     # Write to .env file
@@ -552,7 +570,7 @@ OPENAI_API_KEY={openai_api_key}
 GIGACHAT_CREDENTIALS={gigachat_credentials}
 GIGACHAT_SCOPE={gigachat_scope}
 GIGACHAT_ACCESS_TOKEN={gigachat_access_token}
-GIGACHAT_VERIFY_SSL_CERTS=true
+GIGACHAT_VERIFY_SSL_CERTS=y
 
 # LLM Model Configuration
 SQL_LLM_PROVIDER={sql_llm_provider}
@@ -575,7 +593,7 @@ PROMPT_LLM_API_PATH={prompt_llm_api_path}
 TERMINATE_ON_POTENTIALLY_HARMFUL_SQL=false
 
 # Logging Configuration
-ENABLE_SCREEN_LOGGING=false
+ENABLE_SCREEN_LOGGING=N
 """
         with open(example_env_path, 'w') as example_file:
             example_file.write(example_env_content)

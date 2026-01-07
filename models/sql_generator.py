@@ -6,6 +6,7 @@ from config.settings import (
     SQL_LLM_API_PATH, OPENAI_API_KEY, GIGACHAT_CREDENTIALS, GIGACHAT_SCOPE,
     GIGACHAT_ACCESS_TOKEN, GIGACHAT_VERIFY_SSL_CERTS, ENABLE_SCREEN_LOGGING
 )
+from utils.prompt_manager import PromptManager
 import json
 import logging
 
@@ -16,6 +17,9 @@ class SQLGenerator:
         # Log the configuration being used before creating the LLM
         if ENABLE_SCREEN_LOGGING:
             logger.info(f"SQLGenerator configured with provider: {SQL_LLM_PROVIDER}, model: {SQL_LLM_MODEL}")
+
+        # Initialize the prompt manager
+        self.prompt_manager = PromptManager()
 
         # Create the LLM based on the provider
         if SQL_LLM_PROVIDER.lower() == 'gigachat':
@@ -48,10 +52,12 @@ class SQLGenerator:
                 api_key=OPENAI_API_KEY or ("sk-fake-key" if base_url else OPENAI_API_KEY),
                 base_url=base_url
             )
-        
-        # Define the prompt template for SQL generation
-        self.prompt = ChatPromptTemplate.from_messages([
-            ("system", """You are an expert SQL developer. Your task is to generate correct SQL queries based on natural language requests.
+
+        # Define the prompt template for SQL generation using external prompt
+        system_prompt = self.prompt_manager.get_prompt("sql_generator")
+        if system_prompt is None:
+            # Fallback to default prompt if external prompt is not found
+            system_prompt = """You are an expert SQL developer. Your task is to generate correct SQL queries based on natural language requests.
 
             Database schema:
             {schema_dump}
@@ -65,10 +71,13 @@ class SQLGenerator:
             6. Always use table aliases for better readability
             7. Limit results if the query could return a large dataset unless specifically asked for all records
             8. Wrap the SQL query between <sql_to_use> and </sql_to_use> tags
-            """),
+            """
+
+        self.prompt = ChatPromptTemplate.from_messages([
+            ("system", system_prompt),
             ("human", "{user_request}")
         ])
-        
+
         self.output_parser = StrOutputParser()
         self.chain = self.prompt | self.llm | self.output_parser
     

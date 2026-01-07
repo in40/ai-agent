@@ -27,3 +27,7 @@ ehthumbs.db
 Thumbs.db
 test.db
 *.db-journal
+# Environment variables
+.env
+.env.local
+.env.*.local

@@ -6,6 +6,7 @@ from config.settings import (
     PROMPT_LLM_PORT, PROMPT_LLM_API_PATH, OPENAI_API_KEY,
     GIGACHAT_CREDENTIALS, GIGACHAT_SCOPE, GIGACHAT_ACCESS_TOKEN, ENABLE_SCREEN_LOGGING
 )
+from utils.prompt_manager import PromptManager
 import json
 import logging
 
@@ -16,6 +17,9 @@ class PromptGenerator:
         # Log the configuration being used before creating the LLM
         if ENABLE_SCREEN_LOGGING:
             logger.info(f"PromptGenerator configured with provider: {PROMPT_LLM_PROVIDER}, model: {PROMPT_LLM_MODEL}")
+
+        # Initialize the prompt manager
+        self.prompt_manager = PromptManager()
 
         # Create the LLM based on the provider
         if PROMPT_LLM_PROVIDER.lower() == 'gigachat':
@@ -48,27 +52,32 @@ class PromptGenerator:
                 api_key=OPENAI_API_KEY or ("sk-fake-key" if base_url else OPENAI_API_KEY),
                 base_url=base_url
             )
-        
-        # Define the prompt template for generating a prompt for the response LLM
-        self.prompt = ChatPromptTemplate.from_messages([
-            ("system", """You are an expert at creating detailed prompts for language models. 
-            Your task is to create a comprehensive prompt that will help another LLM generate 
+
+        # Define the prompt template for generating a prompt for the response LLM using external prompt
+        system_prompt = self.prompt_manager.get_prompt("prompt_generator")
+        if system_prompt is None:
+            # Fallback to default prompt if external prompt is not found
+            system_prompt = """You are an expert at creating detailed prompts for language models.
+            Your task is to create a comprehensive prompt that will help another LLM generate
             a detailed natural language response based on database query results and the original user request.
-            
+
             Guidelines:
             1. The prompt should include the original user request
             2. The prompt should include the database query results
             3. The prompt should guide the response LLM on how to format and structure the answer
             4. The prompt should specify the tone and level of detail required
             5. The prompt should ensure the response is in natural language and easy to understand
-            """),
+            """
+
+        self.prompt = ChatPromptTemplate.from_messages([
+            ("system", system_prompt),
             ("human", """Original user request: {user_request}
-            
+
             Database query results: {db_results}
 
             Create a detailed prompt for another LLM to generate a natural language response based on these results.""")
         ])
-        
+
         self.output_parser = StrOutputParser()
         self.chain = self.prompt | self.llm | self.output_parser
     

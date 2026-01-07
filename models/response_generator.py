@@ -6,6 +6,7 @@ from config.settings import (
     RESPONSE_LLM_PORT, RESPONSE_LLM_API_PATH, OPENAI_API_KEY,
     GIGACHAT_CREDENTIALS, GIGACHAT_SCOPE, GIGACHAT_ACCESS_TOKEN, ENABLE_SCREEN_LOGGING
 )
+from utils.prompt_manager import PromptManager
 import logging
 
 logger = logging.getLogger(__name__)
@@ -15,6 +16,9 @@ class ResponseGenerator:
         # Log the configuration being used before creating the LLM
         if ENABLE_SCREEN_LOGGING:
             logger.info(f"ResponseGenerator configured with provider: {RESPONSE_LLM_PROVIDER}, model: {RESPONSE_LLM_MODEL}")
+
+        # Initialize the prompt manager
+        self.prompt_manager = PromptManager()
 
         # Create the LLM based on the provider
         if RESPONSE_LLM_PROVIDER.lower() == 'gigachat':
@@ -47,13 +51,18 @@ class ResponseGenerator:
                 api_key=OPENAI_API_KEY or ("sk-fake-key" if base_url else OPENAI_API_KEY),
                 base_url=base_url
             )
-        
-        # Define the prompt template for generating natural language responses
+
+        # Define the prompt template for generating natural language responses using external prompt
+        system_prompt = self.prompt_manager.get_prompt("response_generator")
+        if system_prompt is None:
+            # Fallback to default prompt if external prompt is not found
+            system_prompt = "You are an expert at converting database results into natural language responses."
+
         self.prompt = ChatPromptTemplate.from_messages([
-            ("system", "You are an expert at converting database results into natural language responses."),
+            ("system", system_prompt),
             ("human", "{generated_prompt}")
         ])
-        
+
         self.output_parser = StrOutputParser()
         self.chain = self.prompt | self.llm | self.output_parser
     
