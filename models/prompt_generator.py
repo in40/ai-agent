@@ -119,6 +119,65 @@ class PromptGenerator:
             logger.info(f"PromptGenerator response: {response}")
 
         return response
+
+    def generate_wider_search_prompt(self, wider_search_context, attached_files=None):
+        """
+        Generate a prompt for wider search strategies when initial query returns no results
+        """
+        # Define the prompt template for generating wider search strategies using external prompt
+        system_prompt = self.prompt_manager.get_prompt("wider_search_generator")
+        if system_prompt is None:
+            # Fallback to default prompt if external prompt is not found
+            system_prompt = """You are an expert at analyzing database schemas and suggesting wider search strategies when initial queries return no results. Your task is to provide specific suggestions for alternative queries that might yield relevant data based on the database schema and the original user request.
+
+When the initial query returns no results, consider these strategies:
+1. Use LIKE operators with wildcards for partial matches
+2. Search in related tables that might contain relevant information
+3. Use broader categories or classifications
+4. Look for similar data patterns
+5. Use full-text search if available
+6. Suggest alternative search terms based on the schema and column names
+
+Always reference specific table and column names from the provided schema. Be creative but practical in your suggestions, and ensure they align with the user's original intent."""
+
+        prompt = ChatPromptTemplate.from_messages([
+            ("system", system_prompt),
+            ("human", "{wider_search_context}")
+        ])
+
+        # Create the chain for this specific task
+        output_parser = StrOutputParser()
+        chain = prompt | self.llm | output_parser
+
+        # Log the full request to LLM, including all roles and prompts
+        if ENABLE_SCREEN_LOGGING:
+            # Get the full prompt with all messages (system and human) without invoking the LLM
+            full_prompt = prompt.format_messages(
+                wider_search_context=wider_search_context
+            )
+            logger.info("PromptGenerator wider search LLM request:")
+            for i, message in enumerate(full_prompt):
+                if message.type == "system":
+                    logger.info(f"  System Message {i+1}: {message.content[:500]}...")  # Limit system message length
+                else:
+                    logger.info(f"  Message {i+1} ({message.type}): {message.content}")
+
+            # Log any attached files
+            if attached_files:
+                logger.info(f"  Attached files: {len(attached_files)} file(s)")
+                for idx, file_info in enumerate(attached_files):
+                    logger.info(f"    File {idx+1}: {file_info.get('filename', 'Unknown')} ({file_info.get('size', 'Unknown')} bytes)")
+
+        # Generate the wider search prompt
+        response = chain.invoke({
+            "wider_search_context": wider_search_context
+        })
+
+        # Log the response
+        if ENABLE_SCREEN_LOGGING:
+            logger.info(f"PromptGenerator wider search response: {response}")
+
+        return response
     
     def format_db_results(self, db_results):
         """

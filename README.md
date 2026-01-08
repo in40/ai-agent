@@ -20,6 +20,8 @@ The enhanced version of the agent uses LangGraph to provide:
 - Iterative refinement of SQL queries
 - Advanced error recovery mechanisms
 - Detailed execution monitoring and logging
+- Wider search strategies when initial queries return no results
+- Multi-provider LLM support (OpenAI, GigaChat, DeepSeek, Qwen, LM Studio, Ollama)
 
 ### LangGraph Nodes:
 1. **get_schema**: Retrieves database schema information
@@ -27,7 +29,10 @@ The enhanced version of the agent uses LangGraph to provide:
 3. **validate_sql**: Performs safety and validation checks (with optional advanced LLM-based analysis)
 4. **execute_sql**: Executes the SQL query against the database
 5. **refine_sql**: Improves queries based on errors or feedback
-6. **generate_response**: Creates natural language responses from results
+6. **generate_wider_search_query**: Generates alternative queries when initial query returns no results
+7. **execute_wider_search**: Executes the wider search query
+8. **generate_prompt**: Creates specialized prompts for response generation
+9. **generate_response**: Creates natural language responses from results
 
 ## Workflow
 
@@ -48,8 +53,10 @@ The enhanced version of the agent uses LangGraph to provide:
 4. The `validate_sql` node performs safety checks (with optional advanced LLM-based analysis)
 5. If validation passes, the `execute_sql` node executes the query
 6. If validation or execution fails, the `refine_sql` node improves the query
-7. The `generate_response` node creates a natural language response from results
-8. The response is returned to the user
+7. If initial query returns no results, the `generate_wider_search_query` and `execute_wider_search` nodes try alternative strategies
+8. The `generate_prompt` node creates a specialized prompt for response generation
+9. The `generate_response` node creates a natural language response from results
+10. The response is returned to the user
 
 ## Setup
 
@@ -95,6 +102,8 @@ python main.py --request "Show me all users from New York"
 - Only SELECT queries are allowed by default
 - Connection parameters are loaded from environment variables
 - Advanced security LLM analysis to reduce false positives
+- Multiple layers of protection against SQL injection
+- Configurable security policies via environment variables
 
 ## SQL Blocking Feature
 
@@ -103,6 +112,7 @@ By default, the agent includes SQL validation to block potentially harmful SQL q
 - Requiring queries to start with SELECT for safety
 - Blocking dangerous patterns that might indicate SQL injection
 - Preventing multiple statements and SQL comments
+- Advanced LLM-based security analysis to reduce false positives
 
 ### Advanced Security LLM Analysis
 
@@ -113,6 +123,7 @@ The security LLM analysis:
 - Reduces false positives compared to simple keyword matching
 - Provides contextual analysis based on the database schema
 - Offers confidence levels for security assessments
+- Supports multiple LLM providers for security analysis (OpenAI, GigaChat, DeepSeek, Qwen, LM Studio, Ollama)
 
 By default, the security LLM is enabled. You can disable it by setting `USE_SECURITY_LLM=false`.
 
@@ -141,3 +152,14 @@ The agent can be configured via environment variables in the `.env` file:
 - `SQL_LLM_MODEL`: Model to use for SQL generation (default: gpt-3.5-turbo)
 - `RESPONSE_LLM_MODEL`: Model to use for response generation (default: gpt-4)
 - `PROMPT_LLM_MODEL`: Model to use for prompt generation (default: gpt-3.5-turbo)
+- `SECURITY_LLM_MODEL`: Model to use for security analysis (default: gpt-3.5-turbo)
+- `SQL_LLM_PROVIDER`: Provider for SQL generation (OpenAI, GigaChat, DeepSeek, Qwen, LM Studio, Ollama)
+- `RESPONSE_LLM_PROVIDER`: Provider for response generation
+- `PROMPT_LLM_PROVIDER`: Provider for prompt generation
+- `SECURITY_LLM_PROVIDER`: Provider for security analysis
+- `SECURITY_LLM_HOSTNAME`: Hostname for security LLM service (for non-OpenAI providers)
+- `SECURITY_LLM_PORT`: Port for security LLM service (for non-OpenAI providers)
+- `SECURITY_LLM_API_PATH`: API path for security LLM service (for non-OpenAI providers)
+- `USE_SECURITY_LLM`: Whether to use the advanced security LLM analysis (default: true)
+- `ENABLE_SCREEN_LOGGING`: Enable detailed logging output (default: false)
+- `TERMINATE_ON_POTENTIALLY_HARMFUL_SQL`: Whether to block potentially harmful SQL (default: true)

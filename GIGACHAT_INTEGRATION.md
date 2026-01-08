@@ -1,6 +1,6 @@
 # GigaChat Integration
 
-This project now supports GigaChat models with OAuth token-based authentication. 
+This project now supports GigaChat models with OAuth token-based authentication.
 
 ## Configuration
 
@@ -20,6 +20,7 @@ Set the provider to `GigaChat` for any of the model components:
 - `SQL_LLM_PROVIDER`: Set to `GigaChat` to use GigaChat for SQL generation
 - `RESPONSE_LLM_PROVIDER`: Set to `GigaChat` to use GigaChat for response generation
 - `PROMPT_LLM_PROVIDER`: Set to `GigaChat` to use GigaChat for prompt generation
+- `SECURITY_LLM_PROVIDER`: Set to `GigaChat` to use GigaChat for security analysis
 
 ## Authentication Methods
 
@@ -65,6 +66,7 @@ The following dependencies have been added to support GigaChat:
 The integration includes:
 - A custom `GigaChatModel` class that extends LangChain's `BaseChatModel`
 - OAuth token handling within the model class
-- Support for all three model components (SQL generation, response generation, prompt generation)
+- Support for all model components (SQL generation, response generation, prompt generation, security analysis)
 - Proper error handling and validation
 - Compatibility with existing configuration patterns
+- Support for both the traditional linear architecture and the enhanced LangGraph architecture

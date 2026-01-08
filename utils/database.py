@@ -20,6 +20,7 @@ class DatabaseManager:
     def get_schema_dump(self, force_refresh=False):
         """
         Get a dump of the database schema (table names, column names, types, etc.)
+        Supports both PostgreSQL and SQLite
         """
         current_time = time.time()
 
@@ -32,42 +33,77 @@ class DatabaseManager:
 
         try:
             with self.engine.connect() as connection:
-                # Get all table names
-                result = connection.execute(text("""
-                    SELECT table_name
-                    FROM information_schema.tables
-                    WHERE table_schema = 'public'
-                """))
-                tables = [row[0] for row in result.fetchall()]
+                # Determine database dialect
+                dialect = self.engine.dialect.name
 
-                schema_info = {}
-
-                for table in tables:
-                    # Validate table name to prevent SQL injection
-                    # Only allow alphanumeric characters, underscores, and hyphens
-                    if not re.match(r'^[a-zA-Z0-9_-]+$', table):
-                        logger.warning(f"Skipping table with invalid name: {table}")
-                        continue
-
-                    # Get column information for each table
-                    # Note: We can't use parameterized queries for table names in this context
-                    # but we've validated the table name above to prevent injection
-                    columns_result = connection.execute(text(f"""
-                        SELECT column_name, data_type, is_nullable
-                        FROM information_schema.columns
-                        WHERE table_name = '{table}'
-                        ORDER BY ordinal_position
+                if dialect == 'postgresql':
+                    # PostgreSQL-specific schema query
+                    result = connection.execute(text("""
+                        SELECT table_name
+                        FROM information_schema.tables
+                        WHERE table_schema = 'public'
                     """))
+                    tables = [row[0] for row in result.fetchall()]
 
-                    columns = []
-                    for col in columns_result.fetchall():
-                        columns.append({
-                            'name': col[0],
-                            'type': col[1],
-                            'nullable': col[2] == 'YES'
-                        })
+                    schema_info = {}
 
-                    schema_info[table] = columns
+                    for table in tables:
+                        # Validate table name to prevent SQL injection
+                        # Only allow alphanumeric characters, underscores, and hyphens
+                        if not re.match(r'^[a-zA-Z0-9_-]+$', table):
+                            logger.warning(f"Skipping table with invalid name: {table}")
+                            continue
+
+                        # Get column information for each table
+                        # Note: We can't use parameterized queries for table names in this context
+                        # but we've validated the table name above to prevent injection
+                        columns_result = connection.execute(text(f"""
+                            SELECT column_name, data_type, is_nullable
+                            FROM information_schema.columns
+                            WHERE table_name = '{table}'
+                            ORDER BY ordinal_position
+                        """))
+
+                        columns = []
+                        for col in columns_result.fetchall():
+                            columns.append({
+                                'name': col[0],
+                                'type': col[1],
+                                'nullable': col[2] == 'YES'
+                            })
+
+                        schema_info[table] = columns
+                elif dialect == 'sqlite':
+                    # SQLite-specific schema query
+                    result = connection.execute(text("SELECT name FROM sqlite_master WHERE type='table';"))
+                    tables = [row[0] for row in result.fetchall()]
+
+                    # Exclude SQLite system tables
+                    tables = [table for table in tables if not table.startswith('sqlite_')]
+
+                    schema_info = {}
+
+                    for table in tables:
+                        # Validate table name to prevent SQL injection
+                        # Only allow alphanumeric characters, underscores, and hyphens
+                        if not re.match(r'^[a-zA-Z0-9_-]+$', table):
+                            logger.warning(f"Skipping table with invalid name: {table}")
+                            continue
+
+                        # Get column information for each table in SQLite
+                        columns_result = connection.execute(text(f"PRAGMA table_info('{table}')"))
+                        columns = []
+                        for col in columns_result.fetchall():
+                            # col[1] is name, col[2] is type, col[3] is not null (0 for nullable, 1 for not null)
+                            columns.append({
+                                'name': col[1],
+                                'type': col[2],
+                                'nullable': col[3] == 0  # 0 means nullable, 1 means not null
+                            })
+
+                        schema_info[table] = columns
+                else:
+                    raise ValueError(f"Unsupported database dialect: {dialect}")
 
                 # Update the cache
                 self._schema_cache = schema_info

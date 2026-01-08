@@ -13,6 +13,9 @@ This project implements an enhanced AI agent using LangGraph for complex databas
 - **Configurable SQL Blocking**: Option to disable SQL blocking for trusted environments
 - **Advanced Security LLM Analysis**: Uses an LLM to reduce false positives in security detection (e.g., distinguishing 'created_at' column from CREATE command)
 - **Multi-Provider LLM Support**: Supports various LLM providers including OpenAI, GigaChat, DeepSeek, Qwen, LM Studio, and Ollama
+- **Wider Search Strategies**: Automatically tries alternative search strategies when initial queries return no results
+- **Specialized Prompt Generation**: Creates tailored prompts for response LLM based on user request and database results
+- **Query Type Tracking**: Tracks whether queries are initial or wider search queries for better processing
 
 ## Architecture
 
@@ -23,7 +26,10 @@ The agent follows a graph-based workflow with the following nodes:
 3. **validate_sql**: Performs safety and validation checks (with optional advanced LLM-based analysis)
 4. **execute_sql**: Executes the SQL query against the database
 5. **refine_sql**: Improves queries based on errors or feedback
-6. **generate_response**: Creates natural language responses from results
+6. **generate_wider_search_query**: Generates alternative queries when initial query returns no results
+7. **execute_wider_search**: Executes the wider search query
+8. **generate_prompt**: Creates specialized prompts for response generation
+9. **generate_response**: Creates natural language responses from results
 
 ## Usage
 
@@ -39,6 +45,7 @@ print("Generated SQL:", result["generated_sql"])
 print("Results:", result["db_results"])
 print("Response:", result["final_response"])
 print("Execution log:", result["execution_log"])
+print("Query type:", result["query_type"])  # Either "initial" or "wider_search"
 ```
 
 ### Advanced Usage
@@ -55,12 +62,15 @@ initial_state: AgentState = {
     "schema_dump": {},
     "sql_query": "",
     "db_results": [],
+    "response_prompt": "",  # Specialized prompt for response generation
     "final_response": "",
     "messages": [],
     "validation_error": None,
     "execution_error": None,
     "sql_generation_error": None,
-    "retry_count": 0
+    "retry_count": 0,
+    "disable_sql_blocking": False,
+    "query_type": "initial"  # Either "initial" or "wider_search"
 }
 
 # Run the graph
@@ -74,6 +84,7 @@ The agent uses the same configuration as the original AI agent, with components 
 - SQL generation (using LLMs)
 - Response generation (using LLMs)
 - Prompt management
+- Security analysis (using LLMs)
 
 See the main project README for configuration details.
 
@@ -94,18 +105,22 @@ The state structure contains:
 - `schema_dump`: Database schema information
 - `sql_query`: The generated SQL query
 - `db_results`: Results from the database query
+- `response_prompt`: Specialized prompt for response generation
 - `final_response`: Natural language response to the user
 - `validation_error`: Any validation errors
 - `execution_error`: Any execution errors
 - `sql_generation_error`: Any SQL generation errors
 - `retry_count`: Number of retry attempts
+- `disable_sql_blocking`: Whether to disable SQL blocking
+- `query_type`: Type of query ("initial" or "wider_search")
 
 ### Error Handling
 
-The system handles three types of errors:
+The system handles four types of errors:
 1. **Validation errors**: Issues with SQL safety
 2. **Execution errors**: Problems executing the query
 3. **Generation errors**: Issues generating SQL or responses
+4. **Security check errors**: Issues with advanced security analysis
 
 Each error type triggers appropriate recovery mechanisms.
 
@@ -129,6 +144,25 @@ Detailed logs are available for each node execution:
 6. **Advanced Security LLM Analysis**: Uses an LLM to reduce false positives in security detection (e.g., distinguishing 'created_at' column from CREATE command)
 7. **Configurable SQL Blocking**: Option to disable SQL blocking for trusted environments
 8. **Context-Aware Analysis**: Security LLM considers database schema context to better distinguish between legitimate column names and harmful commands
+9. **Security Check After Refinement**: Validates refined queries for security issues
+10. **Retry Limits**: Prevents infinite loops during error recovery
+
+## Wider Search Strategies
+
+When initial queries return no results, the system automatically employs wider search strategies:
+
+1. **Generate Wider Search Query**: Creates alternative queries based on schema and original request
+2. **Execute Wider Search**: Runs the alternative query against the database
+3. **Iterative Refinement**: If wider search also yields no results, continues with additional strategies
+4. **Fallback Analysis**: Performs additional analysis on schema to find relevant data
+
+## Specialized Prompt Generation
+
+The system includes a specialized prompt generation step that:
+- Creates tailored prompts for the response LLM based on user request and database results
+- Formats database results in a way that's optimal for natural language generation
+- Incorporates context from the original request to ensure relevance
+- Helps the response LLM generate more accurate and contextual responses
 
 ## Performance Considerations
 
@@ -136,6 +170,7 @@ Detailed logs are available for each node execution:
 - Retry limits prevent infinite loops
 - Schema caching reduces database load
 - Error handling prevents cascading failures
+- Wider search strategies are limited to prevent excessive database queries
 
 ## Troubleshooting
 
@@ -146,6 +181,8 @@ If you encounter issues:
 3. Ensure LLM configurations are correct
 4. Review the execution log for the sequence of operations
 5. Check that the database schema is accessible
+6. If using wider search strategies, verify that schema information is complete
+7. For security analysis issues, ensure the security LLM is properly configured
 
 ## Contributing
 

@@ -26,7 +26,10 @@ The enhanced system uses LangGraph to create a stateful, graph-based workflow wi
 3. **validate_sql**: Performs safety and validation checks (with optional advanced LLM-based analysis)
 4. **execute_sql**: Executes the SQL query against the database
 5. **refine_sql**: Improves queries based on errors or feedback
-6. **generate_response**: Creates natural language responses from results
+6. **generate_wider_search_query**: Generates alternative queries when initial query returns no results
+7. **execute_wider_search**: Executes the wider search query
+8. **generate_prompt**: Creates specialized prompts for response generation
+9. **generate_response**: Creates natural language responses from results
 
 ## Detailed Component Analysis
 
@@ -94,17 +97,17 @@ class PromptGenerator:
             self.llm = GigaChatModel(...)
         else:
             self.llm = ChatOpenAI(...)
-        
+
         # Define the prompt template
         self.prompt = ChatPromptTemplate.from_messages([
             ("system", """You are an expert at creating detailed prompts..."""),
             ("human", """Original user request: {user_request}
-            
+
             Database query results: {db_results}
-            
+
             Create a detailed prompt for another LLM...""")
         ])
-        
+
         self.output_parser = StrOutputParser()
         self.chain = self.prompt | self.llm | self.output_parser
 
@@ -115,6 +118,16 @@ class PromptGenerator:
             "db_results": results_str
         })
         return response
+
+    def generate_wider_search_prompt(self, wider_search_context, attached_files=None):
+        """
+        Generate a prompt for wider search strategies when initial query returns no results
+        """
+        wider_search_prompt = self.prompt.invoke({
+            "user_request": "Generate wider search strategies",
+            "db_results": wider_search_context
+        })
+        return wider_search_prompt
 ```
 
 ### 3. ResponseGenerator
@@ -266,6 +279,7 @@ Generated Prompt → ResponseGenerator → Natural Language Response
 2. **Flexibility**: Different LLMs can be used for different tasks (SQL generation, response generation, etc.)
 3. **Composability**: LCEL allows for easy chaining of components
 4. **Maintainability**: Clear separation of concerns between prompting, model selection, and output processing
+5. **Extensibility**: Easy to add new nodes and functionality to the LangGraph workflow
 
 ## Diagram
 
@@ -364,24 +378,48 @@ Generated Prompt → ResponseGenerator → Natural Language Response
                      │         │
                      ▼         ▼
            ┌─────────────────┐ │
-           │ should_refine_or│ │
-           │ _respond        │◄┘
+           │ should_execute_ │ │
+           │ _wider_search   │◄┘
            └─────────┬───────┘
                      │
           ┌──────────┴──────────┐
           │                     │
           ▼                     ▼
     ┌─────────────────┐  ┌─────────────────┐
-    │  generate_resp  │  │  refine_sql     │
-    │                 │  │                 │
-    └─────────┬───────┘  └─────────────────┘
-              │                    │
-              ▼                    │
-       ┌────────────┐              │
-       │   END      │◄─────────────┘
-       └────────────┘
+    │ generate_wider_ │  │ generate_prompt │
+    │ _search_query   │  │                 │
+    └─────────┬───────┘  └─────────┬───────┘
+              │                     │
+              │         ┌───────────┘
+              │         │
+              ▼         ▼
+    ┌─────────────────┐ │
+    │ execute_wider_  │ │
+    │ _search         │◄┘
+    └─────────┬───────┘
+              │
+              ▼
+    ┌─────────────────┐
+    │ should_continue_│
+    │ _wider_search   │
+    └─────────┬───────┘
+              │
+    ┌─────────┴─────────┐
+    │                   │
+    ▼                   ▼
+┌─────────────┐  ┌─────────────────┐
+│generate_resp│  │  refine_sql     │
+│             │  │                 │
+└─────────────┘  └─────────────────┘
+         │                  │
+         └──────────────────┘
+                    │
+                    ▼
+           ┌────────────┐
+           │   END      │
+           └────────────┘
 ```
 
 ## Conclusion
 
-This AI Agent project demonstrates a practical implementation of LangChain's LCEL for creating a multi-step AI workflow. The project includes both a traditional linear architecture using LangChain's LCEL for simple, sequential operations and an enhanced architecture using LangGraph for complex, stateful workflows with conditional logic, error recovery, and iterative refinement. The system effectively leverages LangChain's core components to create a robust natural language to SQL conversion system with configurable LLM providers and advanced security features.
+This AI Agent project demonstrates a practical implementation of LangChain's LCEL for creating a multi-step AI workflow. The project includes both a traditional linear architecture using LangChain's LCEL for simple, sequential operations and an enhanced architecture using LangGraph for complex, stateful workflows with conditional logic, error recovery, iterative refinement, and wider search strategies. The system effectively leverages LangChain's core components to create a robust natural language to SQL conversion system with configurable LLM providers and advanced security features.
