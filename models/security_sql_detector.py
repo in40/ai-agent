@@ -1,0 +1,249 @@
+"""
+Security SQL Detector module for analyzing SQL queries for potential security vulnerabilities
+using an LLM-based approach to reduce false positives compared to simple keyword matching.
+"""
+
+from typing import Dict, Any, Tuple
+import logging
+import json
+from langchain_openai import ChatOpenAI
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+from config.settings import (
+    SECURITY_LLM_PROVIDER,
+    SECURITY_LLM_MODEL,
+    SECURITY_LLM_HOSTNAME,
+    SECURITY_LLM_PORT,
+    SECURITY_LLM_API_PATH,
+    OPENAI_API_KEY
+)
+
+logger = logging.getLogger(__name__)
+
+
+class SecuritySQLDetector:
+    """
+    A class that uses an LLM to analyze SQL queries for potential security vulnerabilities.
+    This helps reduce false positives compared to simple keyword matching.
+    """
+    
+    def __init__(self):
+        """
+        Initialize the SecuritySQLDetector with an LLM client
+        """
+        # Determine the LLM provider and configure accordingly
+        if SECURITY_LLM_PROVIDER.lower() == "openai":
+            self.llm = ChatOpenAI(
+                model=SECURITY_LLM_MODEL,
+                temperature=0.1,  # Low temperature for more consistent security analysis
+                api_key=OPENAI_API_KEY
+            )
+        elif SECURITY_LLM_PROVIDER.lower() == "lm studio":
+            # For LM Studio, use ChatOpenAI with local configuration
+            from langchain_openai import ChatOpenAI
+
+            # Construct the base URL for LM Studio
+            base_url = f"http://{SECURITY_LLM_HOSTNAME}:{SECURITY_LLM_PORT}{SECURITY_LLM_API_PATH}"
+
+            self.llm = ChatOpenAI(
+                model=SECURITY_LLM_MODEL,
+                temperature=0.1,
+                base_url=base_url,
+                api_key="not-needed"  # LM Studio doesn't require a real API key
+            )
+        else:
+            # For other providers (like Ollama), use the Ollama approach
+            from langchain_ollama import ChatOllama
+
+            # Construct the base URL for non-OpenAI providers
+            base_url = f"http://{SECURITY_LLM_HOSTNAME}:{SECURITY_LLM_PORT}{SECURITY_LLM_API_PATH}"
+
+            self.llm = ChatOllama(
+                model=SECURITY_LLM_MODEL,
+                base_url=base_url,
+                temperature=0.1
+            )
+        
+        # Create the output parser - using string parser instead of JSON parser
+        self.output_parser = StrOutputParser()
+
+        # Load the security analysis prompt from the external file
+        from utils.prompt_manager import PromptManager
+        pm = PromptManager()
+        security_prompt_template = pm.get_prompt("security_sql_analysis")
+
+        if security_prompt_template is None:
+            # Fallback to default prompt if external file is not found
+            logger.warning("Security prompt file not found, using default prompt")
+            security_prompt_template = (
+                "You are a security expert specializing in SQL injection and database vulnerability assessment. "
+                "Analyze the provided SQL query for potential security vulnerabilities. "
+                "Focus on identifying actual threats rather than false positives. "
+                "Consider the context that this query is generated from natural language input. "
+                "Be careful to distinguish between legitimate column/table names that might contain keywords "
+                "like 'create', 'drop', 'select', etc. and actual malicious commands.\n\n"
+                "Analyze the following SQL query for security vulnerabilities:\n\n"
+                "SQL Query: {sql_query}\n\n"
+                "Schema Context: {schema_context}\n\n"
+                "Respond with a JSON object containing the following fields:\n"
+                "- is_safe: boolean indicating if the query is safe\n"
+                "- security_issues: array of strings listing any security issues found\n"
+                "- confidence_level: string (\"high\", \"medium\", or \"low\") indicating confidence in the analysis\n"
+                "- explanation: string explaining the analysis\n\n"
+                "Example response format:\n"
+                "{{\n"
+                "  \"is_safe\": true,\n"
+                "  \"security_issues\": [],\n"
+                "  \"confidence_level\": \"high\",\n"
+                "  \"explanation\": \"Query is safe as it only performs a simple SELECT operation\"\n"
+                "}}\n\n"
+                "IMPORTANT: Respond ONLY with the JSON object, nothing else."
+            )
+
+        # Create a prompt template for security analysis
+        self.security_analysis_prompt = ChatPromptTemplate.from_messages([
+            ("system", security_prompt_template),
+            ("human", "SQL Query: {sql_query}\n\nSchema Context: {schema_context}")
+        ])
+
+        # Create the chain
+        self.chain = self.security_analysis_prompt | self.llm | self.output_parser
+
+    def analyze_query(self, sql_query: str, schema_context: Dict[str, Any] = None) -> Dict[str, Any]:
+        """
+        Analyze a SQL query for security vulnerabilities using the LLM
+        
+        Args:
+            sql_query (str): The SQL query to analyze
+            schema_context (Dict[str, Any]): Optional schema context to help with analysis
+            
+        Returns:
+            Dict[str, Any]: Analysis results with security assessment
+        """
+        logger.info(f"Analyzing SQL query for security: {sql_query[:100]}...")
+        
+        # Prepare schema context for the LLM
+        schema_str = ""
+        if schema_context:
+            schema_str = str(schema_context)
+        else:
+            schema_str = "No schema context provided"
+        
+        try:
+            # Run the chain to analyze the query
+            raw_result = self.chain.invoke({
+                "sql_query": sql_query,
+                "schema_context": schema_str
+            })
+
+            # Extract JSON from the raw result string
+            # Look for JSON between curly braces
+            import re
+            # Use a stack-based approach to find properly balanced JSON
+            def find_json_object(text):
+                stack = []
+                start = -1
+
+                for i, char in enumerate(text):
+                    if char == '{':
+                        if len(stack) == 0:
+                            start = i
+                        stack.append(char)
+                    elif char == '}':
+                        if stack:
+                            stack.pop()
+                            if len(stack) == 0 and start != -1:
+                                return text[start:i+1]
+                return None
+
+            json_str = find_json_object(raw_result)
+            if not json_str:
+                # If the stack-based approach doesn't work, try a simpler pattern
+                json_match = re.search(r'\{.*?\}(?!\s*[,}])', raw_result, re.DOTALL)
+                if json_match:
+                    json_str = json_match.group()
+
+            if json_str:
+                try:
+                    result_dict = json.loads(json_str)
+
+                    # Validate required fields exist
+                    required_fields = ["is_safe", "security_issues", "confidence_level", "explanation"]
+                    for field in required_fields:
+                        if field not in result_dict:
+                            logger.error(f"Security analysis missing required field: {field}")
+                            return {
+                                "is_safe": False,
+                                "security_issues": [f"Missing field: {field}"],
+                                "confidence_level": "low",
+                                "explanation": f"Security analysis missing required field: {field}"
+                            }
+
+                    logger.info(f"Security analysis completed. Safe: {result_dict.get('is_safe', 'unknown')}")
+                    return result_dict
+                except json.JSONDecodeError as je:
+                    logger.error(f"Failed to parse JSON from LLM response: {str(je)}")
+                    logger.debug(f"Raw LLM response: {raw_result}")
+                    logger.debug(f"Extracted potential JSON: {json_str}")
+            else:
+                logger.error(f"Could not find JSON in LLM response: {raw_result}")
+
+                # Try to extract information even if it's not in JSON format
+                # Look for key terms that might indicate the LLM's assessment
+                raw_lower = raw_result.lower()
+                is_safe = "not safe" not in raw_lower and "unsafe" not in raw_lower and "vulnerability" not in raw_lower and "issue" not in raw_lower
+                confidence = "low"
+
+                if "high" in raw_lower and "confidence" in raw_lower:
+                    confidence = "high"
+                elif "medium" in raw_lower and "confidence" in raw_lower:
+                    confidence = "medium"
+
+                return {
+                    "is_safe": is_safe,
+                    "security_issues": [f"Could not parse security analysis from LLM response. Raw response: {raw_result[:200]}..."],
+                    "confidence_level": confidence,
+                    "explanation": "Security analysis failed due to parsing error, but attempting to extract meaning from raw response"
+                }
+
+            # If we couldn't parse the JSON properly, return a conservative result
+            return {
+                "is_safe": False,
+                "security_issues": ["Could not parse security analysis from LLM response"],
+                "confidence_level": "low",
+                "explanation": "Security analysis failed due to parsing error"
+            }
+        except Exception as e:
+            logger.error(f"Error during security analysis: {str(e)}")
+            # In case of error, return a conservative result
+            return {
+                "is_safe": False,
+                "security_issues": ["Analysis error occurred"],
+                "confidence_level": "low",
+                "explanation": f"Security analysis failed due to error: {str(e)}"
+            }
+
+    def is_query_safe(self, sql_query: str, schema_context: Dict[str, Any] = None) -> Tuple[bool, str]:
+        """
+        Determine if a SQL query is safe to execute based on LLM analysis
+        
+        Args:
+            sql_query (str): The SQL query to check
+            schema_context (Dict[str, Any]): Optional schema context to help with analysis
+            
+        Returns:
+            Tuple[bool, str]: (is_safe, reason_for_safety_or_risk)
+        """
+        analysis = self.analyze_query(sql_query, schema_context)
+        
+        is_safe = analysis.get("is_safe", False)
+        confidence = analysis.get("confidence_level", "low")
+        issues = analysis.get("security_issues", [])
+        explanation = analysis.get("explanation", "No explanation provided")
+        
+        if not is_safe:
+            reason = f"Security issues detected: {', '.join(issues)}. {explanation}. Confidence: {confidence}"
+        else:
+            reason = f"No security issues detected. {explanation}. Confidence: {confidence}"
+        
+        return is_safe, reason

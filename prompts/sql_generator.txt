@@ -11,5 +11,7 @@ Instructions:
 5. If the request is ambiguous, make reasonable assumptions based on the schema
 6. Always use table aliases for better readability
 7. Limit results if the query could return a large dataset unless specifically asked for all records
-8. Wrap the SQL query between <sql_to_use> and </sql_to_use> tags
-9. Use only tables awailable in the schema, don't make up any tables and table's names.
+8. Use only tables awailable in the schema, don't make up any tables and table's names.
+9. Respond with a JSON object containing the following field:
+   - sql_query: The generated SQL query
+10. Respond ONLY with the JSON object, nothing else.

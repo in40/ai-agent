@@ -482,6 +482,76 @@ def main():
         validator=validate_api_path
     )
 
+    print("\nSecurity Configuration:")
+    print("-" * 20)
+    # Convert boolean values from existing config to y/N format for the default
+    existing_security_value = existing_values.get("USE_SECURITY_LLM", "Y")
+    if existing_security_value.lower() in ['true', 'false']:
+        # Convert boolean string to y/N format
+        security_default = "Y" if existing_security_value.lower() == 'true' else "N"
+    else:
+        # Value is already in y/N format
+        security_default = existing_security_value if existing_security_value in ['Y', 'N', 'y', 'n'] else "Y"
+
+    use_security_llm = get_user_input(
+        "Use advanced security LLM for SQL analysis? (Y/n)",
+        default_value=security_default,
+        validator=lambda x: (True, "") if x.lower() in ['y', 'n', 'yes', 'no'] else (False, "Please enter y or n")
+    )
+
+    # Security LLM Configuration (only if security LLM is enabled)
+    if use_security_llm.lower() in ['y', 'yes']:
+        security_llm_provider = get_user_input(
+            "Enter the provider for security LLM",
+            default_value=existing_values.get("SECURITY_LLM_PROVIDER", "OpenAI"),
+            validator=validate_provider
+        )
+
+        # Set default values based on provider for Security LLM
+        security_defaults = {
+            'OpenAI': {'hostname': 'api.openai.com', 'port': '443', 'api_path': '/v1'},
+            'DeepSeek': {'hostname': 'api.deepseek.com', 'port': '443', 'api_path': '/v1'},
+            'Qwen': {'hostname': 'dashscope.aliyuncs.com', 'port': '443', 'api_path': '/v1'},
+            'LM Studio': {'hostname': 'localhost', 'port': '1234', 'api_path': '/v1'},
+            'Ollama': {'hostname': 'localhost', 'port': '11434', 'api_path': '/api/v1'},
+            'GigaChat': {'hostname': 'gigachat.devices.sberbank.ru', 'port': '443', 'api_path': '/api/v1'}
+        }
+
+        security_default_hostname = security_defaults[security_llm_provider]['hostname']
+        security_default_port = security_defaults[security_llm_provider]['port']
+        security_default_api_path = security_defaults[security_llm_provider]['api_path']
+
+        security_llm_model = get_user_input(
+            "Enter the model name for security analysis",
+            default_value=existing_values.get("SECURITY_LLM_MODEL", "gpt-3.5-turbo"),
+            validator=validate_model_name
+        )
+
+        security_llm_hostname = get_user_input(
+            "Enter the hostname for security LLM",
+            default_value=existing_values.get("SECURITY_LLM_HOSTNAME", security_default_hostname),
+            validator=validate_hostname
+        )
+
+        security_llm_port = get_user_input(
+            "Enter the port for security LLM",
+            default_value=existing_values.get("SECURITY_LLM_PORT", security_default_port),
+            validator=validate_port
+        )
+
+        security_llm_api_path = get_user_input(
+            "Enter the API path for security LLM",
+            default_value=existing_values.get("SECURITY_LLM_API_PATH", security_default_api_path),
+            validator=validate_api_path
+        )
+    else:
+        # Set default values when security LLM is disabled
+        security_llm_provider = "OpenAI"
+        security_llm_model = "gpt-3.5-turbo"
+        security_llm_hostname = "api.openai.com"
+        security_llm_port = "443"
+        security_llm_api_path = "/v1"
+
     print("\nLogging Configuration:")
     print("-" * 20)
     # Convert boolean values from existing config to y/N format for the default
@@ -538,6 +608,15 @@ PROMPT_LLM_API_PATH={prompt_llm_api_path}
 # Security Configuration
 TERMINATE_ON_POTENTIALLY_HARMFUL_SQL=false
 
+# Security LLM Configuration (for advanced SQL security analysis)
+# Whether to use the security LLM for analysis (set to false to use basic keyword matching only)
+USE_SECURITY_LLM={use_security_llm}
+SECURITY_LLM_PROVIDER={security_llm_provider}
+SECURITY_LLM_MODEL={security_llm_model}
+SECURITY_LLM_HOSTNAME={security_llm_hostname}
+SECURITY_LLM_PORT={security_llm_port}
+SECURITY_LLM_API_PATH={security_llm_api_path}
+
 # Logging Configuration
 ENABLE_SCREEN_LOGGING={enable_screen_logging}
 """
@@ -591,6 +670,15 @@ PROMPT_LLM_API_PATH={prompt_llm_api_path}
 
 # Security Configuration
 TERMINATE_ON_POTENTIALLY_HARMFUL_SQL=false
+
+# Security LLM Configuration (for advanced SQL security analysis)
+# Whether to use the security LLM for analysis (set to false to use basic keyword matching only)
+USE_SECURITY_LLM=Y
+SECURITY_LLM_PROVIDER=OpenAI
+SECURITY_LLM_MODEL=gpt-3.5-turbo
+SECURITY_LLM_HOSTNAME=api.openai.com
+SECURITY_LLM_PORT=443
+SECURITY_LLM_API_PATH=/v1
 
 # Logging Configuration
 ENABLE_SCREEN_LOGGING=N

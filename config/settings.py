@@ -60,5 +60,13 @@ GIGACHAT_VERIFY_SSL_CERTS = str_to_bool(os.getenv("GIGACHAT_VERIFY_SSL_CERTS"), 
 # Security Configuration
 TERMINATE_ON_POTENTIALLY_HARMFUL_SQL = str_to_bool(os.getenv("TERMINATE_ON_POTENTIALLY_HARMFUL_SQL"), False)
 
+# Security LLM Configuration (for advanced SQL security analysis)
+SECURITY_LLM_PROVIDER = os.getenv("SECURITY_LLM_PROVIDER", "OpenAI")
+SECURITY_LLM_MODEL = os.getenv("SECURITY_LLM_MODEL", "gpt-3.5-turbo")
+SECURITY_LLM_HOSTNAME = os.getenv("SECURITY_LLM_HOSTNAME", "localhost")
+SECURITY_LLM_PORT = os.getenv("SECURITY_LLM_PORT", "443")
+SECURITY_LLM_API_PATH = os.getenv("SECURITY_LLM_API_PATH", "/v1")
+USE_SECURITY_LLM = str_to_bool(os.getenv("USE_SECURITY_LLM"), True)  # Whether to use the security LLM for analysis
+
 # Logging Configuration
 ENABLE_SCREEN_LOGGING = str_to_bool(os.getenv("ENABLE_SCREEN_LOGGING"), False)

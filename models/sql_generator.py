@@ -79,7 +79,10 @@ class SQLGenerator:
             5. If the request is ambiguous, make reasonable assumptions based on the schema
             6. Always use table aliases for better readability
             7. Limit results if the query could return a large dataset unless specifically asked for all records
-            8. Wrap the SQL query between <sql_to_use> and </sql_to_use> tags
+            8. Use only tables awailable in the schema, don't make up any tables and table's names.
+            9. Respond with a JSON object containing the following field:
+               - sql_query: The generated SQL query
+            10. Respond ONLY with the JSON object, nothing else.
             """
 
         self.prompt = ChatPromptTemplate.from_messages([
@@ -87,11 +90,40 @@ class SQLGenerator:
             ("human", "{user_request}")
         ])
 
-        # Create the output parser (keeping it for potential future use)
-        self.output_parser = StrOutputParser()
+        # Create the LLM with structured output based on the provider
+        if SQL_LLM_PROVIDER.lower() == 'gigachat':
+            # Import GigaChat model when needed
+            from utils.gigachat_integration import GigaChatModel
+            self.llm = GigaChatModel(
+                model=SQL_LLM_MODEL,
+                temperature=0,  # Lower temperature for more consistent SQL generation
+                credentials=GIGACHAT_CREDENTIALS,
+                scope=GIGACHAT_SCOPE,
+                access_token=GIGACHAT_ACCESS_TOKEN,
+                verify_ssl_certs=GIGACHAT_VERIFY_SSL_CERTS
+            ).with_structured_output(SQLOutput)  # Use structured output
+        else:
+            # Construct the base URL based on provider configuration for other providers
+            if SQL_LLM_PROVIDER.lower() in ['openai', 'deepseek', 'qwen']:
+                # For cloud providers, use HTTPS unless hostname is not the standard one
+                if SQL_LLM_HOSTNAME not in ["api.openai.com", "api.deepseek.com", "dashscope.aliyuncs.com"]:
+                    base_url = f"https://{SQL_LLM_HOSTNAME}:{SQL_LLM_PORT}{SQL_LLM_API_PATH}"
+                else:
+                    base_url = None  # Use default OpenAI endpoint
+            else:
+                # For local providers like LM Studio or Ollama, use custom base URL with HTTP
+                base_url = f"http://{SQL_LLM_HOSTNAME}:{SQL_LLM_PORT}{SQL_LLM_API_PATH}"
 
-        # Create the chain with the parser
-        self.chain = self.prompt | self.llm | self.output_parser
+            # Create the LLM with the determined base URL and structured output
+            self.llm = ChatOpenAI(
+                model=SQL_LLM_MODEL,
+                temperature=0,  # Lower temperature for more consistent SQL generation
+                api_key=OPENAI_API_KEY or ("sk-fake-key" if base_url else OPENAI_API_KEY),
+                base_url=base_url
+            ).with_structured_output(SQLOutput)  # Use structured output
+
+        # Create the chain - no need for separate output parser since we're using with_structured_output
+        self.chain = self.prompt | self.llm
     
     @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
     def generate_sql(self, user_request, schema_dump, attached_files=None):
@@ -123,24 +155,21 @@ class SQLGenerator:
                         logger.info(f"    File {idx+1}: {file_info.get('filename', 'Unknown')} ({file_info.get('size', 'Unknown')} bytes)")
 
             # Generate the SQL query
-            response = self.chain.invoke({
+            structured_response = self.chain.invoke({
                 "user_request": user_request,
                 "schema_dump": schema_str
             })
 
             # Log the response
             if ENABLE_SCREEN_LOGGING:
-                logger.info(f"SQLGenerator response: {response}")
+                logger.info(f"SQLGenerator response: {structured_response}")
 
-            # Try to parse as structured output first
-            try:
-                # Attempt to parse the response with the Pydantic parser
-                parser = PydanticOutputParser(pydantic_object=SQLOutput)
-                structured_response = parser.parse(response)
+            # Since we're using Pydantic parser, the response should already be structured
+            if isinstance(structured_response, SQLOutput):
                 sql_query = structured_response.sql_query
-            except Exception:
+            else:
                 # Fallback to cleaning the string response if structured parsing fails
-                sql_query = self.clean_sql_response(response)
+                sql_query = self.clean_sql_response(str(structured_response))
 
             return sql_query
 

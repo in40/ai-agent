@@ -1,40 +1,32 @@
-# LangGraph: Enhancing the AI Agent Architecture
+"""
+LangGraph implementation of the AI Agent with enhanced state management,
+conditional logic, and error recovery capabilities.
+"""
 
-## Introduction to LangGraph
-
-LangGraph is an extension of LangChain that provides tools for building stateful, multi-step AI applications. Unlike simple LangChain chains (which are linear), LangGraph allows for complex workflows with conditional logic, loops, and state management.
-
-## Key Differences: LangChain vs LangGraph
-
-| Aspect | LangChain (Current Implementation) | LangGraph (Enhanced Implementation) |
-|--------|-----------------------------------|-------------------------------------|
-| Structure | Linear chains | Graph-based workflows |
-| State | Stateless | Stateful |
-| Control Flow | Sequential | Conditional, loops, parallel execution |
-| Complexity | Simple operations | Complex, multi-step processes |
-| Error Handling | Limited | Comprehensive with recovery mechanisms |
-| Validation | Basic | Sophisticated with iterative refinement |
-| Monitoring | Minimal | Detailed with execution tracking |
-
-## Current Architecture Limitations (Addressed)
-
-The original implementation had several limitations that LangGraph now addresses:
-
-1. **Linear Processing**: The workflow is now graph-based with conditional logic
-2. **No Error Recovery**: Implemented automatic retry and refinement mechanisms
-3. **No Iterative Refinement**: Added SQL refinement based on execution results
-4. **No Validation Loop**: Implemented comprehensive validation with feedback loops
-5. **Limited Monitoring**: Added detailed logging and execution tracking
-
-## Enhanced LangGraph Implementation
-
-### 1. State Definition
-
-```python
-from typing import TypedDict, List, Dict, Any
+from typing import TypedDict, List, Dict, Any, Literal
 from langchain_core.messages import BaseMessage
+from pydantic import BaseModel, Field
+from langgraph.graph import StateGraph, END
+from utils.database import DatabaseManager
+from models.sql_generator import SQLGenerator
+from models.sql_executor import SQLExecutor
+from models.prompt_generator import PromptGenerator
+from models.response_generator import ResponseGenerator
+from models.security_sql_detector import SecuritySQLDetector
+from config.settings import TERMINATE_ON_POTENTIALLY_HARMFUL_SQL
+import os
+from config.settings import str_to_bool
+import logging
+import time
+from datetime import datetime
+
+logger = logging.getLogger(__name__)
+
 
 class AgentState(TypedDict):
+    """
+    State definition for the LangGraph agent.
+    """
     user_request: str
     schema_dump: Dict[str, Any]
     sql_query: str
@@ -42,30 +34,29 @@ class AgentState(TypedDict):
     final_response: str
     messages: List[BaseMessage]
     validation_error: str
+    retry_count: int
     execution_error: str
     sql_generation_error: str
-    retry_count: int
-```
+    disable_sql_blocking: bool
 
-### 2. Node Definitions
 
-#### Get Schema Node
-```python
 def get_schema_node(state: AgentState) -> AgentState:
-    """Node to retrieve database schema with enhanced error handling"""
+    """
+    Node to retrieve database schema
+    """
     start_time = time.time()
     logger.info(f"[NODE START] get_schema_node - Processing request: {state['user_request'][:50]}...")
-    
+
     try:
         db_manager = DatabaseManager()
         schema_dump = db_manager.get_schema_dump()
         elapsed_time = time.time() - start_time
-        
+
         logger.info(f"[NODE SUCCESS] get_schema_node - Retrieved schema with {len(schema_dump)} tables in {elapsed_time:.2f}s")
         return {
             **state,
             "schema_dump": schema_dump,
-            "sql_generation_error": None
+            "sql_generation_error": None  # Clear any previous errors
         }
     except Exception as e:
         elapsed_time = time.time() - start_time
@@ -75,15 +66,15 @@ def get_schema_node(state: AgentState) -> AgentState:
             "schema_dump": {},
             "sql_generation_error": f"Error retrieving schema: {str(e)}"
         }
-```
 
-#### Generate SQL Node
-```python
+
 def generate_sql_node(state: AgentState) -> AgentState:
-    """Node to generate SQL query with enhanced error handling"""
+    """
+    Node to generate SQL query
+    """
     start_time = time.time()
     logger.info(f"[NODE START] generate_sql_node - Generating SQL for request: {state['user_request'][:50]}...")
-    
+
     try:
         sql_generator = SQLGenerator()
         sql_query = sql_generator.generate_sql(
@@ -91,12 +82,12 @@ def generate_sql_node(state: AgentState) -> AgentState:
             state["schema_dump"]
         )
         elapsed_time = time.time() - start_time
-        
+
         logger.info(f"[NODE SUCCESS] generate_sql_node - Generated SQL in {elapsed_time:.2f}s: {sql_query[:100]}...")
         return {
             **state,
             "sql_query": sql_query,
-            "sql_generation_error": None
+            "sql_generation_error": None  # Clear any previous errors
         }
     except Exception as e:
         elapsed_time = time.time() - start_time
@@ -107,12 +98,12 @@ def generate_sql_node(state: AgentState) -> AgentState:
             "sql_generation_error": f"Error generating SQL: {str(e)}",
             "retry_count": state.get("retry_count", 0) + 1
         }
-```
 
-#### Validate SQL Node
-```python
+
 def validate_sql_node(state: AgentState) -> AgentState:
-    """Node to validate SQL query safety with comprehensive checks"""
+    """
+    Node to validate SQL query safety
+    """
     start_time = time.time()
     sql = state["sql_query"]
     disable_blocking = state.get("disable_sql_blocking", False)
@@ -270,25 +261,25 @@ def validate_sql_node(state: AgentState) -> AgentState:
         **state,
         "validation_error": None
     }
-```
 
-#### Execute SQL Node
-```python
+
 def execute_sql_node(state: AgentState) -> AgentState:
-    """Node to execute SQL query with enhanced error handling"""
+    """
+    Node to execute SQL query
+    """
     start_time = time.time()
     logger.info(f"[NODE START] execute_sql_node - Executing SQL: {state['sql_query'][:100]}...")
-    
+
     try:
         sql_executor = SQLExecutor(DatabaseManager())
         results = sql_executor.execute_sql_and_get_results(state["sql_query"])
         elapsed_time = time.time() - start_time
-        
+
         logger.info(f"[NODE SUCCESS] execute_sql_node - Query executed in {elapsed_time:.2f}s, got {len(results)} results")
         return {
             **state,
             "db_results": results,
-            "execution_error": None
+            "execution_error": None  # Clear any previous errors
         }
     except Exception as e:
         elapsed_time = time.time() - start_time
@@ -298,17 +289,17 @@ def execute_sql_node(state: AgentState) -> AgentState:
             **state,
             "db_results": [],
             "execution_error": error_msg,
-            "validation_error": error_msg
+            "validation_error": error_msg  # Also set validation error to trigger retry
         }
-```
 
-#### Refine SQL Node
-```python
+
 def refine_sql_node(state: AgentState) -> AgentState:
-    """Node to refine SQL query based on execution results or errors"""
+    """
+    Node to refine SQL query based on execution results or errors
+    """
     start_time = time.time()
     logger.info(f"[NODE START] refine_sql_node - Refining SQL for request: {state['user_request'][:50]}...")
-    
+
     try:
         # Get the error that led to refinement
         error_context = state.get("execution_error") or state.get("validation_error") or state.get("sql_generation_error")
@@ -361,15 +352,27 @@ def refine_sql_node(state: AgentState) -> AgentState:
             **state,
             "sql_generation_error": error_msg
         }
-```
 
-#### Generate Response Node
-```python
+
+def format_schema_dump(schema_dump):
+    """
+    Helper function to format the schema dump for the LLM
+    """
+    formatted = ""
+    for table_name, columns in schema_dump.items():
+        formatted += f"\nTable: {table_name}\n"
+        for col in columns:
+            formatted += f"  - {col['name']} ({col['type']}) - Nullable: {col['nullable']}\n"
+    return formatted
+
+
 def generate_response_node(state: AgentState) -> AgentState:
-    """Node to generate natural language response with enhanced error handling"""
+    """
+    Node to generate natural language response
+    """
     start_time = time.time()
     logger.info(f"[NODE START] generate_response_node - Generating response for request: {state['user_request'][:50]}...")
-    
+
     try:
         prompt_generator = PromptGenerator()
         response_generator = ResponseGenerator()
@@ -397,157 +400,202 @@ def generate_response_node(state: AgentState) -> AgentState:
             **state,
             "final_response": f"Error generating response: {str(e)}"
         }
-```
 
-### 3. Conditional Logic
 
-#### Validation Decision
-```python
 def should_validate_sql(state: AgentState) -> Literal["safe", "unsafe"]:
-    """Conditional edge to determine if SQL is safe to execute"""
+    """
+    Conditional edge to determine if SQL is safe to execute
+    """
     if state.get("validation_error"):
         return "unsafe"
     return "safe"
-```
 
-#### Refinement Decision
-```python
-def should_refine_or_respond(state: AgentState) -> Literal["refine", "respond"]:
-    """Conditional edge to determine if we should refine SQL or generate response"""
+
+def should_retry(state: AgentState) -> Literal["yes", "no"]:
+    """
+    Conditional edge to determine if we should retry SQL generation
+    """
     # Check if we have errors and haven't exceeded retry limit
     has_error = (
-        state.get("validation_error") or 
-        state.get("execution_error") or 
+        state.get("validation_error") or
+        state.get("execution_error") or
         state.get("sql_generation_error")
     )
-    
+
+    if has_error and state.get("retry_count", 0) < 3:
+        logger.info(f"Retrying with retry count: {state.get('retry_count', 0)}")
+        return "yes"
+    return "no"
+
+
+def should_refine_or_respond(state: AgentState) -> Literal["refine", "respond"]:
+    """
+    Conditional edge to determine if we should refine SQL or generate response
+    """
+    # Check if we have errors and haven't exceeded retry limit
+    has_error = (
+        state.get("validation_error") or
+        state.get("execution_error") or
+        state.get("sql_generation_error")
+    )
+
     if has_error and state.get("retry_count", 0) < 3:
         logger.info(f"Refining SQL with retry count: {state.get('retry_count', 0)}")
         return "refine"
     return "respond"
-```
 
-### 4. Enhanced Workflow Diagram
 
-```
-                    ┌─────────────────┐
-                    │   get_schema    │
-                    └─────────┬───────┘
-                              │
-                              ▼
-                    ┌─────────────────┐
-                    │  generate_sql   │
-                    └─────────┬───────┘
-                              │
-                              ▼
-                    ┌─────────────────┐
-                    │  validate_sql   │
-                    └─────────┬───────┘
-                              │
-                    ┌─────────┴─────────┐
-                    │                   │
-                    ▼                   ▼
-           ┌─────────────────┐   ┌─────────────────┐
-           │  execute_sql    │   │  refine_sql     │
-           └─────────┬───────┘   └─────────┬───────┘
-                     │                     │
-                     │                     │
-                     │         ┌───────────┘
-                     │         │
-                     ▼         ▼
-           ┌─────────────────┐ │
-           │ should_refine_or│ │
-           │ _respond        │◄┘
-           └─────────┬───────┘
-                     │
-          ┌──────────┴──────────┐
-          │                     │
-          ▼                     ▼
-    ┌─────────────────┐  ┌─────────────────┐
-    │  generate_resp  │  │  refine_sql     │
-    │                 │  │                 │
-    └─────────┬───────┘  └─────────────────┘
-              │                    │
-              ▼                    │
-       ┌────────────┐              │
-       │   END      │◄─────────────┘
-       └────────────┘
-```
+def create_enhanced_agent_graph():
+    """
+    Create the enhanced agent workflow using LangGraph
+    """
+    workflow = StateGraph(AgentState)
 
-## Benefits of Enhanced LangGraph Implementation
+    # Add nodes
+    workflow.add_node("get_schema", get_schema_node)
+    workflow.add_node("generate_sql", generate_sql_node)
+    workflow.add_node("validate_sql", validate_sql_node)
+    workflow.add_node("execute_sql", execute_sql_node)
+    workflow.add_node("refine_sql", refine_sql_node)
+    workflow.add_node("generate_response", generate_response_node)
 
-### 1. Error Handling and Recovery
-- Automatic retry mechanisms when SQL generation fails
-- Graceful degradation when database queries fail
-- Feedback loops to improve query generation
-- Prevention of infinite loops during refinement
+    # Define edges
+    workflow.add_edge("get_schema", "generate_sql")
+    workflow.add_edge("generate_sql", "validate_sql")
 
-### 2. Validation and Safety
-- Built-in validation steps before executing SQL
-- Conditional logic to prevent harmful queries
-- Iterative refinement of queries based on errors
-- Comprehensive checks for SQL injection patterns
-- Option to disable SQL blocking for trusted environments
-- Advanced security LLM analysis to reduce false positives
-- Context-aware security analysis that considers database schema
-- Configurable security policies via environment variables
-- Support for both basic keyword matching and advanced LLM-based analysis
+    # Conditional edges for validation
+    workflow.add_conditional_edges(
+        "validate_sql",
+        should_validate_sql,
+        {
+            "safe": "execute_sql",
+            "unsafe": "refine_sql"  # Go to refine if unsafe
+        }
+    )
 
-### 3. State Management
-- Persistent state across multiple steps
-- Ability to track retry counts and validation errors
-- Audit trail of all processing steps
-- Detailed execution logs for monitoring
+    # Conditional edges for retries after execution
+    workflow.add_conditional_edges(
+        "execute_sql",
+        should_refine_or_respond,
+        {
+            "refine": "refine_sql",  # Go to refine if execution failed
+            "respond": "generate_response"
+        }
+    )
 
-### 4. Flexibility
-- Easy addition of new processing steps
-- Conditional execution based on results
-- Parallel processing capabilities
-- Configurable retry limits
+    # Conditional edges after refinement
+    workflow.add_conditional_edges(
+        "refine_sql",
+        should_refine_or_respond,
+        {
+            "refine": "validate_sql",  # Go back to validation after refinement
+            "respond": "generate_response"
+        }
+    )
 
-### 5. Monitoring and Observability
-- Detailed logging with timing information
-- Execution tracking with timestamps
-- Error categorization and reporting
-- Performance metrics for each node
+    workflow.add_edge("generate_response", END)
 
-## Implementation Considerations
+    # Set entry point
+    workflow.set_entry_point("get_schema")
 
-### 1. Migration Strategy
-- Keep existing LangChain components as nodes
-- Gradually migrated to graph structure
-- Maintained backward compatibility during transition
+    return workflow.compile()
 
-### 2. Performance
-- Added timing measurements for performance analysis
-- Optimized validation checks to minimize overhead
-- Implemented proper state management
 
-### 3. Monitoring
-- Enhanced logging for graph execution
-- Step-by-step tracking of state changes
-- Performance metrics for each node
+class AgentMonitoringCallback:
+    """
+    Callback class to monitor and log the execution of the LangGraph agent
+    """
+    def __init__(self):
+        self.execution_log = []
+        self.start_time = None
 
-## Testing
+    def on_graph_start(self, state: AgentState):
+        self.start_time = time.time()
+        log_entry = {
+            "timestamp": datetime.now(),
+            "event": "graph_start",
+            "node": "start",
+            "state_summary": {
+                "request_length": len(state.get("user_request", "")),
+                "has_schema": bool(state.get("schema_dump")),
+                "has_sql": bool(state.get("sql_query")),
+                "retry_count": state.get("retry_count", 0)
+            }
+        }
+        self.execution_log.append(log_entry)
+        logger.info(f"[GRAPH START] Processing request: {state['user_request'][:50]}...")
 
-A comprehensive test suite has been created to validate all components:
-- Individual node testing
-- Integration testing of the full graph
-- Error handling scenario testing
-- Edge case validation
+    def on_graph_end(self, state: AgentState):
+        total_time = time.time() - self.start_time if self.start_time else 0
+        log_entry = {
+            "timestamp": datetime.now(),
+            "event": "graph_end",
+            "node": "end",
+            "total_execution_time": total_time,
+            "state_summary": {
+                "has_sql": bool(state.get("sql_query")),
+                "result_count": len(state.get("db_results", [])),
+                "final_response_length": len(state.get("final_response", "")),
+                "retry_count": state.get("retry_count", 0),
+                "errors": {
+                    "validation": state.get("validation_error"),
+                    "execution": state.get("execution_error"),
+                    "generation": state.get("sql_generation_error")
+                }
+            }
+        }
+        self.execution_log.append(log_entry)
+        logger.info(f"[GRAPH END] Completed in {total_time:.2f}s, retries: {state.get('retry_count', 0)}")
 
-## Conclusion
 
-The enhanced LangGraph implementation transforms the original linear workflow into a more intelligent, adaptive system capable of handling complex scenarios and edge cases more effectively. The graph-based approach enables:
+def run_enhanced_agent(user_request: str, disable_sql_blocking: bool = None) -> Dict[str, Any]:
+    """
+    Convenience function to run the enhanced agent with a user request
+    """
+    # Use the configuration value if disable_sql_blocking is not explicitly provided
+    if disable_sql_blocking is None:
+        # TERMINATE_ON_POTENTIALLY_HARMFUL_SQL means we should block harmful SQL,
+        # so if it's True, disable_sql_blocking should be False, and vice versa
+        disable_sql_blocking = not TERMINATE_ON_POTENTIALLY_HARMFUL_SQL
 
-- Better error handling and recovery mechanisms
-- Conditional logic for validation and safety
-- Iterative refinement of SQL queries
-- More sophisticated state management
-- Comprehensive monitoring and logging
-- Prevention of infinite loops during error recovery
-- Advanced security analysis with both basic keyword matching and LLM-based approaches
-- Configurable security policies to balance safety and usability
-- Support for multiple LLM providers (OpenAI, GigaChat, DeepSeek, Qwen, LM Studio, Ollama)
+    # Create the graph
+    graph = create_enhanced_agent_graph()
 
-This implementation provides a robust foundation for building production-ready AI agents with advanced capabilities for database querying and natural language processing.
+    # Define initial state
+    initial_state: AgentState = {
+        "user_request": user_request,
+        "schema_dump": {},
+        "sql_query": "",
+        "db_results": [],
+        "final_response": "",
+        "messages": [],
+        "validation_error": None,
+        "execution_error": None,
+        "sql_generation_error": None,
+        "retry_count": 0,
+        "disable_sql_blocking": disable_sql_blocking
+    }
+
+    # Create monitoring callback
+    callback_handler = AgentMonitoringCallback()
+    callback_handler.on_graph_start(initial_state)
+
+    # Run the graph
+    result = graph.invoke(initial_state)
+
+    callback_handler.on_graph_end(result)
+
+    return {
+        "original_request": user_request,
+        "generated_sql": result.get("sql_query"),
+        "db_results": result.get("db_results"),
+        "final_response": result.get("final_response"),
+        "validation_error": result.get("validation_error"),
+        "execution_error": result.get("execution_error"),
+        "sql_generation_error": result.get("sql_generation_error"),
+        "retry_count": result.get("retry_count"),
+        "execution_log": [entry for entry in callback_handler.execution_log]  # Include execution log
+    }
+
+
+# Mark the current task as completed and move to the next one
