@@ -39,6 +39,7 @@ class AgentState(TypedDict):
     schema_dump: Dict[str, Any]
     sql_query: str
     db_results: List[Dict[str, Any]]
+    response_prompt: str  # Specialized prompt for response generation
     final_response: str
     messages: List[BaseMessage]
     validation_error: str
@@ -363,24 +364,52 @@ def refine_sql_node(state: AgentState) -> AgentState:
         }
 ```
 
-#### Generate Response Node
+#### Generate Prompt Node
 ```python
-def generate_response_node(state: AgentState) -> AgentState:
-    """Node to generate natural language response with enhanced error handling"""
+def generate_prompt_node(state: AgentState) -> AgentState:
+    """Node to generate specialized prompt for the response LLM"""
     start_time = time.time()
-    logger.info(f"[NODE START] generate_response_node - Generating response for request: {state['user_request'][:50]}...")
-    
+    logger.info(f"[NODE START] generate_prompt_node - Generating specialized prompt for request: {state['user_request'][:50]}...")
+
     try:
         prompt_generator = PromptGenerator()
-        response_generator = ResponseGenerator()
 
+        # Generate a specialized prompt for the response LLM based on user request and database results
         response_prompt = prompt_generator.generate_prompt_for_response_llm(
             state["user_request"],
             state["db_results"]
         )
 
+        elapsed_time = time.time() - start_time
+        logger.info(f"[NODE SUCCESS] generate_prompt_node - Generated specialized prompt in {elapsed_time:.2f}s")
+        return {
+            **state,
+            "response_prompt": response_prompt  # Store the generated prompt for the next step
+        }
+    except Exception as e:
+        elapsed_time = time.time() - start_time
+        error_msg = f"Error generating specialized prompt: {str(e)}"
+        logger.error(f"[NODE ERROR] generate_prompt_node - {error_msg} after {elapsed_time:.2f}s")
+        return {
+            **state,
+            "final_response": f"Error generating response: {str(e)}"
+        }
+```
+
+#### Generate Response Node
+```python
+def generate_response_node(state: AgentState) -> AgentState:
+    """Node to generate natural language response using specialized LLM model"""
+    start_time = time.time()
+    logger.info(f"[NODE START] generate_response_node - Generating response for request: {state['user_request'][:50]}...")
+
+    try:
+        # Use the specialized LLM model to generate the final response
+        response_generator = ResponseGenerator()
+
+        # Generate the final response using the specialized prompt
         final_response = response_generator.generate_natural_language_response(
-            response_prompt
+            state.get("response_prompt", "")  # Use the prompt generated in the previous step
         )
 
         elapsed_time = time.time() - start_time
@@ -460,19 +489,33 @@ def should_refine_or_respond(state: AgentState) -> Literal["refine", "respond"]:
            │ _respond        │◄┘
            └─────────┬───────┘
                      │
-          ┌──────────┴──────────┐
-          │                     │
-          ▼                     ▼
-    ┌─────────────────┐  ┌─────────────────┐
-    │  generate_resp  │  │  refine_sql     │
-    │                 │  │                 │
-    └─────────┬───────┘  └─────────────────┘
-              │                    │
-              ▼                    │
-       ┌────────────┐              │
-       │   END      │◄─────────────┘
-       └────────────┘
+                     ▼
+           ┌─────────────────┐
+           │ generate_prompt │  ← Generate specialized prompt for response LLM
+           │                 │
+           └─────────┬───────┘
+                     │
+                     ▼
+           ┌─────────────────┐
+           │ generate_resp   │  ← Generate final response using specialized LLM
+           │                 │
+           └─────────┬───────┘
+                     │
+                     ▼
+           ┌────────────┐
+           │   END      │
+           └────────────┘
 ```
+
+### 5. Specialized LLM Model for Final Response Generation
+
+The enhanced LangGraph implementation includes a two-step process for generating the final response:
+
+1. **Specialized Prompt Generation**: The `generate_prompt_node` creates a tailored prompt for the response LLM based on the user's original request and the database query results. This specialized prompt guides the response LLM on how to format and structure the answer appropriately.
+
+2. **Final Response Generation**: The `generate_response_node` uses a specialized LLM model to generate the natural language response based on the specialized prompt created in the previous step. This ensures that the final response is well-structured, accurate, and in natural language that is easy for the user to understand.
+
+This two-step approach allows for better control over the response generation process and enables the use of different LLM models optimized for different tasks (one for prompt creation and another for response generation).
 
 ## Benefits of Enhanced LangGraph Implementation
 

@@ -31,6 +31,7 @@ class AgentState(TypedDict):
     schema_dump: Dict[str, Any]
     sql_query: str
     db_results: List[Dict[str, Any]]
+    response_prompt: str  # Specialized prompt for response generation
     final_response: str
     messages: List[BaseMessage]
     validation_error: str
@@ -366,24 +367,52 @@ def format_schema_dump(schema_dump):
     return formatted
 
 
-def generate_response_node(state: AgentState) -> AgentState:
+def generate_prompt_node(state: AgentState) -> AgentState:
     """
-    Node to generate natural language response
+    Node to generate specialized prompt for the response LLM
     """
     start_time = time.time()
-    logger.info(f"[NODE START] generate_response_node - Generating response for request: {state['user_request'][:50]}...")
+    logger.info(f"[NODE START] generate_prompt_node - Generating specialized prompt for request: {state['user_request'][:50]}...")
 
     try:
         prompt_generator = PromptGenerator()
-        response_generator = ResponseGenerator()
 
+        # Generate a specialized prompt for the response LLM based on user request and database results
         response_prompt = prompt_generator.generate_prompt_for_response_llm(
             state["user_request"],
             state["db_results"]
         )
 
+        elapsed_time = time.time() - start_time
+        logger.info(f"[NODE SUCCESS] generate_prompt_node - Generated specialized prompt in {elapsed_time:.2f}s")
+        return {
+            **state,
+            "response_prompt": response_prompt  # Store the generated prompt for the next step
+        }
+    except Exception as e:
+        elapsed_time = time.time() - start_time
+        error_msg = f"Error generating specialized prompt: {str(e)}"
+        logger.error(f"[NODE ERROR] generate_prompt_node - {error_msg} after {elapsed_time:.2f}s")
+        return {
+            **state,
+            "final_response": f"Error generating response: {str(e)}"
+        }
+
+
+def generate_response_node(state: AgentState) -> AgentState:
+    """
+    Node to generate natural language response using specialized LLM model
+    """
+    start_time = time.time()
+    logger.info(f"[NODE START] generate_response_node - Generating response for request: {state['user_request'][:50]}...")
+
+    try:
+        # Use the specialized LLM model to generate the final response
+        response_generator = ResponseGenerator()
+
+        # Generate the final response using the specialized prompt
         final_response = response_generator.generate_natural_language_response(
-            response_prompt
+            state.get("response_prompt", "")  # Use the prompt generated in the previous step
         )
 
         elapsed_time = time.time() - start_time
@@ -457,6 +486,7 @@ def create_enhanced_agent_graph():
     workflow.add_node("validate_sql", validate_sql_node)
     workflow.add_node("execute_sql", execute_sql_node)
     workflow.add_node("refine_sql", refine_sql_node)
+    workflow.add_node("generate_prompt", generate_prompt_node)  # New node for generating specialized prompt
     workflow.add_node("generate_response", generate_response_node)
 
     # Define edges
@@ -479,7 +509,7 @@ def create_enhanced_agent_graph():
         should_refine_or_respond,
         {
             "refine": "refine_sql",  # Go to refine if execution failed
-            "respond": "generate_response"
+            "respond": "generate_prompt"  # Go to generate prompt before response
         }
     )
 
@@ -489,10 +519,12 @@ def create_enhanced_agent_graph():
         should_refine_or_respond,
         {
             "refine": "validate_sql",  # Go back to validation after refinement
-            "respond": "generate_response"
+            "respond": "generate_prompt"  # Go to generate prompt before response
         }
     )
 
+    # Add edge from generate_prompt to generate_response
+    workflow.add_edge("generate_prompt", "generate_response")
     workflow.add_edge("generate_response", END)
 
     # Set entry point
@@ -567,6 +599,7 @@ def run_enhanced_agent(user_request: str, disable_sql_blocking: bool = None) -> 
         "schema_dump": {},
         "sql_query": "",
         "db_results": [],
+        "response_prompt": "",  # Specialized prompt for response generation
         "final_response": "",
         "messages": [],
         "validation_error": None,
@@ -589,6 +622,7 @@ def run_enhanced_agent(user_request: str, disable_sql_blocking: bool = None) -> 
         "original_request": user_request,
         "generated_sql": result.get("sql_query"),
         "db_results": result.get("db_results"),
+        "response_prompt": result.get("response_prompt"),  # Include the specialized prompt
         "final_response": result.get("final_response"),
         "validation_error": result.get("validation_error"),
         "execution_error": result.get("execution_error"),
