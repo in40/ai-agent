@@ -426,23 +426,60 @@ def add_database_from_config():
 def reload_database_config():
     """
     Reload database configurations from environment variables.
-    This function clears the existing databases and reloads them from the current environment.
+    This function compares the current databases with the ones defined in environment variables
+    and only adds/removes databases as needed to minimize unnecessary operations.
     """
-    # Clear all existing databases except the default one if it exists
-    current_databases = list(multi_db_manager.databases.keys())
+    # Get the databases that should be present based on environment variables
+    desired_dbs = {}
 
-    # Remove all databases except the default one
-    for db_name in current_databases:
-        if db_name != "default":
-            multi_db_manager.remove_database(db_name)
-
-    # Re-add the default database if DATABASE_URL is configured
+    # Add default database if DATABASE_URL is configured
     from config.settings import DATABASE_URL
     if DATABASE_URL:
-        multi_db_manager.add_database("default", DATABASE_URL)
+        desired_dbs["default"] = DATABASE_URL
 
-    # Add databases from environment variables again
-    add_database_from_config()
+    # Add databases from environment variables
+    for key, value in os.environ.items():
+        if key.startswith("DB_") and key.endswith("_URL"):
+            # Extract the database name from the environment variable name
+            db_name = key[3:-4].lower()  # Remove "DB_" prefix and "_URL" suffix
+            if db_name and db_name != "":  # Make sure we have a valid name
+                desired_dbs[db_name] = value
+
+    # Also check for databases defined with individual components
+    for key, value in os.environ.items():
+        if key.startswith("DB_") and "_TYPE" in key:
+            # Extract the database name from the environment variable name
+            parts = key.split('_')
+            if len(parts) >= 3:
+                db_name = '_'.join(parts[1:-1]).lower()  # Everything between "DB_" and "_TYPE"
+                if db_name and db_name != "":
+                    # Construct the database URL from individual components
+                    db_type = os.getenv(f"DB_{db_name.upper()}_TYPE")
+                    db_username = os.getenv(f"DB_{db_name.upper()}_USERNAME")
+                    db_password = os.getenv(f"DB_{db_name.upper()}_PASSWORD", "")
+                    db_hostname = os.getenv(f"DB_{db_name.upper()}_HOSTNAME", "localhost")
+                    db_port = os.getenv(f"DB_{db_name.upper()}_PORT", "5432")
+                    db_name_env = os.getenv(f"DB_{db_name.upper()}_NAME")
+
+                    if all([db_type, db_username, db_name_env]):
+                        db_url = f"{db_type}://{db_username}:{db_password}@{db_hostname}:{db_port}/{db_name_env}"
+                        desired_dbs[db_name] = db_url
+
+    # Get current databases
+    current_dbs = set(multi_db_manager.databases.keys())
+    desired_db_names = set(desired_dbs.keys())
+
+    # Remove databases that are no longer in environment
+    dbs_to_remove = current_dbs - desired_db_names
+    for db_name in dbs_to_remove:
+        if db_name != "default":  # Don't remove default unless it's no longer configured
+            multi_db_manager.remove_database(db_name)
+
+    # Add/update databases that are in environment but not in manager or have changed URL
+    for db_name, db_url in desired_dbs.items():
+        current_db_manager = multi_db_manager.get_database(db_name)
+        if not current_db_manager or current_db_manager.database_url != db_url:
+            multi_db_manager.add_database(db_name, db_url)
 
 
 # Initialize databases from environment variables when module is loaded
