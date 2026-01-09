@@ -144,7 +144,7 @@ class SQLGenerator:
                 logger.info("SQLGenerator full LLM request:")
                 for i, message in enumerate(full_prompt):
                     if message.type == "system":
-                        logger.info(f"  System Message {i+1}: {message.content[:500]}...")  # Limit system message length
+                        logger.info(f"  System Message {i+1}: {message.content}")  # Full content without truncation
                     else:
                         logger.info(f"  Message {i+1} ({message.type}): {message.content}")
 
@@ -183,10 +183,32 @@ class SQLGenerator:
         Format the schema dump into a readable string for the LLM
         """
         formatted = ""
-        for table_name, columns in schema_dump.items():
-            formatted += f"\nTable: {table_name}\n"
+        for table_name, table_info in schema_dump.items():
+            # Handle both the old format (list of columns) and new format (dict with columns and comment)
+            if isinstance(table_info, list):
+                # Old format - backward compatibility
+                columns = table_info
+                table_comment = None
+            else:
+                # New format with comments
+                columns = table_info.get('columns', [])
+                table_comment = table_info.get('comment', None)
+
+            formatted += f"\nTable: {table_name}"
+            if table_comment:
+                formatted += f" - Comment: {table_comment}"
+            formatted += "\n"
+
             for col in columns:
-                formatted += f"  - {col['name']} ({col['type']}) - Nullable: {col['nullable']}\n"
+                if isinstance(col, dict):
+                    # New format with comments
+                    col_info = f"  - {col['name']} ({col['type']}) - Nullable: {col['nullable']}"
+                    if col.get('comment'):
+                        col_info += f" - Comment: {col['comment']}"
+                    formatted += col_info + "\n"
+                else:
+                    # Old format - backward compatibility
+                    formatted += f"  - {col['name']} ({col['type']}) - Nullable: {col['nullable']}\n"
         return formatted
     
     def clean_sql_response(self, response):

@@ -98,7 +98,7 @@ class PromptGenerator:
             logger.info("PromptGenerator full LLM request:")
             for i, message in enumerate(full_prompt):
                 if message.type == "system":
-                    logger.info(f"  System Message {i+1}: {message.content[:500]}...")  # Limit system message length
+                    logger.info(f"  System Message {i+1}: {message.content}")  # Full content without truncation
                 else:
                     logger.info(f"  Message {i+1} ({message.type}): {message.content}")
 
@@ -124,60 +124,110 @@ class PromptGenerator:
         """
         Generate a prompt for wider search strategies when initial query returns no results
         """
-        # Define the prompt template for generating wider search strategies using external prompt
-        system_prompt = self.prompt_manager.get_prompt("wider_search_generator")
-        if system_prompt is None:
-            # Fallback to default prompt if external prompt is not found
-            system_prompt = """You are an expert at analyzing database schemas and suggesting wider search strategies when initial queries return no results. Your task is to provide specific suggestions for alternative queries that might yield relevant data based on the database schema and the original user request.
+        try:
+            # Define the prompt template for generating wider search strategies using external prompt
+            system_prompt = self.prompt_manager.get_prompt("wider_search_generator")
+            if system_prompt is None:
+                # Fallback to default prompt if external prompt is not found
+                system_prompt = """You are an expert at analyzing database schemas and suggesting wider search strategies when initial queries return no results. Your task is to provide specific suggestions for alternative queries that might yield relevant data based on the database schema and the original user request.
 
-When the initial query returns no results, consider these strategies:
-1. Use LIKE operators with wildcards for partial matches
-2. Search in related tables that might contain relevant information
-3. Use broader categories or classifications
-4. Look for similar data patterns
-5. Use full-text search if available
-6. Suggest alternative search terms based on the schema and column names
+    When the initial query returns no results, consider these strategies:
+    1. Use LIKE operators with wildcards for partial matches
+    2. Search in related tables that might contain relevant information
+    3. Use broader categories or classifications
+    4. Look for similar data patterns
+    5. Use full-text search if available
+    6. Suggest alternative search terms based on the schema and column names
 
-Always reference specific table and column names from the provided schema. Be creative but practical in your suggestions, and ensure they align with the user's original intent."""
+    Always reference specific table and column names from the provided schema. Be creative but practical in your suggestions, and ensure they align with the user's original intent."""
 
-        prompt = ChatPromptTemplate.from_messages([
-            ("system", system_prompt),
-            ("human", "{wider_search_context}")
-        ])
+            prompt = ChatPromptTemplate.from_messages([
+                ("system", system_prompt),
+                ("human", "{wider_search_context}")
+            ])
 
-        # Create the chain for this specific task
-        output_parser = StrOutputParser()
-        chain = prompt | self.llm | output_parser
+            # Create the chain for this specific task
+            output_parser = StrOutputParser()
+            chain = prompt | self.llm | output_parser
 
-        # Log the full request to LLM, including all roles and prompts
-        if ENABLE_SCREEN_LOGGING:
-            # Get the full prompt with all messages (system and human) without invoking the LLM
-            full_prompt = prompt.format_messages(
-                wider_search_context=wider_search_context
-            )
-            logger.info("PromptGenerator wider search LLM request:")
-            for i, message in enumerate(full_prompt):
-                if message.type == "system":
-                    logger.info(f"  System Message {i+1}: {message.content[:500]}...")  # Limit system message length
+            # Log the full request to LLM, including all roles and prompts
+            if ENABLE_SCREEN_LOGGING:
+                # Get the full prompt with all messages (system and human) without invoking the LLM
+                full_prompt = prompt.format_messages(
+                    wider_search_context=wider_search_context
+                )
+                logger.info("PromptGenerator wider search LLM request:")
+                for i, message in enumerate(full_prompt):
+                    if message.type == "system":
+                        logger.info(f"  System Message {i+1}: {message.content}")  # Full content without truncation
+                    else:
+                        logger.info(f"  Message {i+1} ({message.type}): {message.content}")
+
+                # Log any attached files
+                if attached_files:
+                    logger.info(f"  Attached files: {len(attached_files)} file(s)")
+                    for idx, file_info in enumerate(attached_files):
+                        logger.info(f"    File {idx+1}: {file_info.get('filename', 'Unknown')} ({file_info.get('size', 'Unknown')} bytes)")
+
+            # Generate the wider search prompt - wrap this in additional error handling
+            try:
+                response = chain.invoke({
+                    "wider_search_context": wider_search_context
+                })
+
+                # Log the raw response type and content for debugging
+                logger.debug(f"Raw response type: {type(response)}, content: {repr(response)}")
+            except Exception as chain_error:
+                logger.error(f"Error during chain invocation: {str(chain_error)}")
+                logger.error(f"Chain error type: {type(chain_error)}")
+                import traceback
+                logger.error(f"Traceback: {traceback.format_exc()}")
+                # Return a default suggestion if the chain fails
+                return """Consider these alternative search strategies:
+        1. Try searching with broader terms or synonyms
+        2. Look in related tables that might contain the information
+        3. Use wildcards to match partial data
+        4. Check if the data exists in a different format or spelling"""
+
+            # Ensure the response is a string
+            if isinstance(response, dict):
+                # If response is a dictionary, try to extract the content
+                if hasattr(response, 'content'):
+                    response = response.content
+                elif 'content' in response:
+                    response = response['content']
+                elif 'text' in response:
+                    response = response['text']
                 else:
-                    logger.info(f"  Message {i+1} ({message.type}): {message.content}")
+                    # If it's a dict but doesn't have expected keys, convert to string
+                    response = str(response)
+            elif isinstance(response, (list, tuple)):
+                # If response is a list/tuple, convert to string
+                response = str(response)
+            elif hasattr(response, '__dict__') and hasattr(response, 'content'):
+                # If response is an object with content attribute (like AIMessage)
+                response = response.content
+            elif not isinstance(response, str):
+                # If it's anything else, convert to string
+                response = str(response)
 
-            # Log any attached files
-            if attached_files:
-                logger.info(f"  Attached files: {len(attached_files)} file(s)")
-                for idx, file_info in enumerate(attached_files):
-                    logger.info(f"    File {idx+1}: {file_info.get('filename', 'Unknown')} ({file_info.get('size', 'Unknown')} bytes)")
+            # Log the response
+            if ENABLE_SCREEN_LOGGING:
+                logger.info(f"PromptGenerator wider search response: {response}")
 
-        # Generate the wider search prompt
-        response = chain.invoke({
-            "wider_search_context": wider_search_context
-        })
+            return response
+        except Exception as e:
+            logger.error(f"Error in generate_wider_search_prompt: {str(e)}")
+            logger.error(f"Exception type: {type(e)}")
+            import traceback
+            logger.error(f"Full traceback: {traceback.format_exc()}")
 
-        # Log the response
-        if ENABLE_SCREEN_LOGGING:
-            logger.info(f"PromptGenerator wider search response: {response}")
-
-        return response
+            # Return a default suggestion if the LLM call fails
+            return """Consider these alternative search strategies:
+    1. Try searching with broader terms or synonyms
+    2. Look in related tables that might contain the information
+    3. Use wildcards to match partial data
+    4. Check if the data exists in a different format or spelling"""
     
     def format_db_results(self, db_results):
         """

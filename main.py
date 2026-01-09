@@ -32,11 +32,20 @@ else:
     # Disable logging output if screen logging is disabled
     logging.basicConfig(level=logging.WARNING)
 
+from utils.multi_database_manager import multi_db_manager as DatabaseManager, reload_database_config
+
 def main():
     parser = argparse.ArgumentParser(description='AI Agent for Natural Language to SQL Queries using LangGraph')
     parser.add_argument('--request', type=str, help='Natural language request to process')
+    parser.add_argument('--database', type=str, default='default', help='Name of the database to use for queries (default: default)')
 
     args = parser.parse_args()
+
+    # Reload database configuration from environment variables
+    reload_database_config()
+
+    # List all available databases
+    all_databases = DatabaseManager.list_databases()
 
     # Create the LangGraph agent
     graph = create_enhanced_agent_graph()
@@ -49,10 +58,13 @@ def main():
             "schema_dump": {},
             "sql_query": "",
             "db_results": [],
+            "all_db_results": {},
+            "table_to_db_mapping": {},
             "final_response": "",
             "messages": [],
             "validation_error": None,
-            "retry_count": 0
+            "retry_count": 0,
+            "database_name": args.database
         }
 
         try:
@@ -65,6 +77,14 @@ def main():
     else:
         # Interactive mode
         print("AI Agent with LangGraph is ready. Enter your natural language requests (type 'quit' to exit):")
+        print(f"Available databases: {', '.join(all_databases) if all_databases else 'None'}")
+
+        # If a specific database was provided via command line, use it
+        if args.database != 'default' or len(all_databases) == 1:
+            print(f"Using database: {args.database}")
+        else:
+            print("Using all available databases for queries")
+
         while True:
             try:
                 user_input = input("\nYour request: ")
@@ -77,10 +97,13 @@ def main():
                     "schema_dump": {},
                     "sql_query": "",
                     "db_results": [],
+                    "all_db_results": {},
+                    "table_to_db_mapping": {},
                     "final_response": "",
                     "messages": [],
                     "validation_error": None,
-                    "retry_count": 0
+                    "retry_count": 0,
+                    "database_name": args.database
                 }
 
                 # Run the graph

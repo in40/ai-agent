@@ -588,6 +588,118 @@ def test_error_handling_in_run_enhanced_agent():
             print("✓ error handling test passed")
 
 
+def test_validate_sql_node_hex_escape_detection():
+    """
+    Test the validate_sql_node function detects hexadecimal escape sequences
+    """
+    # Temporarily disable the security LLM for this test to use basic validation
+    original_use_security_llm = os.environ.get('USE_SECURITY_LLM')
+    os.environ['USE_SECURITY_LLM'] = 'false'
+
+    try:
+        state = {
+            "user_request": "Get users with hex escape",
+            "schema_dump": {"users": [{"name": "id", "type": "int"}]},
+            "sql_query": "SELECT * FROM users WHERE name = '\\x41';",  # Hex escape for 'A'
+            "db_results": [],
+            "final_response": "",
+            "messages": [],
+            "validation_error": None,
+            "execution_error": None,
+            "sql_generation_error": None,
+            "retry_count": 0,
+            "disable_sql_blocking": False
+        }
+
+        result = validate_sql_node(state)
+
+        assert result["validation_error"] is not None
+        assert "Hexadecimal escape sequences detected" in result["validation_error"]
+        assert result["retry_count"] == 1
+        print("✓ validate_sql_node hex escape detection test passed")
+    finally:
+        # Restore original value
+        if original_use_security_llm is not None:
+            os.environ['USE_SECURITY_LLM'] = original_use_security_llm
+        else:
+            if 'USE_SECURITY_LLM' in os.environ:
+                del os.environ['USE_SECURITY_LLM']
+
+
+def test_validate_sql_node_binary_literal_detection():
+    """
+    Test the validate_sql_node function detects binary literals
+    """
+    # Temporarily disable the security LLM for this test to use basic validation
+    original_use_security_llm = os.environ.get('USE_SECURITY_LLM')
+    os.environ['USE_SECURITY_LLM'] = 'false'
+
+    try:
+        state = {
+            "user_request": "Get users with binary literal",
+            "schema_dump": {"users": [{"name": "id", "type": "int"}]},
+            "sql_query": "SELECT * FROM users WHERE flags = b'1010';",  # Binary literal
+            "db_results": [],
+            "final_response": "",
+            "messages": [],
+            "validation_error": None,
+            "execution_error": None,
+            "sql_generation_error": None,
+            "retry_count": 0,
+            "disable_sql_blocking": False
+        }
+
+        result = validate_sql_node(state)
+
+        assert result["validation_error"] is not None
+        assert "Binary literals detected" in result["validation_error"]
+        assert result["retry_count"] == 1
+        print("✓ validate_sql_node binary literal detection test passed")
+    finally:
+        # Restore original value
+        if original_use_security_llm is not None:
+            os.environ['USE_SECURITY_LLM'] = original_use_security_llm
+        else:
+            if 'USE_SECURITY_LLM' in os.environ:
+                del os.environ['USE_SECURITY_LLM']
+
+
+def test_validate_sql_node_with_clause_allowed():
+    """
+    Test the validate_sql_node function allows WITH clauses
+    """
+    # Temporarily disable the security LLM for this test to use basic validation
+    original_use_security_llm = os.environ.get('USE_SECURITY_LLM')
+    os.environ['USE_SECURITY_LLM'] = 'false'
+
+    try:
+        state = {
+            "user_request": "Get users with CTE",
+            "schema_dump": {"users": [{"name": "id", "type": "int"}]},
+            "sql_query": "WITH recent_users AS (SELECT * FROM users WHERE created_at > '2023-01-01') SELECT * FROM recent_users;",
+            "db_results": [],
+            "final_response": "",
+            "messages": [],
+            "validation_error": None,
+            "execution_error": None,
+            "sql_generation_error": None,
+            "retry_count": 0,
+            "disable_sql_blocking": False
+        }
+
+        result = validate_sql_node(state)
+
+        assert result["validation_error"] is None
+        print("✓ validate_sql_node WITH clause allowed test passed")
+    finally:
+        # Restore original value
+        if original_use_security_llm is not None:
+            os.environ['USE_SECURITY_LLM'] = original_use_security_llm
+        else:
+            if 'USE_SECURITY_LLM' in os.environ:
+                del os.environ['USE_SECURITY_LLM']
+
+
 def run_all_tests():
     """
     Run all tests
@@ -611,6 +723,9 @@ def run_all_tests():
     test_security_llm_false_positive_detection()
     test_security_llm_harmful_query_detection()
     test_error_handling_in_run_enhanced_agent()
+    test_validate_sql_node_hex_escape_detection()
+    test_validate_sql_node_binary_literal_detection()
+    test_validate_sql_node_with_clause_allowed()
 
     print("\n✓ All tests passed!")
 

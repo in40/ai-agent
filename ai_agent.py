@@ -118,7 +118,7 @@ class AIAgent:
                 user_request, db_results, attached_files
             )
             if ENABLE_SCREEN_LOGGING:
-                logger.info(f"Generated response prompt: {response_prompt[:100]}...")  # Truncate for log readability
+                logger.info(f"Generated response prompt: {response_prompt}")  # Full content without truncation
 
             # Step 5: Generate natural language response using third LLM
             if ENABLE_SCREEN_LOGGING:
@@ -127,7 +127,7 @@ class AIAgent:
                 response_prompt, attached_files
             )
             if ENABLE_SCREEN_LOGGING:
-                logger.info(f"Final response: {final_response[:100]}...")  # Truncate for log readability
+                logger.info(f"Final response: {final_response}")  # Full content without truncation
 
             end_time = time.time()
             processing_time = end_time - start_time

@@ -108,7 +108,7 @@ The enhanced version of the agent uses LangGraph to provide:
    DB_{NAME}_PORT=5432
    DB_{NAME}_NAME=database_name
    ```
-
+   
    Or use direct URL:
    ```
    DB_{NAME}_URL=postgresql://username:password@hostname:port/database_name

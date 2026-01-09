@@ -227,6 +227,109 @@ def validate_oauth_token(token):
     return True, ""
 
 
+def parse_additional_databases_from_env(env_content):
+    """
+    Parse additional database configurations from existing .env content.
+    Returns a list of database configuration dictionaries.
+    """
+    additional_db_configs = []
+
+    # Split the content into lines
+    lines = env_content.split('\n')
+
+    # Dictionary to hold all environment variables
+    env_vars = {}
+    for line in lines:
+        if '=' in line and not line.strip().startswith('#'):
+            key, value = line.split('=', 1)
+            env_vars[key.strip()] = value.strip()
+
+    # Find all database names by looking for DB_{NAME}_URL or DB_{NAME}_TYPE patterns
+    db_names = set()
+    for key in env_vars.keys():
+        if key.startswith('DB_') and (key.endswith('_URL') or '_TYPE' in key):
+            db_name = None  # Initialize db_name
+
+            # Extract the database name part
+            if key.endswith('_URL'):
+                db_name = key[3:-4]  # Remove "DB_" prefix and "_URL" suffix
+            else:  # Contains _TYPE
+                parts = key.split('_')
+                if len(parts) >= 3:
+                    db_name = '_'.join(parts[1:-1])  # Everything between "DB_" and "_TYPE"
+
+            if db_name and db_name not in ['TYPE', 'USERNAME', 'PASSWORD', 'HOSTNAME', 'PORT', 'NAME']:
+                db_names.add(db_name.lower())  # Use lowercase for consistency
+
+    # For each database name, extract the configuration
+    for db_name in db_names:
+        db_name_upper = db_name.upper()
+
+        # Check if it's defined by URL
+        if f'DB_{db_name_upper}_URL' in env_vars:
+            # If defined by URL, get the individual components by parsing the URL
+            db_url = env_vars[f'DB_{db_name_upper}_URL']
+
+            # Parse the URL to extract components
+            import re
+            # Handle different URL formats including sqlite with file paths
+            if db_url.startswith('sqlite:///'):
+                # Special handling for SQLite file paths
+                db_type = 'sqlite'
+                db_username = ''
+                db_password = ''
+                db_hostname = ''
+                db_port = '0'
+                db_name_db = db_url[len('sqlite:///'):]  # Get the file path
+            else:
+                url_match = re.match(r'(\w+)://([^:]*):([^@]*)@([^:]+):(\d+)/(.+)', db_url)
+                if url_match:
+                    db_type, db_username, db_password, db_hostname, db_port, db_name_db = url_match.groups()
+                else:
+                    # If the URL doesn't match the standard format, skip this entry
+                    continue
+
+            additional_db_configs.append({
+                'name': db_name,
+                'url': db_url,
+                'type': db_type,
+                'username': db_username,
+                'password': db_password,
+                'hostname': db_hostname,
+                'port': db_port,
+                'database_name': db_name_db
+            })
+        # Check if it's defined by individual components
+        elif all(key in env_vars for key in [
+            f'DB_{db_name_upper}_TYPE',
+            f'DB_{db_name_upper}_USERNAME',
+            f'DB_{db_name_upper}_NAME'
+        ]):
+            # Get individual components
+            db_type = env_vars[f'DB_{db_name_upper}_TYPE']
+            db_username = env_vars[f'DB_{db_name_upper}_USERNAME']
+            db_password = env_vars.get(f'DB_{db_name_upper}_PASSWORD', '')
+            db_hostname = env_vars.get(f'DB_{db_name_upper}_HOSTNAME', 'localhost')
+            db_port = env_vars.get(f'DB_{db_name_upper}_PORT', '5432')
+            db_name_db = env_vars[f'DB_{db_name_upper}_NAME']
+
+            # Construct the URL
+            db_url = f"{db_type}://{db_username}:{db_password}@{db_hostname}:{db_port}/{db_name_db}"
+
+            additional_db_configs.append({
+                'name': db_name,
+                'url': db_url,
+                'type': db_type,
+                'username': db_username,
+                'password': db_password,
+                'hostname': db_hostname,
+                'port': db_port,
+                'database_name': db_name_db
+            })
+
+    return additional_db_configs
+
+
 def main():
     print("AI Agent Configuration Setup")
     print("=" * 40)
@@ -239,6 +342,8 @@ def main():
 
     # Check if .env file already exists and load existing values if available
     existing_values = {}
+    additional_db_configs = []  # Initialize with empty list
+
     if env_file_path.exists():
         response = input(f".env file already exists at {env_file_path}. Overwrite? (y/N): ")
         if response.lower() not in ['y', 'yes']:
@@ -248,10 +353,17 @@ def main():
         # Try to read existing values to use as defaults
         try:
             with open(env_file_path, 'r') as env_file:
-                for line in env_file:
-                    if '=' in line:
-                        key, value = line.split('=', 1)
-                        existing_values[key.strip()] = value.strip()
+                env_content = env_file.read()
+
+            # Parse the content to get existing values
+            for line in env_content.split('\n'):
+                if '=' in line and not line.strip().startswith('#'):
+                    key, value = line.split('=', 1)
+                    existing_values[key.strip()] = value.strip()
+
+            # Parse additional database configurations from the existing .env file
+            additional_db_configs = parse_additional_databases_from_env(env_content)
+
         except Exception as e:
             print(f"Warning: Could not read existing .env file: {e}")
 
@@ -297,6 +409,303 @@ def main():
 
     # Construct the database URL
     db_url = f"{db_type}://{db_username}:{db_password}@{db_hostname}:{db_port}/{db_name}"
+
+    # Ask if user wants to configure additional databases
+    print("\nAdditional Databases Configuration:")
+    print("-" * 35)
+
+    # Show existing additional databases if any
+    if additional_db_configs:
+        print(f"Found {len(additional_db_configs)} existing additional database configuration(s):")
+        for db_config in additional_db_configs:
+            print(f"  - {db_config['name']}: {db_config['type']} database at {db_config['hostname']}:{db_config['port']}/{db_config['database_name']}")
+
+    add_additional_dbs = get_user_input(
+        "Do you want to configure additional databases? (y/n)",
+        default_value="y" if additional_db_configs else "n"  # Default to 'y' if there are existing configs
+    ).lower() in ['y', 'yes']
+
+    if add_additional_dbs:
+        while True:
+            # Show existing databases and ask if user wants to modify them or add new ones
+            if additional_db_configs:
+                modify_existing = get_user_input(
+                    f"Modify existing databases ({len(additional_db_configs)} found) or add new? (m/a)",
+                    default_value="m"
+                ).lower()
+
+                if modify_existing == 'm':
+                    # Let user select which database to modify or remove
+                    print("Select database to modify or remove:")
+                    for i, db_config in enumerate(additional_db_configs):
+                        print(f"  {i+1}. {db_config['name']} ({db_config['type']} at {db_config['hostname']})")
+                    print(f"  {len(additional_db_configs) + 1}. Add new database")
+                    print(f"  {len(additional_db_configs) + 2}. Done")
+
+                    choice = get_user_input(
+                        f"Enter choice (1-{len(additional_db_configs) + 2})",
+                        validator=lambda x: (x.isdigit() and 1 <= int(x) <= len(additional_db_configs) + 2,
+                                           f"Please enter a number between 1 and {len(additional_db_configs) + 2}")
+                    )
+                    choice_num = int(choice)
+
+                    if choice_num <= len(additional_db_configs):
+                        # Modify existing database
+                        idx = choice_num - 1
+                        db_config = additional_db_configs[idx]
+
+                        print(f"\nModifying database: {db_config['name']}")
+
+                        # Ask for new values, using existing ones as defaults
+                        db_name_input = get_user_input(
+                            "Enter database name (used as identifier, e.g., 'analytics', 'reports')",
+                            default_value=db_config['name'],
+                            validator=lambda x: (bool(x and x.replace('_', '').replace('-', '').isalnum()),
+                                               "Database name must be alphanumeric with optional underscores or hyphens")
+                        )
+
+                        db_type_input = get_user_input(
+                            "Enter database type (postgresql, mysql, sqlite, etc.)",
+                            default_value=db_config['type'],
+                            validator=validate_database_type
+                        )
+
+                        db_username_input = get_user_input(
+                            "Enter database username",
+                            default_value=db_config['username'],
+                            validator=validate_database_username
+                        )
+
+                        db_password_input = get_user_input(
+                            "Enter database password",
+                            default_value=db_config['password'],  # Show existing password as default
+                            sensitive=True,
+                            validator=validate_database_password
+                        )
+
+                        db_hostname_input = get_user_input(
+                            "Enter database hostname",
+                            default_value=db_config['hostname'],
+                            validator=validate_database_hostname
+                        )
+
+                        db_port_input = get_user_input(
+                            "Enter database port",
+                            default_value=db_config['port'],
+                            validator=validate_database_port
+                        )
+
+                        db_name_db = get_user_input(
+                            "Enter database name (actual database name)",
+                            default_value=db_config['database_name'],
+                            validator=validate_database_name
+                        )
+
+                        # Update the existing configuration
+                        additional_db_url = f"{db_type_input}://{db_username_input}:{db_password_input}@{db_hostname_input}:{db_port_input}/{db_name_db}"
+
+                        additional_db_configs[idx] = {
+                            'name': db_name_input,
+                            'url': additional_db_url,
+                            'type': db_type_input,
+                            'username': db_username_input,
+                            'password': db_password_input,
+                            'hostname': db_hostname_input,
+                            'port': db_port_input,
+                            'database_name': db_name_db
+                        }
+
+                        print(f"Updated database: {db_name_input}")
+
+                    elif choice_num == len(additional_db_configs) + 1:
+                        # Add new database
+                        print("\nEnter details for new additional database:")
+                        db_name_input = get_user_input(
+                            "Enter database name (used as identifier, e.g., 'analytics', 'reports')",
+                            validator=lambda x: (bool(x and x.replace('_', '').replace('-', '').isalnum()),
+                                               "Database name must be alphanumeric with optional underscores or hyphens")
+                        )
+
+                        db_type_input = get_user_input(
+                            "Enter database type (postgresql, mysql, sqlite, etc.)",
+                            default_value="postgresql",
+                            validator=validate_database_type
+                        )
+
+                        db_username_input = get_user_input(
+                            "Enter database username",
+                            default_value="postgres",
+                            validator=validate_database_username
+                        )
+
+                        db_password_input = get_user_input(
+                            "Enter database password",
+                            sensitive=True,
+                            validator=validate_database_password
+                        )
+
+                        db_hostname_input = get_user_input(
+                            "Enter database hostname",
+                            default_value="localhost",
+                            validator=validate_database_hostname
+                        )
+
+                        db_port_input = get_user_input(
+                            "Enter database port",
+                            default_value="5432",
+                            validator=validate_database_port
+                        )
+
+                        db_name_db = get_user_input(
+                            "Enter database name (actual database name)",
+                            validator=validate_database_name
+                        )
+
+                        # Construct the additional database URL
+                        additional_db_url = f"{db_type_input}://{db_username_input}:{db_password_input}@{db_hostname_input}:{db_port_input}/{db_name_db}"
+
+                        additional_db_configs.append({
+                            'name': db_name_input,
+                            'url': additional_db_url,
+                            'type': db_type_input,
+                            'username': db_username_input,
+                            'password': db_password_input,
+                            'hostname': db_hostname_input,
+                            'port': db_port_input,
+                            'database_name': db_name_db
+                        })
+
+                        print(f"Added database: {db_name_input}")
+
+                    elif choice_num == len(additional_db_configs) + 2:
+                        # Done
+                        break
+                else:
+                    # Add new database option
+                    print("\nEnter details for additional database:")
+                    db_name_input = get_user_input(
+                        "Enter database name (used as identifier, e.g., 'analytics', 'reports')",
+                        validator=lambda x: (bool(x and x.replace('_', '').replace('-', '').isalnum()),
+                                           "Database name must be alphanumeric with optional underscores or hyphens")
+                    )
+
+                    db_type_input = get_user_input(
+                        "Enter database type (postgresql, mysql, sqlite, etc.)",
+                        default_value="postgresql",
+                        validator=validate_database_type
+                    )
+
+                    db_username_input = get_user_input(
+                        "Enter database username",
+                        default_value="postgres",
+                        validator=validate_database_username
+                    )
+
+                    db_password_input = get_user_input(
+                        "Enter database password",
+                        sensitive=True,
+                        validator=validate_database_password
+                    )
+
+                    db_hostname_input = get_user_input(
+                        "Enter database hostname",
+                        default_value="localhost",
+                        validator=validate_database_hostname
+                    )
+
+                    db_port_input = get_user_input(
+                        "Enter database port",
+                        default_value="5432",
+                        validator=validate_database_port
+                    )
+
+                    db_name_db = get_user_input(
+                        "Enter database name (actual database name)",
+                        validator=validate_database_name
+                    )
+
+                    # Construct the additional database URL
+                    additional_db_url = f"{db_type_input}://{db_username_input}:{db_password_input}@{db_hostname_input}:{db_port_input}/{db_name_db}"
+
+                    additional_db_configs.append({
+                        'name': db_name_input,
+                        'url': additional_db_url,
+                        'type': db_type_input,
+                        'username': db_username_input,
+                        'password': db_password_input,
+                        'hostname': db_hostname_input,
+                        'port': db_port_input,
+                        'database_name': db_name_db
+                    })
+
+                    print(f"Added database: {db_name_input}")
+            else:
+                # No existing additional databases, just add new ones
+                add_another = get_user_input(
+                    "Add another database? (y/n)",
+                    default_value="y"
+                ).lower()
+
+                if add_another not in ['y', 'yes']:
+                    break
+
+                print("\nEnter details for additional database:")
+                db_name_input = get_user_input(
+                    "Enter database name (used as identifier, e.g., 'analytics', 'reports')",
+                    validator=lambda x: (bool(x and x.replace('_', '').replace('-', '').isalnum()),
+                                       "Database name must be alphanumeric with optional underscores or hyphens")
+                )
+
+                db_type_input = get_user_input(
+                    "Enter database type (postgresql, mysql, sqlite, etc.)",
+                    default_value="postgresql",
+                    validator=validate_database_type
+                )
+
+                db_username_input = get_user_input(
+                    "Enter database username",
+                    default_value="postgres",
+                    validator=validate_database_username
+                )
+
+                db_password_input = get_user_input(
+                    "Enter database password",
+                    sensitive=True,
+                    validator=validate_database_password
+                )
+
+                db_hostname_input = get_user_input(
+                    "Enter database hostname",
+                    default_value="localhost",
+                    validator=validate_database_hostname
+                )
+
+                db_port_input = get_user_input(
+                    "Enter database port",
+                    default_value="5432",
+                    validator=validate_database_port
+                )
+
+                db_name_db = get_user_input(
+                    "Enter database name (actual database name)",
+                    validator=validate_database_name
+                )
+
+                # Construct the additional database URL
+                additional_db_url = f"{db_type_input}://{db_username_input}:{db_password_input}@{db_hostname_input}:{db_port_input}/{db_name_db}"
+
+                additional_db_configs.append({
+                    'name': db_name_input,
+                    'url': additional_db_url,
+                    'type': db_type_input,
+                    'username': db_username_input,
+                    'password': db_password_input,
+                    'hostname': db_hostname_input,
+                    'port': db_port_input,
+                    'database_name': db_name_db
+                })
+
+                print(f"Added database: {db_name_input}")
 
     print("\nOpenAI Configuration:")
     print("-" * 20)
@@ -578,7 +987,20 @@ DB_HOSTNAME={db_hostname}
 DB_PORT={db_port}
 DB_NAME={db_name}
 DATABASE_URL={db_url}
+"""
 
+    # Add additional database configurations to the .env file
+    for db_config in additional_db_configs:
+        db_name_upper = db_config['name'].upper()
+        env_content += f"DB_{db_name_upper}_URL={db_config['url']}\n"
+        env_content += f"DB_{db_name_upper}_TYPE={db_config['type']}\n"
+        env_content += f"DB_{db_name_upper}_USERNAME={db_config['username']}\n"
+        env_content += f"DB_{db_name_upper}_PASSWORD={db_config['password']}\n"
+        env_content += f"DB_{db_name_upper}_HOSTNAME={db_config['hostname']}\n"
+        env_content += f"DB_{db_name_upper}_PORT={db_config['port']}\n"
+        env_content += f"DB_{db_name_upper}_NAME={db_config['database_name']}\n"
+
+    env_content += f"""
 # OpenAI API Key
 OPENAI_API_KEY={openai_api_key}
 
@@ -626,6 +1048,10 @@ ENABLE_SCREEN_LOGGING={enable_screen_logging}
         with open(env_file_path, 'w') as env_file:
             env_file.write(env_content)
         print(f"\nConfiguration saved to {env_file_path}")
+
+        # Reload the database configuration to ensure it's available
+        from utils.multi_database_manager import reload_database_config
+        reload_database_config()
     except Exception as e:
         print(f"Error writing to .env file: {e}")
         sys.exit(1)
@@ -641,7 +1067,29 @@ DB_HOSTNAME={db_hostname}
 DB_PORT={db_port}
 DB_NAME={db_name}
 DATABASE_URL={db_url}
+"""
 
+        # Add example entries for additional database configurations
+        if additional_db_configs:
+            for db_config in additional_db_configs:
+                db_name_upper = db_config['name'].upper()
+                example_env_content += f"# Example: DB_{db_name_upper}_URL={db_config['url']}\n"
+                example_env_content += f"# Example: DB_{db_name_upper}_TYPE={db_config['type']}\n"
+                example_env_content += f"# Example: DB_{db_name_upper}_USERNAME={db_config['username']}\n"
+                example_env_content += f"# Example: DB_{db_name_upper}_PASSWORD={db_config['password']}\n"
+                example_env_content += f"# Example: DB_{db_name_upper}_HOSTNAME={db_config['hostname']}\n"
+                example_env_content += f"# Example: DB_{db_name_upper}_PORT={db_config['port']}\n"
+                example_env_content += f"# Example: DB_{db_name_upper}_NAME={db_config['database_name']}\n"
+        else:
+            example_env_content += f"# Example additional database:\n# DB_ANALYTICS_URL=postgresql://username:password@hostname:port/dbname\n"
+            example_env_content += f"# DB_ANALYTICS_TYPE=postgresql\n"
+            example_env_content += f"# DB_ANALYTICS_USERNAME=username\n"
+            example_env_content += f"# DB_ANALYTICS_PASSWORD=password\n"
+            example_env_content += f"# DB_ANALYTICS_HOSTNAME=hostname\n"
+            example_env_content += f"# DB_ANALYTICS_PORT=5432\n"
+            example_env_content += f"# DB_ANALYTICS_NAME=dbname\n"
+
+        example_env_content += f"""
 # OpenAI API Key
 OPENAI_API_KEY={openai_api_key}
 

@@ -31,6 +31,35 @@ DB_PORT = os.getenv("DB_PORT", "5432")
 DB_NAME = os.getenv("DB_NAME", "ai_agent_db")
 DATABASE_URL = os.getenv("DATABASE_URL", f"{DB_TYPE}://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOSTNAME}:{DB_PORT}/{DB_NAME}")
 
+# Additional database configurations
+# These can be used to define multiple databases in the format:
+# DB_{NAME}_TYPE, DB_{NAME}_USERNAME, DB_{NAME}_PASSWORD, etc.
+# For example: DB_ANALYTICS_TYPE, DB_ANALYTICS_USERNAME, etc.
+ADDITIONAL_DATABASES = {}
+
+# Discover additional databases from environment variables
+for key, value in os.environ.items():
+    if key.startswith("DB_") and key.endswith("_URL"):
+        # Extract the database name from the environment variable name
+        db_name = key[3:-4].lower()  # Remove "DB_" prefix and "_URL" suffix
+        ADDITIONAL_DATABASES[db_name] = value
+    elif key.startswith("DB_") and "_TYPE" in key:
+        # Extract the database name from the environment variable name
+        parts = key.split('_')
+        if len(parts) >= 3:
+            db_name = '_'.join(parts[1:-1]).lower()  # Everything between "DB_" and "_TYPE"
+            # Construct the database URL from individual components
+            db_type = os.getenv(f"DB_{db_name.upper()}_TYPE")
+            db_username = os.getenv(f"DB_{db_name.upper()}_USERNAME")
+            db_password = os.getenv(f"DB_{db_name.upper()}_PASSWORD", "")
+            db_hostname = os.getenv(f"DB_{db_name.upper()}_HOSTNAME", "localhost")
+            db_port = os.getenv(f"DB_{db_name.upper()}_PORT", "5432")
+            db_name_env = os.getenv(f"DB_{db_name.upper()}_NAME")
+
+            if all([db_type, db_username, db_name_env]):
+                db_url = f"{db_type}://{db_username}:{db_password}@{db_hostname}:{db_port}/{db_name_env}"
+                ADDITIONAL_DATABASES[db_name] = db_url
+
 # LLM Model configurations
 SQL_LLM_PROVIDER = os.getenv("SQL_LLM_PROVIDER", "OpenAI")
 SQL_LLM_MODEL = os.getenv("SQL_LLM_MODEL", "gpt-3.5-turbo")
