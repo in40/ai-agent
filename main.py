@@ -69,8 +69,8 @@ def main():
         }
 
         try:
-            # Run the graph
-            result = graph.invoke(initial_state)
+            # Run the graph with recursion limit to prevent infinite loops
+            result = graph.invoke(initial_state, config={"configurable": {"thread_id": "default"}, "recursion_limit": 50})
             print("Final Response:")
             print(result.get("final_response"))
         except Exception as e:
@@ -112,8 +112,8 @@ def main():
                     "database_name": args.database if args.database else "all_databases"
                 }
 
-                # Run the graph
-                result = graph.invoke(initial_state)
+                # Run the graph with recursion limit to prevent infinite loops
+                result = graph.invoke(initial_state, config={"configurable": {"thread_id": "default"}, "recursion_limit": 50})
                 print("\nFinal Response:")
                 print(result.get("final_response"))
 

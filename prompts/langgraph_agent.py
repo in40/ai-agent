@@ -1203,9 +1203,13 @@ def generate_wider_search_query_node(state: AgentState) -> AgentState:
         # Debug: Log the type and content of combined_prompt
         logger.debug(f"combined_prompt type: {type(combined_prompt)}, content: {repr(combined_prompt)}")
 
+        # Get previous SQL queries from state to pass to the SQL generator
+        previous_sql_queries = state.get("previous_sql_queries", [])
+
         new_sql_query = sql_generator.generate_sql(
             combined_prompt,
             state["schema_dump"],
+            previous_sql_queries=previous_sql_queries,  # Pass the history of previous SQL queries
             table_to_db_mapping=state.get("table_to_db_mapping"),  # Pass the table-to-database mapping
             table_to_real_db_mapping=state.get("table_to_real_db_mapping")  # Pass the table-to-real-database mapping
         )
@@ -1726,7 +1730,7 @@ def run_enhanced_agent(user_request: str, disable_sql_blocking: bool = None) -> 
     callback_handler.on_graph_start(initial_state)
 
     # Run the graph
-    result = graph.invoke(initial_state)
+    result = graph.invoke(initial_state, config={"configurable": {"thread_id": "default"}, "recursion_limit": 50})
 
     callback_handler.on_graph_end(result)
 

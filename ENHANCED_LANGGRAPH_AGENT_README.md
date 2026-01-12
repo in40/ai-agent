@@ -16,6 +16,8 @@ This project implements an enhanced AI agent using LangGraph for complex databas
 - **Wider Search Strategies**: Automatically tries alternative search strategies when initial queries return no results
 - **Specialized Prompt Generation**: Creates tailored prompts for response LLM based on user request and database results
 - **Query Type Tracking**: Tracks whether queries are initial or wider search queries for better processing
+- **Recursion Limits**: Implements recursion limits to prevent infinite loops during processing
+- **Previous SQL Query History**: Maintains a history of all previously generated SQL queries to prevent repetition of failed approaches and provide context for subsequent query generations
 
 ## Architecture
 
@@ -113,6 +115,7 @@ The state structure contains:
 - `retry_count`: Number of retry attempts
 - `disable_sql_blocking`: Whether to disable SQL blocking
 - `query_type`: Type of query ("initial" or "wider_search")
+- `previous_sql_queries`: History of all previously generated SQL queries to prevent repetition of failed approaches
 
 ### Error Handling
 
@@ -168,9 +171,11 @@ The system includes a specialized prompt generation step that:
 
 - Each node is timed for performance analysis
 - Retry limits prevent infinite loops
+- Recursion limits prevent infinite processing loops during graph execution
 - Schema caching reduces database load
 - Error handling prevents cascading failures
 - Wider search strategies are limited to prevent excessive database queries
+- Previous SQL query history prevents repetition of failed approaches
 
 ## Troubleshooting
 

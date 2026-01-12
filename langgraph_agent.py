@@ -100,7 +100,7 @@ def get_schema_node(state: AgentState) -> AgentState:
             "sql_generation_error": None,  # Clear any previous errors
             "query_type": "initial",  # Set the query type to initial
             "database_name": "all_databases",  # Indicate that all databases are being used
-            "previous_sql_queries": []  # Initialize with empty list of previous SQL queries
+            "previous_sql_queries": state.get("previous_sql_queries", [])  # Preserve previous SQL queries
         }
     except Exception as e:
         elapsed_time = time.time() - start_time
@@ -108,7 +108,8 @@ def get_schema_node(state: AgentState) -> AgentState:
         return {
             **state,
             "schema_dump": {},
-            "sql_generation_error": f"Error retrieving schema from all databases: {str(e)}"
+            "sql_generation_error": f"Error retrieving schema from all databases: {str(e)}",
+            "previous_sql_queries": state.get("previous_sql_queries", [])  # Preserve previous SQL queries
         }
 
 
@@ -170,7 +171,8 @@ def generate_sql_node(state: AgentState) -> AgentState:
             **state,
             "sql_query": "",
             "sql_generation_error": f"Error generating SQL: {str(e)}",
-            "retry_count": state.get("retry_count", 0) + 1
+            "retry_count": state.get("retry_count", 0) + 1,
+            "previous_sql_queries": state.get("previous_sql_queries", [])  # Preserve previous SQL queries
         }
 
 
@@ -191,7 +193,8 @@ def validate_sql_node(state: AgentState) -> AgentState:
         logger.info(f"[NODE SUCCESS] validate_sql_node - SQL validation skipped (blocking disabled) in {elapsed_time:.2f}s")
         return {
             **state,
-            "validation_error": None
+            "validation_error": None,
+            "previous_sql_queries": state.get("previous_sql_queries", [])  # Preserve previous SQL queries
         }
 
     # Basic validation: Check if query is empty
@@ -202,7 +205,8 @@ def validate_sql_node(state: AgentState) -> AgentState:
         return {
             **state,
             "validation_error": error_msg,
-            "retry_count": state.get("retry_count", 0) + 1
+            "retry_count": state.get("retry_count", 0) + 1,
+            "previous_sql_queries": state.get("previous_sql_queries", [])  # Preserve previous SQL queries
         }
 
     # Use the security LLM for advanced analysis if enabled
@@ -221,7 +225,8 @@ def validate_sql_node(state: AgentState) -> AgentState:
                 return {
                     **state,
                     "validation_error": error_msg,
-                    "retry_count": state.get("retry_count", 0) + 1
+                    "retry_count": state.get("retry_count", 0) + 1,
+                    "previous_sql_queries": state.get("previous_sql_queries", [])  # Preserve previous SQL queries
                 }
             else:
                 # If security LLM says it's safe, skip basic validation
@@ -229,7 +234,8 @@ def validate_sql_node(state: AgentState) -> AgentState:
                 logger.info(f"[NODE SUCCESS] validate_sql_node - Security LLM validation passed in {elapsed_time:.2f}s")
                 return {
                     **state,
-                    "validation_error": None
+                    "validation_error": None,
+                    "previous_sql_queries": state.get("previous_sql_queries", [])  # Preserve previous SQL queries
                 }
         except Exception as e:
             logger.warning(f"[NODE WARNING] validate_sql_node - Security LLM failed: {str(e)}, falling back to basic validation")
@@ -256,7 +262,8 @@ def validate_sql_node(state: AgentState) -> AgentState:
                 return {
                     **state,
                     "validation_error": error_msg,
-                    "retry_count": state.get("retry_count", 0) + 1
+                    "retry_count": state.get("retry_count", 0) + 1,
+                    "previous_sql_queries": state.get("previous_sql_queries", [])  # Preserve previous SQL queries
                 }
         elif command in sql_lower:
             error_msg = f"Potentially harmful SQL detected: {command}"
@@ -265,7 +272,8 @@ def validate_sql_node(state: AgentState) -> AgentState:
             return {
                 **state,
                 "validation_error": error_msg,
-                "retry_count": state.get("retry_count", 0) + 1
+                "retry_count": state.get("retry_count", 0) + 1,
+                "previous_sql_queries": state.get("previous_sql_queries", [])  # Preserve previous SQL queries
             }
 
     # Additional validation: Check if query starts with SELECT
@@ -278,7 +286,8 @@ def validate_sql_node(state: AgentState) -> AgentState:
             return {
                 **state,
                 "validation_error": error_msg,
-                "retry_count": state.get("retry_count", 0) + 1
+                "retry_count": state.get("retry_count", 0) + 1,
+                "previous_sql_queries": state.get("previous_sql_queries", [])  # Preserve previous SQL queries
             }
 
     # Check for dangerous patterns that might indicate SQL injection
@@ -536,7 +545,8 @@ def validate_sql_node(state: AgentState) -> AgentState:
             return {
                 **state,
                 "validation_error": error_msg,
-                "retry_count": state.get("retry_count", 0) + 1
+                "retry_count": state.get("retry_count", 0) + 1,
+                "previous_sql_queries": state.get("previous_sql_queries", [])  # Preserve previous SQL queries
             }
 
     # Check for multiple statements (semicolon-separated)
@@ -547,7 +557,8 @@ def validate_sql_node(state: AgentState) -> AgentState:
         return {
             **state,
             "validation_error": error_msg,
-            "retry_count": state.get("retry_count", 0) + 1
+            "retry_count": state.get("retry_count", 0) + 1,
+            "previous_sql_queries": state.get("previous_sql_queries", [])  # Preserve previous SQL queries
         }
 
     # Check for comment sequences that might be used to bypass filters
@@ -558,7 +569,8 @@ def validate_sql_node(state: AgentState) -> AgentState:
         return {
             **state,
             "validation_error": error_msg,
-            "retry_count": state.get("retry_count", 0) + 1
+            "retry_count": state.get("retry_count", 0) + 1,
+            "previous_sql_queries": state.get("previous_sql_queries", [])  # Preserve previous SQL queries
         }
 
     # Additional check: Ensure query doesn't contain hex escapes that might be used for injection
@@ -626,7 +638,8 @@ def validate_sql_node(state: AgentState) -> AgentState:
     logger.info(f"[NODE SUCCESS] validate_sql_node - SQL validation passed in {elapsed_time:.2f}s")
     return {
         **state,
-        "validation_error": None
+        "validation_error": None,
+        "previous_sql_queries": state.get("previous_sql_queries", [])  # Preserve previous SQL queries
     }
 
 
@@ -761,7 +774,8 @@ def execute_sql_node(state: AgentState) -> AgentState:
                 "all_db_results": all_db_results,
                 "execution_error": error_summary,  # Store execution errors for refinement
                 "query_type": state.get("query_type", "initial"),  # Preserve the query type
-                "database_name": ", ".join(databases_to_query)  # Indicate which databases were used
+                "database_name": ", ".join(databases_to_query),  # Indicate which databases were used
+                "previous_sql_queries": state.get("previous_sql_queries", [])  # Preserve previous SQL queries
             }
         else:
             logger.info(f"[NODE SUCCESS] execute_sql_node - Query executed on {len(databases_to_query)} databases in {elapsed_time:.2f}s, got {len(combined_results)} total results")
@@ -771,7 +785,8 @@ def execute_sql_node(state: AgentState) -> AgentState:
                 "all_db_results": all_db_results,
                 "execution_error": None,  # Clear any previous errors
                 "query_type": state.get("query_type", "initial"),  # Preserve the query type
-                "database_name": ", ".join(databases_to_query)  # Indicate which databases were used
+                "database_name": ", ".join(databases_to_query),  # Indicate which databases were used
+                "previous_sql_queries": state.get("previous_sql_queries", [])  # Preserve previous SQL queries
             }
     except Exception as e:
         elapsed_time = time.time() - start_time
@@ -784,7 +799,8 @@ def execute_sql_node(state: AgentState) -> AgentState:
             "execution_error": error_msg,
             "validation_error": error_msg,  # Also set validation error to trigger retry
             "query_type": state.get("query_type", "initial"),  # Preserve the query type
-            "database_name": state.get("database_name", "all_databases")  # Preserve database name in state
+            "database_name": state.get("database_name", "all_databases"),  # Preserve database name in state
+            "previous_sql_queries": state.get("previous_sql_queries", [])  # Preserve previous SQL queries
         }
 
 
@@ -849,6 +865,10 @@ def refine_sql_node(state: AgentState) -> AgentState:
                 table_to_real_db_mapping=state.get("table_to_real_db_mapping")  # Pass the table-to-real-database mapping
             )
 
+        # Update the list of previous SQL queries
+        previous_queries = state.get("previous_sql_queries", [])
+        updated_previous_queries = previous_queries + [refined_sql] if refined_sql else previous_queries
+
         elapsed_time = time.time() - start_time
         logger.info(f"[NODE SUCCESS] refine_sql_node - Refined SQL in {elapsed_time:.2f}s: {refined_sql[:100]}...")
 
@@ -858,7 +878,8 @@ def refine_sql_node(state: AgentState) -> AgentState:
             "validation_error": None,  # Reset validation error
             "execution_error": None,   # Reset execution error
             "sql_generation_error": None,  # Reset generation error
-            "query_type": current_query_type  # Preserve the query type
+            "query_type": current_query_type,  # Preserve the query type
+            "previous_sql_queries": updated_previous_queries  # Update the history of SQL queries
         }
     except Exception as e:
         elapsed_time = time.time() - start_time
@@ -866,7 +887,8 @@ def refine_sql_node(state: AgentState) -> AgentState:
         logger.error(f"[NODE ERROR] refine_sql_node - {error_msg} after {elapsed_time:.2f}s")
         return {
             **state,
-            "sql_generation_error": error_msg
+            "sql_generation_error": error_msg,
+            "previous_sql_queries": state.get("previous_sql_queries", [])  # Preserve previous SQL queries
         }
 
 
@@ -979,7 +1001,8 @@ def security_check_after_refinement_node(state: AgentState) -> AgentState:
                     **state,
                     "validation_error": error_msg,
                     "retry_count": state.get("retry_count", 0) + 1,
-                    "query_type": current_query_type  # Preserve the query type
+                    "query_type": current_query_type,  # Preserve the query type
+                    "previous_sql_queries": state.get("previous_sql_queries", [])  # Preserve previous SQL queries
                 }
         elif command in sql_lower:
             error_msg = f"Potentially harmful SQL detected after refinement: {command}"
@@ -989,7 +1012,8 @@ def security_check_after_refinement_node(state: AgentState) -> AgentState:
                 **state,
                 "validation_error": error_msg,
                 "retry_count": state.get("retry_count", 0) + 1,
-                "query_type": current_query_type  # Preserve the query type
+                "query_type": current_query_type,  # Preserve the query type
+                "previous_sql_queries": state.get("previous_sql_queries", [])  # Preserve previous SQL queries
             }
 
     # Additional validation: Check if query starts with SELECT
@@ -1001,7 +1025,8 @@ def security_check_after_refinement_node(state: AgentState) -> AgentState:
             **state,
             "validation_error": error_msg,
             "retry_count": state.get("retry_count", 0) + 1,
-            "query_type": current_query_type  # Preserve the query type
+            "query_type": current_query_type,  # Preserve the query type
+            "previous_sql_queries": state.get("previous_sql_queries", [])  # Preserve previous SQL queries
         }
 
     # Check for dangerous patterns that might indicate SQL injection
@@ -1029,7 +1054,8 @@ def security_check_after_refinement_node(state: AgentState) -> AgentState:
                 **state,
                 "validation_error": error_msg,
                 "retry_count": state.get("retry_count", 0) + 1,
-                "query_type": current_query_type  # Preserve the query type
+                "query_type": current_query_type,  # Preserve the query type
+                "previous_sql_queries": state.get("previous_sql_queries", [])  # Preserve previous SQL queries
             }
 
     # Check for multiple statements (semicolon-separated)
@@ -1041,7 +1067,8 @@ def security_check_after_refinement_node(state: AgentState) -> AgentState:
             **state,
             "validation_error": error_msg,
             "retry_count": state.get("retry_count", 0) + 1,
-            "query_type": current_query_type  # Preserve the query type
+            "query_type": current_query_type,  # Preserve the query type
+            "previous_sql_queries": state.get("previous_sql_queries", [])  # Preserve previous SQL queries
         }
 
     # Check for comment sequences that might be used to bypass filters
@@ -1053,7 +1080,8 @@ def security_check_after_refinement_node(state: AgentState) -> AgentState:
             **state,
             "validation_error": error_msg,
             "retry_count": state.get("retry_count", 0) + 1,
-            "query_type": current_query_type  # Preserve the query type
+            "query_type": current_query_type,  # Preserve the query type
+            "previous_sql_queries": state.get("previous_sql_queries", [])  # Preserve previous SQL queries
         }
 
     # If all validations pass
@@ -1062,7 +1090,8 @@ def security_check_after_refinement_node(state: AgentState) -> AgentState:
     return {
         **state,
         "validation_error": None,
-        "query_type": current_query_type  # Preserve the query type
+        "query_type": current_query_type,  # Preserve the query type
+        "previous_sql_queries": state.get("previous_sql_queries", [])  # Preserve previous SQL queries
     }
 
 
@@ -1087,7 +1116,8 @@ def generate_prompt_node(state: AgentState) -> AgentState:
         return {
             **state,
             "response_prompt": response_prompt,  # Store the generated prompt for the next step
-            "query_type": state.get("query_type", "initial")  # Preserve the query type
+            "query_type": state.get("query_type", "initial"),  # Preserve the query type
+            "previous_sql_queries": state.get("previous_sql_queries", [])  # Preserve previous SQL queries
         }
     except Exception as e:
         elapsed_time = time.time() - start_time
@@ -1096,7 +1126,8 @@ def generate_prompt_node(state: AgentState) -> AgentState:
         return {
             **state,
             "final_response": f"Error generating response: {str(e)}",
-            "query_type": state.get("query_type", "initial")  # Preserve the query type
+            "query_type": state.get("query_type", "initial"),  # Preserve the query type
+            "previous_sql_queries": state.get("previous_sql_queries", [])  # Preserve previous SQL queries
         }
 
 
@@ -1129,19 +1160,21 @@ def generate_wider_search_query_node(state: AgentState) -> AgentState:
         wider_search_context = f"""
         Original user request: {state['user_request']}
 
-        Initial SQL query: {state['sql_query']}
-
         Database schema:
         {format_schema_dump(state['schema_dump'])}{error_context}
 
         Initial query returned no results. Please suggest alternative search strategies or queries that might yield relevant data based on the schema and the original user request.
         """
 
+        # Get previous SQL queries from state, default to empty list if not present
+        previous_sql_queries = state.get("previous_sql_queries", [])
+
         # Generate wider search prompt using the specialized wider search generator
         wider_search_prompt = prompt_generator.generate_wider_search_prompt(
             wider_search_context,
             schema_dump=state['schema_dump'],
-            db_mapping=state.get('table_to_db_mapping')
+            db_mapping=state.get('table_to_db_mapping'),
+            previous_sql_queries=previous_sql_queries  # Pass the history of previous SQL queries
         )
 
         # Debug: Log the type and content of wider_search_prompt
@@ -1151,17 +1184,29 @@ def generate_wider_search_query_node(state: AgentState) -> AgentState:
         sql_generator = SQLGenerator()
 
         # Prepare the combined prompt for SQL generation
+        # Ensure wider_search_prompt is a string before concatenating
+        if not isinstance(wider_search_prompt, str):
+            wider_search_prompt = str(wider_search_prompt) if wider_search_prompt is not None else ""
+
         combined_prompt = wider_search_prompt + f"\n\nBased on these suggestions, generate a new SQL query for the request: {state['user_request']}"
 
         # Debug: Log the type and content of combined_prompt
         logger.debug(f"combined_prompt type: {type(combined_prompt)}, content: {repr(combined_prompt)}")
 
+        # Get previous SQL queries from state, default to empty list if not present
+        previous_sql_queries = state.get("previous_sql_queries", [])
+
         new_sql_query = sql_generator.generate_sql(
             combined_prompt,
             state["schema_dump"],
+            previous_sql_queries=previous_sql_queries,  # Pass the history of previous SQL queries
             table_to_db_mapping=state.get("table_to_db_mapping"),  # Pass the table-to-database mapping
             table_to_real_db_mapping=state.get("table_to_real_db_mapping")  # Pass the table-to-real-database mapping
         )
+
+        # Update the list of previous SQL queries
+        previous_queries = state.get("previous_sql_queries", [])
+        updated_previous_queries = previous_queries + [new_sql_query] if new_sql_query else previous_queries
 
         elapsed_time = time.time() - start_time
         logger.info(f"[NODE SUCCESS] generate_wider_search_query_node - Generated wider search query in {elapsed_time:.2f}s: {new_sql_query}")
@@ -1169,7 +1214,8 @@ def generate_wider_search_query_node(state: AgentState) -> AgentState:
             **state,
             "sql_query": new_sql_query,  # Update the SQL query with the wider search query
             "query_type": "wider_search",  # Set the query type to wider_search
-            "retry_count": state.get("retry_count", 0) + 1  # Increment retry count to prevent infinite loops
+            "retry_count": state.get("retry_count", 0) + 1,  # Increment retry count to prevent infinite loops
+            "previous_sql_queries": updated_previous_queries  # Update the history of SQL queries
         }
     except Exception as e:
         elapsed_time = time.time() - start_time
@@ -1184,7 +1230,8 @@ def generate_wider_search_query_node(state: AgentState) -> AgentState:
             **state,
             "final_response": "I couldn't find any results for your query. The database doesn't contain the information requested.",
             "query_type": "wider_search",  # Mark as wider search to indicate we tried
-            "retry_count": state.get("retry_count", 0) + 1  # Increment retry count to prevent infinite loops
+            "retry_count": state.get("retry_count", 0) + 1,  # Increment retry count to prevent infinite loops
+            "previous_sql_queries": state.get("previous_sql_queries", [])  # Preserve previous SQL queries
         }
 
 
@@ -1296,7 +1343,8 @@ def execute_wider_search_node(state: AgentState) -> AgentState:
                 "all_db_results": all_db_results,
                 "execution_error": error_summary,  # Store execution errors for refinement
                 "query_type": "wider_search",  # Set the query type to wider_search
-                "database_name": "all_databases"  # Indicate that all databases were used
+                "database_name": "all_databases",  # Indicate that all databases were used
+                "previous_sql_queries": state.get("previous_sql_queries", [])  # Preserve previous SQL queries
             }
         else:
             logger.info(f"[NODE SUCCESS] execute_wider_search_node - Wider search query executed on {len(all_databases)} databases in {elapsed_time:.2f}s, got {len(combined_results)} total results")
@@ -1306,7 +1354,8 @@ def execute_wider_search_node(state: AgentState) -> AgentState:
                 "all_db_results": all_db_results,
                 "execution_error": None,  # Clear any previous errors
                 "query_type": "wider_search",  # Set the query type to wider_search
-                "database_name": "all_databases"  # Indicate that all databases were used
+                "database_name": "all_databases",  # Indicate that all databases were used
+                "previous_sql_queries": state.get("previous_sql_queries", [])  # Preserve previous SQL queries
             }
     except Exception as e:
         elapsed_time = time.time() - start_time
@@ -1317,7 +1366,8 @@ def execute_wider_search_node(state: AgentState) -> AgentState:
             "db_results": [],
             "all_db_results": {},
             "execution_error": error_msg,
-            "query_type": "wider_search"  # Set the query type to wider_search
+            "query_type": "wider_search",  # Set the query type to wider_search
+            "previous_sql_queries": state.get("previous_sql_queries", [])  # Preserve previous SQL queries
         }
 
 
@@ -1342,7 +1392,8 @@ def generate_response_node(state: AgentState) -> AgentState:
         return {
             **state,
             "final_response": final_response,
-            "query_type": state.get("query_type", "initial")  # Preserve the query type
+            "query_type": state.get("query_type", "initial"),  # Preserve the query type
+            "previous_sql_queries": state.get("previous_sql_queries", [])  # Preserve previous SQL queries
         }
     except Exception as e:
         elapsed_time = time.time() - start_time
@@ -1351,7 +1402,8 @@ def generate_response_node(state: AgentState) -> AgentState:
         return {
             **state,
             "final_response": f"Error generating response: {str(e)}",
-            "query_type": state.get("query_type", "initial")  # Preserve the query type
+            "query_type": state.get("query_type", "initial"),  # Preserve the query type
+            "previous_sql_queries": state.get("previous_sql_queries", [])  # Preserve previous SQL queries
         }
 
 
@@ -1668,15 +1720,37 @@ def run_enhanced_agent(user_request: str, disable_sql_blocking: bool = None) -> 
         "sql_generation_error": None,
         "retry_count": 0,
         "disable_sql_blocking": disable_sql_blocking,
-        "query_type": "initial"  # Set initial query type
+        "query_type": "initial",  # Set initial query type
+        "previous_sql_queries": []  # Initialize with empty list of previous SQL queries
     }
 
     # Create monitoring callback
     callback_handler = AgentMonitoringCallback()
     callback_handler.on_graph_start(initial_state)
 
-    # Run the graph
-    result = graph.invoke(initial_state)
+    # Run the graph with a recursion limit to prevent infinite loops
+    try:
+        result = graph.invoke(initial_state, config={"configurable": {"thread_id": "default"}, "recursion_limit": 50})
+    except Exception as e:
+        # If we hit a recursion limit or other error, return a meaningful response
+        error_msg = str(e)
+        if "Recursion limit" in error_msg:
+            logger.error(f"Recursion limit reached: {error_msg}. Returning error response to prevent infinite loop.")
+            result = {
+                "user_request": user_request,
+                "sql_query": "N/A - Error occurred during processing",
+                "db_results": [],
+                "all_db_results": {},
+                "final_response": "Error: The system encountered an issue while processing your request. This may be due to a complex query that caused a recursion limit. Please try simplifying your request.",
+                "validation_error": "Recursion limit reached during processing",
+                "execution_error": "Recursion limit reached during processing",
+                "sql_generation_error": "Recursion limit reached during processing",
+                "retry_count": initial_state.get("retry_count", 0),
+                "query_type": initial_state.get("query_type", "initial"),
+                "previous_sql_queries": initial_state.get("previous_sql_queries", [])
+            }
+        else:
+            raise e
 
     callback_handler.on_graph_end(result)
 
@@ -1694,7 +1768,8 @@ def run_enhanced_agent(user_request: str, disable_sql_blocking: bool = None) -> 
         "sql_generation_error": result.get("sql_generation_error"),
         "retry_count": result.get("retry_count"),
         "execution_log": [entry for entry in callback_handler.execution_log],  # Include execution log
-        "query_type": result.get("query_type")  # Include query type in the result
+        "query_type": result.get("query_type"),  # Include query type in the result
+        "previous_sql_queries": result.get("previous_sql_queries")  # Include previous SQL queries in the result
     }
 
 

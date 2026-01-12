@@ -1137,11 +1137,15 @@ def generate_wider_search_query_node(state: AgentState) -> AgentState:
         Initial query returned no results. Please suggest alternative search strategies or queries that might yield relevant data based on the schema and the original user request.
         """
 
+        # Get previous SQL queries from state to pass to the wider search generator
+        previous_sql_queries = state.get("previous_sql_queries", [])
+
         # Generate wider search prompt using the specialized wider search generator
         wider_search_prompt = prompt_generator.generate_wider_search_prompt(
             wider_search_context,
             schema_dump=state['schema_dump'],
-            db_mapping=state.get('table_to_db_mapping')
+            db_mapping=state.get('table_to_db_mapping'),
+            previous_sql_queries=previous_sql_queries
         )
 
         # Debug: Log the type and content of wider_search_prompt
@@ -1159,17 +1163,24 @@ def generate_wider_search_query_node(state: AgentState) -> AgentState:
         new_sql_query = sql_generator.generate_sql(
             combined_prompt,
             state["schema_dump"],
+            previous_sql_queries=previous_sql_queries,  # Pass the history of previous SQL queries
             table_to_db_mapping=state.get("table_to_db_mapping"),  # Pass the table-to-database mapping
             table_to_real_db_mapping=state.get("table_to_real_db_mapping")  # Pass the table-to-real-database mapping
         )
 
         elapsed_time = time.time() - start_time
+
+        # Update the list of previous SQL queries with the newly generated query
+        previous_queries = state.get("previous_sql_queries", [])
+        updated_previous_queries = previous_queries + [new_sql_query] if new_sql_query else previous_queries
+
         logger.info(f"[NODE SUCCESS] generate_wider_search_query_node - Generated wider search query in {elapsed_time:.2f}s: {new_sql_query}")
         return {
             **state,
             "sql_query": new_sql_query,  # Update the SQL query with the wider search query
             "query_type": "wider_search",  # Set the query type to wider_search
-            "retry_count": state.get("retry_count", 0) + 1  # Increment retry count to prevent infinite loops
+            "retry_count": state.get("retry_count", 0) + 1,  # Increment retry count to prevent infinite loops
+            "previous_sql_queries": updated_previous_queries  # Update the history of SQL queries
         }
     except Exception as e:
         elapsed_time = time.time() - start_time
@@ -1184,7 +1195,8 @@ def generate_wider_search_query_node(state: AgentState) -> AgentState:
             **state,
             "final_response": "I couldn't find any results for your query. The database doesn't contain the information requested.",
             "query_type": "wider_search",  # Mark as wider search to indicate we tried
-            "retry_count": state.get("retry_count", 0) + 1  # Increment retry count to prevent infinite loops
+            "retry_count": state.get("retry_count", 0) + 1,  # Increment retry count to prevent infinite loops
+            "previous_sql_queries": state.get("previous_sql_queries", [])  # Preserve the history of SQL queries
         }
 
 
@@ -1676,7 +1688,7 @@ def run_enhanced_agent(user_request: str, disable_sql_blocking: bool = None) -> 
     callback_handler.on_graph_start(initial_state)
 
     # Run the graph
-    result = graph.invoke(initial_state)
+    result = graph.invoke(initial_state, config={"configurable": {"thread_id": "default"}, "recursion_limit": 50})
 
     callback_handler.on_graph_end(result)
 

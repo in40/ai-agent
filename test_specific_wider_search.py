@@ -41,7 +41,7 @@ def test_specific_wider_search_path():
     
     try:
         # This should trigger the wider search path without the original error
-        result = graph.invoke(initial_state)
+        result = graph.invoke(initial_state, config={"configurable": {"thread_id": "default"}, "recursion_limit": 50})
         
         print(f"Query type in result: {result.get('query_type')}")
         print(f"Execution error: {result.get('execution_error')}")

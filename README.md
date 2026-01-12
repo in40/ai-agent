@@ -23,6 +23,8 @@ The enhanced version of the agent uses LangGraph to provide:
 - Wider search strategies when initial queries return no results
 - Multi-provider LLM support (OpenAI, GigaChat, DeepSeek, Qwen, LM Studio, Ollama)
 - Multi-database support with schema aggregation
+- Recursion limits to prevent infinite loops during processing
+- History tracking of previous SQL queries to prevent repetition of failed approaches
 
 ### LangGraph Nodes:
 1. **get_schema**: Retrieves database schema information from all available databases
@@ -35,6 +37,9 @@ The enhanced version of the agent uses LangGraph to provide:
 8. **execute_wider_search**: Executes the wider search query
 9. **generate_prompt**: Creates specialized prompts for response generation
 10. **generate_response**: Creates natural language responses from results
+
+### Agent State Features:
+- **previous_sql_queries**: Maintains a history of all previously generated SQL queries to prevent repetition of failed approaches and provide context for subsequent query generations
 
 ## Key Features
 
@@ -77,6 +82,8 @@ The enhanced version of the agent uses LangGraph to provide:
 9. The `generate_prompt` node creates a specialized prompt for response generation
 10. The `generate_response` node creates a natural language response from results
 11. The response is returned to the user
+12. The system includes recursion limits to prevent infinite loops during processing
+13. The system maintains a history of previous SQL queries to prevent repetition of failed approaches
 
 ## Setup
 
@@ -268,10 +275,12 @@ Detailed logs are available for each node execution:
 
 - Each node is timed for performance analysis
 - Retry limits prevent infinite loops
+- Recursion limits prevent infinite processing loops during graph execution
 - Schema caching reduces database load
 - Error handling prevents cascading failures
 - Wider search strategies are limited to prevent excessive database queries
 - Multi-database schema aggregation is cached for efficiency
+- Previous SQL query history prevents repetition of failed approaches
 
 ## Troubleshooting
 

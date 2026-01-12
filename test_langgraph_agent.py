@@ -28,7 +28,7 @@ def test_langgraph_agent():
     }
     
     # Run the graph
-    result = graph.invoke(initial_state)
+    result = graph.invoke(initial_state, config={"configurable": {"thread_id": "default"}, "recursion_limit": 50})
     
     print("Final state:", result)
     print("Final response:", result.get("final_response"))

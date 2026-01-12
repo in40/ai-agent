@@ -52,6 +52,7 @@ class AgentState(TypedDict):
     retry_count: int
     disable_sql_blocking: bool
     query_type: str  # Track whether this is an 'initial' query or 'wider_search' query
+    previous_sql_queries: List[str]  # History of all previously generated SQL queries to prevent repetition of failed approaches
 ```
 
 ### 2. Node Definitions
@@ -943,5 +944,7 @@ The enhanced LangGraph implementation transforms the original linear workflow in
 - Wider search strategies when initial queries return no results
 - Specialized prompt generation for improved response quality
 - Query type tracking to differentiate between initial and wider search queries
+- Recursion limits to prevent infinite processing loops during graph execution
+- Previous SQL query history to prevent repetition of failed approaches and provide context for subsequent query generations
 
 This implementation provides a robust foundation for building production-ready AI agents with advanced capabilities for database querying and natural language processing.
