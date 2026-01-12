@@ -61,24 +61,25 @@ for key, value in os.environ.items():
                 ADDITIONAL_DATABASES[db_name] = db_url
 
 # LLM Model configurations
-SQL_LLM_PROVIDER = os.getenv("SQL_LLM_PROVIDER", "OpenAI")
-SQL_LLM_MODEL = os.getenv("SQL_LLM_MODEL", "gpt-3.5-turbo")
+SQL_LLM_PROVIDER = os.getenv("SQL_LLM_PROVIDER", "LM Studio")
+SQL_LLM_MODEL = os.getenv("SQL_LLM_MODEL", "qwen2.5-coder-7b-instruct-abliterated@q3_k_m")
 SQL_LLM_HOSTNAME = os.getenv("SQL_LLM_HOSTNAME", "localhost")
-SQL_LLM_PORT = os.getenv("SQL_LLM_PORT", "443")
+SQL_LLM_PORT = os.getenv("SQL_LLM_PORT", "1234")
 SQL_LLM_API_PATH = os.getenv("SQL_LLM_API_PATH", "/v1")
-RESPONSE_LLM_PROVIDER = os.getenv("RESPONSE_LLM_PROVIDER", "OpenAI")
-RESPONSE_LLM_MODEL = os.getenv("RESPONSE_LLM_MODEL", "gpt-4")
+RESPONSE_LLM_PROVIDER = os.getenv("RESPONSE_LLM_PROVIDER", "LM Studio")
+RESPONSE_LLM_MODEL = os.getenv("RESPONSE_LLM_MODEL", "qwen2.5-coder-7b-instruct-abliterated@q3_k_m")
 RESPONSE_LLM_HOSTNAME = os.getenv("RESPONSE_LLM_HOSTNAME", "localhost")
-RESPONSE_LLM_PORT = os.getenv("RESPONSE_LLM_PORT", "443")
+RESPONSE_LLM_PORT = os.getenv("RESPONSE_LLM_PORT", "1234")
 RESPONSE_LLM_API_PATH = os.getenv("RESPONSE_LLM_API_PATH", "/v1")
-PROMPT_LLM_PROVIDER = os.getenv("PROMPT_LLM_PROVIDER", "OpenAI")
-PROMPT_LLM_MODEL = os.getenv("PROMPT_LLM_MODEL", "gpt-3.5-turbo")
+PROMPT_LLM_PROVIDER = os.getenv("PROMPT_LLM_PROVIDER", "LM Studio")
+PROMPT_LLM_MODEL = os.getenv("PROMPT_LLM_MODEL", "qwen2.5-coder-7b-instruct-abliterated@q3_k_m")
 PROMPT_LLM_HOSTNAME = os.getenv("PROMPT_LLM_HOSTNAME", "localhost")
-PROMPT_LLM_PORT = os.getenv("PROMPT_LLM_PORT", "443")
+PROMPT_LLM_PORT = os.getenv("PROMPT_LLM_PORT", "1234")
 PROMPT_LLM_API_PATH = os.getenv("PROMPT_LLM_API_PATH", "/v1")
 
 # API Keys
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
 
 # GigaChat Configuration
 GIGACHAT_CREDENTIALS = os.getenv("GIGACHAT_CREDENTIALS")
@@ -90,10 +91,10 @@ GIGACHAT_VERIFY_SSL_CERTS = str_to_bool(os.getenv("GIGACHAT_VERIFY_SSL_CERTS"), 
 TERMINATE_ON_POTENTIALLY_HARMFUL_SQL = str_to_bool(os.getenv("TERMINATE_ON_POTENTIALLY_HARMFUL_SQL"), False)
 
 # Security LLM Configuration (for advanced SQL security analysis)
-SECURITY_LLM_PROVIDER = os.getenv("SECURITY_LLM_PROVIDER", "OpenAI")
-SECURITY_LLM_MODEL = os.getenv("SECURITY_LLM_MODEL", "gpt-3.5-turbo")
+SECURITY_LLM_PROVIDER = os.getenv("SECURITY_LLM_PROVIDER", "LM Studio")
+SECURITY_LLM_MODEL = os.getenv("SECURITY_LLM_MODEL", "qwen2.5-coder-7b-instruct-abliterated@q3_k_m")
 SECURITY_LLM_HOSTNAME = os.getenv("SECURITY_LLM_HOSTNAME", "localhost")
-SECURITY_LLM_PORT = os.getenv("SECURITY_LLM_PORT", "443")
+SECURITY_LLM_PORT = os.getenv("SECURITY_LLM_PORT", "1234")
 SECURITY_LLM_API_PATH = os.getenv("SECURITY_LLM_API_PATH", "/v1")
 USE_SECURITY_LLM = str_to_bool(os.getenv("USE_SECURITY_LLM"), True)  # Whether to use the security LLM for analysis
 

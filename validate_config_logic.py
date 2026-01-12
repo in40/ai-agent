@@ -189,6 +189,7 @@ def test_validations():
     print("\n8. Testing model name validation:")
 
     valid_models = [
+        "qwen2.5-coder-7b-instruct-abliterated@q3_k_m",
         "gpt-3.5-turbo",
         "gpt-4",
         "claude-2",
@@ -332,20 +333,20 @@ def test_env_file_generation():
     db_url = f"{db_type}://{db_username}:{db_password}@{db_hostname}:{db_port}/{db_name}"
     api_key = "sk-testapikey1234567890"
     sql_provider = "LM Studio"
-    sql_model = "gpt-4-test"
+    sql_model = "qwen2.5-coder-7b-instruct-abliterated@q3_k_m"
     sql_hostname = "asus-tos"
     sql_port = "1234"
     sql_api_path = "/v1"
-    response_provider = "Ollama"
-    response_model = "gpt-3.5-turbo-test"
+    response_provider = "LM Studio"
+    response_model = "qwen2.5-coder-7b-instruct-abliterated@q3_k_m"
     response_hostname = "asus-tos"
-    response_port = "11434"
-    response_api_path = "/api/v1"
-    prompt_provider = "Qwen"
-    prompt_model = "gpt-4-test"
+    response_port = "1234"
+    response_api_path = "/v1"
+    prompt_provider = "LM Studio"
+    prompt_model = "qwen2.5-coder-7b-instruct-abliterated@q3_k_m"
     prompt_hostname = "asus-tos"
-    prompt_port = "443"
-    prompt_api_path = "/api/v1"
+    prompt_port = "1234"
+    prompt_api_path = "/v1"
 
     # Generate .env content
     env_content = f"""# Database Configuration

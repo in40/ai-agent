@@ -9,6 +9,7 @@ from typing import Dict, Optional, List
 from sqlalchemy import create_engine, text
 from sqlalchemy.exc import SQLAlchemyError
 from config.settings import DATABASE_URL
+from config.database_aliases import get_db_alias_mapper
 import logging
 import time
 
@@ -24,7 +25,46 @@ class MultiDatabaseManager:
         self.databases: Dict[str, DatabaseManager] = {}
         # Add the default database if DATABASE_URL is configured
         if DATABASE_URL:
-            self.add_database("default", DATABASE_URL)
+            # Extract the real database name from the URL to use as the configuration name
+            db_name = self._extract_db_name_from_url(DATABASE_URL)
+            self.add_database(db_name, DATABASE_URL)
+
+    def _extract_db_name_from_url(self, database_url: str) -> str:
+        """
+        Extract the database name from the database URL to use as the configuration name.
+
+        Args:
+            database_url: The database connection URL
+
+        Returns:
+            str: The extracted database name
+        """
+        # Handle different URL formats including sqlite with file paths
+        if database_url.startswith('sqlite:///'):
+            # Special handling for SQLite file paths
+            db_path = database_url[len('sqlite:///'):]
+            # Get the file name without extension
+            db_name = db_path.split('/')[-1].split('.')[0]
+            # If the name is just numbers or generic like 'db', use a more descriptive name
+            if not db_name or db_name.isdigit() or db_name in ['db', 'database', 'main']:
+                db_name = 'primary_db'
+        else:
+            # Handle standard database URLs like postgresql://user:pass@host:port/dbname
+            try:
+                # Split the URL by '/' and get the last part which should be the database name
+                db_name = database_url.split('/')[-1]
+
+                # Remove any query parameters or fragments if present
+                db_name = db_name.split('?')[0].split('#')[0]
+
+                # If the extracted name is empty or generic, use a default name
+                if not db_name or db_name in ['', 'db', 'database', 'main']:
+                    db_name = 'primary_db'
+            except Exception:
+                # If parsing fails, use a default name
+                db_name = 'primary_db'
+
+        return db_name
     
     def add_database(self, name: str, database_url: str, **kwargs) -> bool:
         """
@@ -43,8 +83,14 @@ class MultiDatabaseManager:
             return False
             
         if name in self.databases:
-            logger.warning(f"Database with name '{name}' already exists. Updating connection.")
-        
+            existing_db_manager = self.databases[name]
+            if existing_db_manager.database_url == database_url:
+                # URL is the same, no need to update
+                logger.debug(f"Database with name '{name}' already exists with the same URL. Skipping update.")
+                return True
+            else:
+                logger.warning(f"Database with name '{name}' already exists. Updating connection.")
+
         try:
             db_manager = DatabaseManager(database_url, **kwargs)
             # Test the connection before adding
@@ -98,22 +144,36 @@ class MultiDatabaseManager:
         """
         return list(self.databases.keys())
     
-    def get_schema_dump(self, db_name: str, force_refresh: bool = False):
+    def get_schema_dump(self, db_name: str, force_refresh: bool = False, use_real_name: bool = False):
         """
         Get the schema dump for a specific database.
-        
+
         Args:
             db_name: The name of the database to get schema for
             force_refresh: Whether to force a refresh of the schema cache
-            
+            use_real_name: Whether to use the real database name instead of alias when passing to LLMs
+
         Returns:
             The schema dump for the specified database
         """
         db_manager = self.get_database(db_name)
         if not db_manager:
             raise ValueError(f"Database '{db_name}' not found in manager")
-        
-        return db_manager.get_schema_dump(force_refresh=force_refresh)
+
+        # Get the schema dump
+        schema_dump = db_manager.get_schema_dump(force_refresh=force_refresh)
+
+        # If using real name, update the schema dump to reference the real database name
+        if use_real_name:
+            db_alias_mapper = get_db_alias_mapper()
+            real_name = db_alias_mapper.get_real_name(db_name)
+            if real_name:
+                # Update any references in the schema dump to use the real name
+                # This is mainly for when the schema contains references to the database name
+                # For now, we'll just log that we're using the real name
+                logger.debug(f"Using real database name '{real_name}' instead of alias '{db_name}' for LLM")
+
+        return schema_dump
     
     def execute_query(self, db_name: str, query: str):
         """
@@ -435,7 +495,9 @@ def reload_database_config():
     # Add default database if DATABASE_URL is configured
     from config.settings import DATABASE_URL
     if DATABASE_URL:
-        desired_dbs["default"] = DATABASE_URL
+        # Extract the real database name from the URL to use as the configuration name
+        db_name = multi_db_manager._extract_db_name_from_url(DATABASE_URL)
+        desired_dbs[db_name] = DATABASE_URL
 
     # Add databases from environment variables
     for key, value in os.environ.items():
@@ -480,6 +542,13 @@ def reload_database_config():
         current_db_manager = multi_db_manager.get_database(db_name)
         if not current_db_manager or current_db_manager.database_url != db_url:
             multi_db_manager.add_database(db_name, db_url)
+
+    # After reloading database configs, also reload the alias mappings
+    from config.database_aliases import get_db_alias_mapper
+    db_alias_mapper = get_db_alias_mapper()
+    # Reload mappings from additional databases
+    # This will update the mappings based on the current ADDITIONAL_DATABASES
+    db_alias_mapper._load_mappings_from_additional_databases()
 
 
 # Initialize databases from environment variables when module is loaded

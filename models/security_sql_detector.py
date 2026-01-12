@@ -6,6 +6,7 @@ using an LLM-based approach to reduce false positives compared to simple keyword
 from typing import Dict, Any, Tuple
 import logging
 import json
+import os
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
@@ -15,8 +16,10 @@ from config.settings import (
     SECURITY_LLM_HOSTNAME,
     SECURITY_LLM_PORT,
     SECURITY_LLM_API_PATH,
-    OPENAI_API_KEY
+    OPENAI_API_KEY,
+    DEEPSEEK_API_KEY
 )
+from utils.ssh_keep_alive import SSHKeepAliveContext
 
 logger = logging.getLogger(__name__)
 
@@ -38,6 +41,42 @@ class SecuritySQLDetector:
                 temperature=0.1,  # Low temperature for more consistent security analysis
                 api_key=OPENAI_API_KEY
             )
+        elif SECURITY_LLM_PROVIDER.lower() == "deepseek":
+            # For DeepSeek, use ChatOpenAI with DeepSeek configuration
+            # Construct the base URL for DeepSeek
+            if SECURITY_LLM_HOSTNAME not in ["api.deepseek.com"]:
+                base_url = f"https://{SECURITY_LLM_HOSTNAME}:{SECURITY_LLM_PORT}{SECURITY_LLM_API_PATH}"
+            else:
+                base_url = None  # Use default DeepSeek endpoint
+
+            self.llm = ChatOpenAI(
+                model=SECURITY_LLM_MODEL,
+                temperature=0.1,
+                api_key=DEEPSEEK_API_KEY,
+                base_url=base_url
+            )
+        elif SECURITY_LLM_PROVIDER.lower() == "gigachat":
+            # For GigaChat, use the GigaChat integration
+            from langchain_gigachat.chat_models import GigaChat
+
+            # Use credentials if provided, otherwise use access token
+            if os.getenv("GIGACHAT_CREDENTIALS"):
+                self.llm = GigaChat(
+                    credentials=os.getenv("GIGACHAT_CREDENTIALS"),
+                    scope=os.getenv("GIGACHAT_SCOPE", "GIGACHAT_API_PERS"),
+                    model=SECURITY_LLM_MODEL,
+                    temperature=0.1,
+                    verify_ssl=os.getenv("GIGACHAT_VERIFY_SSL_CERTS", "true").lower() == "true"
+                )
+            elif os.getenv("GIGACHAT_ACCESS_TOKEN"):
+                self.llm = GigaChat(
+                    access_token=os.getenv("GIGACHAT_ACCESS_TOKEN"),
+                    model=SECURITY_LLM_MODEL,
+                    temperature=0.1,
+                    verify_ssl=os.getenv("GIGACHAT_VERIFY_SSL_CERTS", "true").lower() == "true"
+                )
+            else:
+                raise ValueError("Either GIGACHAT_CREDENTIALS or GIGACHAT_ACCESS_TOKEN must be set for GigaChat provider")
         elif SECURITY_LLM_PROVIDER.lower() == "lm studio":
             # For LM Studio, use ChatOpenAI with local configuration
             from langchain_openai import ChatOpenAI
@@ -130,11 +169,13 @@ class SecuritySQLDetector:
             schema_str = "No schema context provided"
         
         try:
-            # Run the chain to analyze the query
-            raw_result = self.chain.invoke({
-                "sql_query": sql_query,
-                "schema_context": schema_str
-            })
+            # Use SSH keep-alive during the LLM call
+            with SSHKeepAliveContext():
+                # Run the chain to analyze the query
+                raw_result = self.chain.invoke({
+                    "sql_query": sql_query,
+                    "schema_context": schema_str
+                })
 
             # Extract JSON from the raw result string
             # Look for JSON between curly braces

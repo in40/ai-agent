@@ -716,6 +716,15 @@ def main():
         validator=validate_openai_api_key
     )
 
+    print("\nDeepSeek Configuration (optional):")
+    print("-" * 30)
+    deepseek_api_key = get_user_input(
+        "Enter your DeepSeek API key (or leave empty if not using DeepSeek)",
+        default_value=existing_values.get("DEEPSEEK_API_KEY", ""),
+        sensitive=True,
+        validator=validate_openai_api_key  # Using the same validation as OpenAI since they have similar format
+    )
+
     print("\nGigaChat Configuration (optional):")
     print("-" * 30)
     gigachat_credentials = get_user_input(
@@ -779,7 +788,7 @@ def main():
 
     sql_llm_model = get_user_input(
         "Enter the model name for SQL generation",
-        default_value=existing_values.get("SQL_LLM_MODEL", "gpt-3.5-turbo"),
+        default_value=existing_values.get("SQL_LLM_MODEL", "qwen2.5-coder-7b-instruct-abliterated@q3_k_m"),
         validator=validate_model_name
     )
 
@@ -824,7 +833,7 @@ def main():
 
     response_llm_model = get_user_input(
         "Enter the model name for response generation",
-        default_value=existing_values.get("RESPONSE_LLM_MODEL", "gpt-4"),
+        default_value=existing_values.get("RESPONSE_LLM_MODEL", "qwen2.5-coder-7b-instruct-abliterated@q3_k_m"),
         validator=validate_model_name
     )
 
@@ -869,7 +878,7 @@ def main():
 
     prompt_llm_model = get_user_input(
         "Enter the model name for prompt generation",
-        default_value=existing_values.get("PROMPT_LLM_MODEL", "gpt-3.5-turbo"),
+        default_value=existing_values.get("PROMPT_LLM_MODEL", "qwen2.5-coder-7b-instruct-abliterated@q3_k_m"),
         validator=validate_model_name
     )
 
@@ -932,7 +941,7 @@ def main():
 
         security_llm_model = get_user_input(
             "Enter the model name for security analysis",
-            default_value=existing_values.get("SECURITY_LLM_MODEL", "gpt-3.5-turbo"),
+            default_value=existing_values.get("SECURITY_LLM_MODEL", "qwen2.5-coder-7b-instruct-abliterated@q3_k_m"),
             validator=validate_model_name
         )
 
@@ -956,7 +965,7 @@ def main():
     else:
         # Set default values when security LLM is disabled
         security_llm_provider = "OpenAI"
-        security_llm_model = "gpt-3.5-turbo"
+        security_llm_model = "qwen2.5-coder-7b-instruct-abliterated@q3_k_m"
         security_llm_hostname = "api.openai.com"
         security_llm_port = "443"
         security_llm_api_path = "/v1"
@@ -1003,6 +1012,9 @@ DATABASE_URL={db_url}
     env_content += f"""
 # OpenAI API Key
 OPENAI_API_KEY={openai_api_key}
+
+# DeepSeek API Key
+DEEPSEEK_API_KEY={deepseek_api_key}
 
 # GigaChat Configuration
 GIGACHAT_CREDENTIALS={gigachat_credentials}
@@ -1093,6 +1105,9 @@ DATABASE_URL={db_url}
 # OpenAI API Key
 OPENAI_API_KEY={openai_api_key}
 
+# DeepSeek API Key
+DEEPSEEK_API_KEY={deepseek_api_key}
+
 # GigaChat Configuration
 GIGACHAT_CREDENTIALS={gigachat_credentials}
 GIGACHAT_SCOPE={gigachat_scope}
@@ -1122,10 +1137,10 @@ TERMINATE_ON_POTENTIALLY_HARMFUL_SQL=false
 # Security LLM Configuration (for advanced SQL security analysis)
 # Whether to use the security LLM for analysis (set to false to use basic keyword matching only)
 USE_SECURITY_LLM=Y
-SECURITY_LLM_PROVIDER=OpenAI
-SECURITY_LLM_MODEL=gpt-3.5-turbo
+SECURITY_LLM_PROVIDER=LM Studio
+SECURITY_LLM_MODEL=qwen2.5-coder-7b-instruct-abliterated@q3_k_m
 SECURITY_LLM_HOSTNAME=api.openai.com
-SECURITY_LLM_PORT=443
+SECURITY_LLM_PORT=1234
 SECURITY_LLM_API_PATH=/v1
 
 # Logging Configuration

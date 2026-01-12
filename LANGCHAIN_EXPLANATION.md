@@ -119,15 +119,14 @@ class PromptGenerator:
         })
         return response
 
-    def generate_wider_search_prompt(self, wider_search_context, attached_files=None):
+    def generate_wider_search_prompt(self, wider_search_context, attached_files=None, schema_dump=None, db_mapping=None):
         """
         Generate a prompt for wider search strategies when initial query returns no results
         """
-        wider_search_prompt = self.prompt.invoke({
-            "user_request": "Generate wider search strategies",
-            "db_results": wider_search_context
-        })
-        return wider_search_prompt
+        # Implementation handles both the old template format (with just wider_search_context)
+        # and the new format (with schema_dump and db_mapping variables)
+        # See models/prompt_generator.py for full implementation
+        pass
 ```
 
 ### 3. ResponseGenerator

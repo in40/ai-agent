@@ -146,10 +146,10 @@ The agent can be configured via environment variables in the `.env` file:
 - `DB_{NAME}_NAME`: Database name
 
 ### LLM Configuration
-- `SQL_LLM_MODEL`: Model to use for SQL generation (default: gpt-3.5-turbo)
-- `RESPONSE_LLM_MODEL`: Model to use for response generation (default: gpt-4)
-- `PROMPT_LLM_MODEL`: Model to use for prompt generation (default: gpt-3.5-turbo)
-- `SECURITY_LLM_MODEL`: Model to use for security analysis (default: gpt-3.5-turbo)
+- `SQL_LLM_MODEL`: Model to use for SQL generation (default: qwen2.5-coder-7b-instruct-abliterated@q3_k_m)
+- `RESPONSE_LLM_MODEL`: Model to use for response generation (default: qwen2.5-coder-7b-instruct-abliterated@q3_k_m)
+- `PROMPT_LLM_MODEL`: Model to use for prompt generation (default: qwen2.5-coder-7b-instruct-abliterated@q3_k_m)
+- `SECURITY_LLM_MODEL`: Model to use for security analysis (default: qwen2.5-coder-7b-instruct-abliterated@q3_k_m)
 - `SQL_LLM_PROVIDER`: Provider for SQL generation (OpenAI, GigaChat, DeepSeek, Qwen, LM Studio, Ollama)
 - `RESPONSE_LLM_PROVIDER`: Provider for response generation
 - `PROMPT_LLM_PROVIDER`: Provider for prompt generation
@@ -173,7 +173,7 @@ The agent can be configured via environment variables in the `.env` file:
 - `GIGACHAT_SCOPE`: The scope for your GigaChat API access (default: GIGACHAT_API_PERS)
 
 ### Security Configuration
-- `SECURITY_LLM_MODEL`: Model to use for security analysis (default: gpt-3.5-turbo)
+- `SECURITY_LLM_MODEL`: Model to use for security analysis (default: qwen2.5-coder-7b-instruct-abliterated@q3_k_m)
 - `USE_SECURITY_LLM`: Whether to use the advanced security LLM analysis (default: true)
 - `TERMINATE_ON_POTENTIALLY_HARMFUL_SQL`: Whether to block potentially harmful SQL (default: true)
 

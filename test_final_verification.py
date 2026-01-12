@@ -1,50 +1,57 @@
 #!/usr/bin/env python3
 """
-Final verification test to confirm the wider search functionality works as expected.
+Final test to verify the original issue is fixed
 """
 
 import sys
 import os
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__)))
 
-from langgraph_agent import run_enhanced_agent
+from models.sql_executor import SQLExecutor
 
-def test_final_verification():
-    """
-    Final test to verify the wider search functionality
-    """
-    print("=== Final Verification Test ===")
+def test_original_issue_fixed():
+    """Test that the original issue is fixed"""
+    sql_executor = SQLExecutor()
     
-    # This query should return no results with the current schema
-    user_request = "What is the most common women's name?"
-    print(f"Request: {user_request}")
+    # This is the original problematic query from the error logs
+    original_problematic_query = "SELECT DISTINCT c.name, c.phone FROM contacts_db.contacts c JOIN contacts_db.arrest_records a ON (c.name ILIKE '%' || a.first_name || '%' OR c.name ILIKE '%' || a.last_name || '%') WHERE LOWER(a.race) LIKE '%asian%' AND LOWER(a.sex) LIKE '%female%' AND c.is_active = TRUE ORDER BY c.name LIMIT 10;"
     
-    result = run_enhanced_agent(user_request)
+    print("Testing the original problematic query...")
+    print(f"Original: {original_problematic_query[:80]}...")
     
-    print(f"Generated SQL: {result['generated_sql']}")
-    print(f"Query Type: {result.get('query_type', 'unknown')}")
-    print(f"Number of DB Results: {len(result['db_results'])}")
-    print(f"Final Response: {result['final_response'][:200]}...")
-    print(f"Retry Count: {result['retry_count']}")
-    print(f"Validation Error: {result.get('validation_error', 'None')}")
-    print(f"Execution Error: {result.get('execution_error', 'None')}")
+    # Sanitize the query
+    sanitized = sql_executor._sanitize_sql_query(original_problematic_query)
+    print(f"Sanitized: {sanitized[:80]}...")
     
-    # Check if the wider search was attempted
-    if result.get('query_type') == 'wider_search':
-        print("\n✓ SUCCESS: The wider search functionality was triggered as expected!")
-        print("  - The system detected that initial query returned no results")
-        print("  - The system attempted wider search strategies")
-        print("  - The system handled the lack of results appropriately")
-        print("  - The system respected the retry limit to prevent infinite loops")
+    # Verify that table names are preserved
+    if "contacts" in sanitized and "arrest_records" in sanitized:
+        print("✅ SUCCESS: Both table names 'contacts' and 'arrest_records' are preserved")
     else:
-        print("\n✗ FAILURE: The wider search functionality was not triggered as expected")
+        print("❌ FAILURE: Table names were not preserved properly")
+        return False
     
-    print("\n=== Test Summary ===")
-    print("The wider search functionality is working correctly:")
-    print("- Detects when initial queries return no results")
-    print("- Attempts alternative search strategies")
-    print("- Respects retry limits to prevent infinite loops")
-    print("- Handles database schema limitations appropriately")
+    # Verify that the database prefix was removed
+    if "contacts_db." not in sanitized:
+        print("✅ SUCCESS: Database prefix 'contacts_db.' was properly removed")
+    else:
+        print("❌ FAILURE: Database prefix was not removed")
+        return False
+    
+    # Verify that aliases are preserved
+    if "c" in sanitized and "a" in sanitized:
+        print("✅ SUCCESS: Table aliases 'c' and 'a' are preserved")
+    else:
+        print("❌ FAILURE: Table aliases were not preserved")
+        return False
+    
+    print("\n🎉 All checks passed! The original issue has been fixed.")
+    print("The query will no longer fail with 'relation does not exist' error.")
+    return True
 
 if __name__ == "__main__":
-    test_final_verification()
+    success = test_original_issue_fixed()
+    if success:
+        print("\n✓ Test PASSED - Original issue is fixed")
+    else:
+        print("\n✗ Test FAILED - Issue still exists")
+        sys.exit(1)

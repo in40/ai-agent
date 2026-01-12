@@ -37,7 +37,7 @@ from utils.multi_database_manager import multi_db_manager as DatabaseManager, re
 def main():
     parser = argparse.ArgumentParser(description='AI Agent for Natural Language to SQL Queries using LangGraph')
     parser.add_argument('--request', type=str, help='Natural language request to process')
-    parser.add_argument('--database', type=str, default='default', help='Name of the database to use for queries (default: default)')
+    parser.add_argument('--database', type=str, default=None, help='Name of the database to use for queries (default: primary database from DATABASE_URL)')
 
     args = parser.parse_args()
 
@@ -60,11 +60,12 @@ def main():
             "db_results": [],
             "all_db_results": {},
             "table_to_db_mapping": {},
+            "table_to_real_db_mapping": {},
             "final_response": "",
             "messages": [],
             "validation_error": None,
             "retry_count": 0,
-            "database_name": args.database
+            "database_name": args.database if args.database else "all_databases"
         }
 
         try:
@@ -80,7 +81,11 @@ def main():
         print(f"Available databases: {', '.join(all_databases) if all_databases else 'None'}")
 
         # If a specific database was provided via command line, use it
-        if args.database != 'default' or len(all_databases) == 1:
+        if args.database:
+            print(f"Using database: {args.database}")
+        elif len(all_databases) == 1:
+            # If only one database is available, use it
+            args.database = all_databases[0]
             print(f"Using database: {args.database}")
         else:
             print("Using all available databases for queries")
@@ -99,11 +104,12 @@ def main():
                     "db_results": [],
                     "all_db_results": {},
                     "table_to_db_mapping": {},
+                    "table_to_real_db_mapping": {},
                     "final_response": "",
                     "messages": [],
                     "validation_error": None,
                     "retry_count": 0,
-                    "database_name": args.database
+                    "database_name": args.database if args.database else "all_databases"
                 }
 
                 # Run the graph

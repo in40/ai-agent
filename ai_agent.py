@@ -12,9 +12,23 @@ logger = logging.getLogger(__name__)
 class AIAgent:
     def __init__(self, database_url=None):
         # Initialize components
-        self.db_manager = DatabaseManager(database_url)
+        from utils.multi_database_manager import multi_db_manager
+        # Add the primary database if database_url is provided
+        if database_url:
+            # Extract the real database name from the URL to use as the configuration name
+            db_name = multi_db_manager._extract_db_name_from_url(database_url)
+            multi_db_manager.add_database(db_name, database_url)
+        else:
+            # Use the primary database from config if available
+            from config.settings import DATABASE_URL
+            if DATABASE_URL:
+                # Extract the real database name from the URL to use as the configuration name
+                db_name = multi_db_manager._extract_db_name_from_url(DATABASE_URL)
+                multi_db_manager.add_database(db_name, DATABASE_URL)
+
+        self.db_manager = multi_db_manager
         self.sql_generator = SQLGenerator()
-        self.sql_executor = SQLExecutor(self.db_manager)
+        self.sql_executor = SQLExecutor(self.db_manager)  # Will use multi_db_manager by default
         self.prompt_generator = PromptGenerator()
         self.response_generator = ResponseGenerator()
 
@@ -31,20 +45,56 @@ class AIAgent:
             # Step 1: Get database schema
             if ENABLE_SCREEN_LOGGING:
                 logger.info("Getting database schema...")
-            schema_dump = self.db_manager.get_schema_dump()
+
+            # Get all available database names
+            all_databases = self.db_manager.list_databases()
+
+            # Collect schema dumps from all databases
+            combined_schema_dump = {}
+            table_to_db_mapping = {}  # Map original table names to database names
+            table_to_real_db_mapping = {}  # Map original table names to real database names
+
+            for db_name in all_databases:
+                try:
+                    schema_dump = self.db_manager.get_schema_dump(db_name, use_real_name=True)
+
+                    # Add all tables from this database to the combined schema
+                    for table_name, table_info in schema_dump.items():
+                        # Store the original table name
+                        combined_schema_dump[table_name] = table_info
+
+                        # Store mapping from original table name to database
+                        table_to_db_mapping[table_name] = db_name
+
+                        # Store mapping from original table name to real database name
+                        from config.database_aliases import get_db_alias_mapper
+                        db_alias_mapper = get_db_alias_mapper()
+                        real_name = db_alias_mapper.get_real_name(db_name)
+                        if real_name:
+                            table_to_real_db_mapping[table_name] = real_name
+                        else:
+                            table_to_real_db_mapping[table_name] = db_name  # Use alias if no real name mapping
+
+                    logger.info(f"Retrieved schema with {len(schema_dump)} tables from '{db_name}' database")
+                except Exception as e:
+                    logger.warning(f"Error retrieving schema from '{db_name}' database: {str(e)}")
+                    # Continue with other databases even if one fails
+
             if ENABLE_SCREEN_LOGGING:
-                logger.info(f"Retrieved schema with {len(schema_dump)} tables")
+                logger.info(f"Retrieved combined schema with {len(combined_schema_dump)} tables from {len(all_databases)} databases")
 
             # Step 2: Generate SQL query using first LLM
             if ENABLE_SCREEN_LOGGING:
                 logger.info("Generating SQL query...")
-            sql_query = self.sql_generator.generate_sql(user_request, schema_dump, attached_files)
+            sql_query = self.sql_generator.generate_sql(user_request, combined_schema_dump, attached_files, table_to_db_mapping, table_to_real_db_mapping)
             if ENABLE_SCREEN_LOGGING:
                 logger.info(f"Generated SQL: {sql_query}")
 
             # Step 3: Execute SQL query against database
             if ENABLE_SCREEN_LOGGING:
                 logger.info("Executing SQL query...")
+
+            # Execute the SQL query
             db_results = self.sql_executor.execute_sql_and_get_results(sql_query)
             if ENABLE_SCREEN_LOGGING:
                 logger.info(f"Query executed, got {len(db_results)} results")
@@ -59,7 +109,7 @@ class AIAgent:
                 The original user request was: "{user_request}"
 
                 The database schema is:
-                {self.format_schema_dump(schema_dump)}
+                {self.format_schema_dump(combined_schema_dump)}
 
                 The initial SQL query based on this request returned no results.
 
@@ -77,14 +127,14 @@ class AIAgent:
 
                 # Use the prompt generator to get suggestions for wider search
                 wider_search_suggestions = self.prompt_generator.generate_wider_search_prompt(
-                    wider_search_context, attached_files
+                    wider_search_context, attached_files, combined_schema_dump, table_to_db_mapping
                 )
 
                 if ENABLE_SCREEN_LOGGING:
                     logger.info(f"Wider search suggestions: {wider_search_suggestions}")
 
                 # Generate new SQL based on the wider suggestions
-                new_sql_query = self.sql_generator.generate_sql(wider_search_suggestions, schema_dump, attached_files)
+                new_sql_query = self.sql_generator.generate_sql(wider_search_suggestions, combined_schema_dump, attached_files, table_to_db_mapping, table_to_real_db_mapping)
                 if ENABLE_SCREEN_LOGGING:
                     logger.info(f"Generated new SQL based on wider search: {new_sql_query}")
 
@@ -305,10 +355,32 @@ class AIAgent:
         Format the schema dump into a readable string for the LLM
         """
         formatted = ""
-        for table_name, columns in schema_dump.items():
-            formatted += f"\nTable: {table_name}\n"
+        for table_name, table_info in schema_dump.items():
+            # Handle both the old format (list of columns) and new format (dict with columns and comment)
+            if isinstance(table_info, list):
+                # Old format - backward compatibility
+                columns = table_info
+                table_comment = None
+            else:
+                # New format with comments
+                columns = table_info.get('columns', [])
+                table_comment = table_info.get('comment', None)
+
+            formatted += f"\nTable: {table_name}"
+            if table_comment:
+                formatted += f" - Comment: {table_comment}"
+            formatted += "\n"
+
             for col in columns:
-                formatted += f"  - {col['name']} ({col['type']}) - Nullable: {col['nullable']}\n"
+                if isinstance(col, dict):
+                    # New format with comments
+                    col_info = f"  - {col['name']} ({col['type']}) - Nullable: {col['nullable']}"
+                    if col.get('comment'):
+                        col_info += f" - Comment: {col['comment']}"
+                    formatted += col_info + "\n"
+                else:
+                    # Old format - backward compatibility
+                    formatted += f"  - {col['name']} ({col['type']}) - Nullable: {col['nullable']}\n"
         return formatted
     
     def test_connection(self):

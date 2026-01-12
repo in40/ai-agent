@@ -562,7 +562,11 @@ def generate_wider_search_query_node(state: AgentState) -> AgentState:
         """
 
         # Generate wider search prompt using the specialized wider search generator
-        wider_search_prompt = prompt_generator.generate_wider_search_prompt(wider_search_context)
+        wider_search_prompt = prompt_generator.generate_wider_search_prompt(
+            wider_search_context,
+            schema_dump=state['schema_dump'],
+            db_mapping=state.get('table_to_db_mapping')
+        )
 
         # Use the SQL generator to create a new query based on the wider search suggestions
         sql_generator = SQLGenerator()

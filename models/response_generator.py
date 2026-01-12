@@ -6,9 +6,11 @@ from langchain_core.output_parsers import PydanticOutputParser
 from config.settings import (
     RESPONSE_LLM_PROVIDER, RESPONSE_LLM_MODEL, RESPONSE_LLM_HOSTNAME,
     RESPONSE_LLM_PORT, RESPONSE_LLM_API_PATH, OPENAI_API_KEY,
-    GIGACHAT_CREDENTIALS, GIGACHAT_SCOPE, GIGACHAT_ACCESS_TOKEN, ENABLE_SCREEN_LOGGING
+    GIGACHAT_CREDENTIALS, GIGACHAT_SCOPE, GIGACHAT_ACCESS_TOKEN,
+    GIGACHAT_VERIFY_SSL_CERTS, ENABLE_SCREEN_LOGGING
 )
 from utils.prompt_manager import PromptManager
+from utils.ssh_keep_alive import SSHKeepAliveContext
 import logging
 from tenacity import retry, stop_after_attempt, wait_exponential
 
@@ -51,11 +53,17 @@ class ResponseGenerator:
                 # For local providers like LM Studio or Ollama, use custom base URL with HTTP
                 base_url = f"http://{RESPONSE_LLM_HOSTNAME}:{RESPONSE_LLM_PORT}{RESPONSE_LLM_API_PATH}"
 
+            # Select the appropriate API key based on the provider
+            if RESPONSE_LLM_PROVIDER.lower() == 'deepseek':
+                api_key = DEEPSEEK_API_KEY or ("sk-fake-key" if base_url else DEEPSEEK_API_KEY)
+            else:
+                api_key = OPENAI_API_KEY or ("sk-fake-key" if base_url else OPENAI_API_KEY)
+
             # Create the LLM with the determined base URL
             self.llm = ChatOpenAI(
                 model=RESPONSE_LLM_MODEL,
                 temperature=0.7,  # Slightly higher temperature for more natural responses
-                api_key=OPENAI_API_KEY or ("sk-fake-key" if base_url else OPENAI_API_KEY),
+                api_key=api_key,
                 base_url=base_url
             )
 
@@ -96,9 +104,11 @@ class ResponseGenerator:
                     for idx, file_info in enumerate(attached_files):
                         logger.info(f"    File {idx+1}: {file_info.get('filename', 'Unknown')} ({file_info.get('size', 'Unknown')} bytes)")
 
-            response = self.chain.invoke({
-                "generated_prompt": generated_prompt
-            })
+            # Use SSH keep-alive during the LLM call
+            with SSHKeepAliveContext():
+                response = self.chain.invoke({
+                    "generated_prompt": generated_prompt
+                })
 
             # Log the response
             if ENABLE_SCREEN_LOGGING:

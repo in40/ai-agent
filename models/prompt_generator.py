@@ -4,9 +4,11 @@ from langchain_core.output_parsers import StrOutputParser
 from config.settings import (
     PROMPT_LLM_PROVIDER, PROMPT_LLM_MODEL, PROMPT_LLM_HOSTNAME,
     PROMPT_LLM_PORT, PROMPT_LLM_API_PATH, OPENAI_API_KEY,
-    GIGACHAT_CREDENTIALS, GIGACHAT_SCOPE, GIGACHAT_ACCESS_TOKEN, ENABLE_SCREEN_LOGGING
+    GIGACHAT_CREDENTIALS, GIGACHAT_SCOPE, GIGACHAT_ACCESS_TOKEN,
+    GIGACHAT_VERIFY_SSL_CERTS, ENABLE_SCREEN_LOGGING
 )
 from utils.prompt_manager import PromptManager
+from utils.ssh_keep_alive import SSHKeepAliveContext
 import json
 import logging
 
@@ -45,11 +47,17 @@ class PromptGenerator:
                 # For local providers like LM Studio or Ollama, use custom base URL with HTTP
                 base_url = f"http://{PROMPT_LLM_HOSTNAME}:{PROMPT_LLM_PORT}{PROMPT_LLM_API_PATH}"
 
+            # Select the appropriate API key based on the provider
+            if PROMPT_LLM_PROVIDER.lower() == 'deepseek':
+                api_key = DEEPSEEK_API_KEY or ("sk-fake-key" if base_url else DEEPSEEK_API_KEY)
+            else:
+                api_key = OPENAI_API_KEY or ("sk-fake-key" if base_url else OPENAI_API_KEY)
+
             # Create the LLM with the determined base URL
             self.llm = ChatOpenAI(
                 model=PROMPT_LLM_MODEL,
                 temperature=0.1,
-                api_key=OPENAI_API_KEY or ("sk-fake-key" if base_url else OPENAI_API_KEY),
+                api_key=api_key,
                 base_url=base_url
             )
 
@@ -108,11 +116,13 @@ class PromptGenerator:
                 for idx, file_info in enumerate(attached_files):
                     logger.info(f"    File {idx+1}: {file_info.get('filename', 'Unknown')} ({file_info.get('size', 'Unknown')} bytes)")
 
-        # Generate the prompt for the response LLM
-        response = self.chain.invoke({
-            "user_request": user_request,
-            "db_results": results_str
-        })
+        # Use SSH keep-alive during the LLM call
+        with SSHKeepAliveContext():
+            # Generate the prompt for the response LLM
+            response = self.chain.invoke({
+                "user_request": user_request,
+                "db_results": results_str
+            })
 
         # Log the response
         if ENABLE_SCREEN_LOGGING:
@@ -120,7 +130,7 @@ class PromptGenerator:
 
         return response
 
-    def generate_wider_search_prompt(self, wider_search_context, attached_files=None):
+    def generate_wider_search_prompt(self, wider_search_context, attached_files=None, schema_dump=None, db_mapping=None, previous_sql_queries=None):
         """
         Generate a prompt for wider search strategies when initial query returns no results
         """
@@ -141,10 +151,61 @@ class PromptGenerator:
 
     Always reference specific table and column names from the provided schema. Be creative but practical in your suggestions, and ensure they align with the user's original intent."""
 
-            prompt = ChatPromptTemplate.from_messages([
-                ("system", system_prompt),
-                ("human", "{wider_search_context}")
-            ])
+            # Check if the template expects specific variables
+            has_schema_dump = "{schema_dump}" in system_prompt
+            has_db_mapping = "{db_mapping}" in system_prompt
+            has_prev_queries = "{previous_sql_queries}" in system_prompt
+            has_wider_context = "{wider_search_context}" in system_prompt
+
+            # Format the previous SQL queries for the prompt if provided
+            if previous_sql_queries:
+                previous_sql_str = "\n".join([f"- {query}" for query in previous_sql_queries])
+            else:
+                previous_sql_str = "No previous SQL queries."
+
+            # Create the prompt template based on required variables
+            if has_schema_dump or has_db_mapping or has_prev_queries:
+                # Template expects specific variables in the system message
+                # Need to handle the formatting carefully to avoid conflicts with curly braces in schema/db_mapping
+                # First, we need to escape any curly braces in the schema_dump and db_mapping to avoid formatting conflicts
+                schema_str = str(schema_dump) if schema_dump else ""
+                db_map_str = str(db_mapping) if db_mapping else ""
+
+                # Escape curly braces in the schema and db mapping strings to prevent formatting conflicts
+                escaped_schema_str = schema_str.replace('{', '{{').replace('}', '}}')
+                escaped_db_map_str = db_map_str.replace('{', '{{').replace('}', '}}')
+
+                # Replace the placeholders one by one to avoid conflicts
+                system_prompt_formatted = system_prompt
+                if has_prev_queries:
+                    # No need to escape previous_sql_str since it's just SQL queries
+                    system_prompt_formatted = system_prompt_formatted.replace("{previous_sql_queries}", previous_sql_str)
+
+                if has_schema_dump:
+                    system_prompt_formatted = system_prompt_formatted.replace("{schema_dump}", escaped_schema_str)
+
+                if has_db_mapping:
+                    system_prompt_formatted = system_prompt_formatted.replace("{db_mapping}", escaped_db_map_str)
+
+                # The wider_search_context should always be in the human message part
+                prompt = ChatPromptTemplate.from_messages([
+                    ("system", system_prompt_formatted),
+                    ("human", "{wider_search_context}")
+                ])
+                prompt_kwargs = {
+                    "wider_search_context": wider_search_context
+                }
+            else:
+                # Template expects wider_search_context variable in human message
+                prompt = ChatPromptTemplate.from_messages([
+                    ("system", system_prompt),
+                    ("human", "{wider_search_context}")
+                ])
+
+                # Prepare the arguments for the prompt
+                prompt_kwargs = {
+                    "wider_search_context": wider_search_context
+                }
 
             # Create the chain for this specific task
             output_parser = StrOutputParser()
@@ -153,9 +214,7 @@ class PromptGenerator:
             # Log the full request to LLM, including all roles and prompts
             if ENABLE_SCREEN_LOGGING:
                 # Get the full prompt with all messages (system and human) without invoking the LLM
-                full_prompt = prompt.format_messages(
-                    wider_search_context=wider_search_context
-                )
+                full_prompt = prompt.format_messages(**prompt_kwargs)
                 logger.info("PromptGenerator wider search LLM request:")
                 for i, message in enumerate(full_prompt):
                     if message.type == "system":
@@ -171,9 +230,9 @@ class PromptGenerator:
 
             # Generate the wider search prompt - wrap this in additional error handling
             try:
-                response = chain.invoke({
-                    "wider_search_context": wider_search_context
-                })
+                # Use SSH keep-alive during the LLM call
+                with SSHKeepAliveContext():
+                    response = chain.invoke(prompt_kwargs)
 
                 # Log the raw response type and content for debugging
                 logger.debug(f"Raw response type: {type(response)}, content: {repr(response)}")
