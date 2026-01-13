@@ -5,7 +5,7 @@ from pydantic import BaseModel, Field
 from langchain_core.output_parsers import PydanticOutputParser
 from config.settings import (
     SQL_LLM_PROVIDER, SQL_LLM_MODEL, SQL_LLM_HOSTNAME, SQL_LLM_PORT,
-    SQL_LLM_API_PATH, OPENAI_API_KEY, GIGACHAT_CREDENTIALS, GIGACHAT_SCOPE,
+    SQL_LLM_API_PATH, OPENAI_API_KEY, DEEPSEEK_API_KEY, GIGACHAT_CREDENTIALS, GIGACHAT_SCOPE,
     GIGACHAT_ACCESS_TOKEN, GIGACHAT_VERIFY_SSL_CERTS, ENABLE_SCREEN_LOGGING
 )
 from utils.prompt_manager import PromptManager
@@ -79,11 +79,12 @@ class SQLGenerator:
         else:
             # Construct the base URL based on provider configuration for other providers
             if SQL_LLM_PROVIDER.lower() in ['openai', 'deepseek', 'qwen']:
-                # For cloud providers, use HTTPS unless hostname is not the standard one
-                if SQL_LLM_HOSTNAME not in ["api.openai.com", "api.deepseek.com", "dashscope.aliyuncs.com"]:
-                    base_url = f"https://{SQL_LLM_HOSTNAME}:{SQL_LLM_PORT}{SQL_LLM_API_PATH}"
-                else:
+                # For cloud providers, use HTTPS with the specified hostname
+                # But for default OpenAI, allow using the default endpoint
+                if SQL_LLM_PROVIDER.lower() == 'openai' and SQL_LLM_HOSTNAME == "api.openai.com":
                     base_url = None  # Use default OpenAI endpoint
+                else:
+                    base_url = f"https://{SQL_LLM_HOSTNAME}:{SQL_LLM_PORT}{SQL_LLM_API_PATH}"
             else:
                 # For local providers like LM Studio or Ollama, use custom base URL with HTTP
                 base_url = f"http://{SQL_LLM_HOSTNAME}:{SQL_LLM_PORT}{SQL_LLM_API_PATH}"

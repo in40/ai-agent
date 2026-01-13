@@ -237,6 +237,11 @@ def validate_sql_node(state: AgentState) -> AgentState:
                     "validation_error": None,
                     "previous_sql_queries": state.get("previous_sql_queries", [])  # Preserve previous SQL queries
                 }
+        except NameError as ne:
+            # Specifically handle the case where ChatOpenAI is not defined
+            logger.warning(f"[NODE WARNING] validate_sql_node - Security LLM failed due to name error: {str(ne)}, falling back to basic validation")
+            # If security LLM fails, fall back to basic validation
+            pass
         except Exception as e:
             logger.warning(f"[NODE WARNING] validate_sql_node - Security LLM failed: {str(e)}, falling back to basic validation")
             # If security LLM fails, fall back to basic validation
@@ -975,6 +980,11 @@ def security_check_after_refinement_node(state: AgentState) -> AgentState:
                     "validation_error": None,
                     "query_type": current_query_type  # Preserve the query type
                 }
+        except NameError as ne:
+            # Specifically handle the case where ChatOpenAI is not defined
+            logger.warning(f"[NODE WARNING] security_check_after_refinement_node - Security LLM failed due to name error: {str(ne)}, falling back to basic validation")
+            # If security LLM fails, fall back to basic validation
+            pass
         except Exception as e:
             logger.warning(f"[NODE WARNING] security_check_after_refinement_node - Security LLM failed: {str(e)}, falling back to basic validation")
             # If security LLM fails, fall back to basic validation

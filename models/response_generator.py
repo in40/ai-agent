@@ -5,7 +5,7 @@ from pydantic import BaseModel, Field
 from langchain_core.output_parsers import PydanticOutputParser
 from config.settings import (
     RESPONSE_LLM_PROVIDER, RESPONSE_LLM_MODEL, RESPONSE_LLM_HOSTNAME,
-    RESPONSE_LLM_PORT, RESPONSE_LLM_API_PATH, OPENAI_API_KEY,
+    RESPONSE_LLM_PORT, RESPONSE_LLM_API_PATH, OPENAI_API_KEY, DEEPSEEK_API_KEY,
     GIGACHAT_CREDENTIALS, GIGACHAT_SCOPE, GIGACHAT_ACCESS_TOKEN,
     GIGACHAT_VERIFY_SSL_CERTS, ENABLE_SCREEN_LOGGING
 )
@@ -44,11 +44,12 @@ class ResponseGenerator:
         else:
             # Construct the base URL based on provider configuration for other providers
             if RESPONSE_LLM_PROVIDER.lower() in ['openai', 'deepseek', 'qwen']:
-                # For cloud providers, use HTTPS unless hostname is not the standard one
-                if RESPONSE_LLM_HOSTNAME not in ["api.openai.com", "api.deepseek.com", "dashscope.aliyuncs.com"]:
-                    base_url = f"https://{RESPONSE_LLM_HOSTNAME}:{RESPONSE_LLM_PORT}{RESPONSE_LLM_API_PATH}"
-                else:
+                # For cloud providers, use HTTPS with the specified hostname
+                # But for default OpenAI, allow using the default endpoint
+                if RESPONSE_LLM_PROVIDER.lower() == 'openai' and RESPONSE_LLM_HOSTNAME == "api.openai.com":
                     base_url = None  # Use default OpenAI endpoint
+                else:
+                    base_url = f"https://{RESPONSE_LLM_HOSTNAME}:{RESPONSE_LLM_PORT}{RESPONSE_LLM_API_PATH}"
             else:
                 # For local providers like LM Studio or Ollama, use custom base URL with HTTP
                 base_url = f"http://{RESPONSE_LLM_HOSTNAME}:{RESPONSE_LLM_PORT}{RESPONSE_LLM_API_PATH}"

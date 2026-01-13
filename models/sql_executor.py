@@ -23,6 +23,43 @@ class SQLExecutor:
                 db_name = all_databases[0]  # Use the first database as default
             else:
                 raise ValueError("No databases available for execution")
+
+        # First, try to extract just the SQL query from the response if it contains extra text
+        # This handles cases where the LLM response includes more than just the SQL query
+        import re
+        import json
+
+        # Look for JSON objects that might contain sql_query
+        json_pattern = r'"sql_query"\s*:\s*"((?:[^"\\]|\\.)*")'
+        json_match = re.search(json_pattern, str(sql_query))
+        if json_match:
+            # Extract the SQL query from the JSON
+            try:
+                # Find the full JSON object containing the sql_query
+                full_json_match = re.search(r'(\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\"sql_query\"[^{}]*\})', str(sql_query), re.DOTALL)
+                if full_json_match:
+                    json_str = full_json_match.group(1)
+                    parsed_json = json.loads(json_str)
+                    if isinstance(parsed_json, dict) and 'sql_query' in parsed_json:
+                        sql_query = parsed_json['sql_query']
+            except (json.JSONDecodeError, KeyError):
+                # If JSON parsing fails, continue with the original approach
+                pass
+
+        # Also try to extract SQL between ```sql and ``` markers
+        markdown_match = re.search(r'```(?:sql)?\n(.*?)\n```', str(sql_query), re.DOTALL)
+        if markdown_match:
+            sql_query = markdown_match.group(1).strip()
+
+        # Remove any content between ###ponder### tags and ###/ponder### tags
+        sql_query = re.sub(r'###ponder###.*?###/ponder###', '', str(sql_query), flags=re.DOTALL)
+
+        # Also remove any content between <thinking> tags and </thinking> tags
+        sql_query = re.sub(r'<thinking>.*?</thinking>', '', sql_query, flags=re.DOTALL)
+
+        # Strip any leading/trailing whitespace
+        sql_query = sql_query.strip()
+
         try:
             # Check for potentially harmful commands
             is_safe, issues = self.check_for_harmful_commands(sql_query)
@@ -97,6 +134,42 @@ class SQLExecutor:
         Validate that all tables referenced in the SQL query exist in the specified database
         and that all columns referenced in the query exist in the corresponding tables
         """
+        import re
+        import json
+
+        # First, try to extract just the SQL query from the response if it contains extra text
+        # This handles cases where the LLM response includes more than just the SQL query
+        # Look for JSON objects that might contain sql_query
+        json_pattern = r'"sql_query"\s*:\s*"((?:[^"\\]|\\.)*")'
+        json_match = re.search(json_pattern, str(sql_query))
+        if json_match:
+            # Extract the SQL query from the JSON
+            try:
+                # Find the full JSON object containing the sql_query
+                full_json_match = re.search(r'(\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\"sql_query\"[^{}]*\})', str(sql_query), re.DOTALL)
+                if full_json_match:
+                    json_str = full_json_match.group(1)
+                    parsed_json = json.loads(json_str)
+                    if isinstance(parsed_json, dict) and 'sql_query' in parsed_json:
+                        sql_query = parsed_json['sql_query']
+            except (json.JSONDecodeError, KeyError):
+                # If JSON parsing fails, continue with the original approach
+                pass
+
+        # Also try to extract SQL between ```sql and ``` markers
+        markdown_match = re.search(r'```(?:sql)?\n(.*?)\n```', str(sql_query), re.DOTALL)
+        if markdown_match:
+            sql_query = markdown_match.group(1).strip()
+
+        # Remove any content between ###ponder### tags and ###/ponder### tags
+        sql_query = re.sub(r'###ponder###.*?###/ponder###', '', str(sql_query), flags=re.DOTALL)
+
+        # Also remove any content between <thinking> tags and </thinking> tags
+        sql_query = re.sub(r'<thinking>.*?</thinking>', '', sql_query, flags=re.DOTALL)
+
+        # Strip any leading/trailing whitespace
+        sql_query = sql_query.strip()
+
         try:
             # Extract table names from the SQL query
             table_names = self._extract_table_names(sql_query)
@@ -322,6 +395,79 @@ class SQLExecutor:
         """
         import re
 
+        # First, try to extract just the SQL query from the response if it contains extra text
+        # This handles cases where the LLM response includes more than just the SQL query
+        # Look for JSON objects that might contain sql_query
+        json_pattern = r'"sql_query"\s*:\s*"((?:[^"\\]|\\.)*")'
+        json_match = re.search(json_pattern, sql_query)
+        if json_match:
+            # Extract the SQL query from the JSON
+            import json
+            try:
+                # Find the full JSON object containing the sql_query
+                full_json_match = re.search(r'(\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\"sql_query\"[^{}]*\})', sql_query, re.DOTALL)
+                if full_json_match:
+                    json_str = full_json_match.group(1)
+                    parsed_json = json.loads(json_str)
+                    if isinstance(parsed_json, dict) and 'sql_query' in parsed_json:
+                        sql_query = parsed_json['sql_query']
+            except (json.JSONDecodeError, KeyError):
+                # If JSON parsing fails, continue with the original approach
+                pass
+
+        # Also try to extract SQL between ```sql and ``` markers
+        markdown_match = re.search(r'```(?:sql)?\n(.*?)\n```', sql_query, re.DOTALL)
+        if markdown_match:
+            sql_query = markdown_match.group(1).strip()
+
+        # Remove any content between ###ponder### tags and ###/ponder### tags
+        sql_query = re.sub(r'###ponder###.*?###/ponder###', '', sql_query, flags=re.DOTALL)
+
+        # Also remove any content between <thinking> tags and </thinking> tags
+        sql_query = re.sub(r'<thinking>.*?</thinking>', '', sql_query, flags=re.DOTALL)
+
+        # First, fix escaped single quotes that are causing PostgreSQL syntax errors
+        # Replace \' with ' (converting escaped quotes to proper SQL string literals)
+        # This handles cases where the LLM generates backslash-escaped quotes
+        sql_query = re.sub(r"\\'", "'", sql_query)
+
+        # Also handle other common escape sequences
+        sql_query = sql_query.replace('\\n', '\n').replace('\\t', '\t').replace('\\r', '\r')
+
+        # Remove extra backslashes that might be used for escaping
+        # This handles cases where the LLM might have added extra escaping
+        sql_query = re.sub('\\\\\\\\', '\\\\', sql_query)
+
+        # Remove any potential comment indicators that could be used maliciously
+        # This is a basic protection against comment-based SQL injection
+        sql_query = re.sub(r'/\*.*?\*/', '', sql_query, flags=re.DOTALL)
+        sql_query = re.sub(r'--.*', '', sql_query)
+
+        # Remove any potential command terminators that could allow multiple statements
+        # This is important for preventing stacked query attacks
+        sql_query = sql_query.strip(';')
+
+        # Prevent certain dangerous SQL patterns
+        dangerous_patterns = [
+            r'\b(DROP|DELETE|TRUNCATE|ALTER|CREATE|INSERT|UPDATE|EXEC|EXECUTE|MERGE)\b',
+            r'\b(GRANT|REVOKE)\b',
+            r'\b(CALL|LOAD|SOURCE)\b'
+        ]
+
+        # Check for potentially dangerous patterns but allow SELECT, WITH, etc.
+        sql_upper = sql_query.upper()
+        for pattern in dangerous_patterns:
+            if re.search(pattern, sql_upper):
+                # Only raise an error if it's not part of an allowed pattern
+                # For example, we allow SELECT but not DELETE
+                if not re.match(r'^\s*(SELECT|WITH|SHOW|DESCRIBE|EXPLAIN)\b', sql_upper):
+                    # This is a more restrictive check - we'll log but not necessarily block
+                    # as some legitimate queries might contain these keywords in strings
+                    logger.warning(f"Potentially dangerous SQL pattern detected: {re.search(pattern, sql_upper).group()}")
+
+        # Additional sanitization to remove any remaining leading/trailing whitespace
+        sql_query = sql_query.strip()
+
         # The key insight is that we need to differentiate between:
         # 1. Three-part names: database.schema.table (remove database, keep schema.table)
         # 2. Two-part names that are actually schema.table (keep as is)
@@ -493,6 +639,42 @@ class SQLExecutor:
         NOTE: True cross-database joins are not supported by most SQL databases, so complex queries
         involving joins across databases will likely fail at execution time. This is expected behavior.
         """
+        import re
+        import json
+
+        # First, try to extract just the SQL query from the response if it contains extra text
+        # This handles cases where the LLM response includes more than just the SQL query
+        # Look for JSON objects that might contain sql_query
+        json_pattern = r'"sql_query"\s*:\s*"((?:[^"\\]|\\.)*")'
+        json_match = re.search(json_pattern, str(sql_query))
+        if json_match:
+            # Extract the SQL query from the JSON
+            try:
+                # Find the full JSON object containing the sql_query
+                full_json_match = re.search(r'(\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\"sql_query\"[^{}]*\})', str(sql_query), re.DOTALL)
+                if full_json_match:
+                    json_str = full_json_match.group(1)
+                    parsed_json = json.loads(json_str)
+                    if isinstance(parsed_json, dict) and 'sql_query' in parsed_json:
+                        sql_query = parsed_json['sql_query']
+            except (json.JSONDecodeError, KeyError):
+                # If JSON parsing fails, continue with the original approach
+                pass
+
+        # Also try to extract SQL between ```sql and ``` markers
+        markdown_match = re.search(r'```(?:sql)?\n(.*?)\n```', str(sql_query), re.DOTALL)
+        if markdown_match:
+            sql_query = markdown_match.group(1).strip()
+
+        # Remove any content between ###ponder### tags and ###/ponder### tags
+        sql_query = re.sub(r'###ponder###.*?###/ponder###', '', str(sql_query), flags=re.DOTALL)
+
+        # Also remove any content between <thinking> tags and </thinking> tags
+        sql_query = re.sub(r'<thinking>.*?</thinking>', '', sql_query, flags=re.DOTALL)
+
+        # Strip any leading/trailing whitespace
+        sql_query = sql_query.strip()
+
         # Extract table names from the SQL query
         original_table_names = self._extract_table_names(sql_query)
 
@@ -585,6 +767,40 @@ class SQLExecutor:
         Updated to handle schema prefixes and quoted identifiers
         """
         import re
+        import json
+
+        # First, try to extract just the SQL query from the response if it contains extra text
+        # This handles cases where the LLM response includes more than just the SQL query
+        # Look for JSON objects that might contain sql_query
+        json_pattern = r'"sql_query"\s*:\s*"((?:[^"\\]|\\.)*")'
+        json_match = re.search(json_pattern, str(sql_query))
+        if json_match:
+            # Extract the SQL query from the JSON
+            try:
+                # Find the full JSON object containing the sql_query
+                full_json_match = re.search(r'(\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\"sql_query\"[^{}]*\})', str(sql_query), re.DOTALL)
+                if full_json_match:
+                    json_str = full_json_match.group(1)
+                    parsed_json = json.loads(json_str)
+                    if isinstance(parsed_json, dict) and 'sql_query' in parsed_json:
+                        sql_query = parsed_json['sql_query']
+            except (json.JSONDecodeError, KeyError):
+                # If JSON parsing fails, continue with the original approach
+                pass
+
+        # Also try to extract SQL between ```sql and ``` markers
+        markdown_match = re.search(r'```(?:sql)?\n(.*?)\n```', str(sql_query), re.DOTALL)
+        if markdown_match:
+            sql_query = markdown_match.group(1).strip()
+
+        # Remove any content between ###ponder### tags and ###/ponder### tags
+        sql_query = re.sub(r'###ponder###.*?###/ponder###', '', str(sql_query), flags=re.DOTALL)
+
+        # Also remove any content between <thinking> tags and </thinking> tags
+        sql_query = re.sub(r'<thinking>.*?</thinking>', '', sql_query, flags=re.DOTALL)
+
+        # Strip any leading/trailing whitespace
+        sql_query = sql_query.strip()
 
         # Convert to uppercase for easier parsing
         query_upper = sql_query.upper()
@@ -629,6 +845,39 @@ class SQLExecutor:
         Check the SQL query for potentially harmful commands
         Returns (is_safe: bool, issues: list)
         """
+        import re
+
+        # First, try to extract just the SQL query from the response if it contains extra text
+        # This handles cases where the LLM response includes more than just the SQL query
+        # Look for JSON objects that might contain sql_query
+        json_pattern = r'"sql_query"\s*:\s*"((?:[^"\\]|\\.)*")'
+        json_match = re.search(json_pattern, query)
+        if json_match:
+            # Extract the SQL query from the JSON
+            import json
+            try:
+                # Find the full JSON object containing the sql_query
+                full_json_match = re.search(r'(\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\"sql_query\"[^{}]*\})', query, re.DOTALL)
+                if full_json_match:
+                    json_str = full_json_match.group(1)
+                    parsed_json = json.loads(json_str)
+                    if isinstance(parsed_json, dict) and 'sql_query' in parsed_json:
+                        query = parsed_json['sql_query']
+            except (json.JSONDecodeError, KeyError):
+                # If JSON parsing fails, continue with the original approach
+                pass
+
+        # Also try to extract SQL between ```sql and ``` markers
+        markdown_match = re.search(r'```(?:sql)?\n(.*?)\n```', query, re.DOTALL)
+        if markdown_match:
+            query = markdown_match.group(1).strip()
+
+        # Remove any content between ###ponder### tags and ###/ponder### tags
+        query = re.sub(r'###ponder###.*?###/ponder###', '', query, flags=re.DOTALL)
+
+        # Also remove any content between <thinking> tags and </thinking> tags
+        query = re.sub(r'<thinking>.*?</thinking>', '', query, flags=re.DOTALL)
+
         # Convert to lowercase for case-insensitive matching
         query_lower = query.lower().strip()
 

@@ -55,3 +55,23 @@ ADDITIONAL SAFETY RULES:
 - Always validate that every column and table reference exists in the provided schema
 - For filtering by demographic attributes, use only columns that are explicitly available in the schema
 - Include LIMIT clauses for queries that might return large result sets (default to LIMIT 10 unless all results are specifically requested).
+
+OUTPUT FORMAT REQUIREMENTS:
+- Wrap your SQL query in special XML-like tags: <sql_generated>YOUR SQL QUERY HERE</sql_generated>
+- ONLY output the SQL query between these tags, with no additional text or explanation outside the tags
+- Do not include markdown code blocks (```sql ... ```) when using these tags
+- Example format:
+  ```
+  [any reasoning/thoughts outside the tags]
+  <sql_generated>
+  SELECT id, name, email
+  FROM users
+  WHERE active = true
+  LIMIT 10;
+  </sql_generated>
+  ```
+
+Respond with a JSON object containing the following field:
+ - sql_query: The generated SQL query
+Respond ONLY with the JSON object, nothing else.
+

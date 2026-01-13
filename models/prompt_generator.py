@@ -3,7 +3,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from config.settings import (
     PROMPT_LLM_PROVIDER, PROMPT_LLM_MODEL, PROMPT_LLM_HOSTNAME,
-    PROMPT_LLM_PORT, PROMPT_LLM_API_PATH, OPENAI_API_KEY,
+    PROMPT_LLM_PORT, PROMPT_LLM_API_PATH, OPENAI_API_KEY, DEEPSEEK_API_KEY,
     GIGACHAT_CREDENTIALS, GIGACHAT_SCOPE, GIGACHAT_ACCESS_TOKEN,
     GIGACHAT_VERIFY_SSL_CERTS, ENABLE_SCREEN_LOGGING
 )
@@ -11,6 +11,7 @@ from utils.prompt_manager import PromptManager
 from utils.ssh_keep_alive import SSHKeepAliveContext
 import json
 import logging
+import uuid
 
 logger = logging.getLogger(__name__)
 
@@ -38,11 +39,12 @@ class PromptGenerator:
         else:
             # Construct the base URL based on provider configuration for other providers
             if PROMPT_LLM_PROVIDER.lower() in ['openai', 'deepseek', 'qwen']:
-                # For cloud providers, use HTTPS unless hostname is not the standard one
-                if PROMPT_LLM_HOSTNAME not in ["api.openai.com", "api.deepseek.com", "dashscope.aliyuncs.com"]:
-                    base_url = f"https://{PROMPT_LLM_HOSTNAME}:{PROMPT_LLM_PORT}{PROMPT_LLM_API_PATH}"
-                else:
+                # For cloud providers, use HTTPS with the specified hostname
+                # But for default OpenAI, allow using the default endpoint
+                if PROMPT_LLM_PROVIDER.lower() == 'openai' and PROMPT_LLM_HOSTNAME == "api.openai.com":
                     base_url = None  # Use default OpenAI endpoint
+                else:
+                    base_url = f"https://{PROMPT_LLM_HOSTNAME}:{PROMPT_LLM_PORT}{PROMPT_LLM_API_PATH}"
             else:
                 # For local providers like LM Studio or Ollama, use custom base URL with HTTP
                 base_url = f"http://{PROMPT_LLM_HOSTNAME}:{PROMPT_LLM_PORT}{PROMPT_LLM_API_PATH}"
@@ -167,29 +169,49 @@ class PromptGenerator:
             if has_schema_dump or has_db_mapping or has_prev_queries:
                 # Template expects specific variables in the system message
                 # Need to handle the formatting carefully to avoid conflicts with curly braces in schema/db_mapping
-                # First, we need to escape any curly braces in the schema_dump and db_mapping to avoid formatting conflicts
                 schema_str = str(schema_dump) if schema_dump else ""
                 db_map_str = str(db_mapping) if db_mapping else ""
 
-                # Escape curly braces in the schema and db mapping strings to prevent formatting conflicts
-                escaped_schema_str = schema_str.replace('{', '{{').replace('}', '}}')
-                escaped_db_map_str = db_map_str.replace('{', '{{').replace('}', '}}')
+                # To avoid format conflicts, we'll use temporary unique placeholders
+                # that won't conflict with content in the schema/db_mapping
+                import uuid
+                prev_queries_placeholder = f"__TEMP_PREV_QUERIES_{uuid.uuid4()}__"
+                schema_dump_placeholder = f"__TEMP_SCHEMA_DUMP_{uuid.uuid4()}__"
+                db_mapping_placeholder = f"__TEMP_DB_MAPPING_{uuid.uuid4()}__"
 
-                # Replace the placeholders one by one to avoid conflicts
-                system_prompt_formatted = system_prompt
+                # Create a copy of the system prompt to work with
+                system_prompt_work = system_prompt
+
+                # Replace the placeholders with temporary unique ones
                 if has_prev_queries:
-                    # No need to escape previous_sql_str since it's just SQL queries
-                    system_prompt_formatted = system_prompt_formatted.replace("{previous_sql_queries}", previous_sql_str)
+                    system_prompt_work = system_prompt_work.replace("{previous_sql_queries}", prev_queries_placeholder)
 
                 if has_schema_dump:
-                    system_prompt_formatted = system_prompt_formatted.replace("{schema_dump}", escaped_schema_str)
+                    system_prompt_work = system_prompt_work.replace("{schema_dump}", schema_dump_placeholder)
 
                 if has_db_mapping:
-                    system_prompt_formatted = system_prompt_formatted.replace("{db_mapping}", escaped_db_map_str)
+                    system_prompt_work = system_prompt_work.replace("{db_mapping}", db_mapping_placeholder)
+
+                # Now safely replace the temporary placeholders with actual values,
+                # properly escaping any curly braces in the content
+                if has_prev_queries:
+                    # Escape curly braces in previous_sql_str to prevent format conflicts
+                    escaped_prev_queries = previous_sql_str.replace('{', '{{').replace('}', '}}')
+                    system_prompt_work = system_prompt_work.replace(prev_queries_placeholder, escaped_prev_queries)
+
+                if has_schema_dump:
+                    # Escape curly braces in schema_str to prevent format conflicts
+                    escaped_schema = schema_str.replace('{', '{{').replace('}', '}}')
+                    system_prompt_work = system_prompt_work.replace(schema_dump_placeholder, escaped_schema)
+
+                if has_db_mapping:
+                    # Escape curly braces in db_map_str to prevent format conflicts
+                    escaped_db_mapping = db_map_str.replace('{', '{{').replace('}', '}}')
+                    system_prompt_work = system_prompt_work.replace(db_mapping_placeholder, escaped_db_mapping)
 
                 # The wider_search_context should always be in the human message part
                 prompt = ChatPromptTemplate.from_messages([
-                    ("system", system_prompt_formatted),
+                    ("system", system_prompt_work),
                     ("human", "{wider_search_context}")
                 ])
                 prompt_kwargs = {

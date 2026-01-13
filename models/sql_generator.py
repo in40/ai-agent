@@ -5,7 +5,7 @@ from pydantic import BaseModel, Field
 from langchain_core.output_parsers import PydanticOutputParser
 from config.settings import (
     SQL_LLM_PROVIDER, SQL_LLM_MODEL, SQL_LLM_HOSTNAME, SQL_LLM_PORT,
-    SQL_LLM_API_PATH, OPENAI_API_KEY, GIGACHAT_CREDENTIALS, GIGACHAT_SCOPE,
+    SQL_LLM_API_PATH, OPENAI_API_KEY, DEEPSEEK_API_KEY, GIGACHAT_CREDENTIALS, GIGACHAT_SCOPE,
     GIGACHAT_ACCESS_TOKEN, GIGACHAT_VERIFY_SSL_CERTS, ENABLE_SCREEN_LOGGING
 )
 from utils.prompt_manager import PromptManager
@@ -76,23 +76,35 @@ class SQLGenerator:
                 verify_ssl_certs=GIGACHAT_VERIFY_SSL_CERTS
             )
             self.llm = llm_base.with_structured_output(SQLOutput)  # Use structured output
+        elif SQL_LLM_PROVIDER.lower() == 'deepseek':
+            # DeepSeek doesn't support structured output, so we'll use regular output and parse manually
+            base_url = f"https://{SQL_LLM_HOSTNAME}:{SQL_LLM_PORT}{SQL_LLM_API_PATH}"
+            api_key = DEEPSEEK_API_KEY or ("sk-fake-key" if base_url else DEEPSEEK_API_KEY)
+
+            # Create the LLM with the determined base URL but without structured output
+            llm_base = ChatOpenAI(
+                model=SQL_LLM_MODEL,
+                temperature=0,  # Lower temperature for more consistent SQL generation
+                api_key=api_key,
+                base_url=base_url
+            )
+            self.llm = llm_base  # Don't use structured output for DeepSeek
+            self.use_structured_output = False
         else:
             # Construct the base URL based on provider configuration for other providers
-            if SQL_LLM_PROVIDER.lower() in ['openai', 'deepseek', 'qwen']:
-                # For cloud providers, use HTTPS unless hostname is not the standard one
-                if SQL_LLM_HOSTNAME not in ["api.openai.com", "api.deepseek.com", "dashscope.aliyuncs.com"]:
-                    base_url = f"https://{SQL_LLM_HOSTNAME}:{SQL_LLM_PORT}{SQL_LLM_API_PATH}"
-                else:
+            if SQL_LLM_PROVIDER.lower() in ['openai', 'qwen']:
+                # For cloud providers, use HTTPS with the specified hostname
+                # But for default OpenAI, allow using the default endpoint
+                if SQL_LLM_PROVIDER.lower() == 'openai' and SQL_LLM_HOSTNAME == "api.openai.com":
                     base_url = None  # Use default OpenAI endpoint
+                else:
+                    base_url = f"https://{SQL_LLM_HOSTNAME}:{SQL_LLM_PORT}{SQL_LLM_API_PATH}"
             else:
                 # For local providers like LM Studio or Ollama, use custom base URL with HTTP
                 base_url = f"http://{SQL_LLM_HOSTNAME}:{SQL_LLM_PORT}{SQL_LLM_API_PATH}"
 
             # Select the appropriate API key based on the provider
-            if SQL_LLM_PROVIDER.lower() == 'deepseek':
-                api_key = DEEPSEEK_API_KEY or ("sk-fake-key" if base_url else DEEPSEEK_API_KEY)
-            else:
-                api_key = OPENAI_API_KEY or ("sk-fake-key" if base_url else OPENAI_API_KEY)
+            api_key = OPENAI_API_KEY or ("sk-fake-key" if base_url else OPENAI_API_KEY)
 
             # Create the LLM with the determined base URL and structured output
             llm_base = ChatOpenAI(
@@ -102,8 +114,9 @@ class SQLGenerator:
                 base_url=base_url
             )
             self.llm = llm_base.with_structured_output(SQLOutput)  # Use structured output
+            self.use_structured_output = True
 
-        # Create the chain - no need for separate output parser since we're using with_structured_output
+        # Create the chain
         self.chain = self.prompt | self.llm
     
     @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
@@ -149,7 +162,7 @@ class SQLGenerator:
             # Use SSH keep-alive during the LLM call
             with SSHKeepAliveContext():
                 # Generate the SQL query
-                structured_response = self.chain.invoke({
+                response = self.chain.invoke({
                     "user_request": user_request,
                     "schema_dump": schema_str,
                     "db_mapping": db_mapping_str,
@@ -158,14 +171,34 @@ class SQLGenerator:
 
             # Log the response
             if ENABLE_SCREEN_LOGGING:
-                logger.info(f"SQLGenerator response: {structured_response}")
+                logger.info(f"SQLGenerator response: {response}")
 
-            # Since we're using Pydantic parser, the response should already be structured
-            if isinstance(structured_response, SQLOutput):
-                sql_query = structured_response.sql_query
+            # Handle response based on whether structured output is used
+            if hasattr(self, 'use_structured_output') and not self.use_structured_output:
+                # For providers that don't support structured output (like DeepSeek)
+                # we need to extract the content from the response object
+                # The response might be a LangChain message object with a content attribute
+                if hasattr(response, 'content'):
+                    # Extract the content from the LangChain message object
+                    response_content = response.content
+                else:
+                    # If it's not a message object, use the response as-is
+                    response_content = str(response)
+
+                sql_query = self.clean_sql_response(response_content)
             else:
-                # Fallback to cleaning the string response if structured parsing fails
-                sql_query = self.clean_sql_response(str(structured_response))
+                # For providers that support structured output
+                if isinstance(response, SQLOutput):
+                    sql_query = response.sql_query
+                else:
+                    # Fallback to cleaning the string response if structured parsing fails
+                    # Extract content if it's a message object
+                    if hasattr(response, 'content'):
+                        response_content = response.content
+                    else:
+                        response_content = str(response)
+
+                    sql_query = self.clean_sql_response(response_content)
 
             return sql_query
 
@@ -299,23 +332,224 @@ class SQLGenerator:
         Clean up the LLM response to extract just the SQL query
         """
         import re
+        import json
 
-        # First, try to extract SQL between custom tags
-        sql_match = re.search(r'<sql_to_use>(.*?)</sql_to_use>', response, re.DOTALL)
-        if sql_match:
-            sql_query = sql_match.group(1).strip()
+        # First, remove any content between ###ponder### tags and ###/ponder### tags
+        # This removes the explanatory text that comes before the actual SQL
+        response_without_ponder = re.sub(r'###ponder###.*?###/ponder###', '', response, flags=re.DOTALL)
+
+        # Also remove any content between <thinking> tags and </thinking> tags
+        # This is another common pattern for LLM reasoning sections
+        response_without_thinking = re.sub(r'<thinking>.*?</thinking>', '', response_without_ponder, flags=re.DOTALL)
+
+        # Use the cleaned response for further processing
+        response = response_without_thinking
+
+        # First, try to extract SQL between custom tags (in order of preference)
+        # More specific tags for SQL extraction from DeepSeek and other models
+        tag_patterns = [
+            r'<sql_generated>(.*?)</sql_generated>',
+            r'<sql_query>(.*?)</sql_query>',
+            r'<sql_code>(.*?)</sql_code>',
+            r'<sql>(.*?)</sql>',
+            r'<sql_to_use>(.*?)</sql_to_use>'
+        ]
+
+        for pattern in tag_patterns:
+            sql_match = re.search(pattern, response, re.DOTALL)
+            if sql_match:
+                sql_query = sql_match.group(1).strip()
+                # Additional sanitization to remove system characters
+                sql_query = self.sanitize_sql_query(sql_query)
+                return sql_query
+
+        # Try to parse the response as JSON and extract the sql_query field
+        # This handles responses from models that don't support structured output
+        try:
+            # First, try to extract JSON from the response if it's embedded in a larger text
+            # Look for JSON objects that might contain sql_query
+            # This pattern looks for content that looks like a JSON object containing sql_query
+            # It handles both single-line and multi-line JSON structures
+            json_pattern = r'(\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\"sql_query\"[^{}]*\})'
+            json_match = re.search(json_pattern, response, re.DOTALL)
+
+            if json_match:
+                json_str = json_match.group(1)
+                try:
+                    parsed_json = json.loads(json_str)
+
+                    if isinstance(parsed_json, dict) and 'sql_query' in parsed_json:
+                        sql_query = parsed_json['sql_query'].strip()
+                        # Additional sanitization to remove system characters
+                        sql_query = self.sanitize_sql_query(sql_query)
+                        return sql_query
+                except json.JSONDecodeError:
+                    # If the extracted string isn't valid JSON, continue to other methods
+                    pass
+
+            # If the entire response looks like a JSON object, try parsing it directly
+            # First, try to strip any leading/trailing text that might surround the JSON
+            stripped_response = response.strip()
+
+            # Look for the first JSON object in the response
+            start_idx = stripped_response.find('{')
+            end_idx = stripped_response.rfind('}')
+
+            if start_idx != -1 and end_idx != -1 and start_idx < end_idx:
+                json_str = stripped_response[start_idx:end_idx+1]
+                try:
+                    parsed_json = json.loads(json_str)
+                    if isinstance(parsed_json, dict) and 'sql_query' in parsed_json:
+                        sql_query = parsed_json['sql_query'].strip()
+                        # Additional sanitization to remove system characters
+                        sql_query = self.sanitize_sql_query(sql_query)
+                        return sql_query
+                except json.JSONDecodeError:
+                    # If the entire response isn't valid JSON, continue to other methods
+                    pass
+        except Exception:
+            # If any other error occurs during JSON parsing, continue with other methods
+            pass
+
+        # Additional check: If the response looks like a LangChain message object representation
+        # e.g., content='{"sql_query": "..."}', try to extract the content part
+        content_pattern = r"content='(\{.*\})'"
+        content_match = re.search(content_pattern, response)
+        if content_match:
+            content_str = content_match.group(1)
+            try:
+                parsed_json = json.loads(content_str)
+                if isinstance(parsed_json, dict) and 'sql_query' in parsed_json:
+                    sql_query = parsed_json['sql_query'].strip()
+                    # Additional sanitization to remove system characters
+                    sql_query = self.sanitize_sql_query(sql_query)
+                    return sql_query
+            except json.JSONDecodeError:
+                # If this fails, continue with other methods
+                pass
+
+        # Additional check: Handle cases where the JSON content has escaped quotes/newlines
+        # This can happen with responses from some LLMs
+        # Look for content='{' and try to extract the JSON portion
+        # Use a more flexible pattern to match the content part
+        content_start = response.find("content='")
+        if content_start != -1:
+            # Find the JSON part within the content
+            json_start = response.find('{', content_start)
+            if json_start != -1:
+                # Find the matching closing brace
+                brace_count = 0
+                json_end = -1
+                for i in range(json_start, len(response)):
+                    if response[i] == '{':
+                        brace_count += 1
+                    elif response[i] == '}':
+                        brace_count -= 1
+                        if brace_count == 0:
+                            json_end = i
+                            break
+
+                if json_end != -1:
+                    json_part = response[json_start:json_end+1]
+                    # Try to fix common escaping issues before parsing
+                    # Replace double backslashes with single backslashes for newlines, etc.
+                    json_part_fixed = json_part.replace('\\\\n', '\\n').replace('\\\\t', '\\t').replace('\\\\r', '\\r')
+                    # Handle escaped quotes - first handle double quotes
+                    json_part_fixed = json_part_fixed.replace('\\"', '"')
+                    # Then handle single quotes in SQL strings - these should remain as single quotes
+                    # The issue is that in the original response, single quotes in SQL are often escaped as \'
+                    # But in JSON, this becomes a literal backslash+quote which is invalid
+                    # So we need to be careful not to unescape these incorrectly
+                    # Instead, let's try to fix the JSON by replacing \' with ' in contexts where it's likely SQL
+                    import re
+                    # Replace \' with ' but only when it appears to be inside SQL string literals
+                    # This is a bit tricky, but we can look for patterns like ILIKE \'%...%\'
+                    json_part_fixed = re.sub(r"ILIKE\s+'([^']*)\\\'([^']*)'", r"ILIKE '\1'\''\2'", json_part_fixed)
+                    # A more general approach: replace escaped single quotes in contexts that look like SQL
+                    # This is complex, so let's try a simpler approach - just replace \' with ' in the SQL query part
+                    # But first, let's try to parse the JSON as is and handle the error differently
+
+                    try:
+                        parsed_json = json.loads(json_part_fixed)
+                        if isinstance(parsed_json, dict) and 'sql_query' in parsed_json:
+                            sql_query = parsed_json['sql_query'].strip()
+                            # Additional sanitization to remove system characters
+                            sql_query = self.sanitize_sql_query(sql_query)
+                            return sql_query
+                    except json.JSONDecodeError:
+                        # If the JSON is still invalid, try a different approach
+                        # Extract the SQL query using regex from the original JSON string
+                        sql_query_match = re.search(r'"sql_query":\s*"((?:[^"\\]|\\.)*")', json_part)
+                        if sql_query_match:
+                            # Extract the SQL query part (still escaped)
+                            escaped_sql = sql_query_match.group(1)
+                            # Remove the outer quotes and handle escapes
+                            # Remove the outer quotes
+                            if escaped_sql.startswith('"') and escaped_sql.endswith('"'):
+                                escaped_sql = escaped_sql[1:-1]
+
+                            # Unescape common sequences
+                            sql_query = escaped_sql.replace('\n', '\n').replace('\t', '\t').replace('\r', '\r')
+                            sql_query = sql_query.replace('\\"', '"').replace("\\'", "'")
+
+                            # Additional sanitization to remove system characters
+                            sql_query = self.sanitize_sql_query(sql_query)
+                            return sql_query
+
+                        # If this also fails, continue with other methods
+                        pass
+
+        # If custom tags and JSON parsing aren't found, try to extract from markdown blocks
+        # Look for SQL code blocks in markdown format
+        markdown_match = re.search(r'```(?:sql)?\n(.*?)\n```', response, re.DOTALL)
+        if markdown_match:
+            sql_query = markdown_match.group(1).strip()
         else:
-            # If custom tags aren't found, try to extract from markdown blocks
+            # If no markdown blocks found, return the original response
+            # This handles plain SQL without any formatting
             sql_query = response.strip()
 
-            # Remove markdown code block markers
-            if sql_query.startswith("```sql"):
-                sql_query = sql_query[5:]  # Remove ```sql
-            elif sql_query.startswith("```"):
-                sql_query = sql_query[3:]  # Remove ```
+        # Additional sanitization to remove system characters
+        sql_query = self.sanitize_sql_query(sql_query)
+        return sql_query
 
-            if sql_query.endswith("```"):
-                sql_query = sql_query[:-3]  # Remove ```
+    def sanitize_sql_query(self, sql_query):
+        """
+        Sanitize SQL query to remove system characters and prevent injection
+        """
+        import re
 
-        # Remove any remaining leading/trailing whitespace
-        return sql_query.strip()
+        # Remove common escape sequences that might interfere with SQL execution
+        # Replace escaped single quotes with regular single quotes
+        sql_query = re.sub(r"\\'", "'", sql_query)
+
+        # Replace other common escape sequences
+        sql_query = sql_query.replace('\\n', '\n').replace('\\t', '\t').replace('\\r', '\r')
+
+        # Remove extra backslashes that might be used for escaping
+        # This handles cases where the LLM might have added extra escaping
+        sql_query = re.sub('\\\\\\\\', '\\\\', sql_query)
+
+        # Remove any potential comment indicators that could be used maliciously
+        # This is a basic protection against comment-based SQL injection
+        sql_query = re.sub(r'/\*.*?\*/', '', sql_query, flags=re.DOTALL)
+        sql_query = re.sub(r'--.*', '', sql_query)
+
+        # Check if the query originally ended with a semicolon before stripping
+        original_ends_with_semicolon = sql_query.rstrip().endswith(';')
+
+        # Remove any potential command terminators that could allow multiple statements
+        # This is important for preventing stacked query attacks (only if there are multiple statements)
+        # If the query only has one statement ending with ;, preserve the semicolon
+        stripped_sql = sql_query.rstrip().rstrip(';')
+
+        # Additional sanitization to remove any remaining leading/trailing whitespace
+        result = stripped_sql.strip()
+
+        # Add back the semicolon if the original query ended with one and we didn't find other statements
+        # Count potential statement separators in the stripped result
+        potential_statements = len([s for s in result.split(';') if s.strip()])
+        if original_ends_with_semicolon and potential_statements == 1:
+            result = result + ';'
+
+        return result

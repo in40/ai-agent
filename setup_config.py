@@ -13,14 +13,17 @@ import getpass
 import re
 
 
-def get_user_input(prompt, default_value=None, sensitive=False, validator=None):
+def get_user_input(prompt, default_value=None, sensitive=False, validator=None, is_db_password=False):
     """
     Get input from the user with an optional default value.
     For sensitive information like API keys, use getpass to hide input.
+    is_db_password: If True, all characters of the password will be masked (not just after the first 5).
     """
     while True:
         if default_value:
-            prompt_with_default = f"{prompt} (default: {default_value}): "
+            # Mask sensitive data in the default value display
+            display_default = mask_sensitive_data(default_value, is_db_password) if sensitive else default_value
+            prompt_with_default = f"{prompt} (default: {display_default}): "
         else:
             prompt_with_default = f"{prompt}: "
 
@@ -227,6 +230,28 @@ def validate_oauth_token(token):
     return True, ""
 
 
+def mask_sensitive_data(value, is_db_password=False):
+    """
+    Mask sensitive data.
+    For database passwords: all characters are replaced with asterisks.
+    For other sensitive data: show first 5 characters followed by asterisks.
+    If the value is empty or None, return as is.
+    """
+    if not value:
+        return value
+
+    if is_db_password:
+        # For database passwords, mask all characters
+        return "*" * len(value)
+    else:
+        # For other sensitive data, show first 5 characters and mask the rest
+        if len(value) <= 5:
+            return "*" * len(value)
+
+        # Show first 5 characters and mask the rest
+        return value[:5] + "*" * (len(value) - 5)
+
+
 def parse_additional_databases_from_env(env_content):
     """
     Parse additional database configurations from existing .env content.
@@ -386,6 +411,7 @@ def main():
         "Enter your database password",
         default_value=existing_values.get("DB_PASSWORD", ""),  # Don't show password as default
         sensitive=True,
+        is_db_password=True,
         validator=validate_database_password
     )
 
@@ -418,7 +444,9 @@ def main():
     if additional_db_configs:
         print(f"Found {len(additional_db_configs)} existing additional database configuration(s):")
         for db_config in additional_db_configs:
-            print(f"  - {db_config['name']}: {db_config['type']} database at {db_config['hostname']}:{db_config['port']}/{db_config['database_name']}")
+            # Mask password in the display
+            masked_url = db_config['url'].replace(db_config['password'], mask_sensitive_data(db_config['password'], True))
+            print(f"  - {db_config['name']}: {db_config['type']} database at {db_config['hostname']}:{db_config['port']}/{db_config['database_name']} (URL: {masked_url})")
 
     add_additional_dbs = get_user_input(
         "Do you want to configure additional databases? (y/n)",
@@ -480,6 +508,7 @@ def main():
                             "Enter database password",
                             default_value=db_config['password'],  # Show existing password as default
                             sensitive=True,
+                            is_db_password=True,
                             validator=validate_database_password
                         )
 
@@ -604,6 +633,7 @@ def main():
                     db_password_input = get_user_input(
                         "Enter database password",
                         sensitive=True,
+                        is_db_password=True,
                         validator=validate_database_password
                     )
 
@@ -1055,11 +1085,86 @@ SECURITY_LLM_API_PATH={security_llm_api_path}
 ENABLE_SCREEN_LOGGING={enable_screen_logging}
 """
 
-    # Write to .env file
+    # Create a masked version of the content for display purposes
+    masked_env_content = f"""# Database Configuration
+DB_TYPE={db_type}
+DB_USERNAME={db_username}
+DB_PASSWORD={mask_sensitive_data(db_password, True)}
+DB_HOSTNAME={db_hostname}
+DB_PORT={db_port}
+DB_NAME={db_name}
+DATABASE_URL={db_url.replace(db_password, mask_sensitive_data(db_password, True))}
+"""
+
+    # Add additional database configurations to the masked .env file
+    for db_config in additional_db_configs:
+        db_name_upper = db_config['name'].upper()
+        masked_db_url = db_config['url'].replace(db_config['password'], mask_sensitive_data(db_config['password'], True))
+        masked_env_content += f"DB_{db_name_upper}_URL={masked_db_url}\n"
+        masked_env_content += f"DB_{db_name_upper}_TYPE={db_config['type']}\n"
+        masked_env_content += f"DB_{db_name_upper}_USERNAME={db_config['username']}\n"
+        masked_env_content += f"DB_{db_name_upper}_PASSWORD={mask_sensitive_data(db_config['password'], True)}\n"
+        masked_env_content += f"DB_{db_name_upper}_HOSTNAME={db_config['hostname']}\n"
+        masked_env_content += f"DB_{db_name_upper}_PORT={db_config['port']}\n"
+        masked_env_content += f"DB_{db_name_upper}_NAME={db_config['database_name']}\n"
+
+    masked_env_content += f"""
+# OpenAI API Key
+OPENAI_API_KEY={mask_sensitive_data(openai_api_key)}
+
+# DeepSeek API Key
+DEEPSEEK_API_KEY={mask_sensitive_data(deepseek_api_key)}
+
+# GigaChat Configuration
+GIGACHAT_CREDENTIALS={mask_sensitive_data(gigachat_credentials)}
+GIGACHAT_SCOPE={gigachat_scope}
+GIGACHAT_ACCESS_TOKEN={mask_sensitive_data(gigachat_access_token)}
+GIGACHAT_VERIFY_SSL_CERTS={gigachat_verify_ssl_certs}
+
+# LLM Model Configuration
+SQL_LLM_PROVIDER={sql_llm_provider}
+SQL_LLM_MODEL={sql_llm_model}
+SQL_LLM_HOSTNAME={sql_llm_hostname}
+SQL_LLM_PORT={sql_llm_port}
+SQL_LLM_API_PATH={sql_llm_api_path}
+RESPONSE_LLM_PROVIDER={response_llm_provider}
+RESPONSE_LLM_MODEL={response_llm_model}
+RESPONSE_LLM_HOSTNAME={response_llm_hostname}
+RESPONSE_LLM_PORT={response_llm_port}
+RESPONSE_LLM_API_PATH={response_llm_api_path}
+PROMPT_LLM_PROVIDER={prompt_llm_provider}
+PROMPT_LLM_MODEL={prompt_llm_model}
+PROMPT_LLM_HOSTNAME={prompt_llm_hostname}
+PROMPT_LLM_PORT={prompt_llm_port}
+PROMPT_LLM_API_PATH={prompt_llm_api_path}
+
+# Security Configuration
+TERMINATE_ON_POTENTIALLY_HARMFUL_SQL=false
+
+# Security LLM Configuration (for advanced SQL security analysis)
+# Whether to use the security LLM for analysis (set to false to use basic keyword matching only)
+USE_SECURITY_LLM={use_security_llm}
+SECURITY_LLM_PROVIDER={security_llm_provider}
+SECURITY_LLM_MODEL={security_llm_model}
+SECURITY_LLM_HOSTNAME={security_llm_hostname}
+SECURITY_LLM_PORT={security_llm_port}
+SECURITY_LLM_API_PATH={security_llm_api_path}
+
+# Logging Configuration
+ENABLE_SCREEN_LOGGING={enable_screen_logging}
+"""
+
+    # Write to .env file with unmasked content
     try:
         with open(env_file_path, 'w') as env_file:
             env_file.write(env_content)
         print(f"\nConfiguration saved to {env_file_path}")
+
+        # Display masked content to the user for security
+        print("\nSaved configuration (sensitive data masked for display):")
+        print("-" * 50)
+        print(masked_env_content)
+        print("-" * 50)
 
         # Reload the database configuration to ensure it's available
         from utils.multi_database_manager import reload_database_config
@@ -1103,15 +1208,15 @@ DATABASE_URL={db_url}
 
         example_env_content += f"""
 # OpenAI API Key
-OPENAI_API_KEY={openai_api_key}
+OPENAI_API_KEY={mask_sensitive_data(openai_api_key)}
 
 # DeepSeek API Key
-DEEPSEEK_API_KEY={deepseek_api_key}
+DEEPSEEK_API_KEY={mask_sensitive_data(deepseek_api_key)}
 
 # GigaChat Configuration
-GIGACHAT_CREDENTIALS={gigachat_credentials}
+GIGACHAT_CREDENTIALS={mask_sensitive_data(gigachat_credentials)}
 GIGACHAT_SCOPE={gigachat_scope}
-GIGACHAT_ACCESS_TOKEN={gigachat_access_token}
+GIGACHAT_ACCESS_TOKEN={mask_sensitive_data(gigachat_access_token)}
 GIGACHAT_VERIFY_SSL_CERTS=y
 
 # LLM Model Configuration

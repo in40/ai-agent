@@ -34,74 +34,80 @@ class SecuritySQLDetector:
         """
         Initialize the SecuritySQLDetector with an LLM client
         """
-        # Determine the LLM provider and configure accordingly
-        if SECURITY_LLM_PROVIDER.lower() == "openai":
-            self.llm = ChatOpenAI(
-                model=SECURITY_LLM_MODEL,
-                temperature=0.1,  # Low temperature for more consistent security analysis
-                api_key=OPENAI_API_KEY
-            )
-        elif SECURITY_LLM_PROVIDER.lower() == "deepseek":
-            # For DeepSeek, use ChatOpenAI with DeepSeek configuration
-            # Construct the base URL for DeepSeek
-            if SECURITY_LLM_HOSTNAME not in ["api.deepseek.com"]:
+        try:
+            # Determine the LLM provider and configure accordingly
+            if SECURITY_LLM_PROVIDER.lower() == "openai":
+                self.llm = ChatOpenAI(
+                    model=SECURITY_LLM_MODEL,
+                    temperature=0.1,  # Low temperature for more consistent security analysis
+                    api_key=OPENAI_API_KEY
+                )
+            elif SECURITY_LLM_PROVIDER.lower() == "deepseek":
+                # For DeepSeek, use ChatOpenAI with DeepSeek configuration
+                # Construct the base URL for DeepSeek
                 base_url = f"https://{SECURITY_LLM_HOSTNAME}:{SECURITY_LLM_PORT}{SECURITY_LLM_API_PATH}"
-            else:
-                base_url = None  # Use default DeepSeek endpoint
 
-            self.llm = ChatOpenAI(
-                model=SECURITY_LLM_MODEL,
-                temperature=0.1,
-                api_key=DEEPSEEK_API_KEY,
-                base_url=base_url
-            )
-        elif SECURITY_LLM_PROVIDER.lower() == "gigachat":
-            # For GigaChat, use the GigaChat integration
-            from langchain_gigachat.chat_models import GigaChat
-
-            # Use credentials if provided, otherwise use access token
-            if os.getenv("GIGACHAT_CREDENTIALS"):
-                self.llm = GigaChat(
-                    credentials=os.getenv("GIGACHAT_CREDENTIALS"),
-                    scope=os.getenv("GIGACHAT_SCOPE", "GIGACHAT_API_PERS"),
+                self.llm = ChatOpenAI(
                     model=SECURITY_LLM_MODEL,
                     temperature=0.1,
-                    verify_ssl=os.getenv("GIGACHAT_VERIFY_SSL_CERTS", "true").lower() == "true"
+                    api_key=DEEPSEEK_API_KEY,
+                    base_url=base_url
                 )
-            elif os.getenv("GIGACHAT_ACCESS_TOKEN"):
-                self.llm = GigaChat(
-                    access_token=os.getenv("GIGACHAT_ACCESS_TOKEN"),
+            elif SECURITY_LLM_PROVIDER.lower() == "gigachat":
+                # For GigaChat, use the GigaChat integration
+                from langchain_gigachat.chat_models import GigaChat
+
+                # Use credentials if provided, otherwise use access token
+                if os.getenv("GIGACHAT_CREDENTIALS"):
+                    self.llm = GigaChat(
+                        credentials=os.getenv("GIGACHAT_CREDENTIALS"),
+                        scope=os.getenv("GIGACHAT_SCOPE", "GIGACHAT_API_PERS"),
+                        model=SECURITY_LLM_MODEL,
+                        temperature=0.1,
+                        verify_ssl=os.getenv("GIGACHAT_VERIFY_SSL_CERTS", "true").lower() == "true"
+                    )
+                elif os.getenv("GIGACHAT_ACCESS_TOKEN"):
+                    self.llm = GigaChat(
+                        access_token=os.getenv("GIGACHAT_ACCESS_TOKEN"),
+                        model=SECURITY_LLM_MODEL,
+                        temperature=0.1,
+                        verify_ssl=os.getenv("GIGACHAT_VERIFY_SSL_CERTS", "true").lower() == "true"
+                    )
+                else:
+                    raise ValueError("Either GIGACHAT_CREDENTIALS or GIGACHAT_ACCESS_TOKEN must be set for GigaChat provider")
+            elif SECURITY_LLM_PROVIDER.lower() == "lm studio":
+                # For LM Studio, use ChatOpenAI with local configuration
+                # langchain_openai.ChatOpenAI is already imported at the top of the file
+
+                # Construct the base URL for LM Studio
+                base_url = f"http://{SECURITY_LLM_HOSTNAME}:{SECURITY_LLM_PORT}{SECURITY_LLM_API_PATH}"
+
+                self.llm = ChatOpenAI(
                     model=SECURITY_LLM_MODEL,
                     temperature=0.1,
-                    verify_ssl=os.getenv("GIGACHAT_VERIFY_SSL_CERTS", "true").lower() == "true"
+                    base_url=base_url,
+                    api_key="not-needed"  # LM Studio doesn't require a real API key
                 )
             else:
-                raise ValueError("Either GIGACHAT_CREDENTIALS or GIGACHAT_ACCESS_TOKEN must be set for GigaChat provider")
-        elif SECURITY_LLM_PROVIDER.lower() == "lm studio":
-            # For LM Studio, use ChatOpenAI with local configuration
-            from langchain_openai import ChatOpenAI
+                # For other providers (like Ollama), use the Ollama approach
+                from langchain_ollama import ChatOllama
 
-            # Construct the base URL for LM Studio
-            base_url = f"http://{SECURITY_LLM_HOSTNAME}:{SECURITY_LLM_PORT}{SECURITY_LLM_API_PATH}"
+                # Construct the base URL for non-OpenAI providers
+                base_url = f"http://{SECURITY_LLM_HOSTNAME}:{SECURITY_LLM_PORT}{SECURITY_LLM_API_PATH}"
 
-            self.llm = ChatOpenAI(
-                model=SECURITY_LLM_MODEL,
-                temperature=0.1,
-                base_url=base_url,
-                api_key="not-needed"  # LM Studio doesn't require a real API key
-            )
-        else:
-            # For other providers (like Ollama), use the Ollama approach
-            from langchain_ollama import ChatOllama
-
-            # Construct the base URL for non-OpenAI providers
-            base_url = f"http://{SECURITY_LLM_HOSTNAME}:{SECURITY_LLM_PORT}{SECURITY_LLM_API_PATH}"
-
-            self.llm = ChatOllama(
-                model=SECURITY_LLM_MODEL,
-                base_url=base_url,
-                temperature=0.1
-            )
+                self.llm = ChatOllama(
+                    model=SECURITY_LLM_MODEL,
+                    base_url=base_url,
+                    temperature=0.1
+                )
+        except ImportError as e:
+            logger.error(f"Import error in SecuritySQLDetector: {str(e)}")
+            # Fallback to a basic configuration if imports fail
+            raise
+        except Exception as e:
+            logger.error(f"Error initializing SecuritySQLDetector: {str(e)}")
+            # Re-raise the exception to be handled by the calling function
+            raise
         
         # Create the output parser - using string parser instead of JSON parser
         self.output_parser = StrOutputParser()
