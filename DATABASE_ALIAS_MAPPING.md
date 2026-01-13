@@ -93,6 +93,9 @@ Mappings can be set up in two ways:
 - Supports complex multi-database environments
 - Provides flexibility in configuration
 - Maintains backward compatibility
+- Improves SQL generation accuracy by providing LLMs with correct database names
+- Enables better schema understanding for complex queries across multiple databases
+- Reduces errors caused by mismatched database references
 
 ## Example Flow
 1. Application defines additional database "analytics" pointing to "analytics_prod_db"

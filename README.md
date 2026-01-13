@@ -48,6 +48,7 @@ The enhanced version of the agent uses LangGraph to provide:
 - Aggregate schema information from all databases
 - Execute queries across all databases and combine results
 - Map original table names to their respective databases
+- Database alias to real name mapping system for improved LLM accuracy
 
 ### Advanced Security Analysis
 - Basic keyword matching for harmful SQL commands
@@ -55,6 +56,7 @@ The enhanced version of the agent uses LangGraph to provide:
 - Context-aware analysis that considers database schema
 - Configurable security policies via environment variables
 - Support for both basic keyword matching and advanced LLM-based analysis
+- Security check after refinement to ensure refined queries are safe
 
 ### Wider Search Strategies
 - Automatic fallback to wider search when initial queries return no results
@@ -67,6 +69,25 @@ The enhanced version of the agent uses LangGraph to provide:
 - Graceful degradation when database queries fail
 - Feedback loops to improve query generation
 - Prevention of infinite loops during refinement
+- Table existence validation before SQL execution
+
+### Previous SQL Query History
+- Maintains a history of all previously generated SQL queries
+- Prevents repetition of failed approaches
+- Provides context for subsequent query generations
+- Improves convergence on successful queries
+
+### SSH Session Keep-Alive
+- Prevents SSH disconnections during long-running LLM requests
+- Sends periodic signals to maintain active SSH sessions
+- Automatic detection of SSH sessions
+- Minimal overhead during operations
+
+### Schema Export with Comments
+- Exports database schema comments for better LLM understanding
+- Supports both PostgreSQL and SQLite databases
+- Includes table and column comments in schema dumps
+- Improves accuracy and relevance of SQL queries
 
 ## Workflow
 
@@ -82,8 +103,8 @@ The enhanced version of the agent uses LangGraph to provide:
 9. The `generate_prompt` node creates a specialized prompt for response generation
 10. The `generate_response` node creates a natural language response from results
 11. The response is returned to the user
-12. The system includes recursion limits to prevent infinite loops during processing
-13. The system maintains a history of previous SQL queries to prevent repetition of failed approaches
+12. Throughout the process, recursion limits prevent infinite loops during processing
+13. The system maintains a history of previous SQL queries to prevent repetition of failed approaches and provide context for subsequent query generations
 
 ## Setup
 
@@ -280,7 +301,8 @@ Detailed logs are available for each node execution:
 - Error handling prevents cascading failures
 - Wider search strategies are limited to prevent excessive database queries
 - Multi-database schema aggregation is cached for efficiency
-- Previous SQL query history prevents repetition of failed approaches
+- Previous SQL query history prevents repetition of failed approaches and provides context for subsequent query generations
+- SSH keep-alive prevents connection timeouts during long-running operations
 
 ## Troubleshooting
 
