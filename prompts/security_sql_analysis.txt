@@ -26,3 +26,5 @@ Example response format:
 }}
 
 IMPORTANT: Respond ONLY with the JSON object, nothing else.
+
+/no_think

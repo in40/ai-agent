@@ -8,3 +8,5 @@ Guidelines:
 3. The prompt should guide the response LLM on how to format and structure the answer
 4. The prompt should specify the tone and level of detail required
 5. The prompt should ensure the response is in natural language and easy to understand
+
+Do not use markdown
