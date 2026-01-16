@@ -25,7 +25,12 @@ from config.settings import (
     GIGACHAT_SCOPE,
     GIGACHAT_ACCESS_TOKEN,
     GIGACHAT_VERIFY_SSL_CERTS,
-    ENABLE_SCREEN_LOGGING
+    ENABLE_SCREEN_LOGGING,
+    DEFAULT_LLM_PROVIDER,
+    DEFAULT_LLM_MODEL,
+    DEFAULT_LLM_HOSTNAME,
+    DEFAULT_LLM_PORT,
+    DEFAULT_LLM_API_PATH
 )
 from utils.prompt_manager import PromptManager
 from utils.ssh_keep_alive import SSHKeepAliveContext
@@ -51,11 +56,26 @@ class MCPCapableModel:
 
         # Create the LLM based on the provider
         # Use MCP-specific configuration if available, otherwise fall back to prompt configuration
-        provider = MCP_LLM_PROVIDER if MCP_LLM_PROVIDER and MCP_LLM_PROVIDER.strip() else PROMPT_LLM_PROVIDER
-        model = MCP_LLM_MODEL if MCP_LLM_MODEL and MCP_LLM_MODEL.strip() else PROMPT_LLM_MODEL
-        hostname = MCP_LLM_HOSTNAME if MCP_LLM_HOSTNAME and MCP_LLM_HOSTNAME.strip() else PROMPT_LLM_HOSTNAME
-        port = MCP_LLM_PORT if MCP_LLM_PORT and MCP_LLM_PORT.strip() else PROMPT_LLM_PORT
-        api_path = MCP_LLM_API_PATH if MCP_LLM_API_PATH and MCP_LLM_API_PATH.strip() else PROMPT_LLM_API_PATH
+        # If MCP_LLM_PROVIDER is empty or set to "default", use the default configuration
+        if MCP_LLM_PROVIDER.lower() in ['', 'default']:
+            provider = DEFAULT_LLM_PROVIDER
+            model = DEFAULT_LLM_MODEL
+            hostname = DEFAULT_LLM_HOSTNAME
+            port = DEFAULT_LLM_PORT
+            api_path = DEFAULT_LLM_API_PATH
+        elif MCP_LLM_PROVIDER and MCP_LLM_PROVIDER.strip():
+            provider = MCP_LLM_PROVIDER
+            model = MCP_LLM_MODEL
+            hostname = MCP_LLM_HOSTNAME
+            port = MCP_LLM_PORT
+            api_path = MCP_LLM_API_PATH
+        else:
+            # Fall back to prompt configuration if MCP config is not available
+            provider = PROMPT_LLM_PROVIDER
+            model = PROMPT_LLM_MODEL
+            hostname = PROMPT_LLM_HOSTNAME
+            port = PROMPT_LLM_PORT
+            api_path = PROMPT_LLM_API_PATH
 
         if provider.lower() == 'gigachat':
             # Import GigaChat model when needed
@@ -290,7 +310,11 @@ Always respond in valid JSON format.
 
                 # Determine the endpoint based on the action
                 # This is a convention - you might need to adjust based on your actual service implementation
-                endpoint = f"{base_url}/{action.lstrip('/')}"  # Ensure action doesn't start with extra slash
+                if action:
+                    endpoint = f"{base_url}/{action.lstrip('/')}"  # Ensure action doesn't start with extra slash
+                else:
+                    # If no action is specified, use the base URL directly
+                    endpoint = base_url
 
                 # Prepare the request payload
                 payload = {
@@ -368,7 +392,11 @@ Always respond in valid JSON format.
                 base_url = f"http://{service_host}:{service_port}"
 
                 # Determine the endpoint based on the action
-                endpoint = f"{base_url}/{action.lstrip('/')}"
+                if action:
+                    endpoint = f"{base_url}/{action.lstrip('/')}"  # Ensure action doesn't start with extra slash
+                else:
+                    # If no action is specified, use the base URL directly
+                    endpoint = base_url
 
                 # Prepare the request payload
                 payload = {

@@ -31,7 +31,12 @@ from config.settings import (
     GIGACHAT_SCOPE,
     GIGACHAT_ACCESS_TOKEN,
     GIGACHAT_VERIFY_SSL_CERTS,
-    ENABLE_SCREEN_LOGGING
+    ENABLE_SCREEN_LOGGING,
+    DEFAULT_LLM_PROVIDER,
+    DEFAULT_LLM_MODEL,
+    DEFAULT_LLM_HOSTNAME,
+    DEFAULT_LLM_PORT,
+    DEFAULT_LLM_API_PATH
 )
 from utils.prompt_manager import PromptManager
 from utils.ssh_keep_alive import SSHKeepAliveContext
@@ -77,23 +82,38 @@ class DedicatedMCPModel:
         self.prompt_manager = PromptManager()
 
         # Create the LLM based on the dedicated MCP provider configuration
-        provider = self.dedicated_mcp_llm_provider or self.mcp_llm_provider or self.prompt_llm_provider
-        model = self.dedicated_mcp_llm_model or self.mcp_llm_model or self.prompt_llm_model
-        hostname = self.dedicated_mcp_llm_hostname or self.mcp_llm_hostname or self.prompt_llm_hostname
-        port = self.dedicated_mcp_llm_port or self.mcp_llm_port or self.prompt_llm_port
-        api_path = self.dedicated_mcp_llm_api_path or self.mcp_llm_api_path or self.prompt_llm_api_path
-
-        # If dedicated config is not set, fall back to MCP config, then to prompt config
-        if not provider or not provider.strip():
-            provider = self.mcp_llm_provider or self.prompt_llm_provider
-        if not model or not model.strip():
-            model = self.mcp_llm_model or self.prompt_llm_model
-        if not hostname or not hostname.strip():
-            hostname = self.mcp_llm_hostname or self.prompt_llm_hostname
-        if not port or not port.strip():
-            port = self.mcp_llm_port or self.prompt_llm_port
-        if not api_path or not api_path.strip():
-            api_path = self.mcp_llm_api_path or self.prompt_llm_api_path
+        # If DEDICATED_MCP_LLM_PROVIDER is empty or set to "default", use the default configuration
+        if DEDICATED_MCP_LLM_PROVIDER.lower() in ['', 'default']:
+            provider = DEFAULT_LLM_PROVIDER
+            model = DEFAULT_LLM_MODEL
+            hostname = DEFAULT_LLM_HOSTNAME
+            port = DEFAULT_LLM_PORT
+            api_path = DEFAULT_LLM_API_PATH
+        elif DEDICATED_MCP_LLM_PROVIDER and DEDICATED_MCP_LLM_PROVIDER.strip():
+            provider = DEDICATED_MCP_LLM_PROVIDER
+            model = DEDICATED_MCP_LLM_MODEL
+            hostname = DEDICATED_MCP_LLM_HOSTNAME
+            port = DEDICATED_MCP_LLM_PORT
+            api_path = DEDICATED_MCP_LLM_API_PATH
+        elif MCP_LLM_PROVIDER and MCP_LLM_PROVIDER.strip():
+            provider = MCP_LLM_PROVIDER
+            model = MCP_LLM_MODEL
+            hostname = MCP_LLM_HOSTNAME
+            port = MCP_LLM_PORT
+            api_path = MCP_LLM_API_PATH
+        elif PROMPT_LLM_PROVIDER and PROMPT_LLM_PROVIDER.strip():
+            provider = PROMPT_LLM_PROVIDER
+            model = PROMPT_LLM_MODEL
+            hostname = PROMPT_LLM_HOSTNAME
+            port = PROMPT_LLM_PORT
+            api_path = PROMPT_LLM_API_PATH
+        else:
+            # If none of the specific configurations are set, use the default configuration
+            provider = DEFAULT_LLM_PROVIDER
+            model = DEFAULT_LLM_MODEL
+            hostname = DEFAULT_LLM_HOSTNAME
+            port = DEFAULT_LLM_PORT
+            api_path = DEFAULT_LLM_API_PATH
 
         if provider and provider.lower() == 'gigachat':
             # Import GigaChat model when needed
@@ -240,9 +260,125 @@ Your capabilities:
             try:
                 result = json.loads(response)
                 logger.info(f"DedicatedMCPModel generated tool calls: {result}")
-                return result
+
+                # Handle nested structure where the tool call is wrapped in a 'tool_call' key
+                if isinstance(result, dict) and 'tool_call' in result:
+                    # Extract the actual tool call from the 'tool_call' key
+                    actual_tool_call = result['tool_call']
+                    if isinstance(actual_tool_call, dict):
+                        # Wrap the single tool call in a list and return
+                        return {"tool_calls": [actual_tool_call]}
+
+                # Ensure the result has the expected format with a 'tool_calls' key
+                if isinstance(result, list):
+                    # If the result is a list of tool calls, wrap it
+                    return {"tool_calls": result}
+                elif isinstance(result, dict) and "tool_calls" not in result:
+                    # If the result is a single tool call object, wrap it in a list
+                    return {"tool_calls": [result]}
+                else:
+                    # If it already has the 'tool_calls' key or is in the expected format, return as is
+                    return result
             except json.JSONDecodeError:
                 logger.warning(f"DedicatedMCPModel response is not valid JSON: {response}")
+
+                # Try to extract JSON from the response if it contains JSON within a larger string
+                # This handles cases where the LLM returns a response with JSON inside it
+                import re
+
+                # First, try to find JSON between ```json and ``` markers (common in LLM responses)
+                json_pattern = r'```(?:json)?\s*\n*(\{(?:.|\n)*?\})\s*\n*```'
+                json_match = re.search(json_pattern, response, re.DOTALL)
+
+                if not json_match:
+                    # If not found, try to find any JSON object in the response
+                    # Look for JSON objects that start with { and end with }, handling nested structures
+                    brace_count = 0
+                    start_idx = -1
+
+                    for i, char in enumerate(response):
+                        if char == '{':
+                            if brace_count == 0:
+                                start_idx = i
+                            brace_count += 1
+                        elif char == '}':
+                            brace_count -= 1
+                            if brace_count == 0 and start_idx != -1:
+                                # Found a complete JSON object
+                                try:
+                                    potential_json = response[start_idx:i+1]
+                                    result = json.loads(potential_json)
+                                    logger.info(f"DedicatedMCPModel extracted JSON from response: {result}")
+
+                                    # Handle nested structure where the tool call is wrapped in a 'tool_call' key
+                                    if isinstance(result, dict) and 'tool_call' in result:
+                                        # Extract the actual tool call from the 'tool_call' key
+                                        actual_tool_call = result['tool_call']
+                                        if isinstance(actual_tool_call, dict):
+                                            # Wrap the single tool call in a list and return
+                                            return {"tool_calls": [actual_tool_call]}
+
+                                    # Ensure the extracted result has the expected format
+                                    if isinstance(result, list):
+                                        return {"tool_calls": result}
+                                    elif isinstance(result, dict) and "tool_calls" not in result:
+                                        return {"tool_calls": [result]}
+                                    else:
+                                        return result
+                                except json.JSONDecodeError:
+                                    # If this JSON object is invalid, continue looking
+                                    continue
+
+                if json_match:
+                    try:
+                        extracted_json = json_match.group(1)  # Get the captured group (the JSON part)
+                        result = json.loads(extracted_json)
+                        logger.info(f"DedicatedMCPModel extracted JSON from response: {result}")
+
+                        # Handle nested structure where the tool call is wrapped in a 'tool_call' key
+                        if isinstance(result, dict) and 'tool_call' in result:
+                            # Extract the actual tool call from the 'tool_call' key
+                            actual_tool_call = result['tool_call']
+                            if isinstance(actual_tool_call, dict):
+                                # Wrap the single tool call in a list and return
+                                return {"tool_calls": [actual_tool_call]}
+
+                        # Ensure the extracted result has the expected format
+                        if isinstance(result, list):
+                            return {"tool_calls": result}
+                        elif isinstance(result, dict) and "tool_calls" not in result:
+                            return {"tool_calls": [result]}
+                        else:
+                            return result
+                    except json.JSONDecodeError:
+                        logger.warning(f"Extracted text is still not valid JSON: {extracted_json}")
+
+                        # Sometimes the LLM might return JSON with extra formatting, try to clean it
+                        cleaned_json = extracted_json.strip()
+                        # Remove any trailing commas before closing braces or brackets
+                        cleaned_json = re.sub(r',(\s*[}\]])', r'\1', cleaned_json)
+                        try:
+                            result = json.loads(cleaned_json)
+                            logger.info(f"DedicatedMCPModel extracted and cleaned JSON from response: {result}")
+
+                            # Handle nested structure where the tool call is wrapped in a 'tool_call' key
+                            if isinstance(result, dict) and 'tool_call' in result:
+                                # Extract the actual tool call from the 'tool_call' key
+                                actual_tool_call = result['tool_call']
+                                if isinstance(actual_tool_call, dict):
+                                    # Wrap the single tool call in a list and return
+                                    return {"tool_calls": [actual_tool_call]}
+
+                            # Ensure the cleaned result has the expected format
+                            if isinstance(result, list):
+                                return {"tool_calls": result}
+                            elif isinstance(result, dict) and "tool_calls" not in result:
+                                return {"tool_calls": [result]}
+                            else:
+                                return result
+                        except json.JSONDecodeError:
+                            logger.warning(f"Even cleaned JSON is not valid: {cleaned_json}")
+
                 # If response is not valid JSON, return empty tool calls
                 return {"tool_calls": []}
 
@@ -269,9 +405,21 @@ Your capabilities:
         service_lookup = {service['id']: service for service in mcp_services}
 
         for call in tool_calls:
-            service_id = call.get('service_id')
-            action = call.get('action')
-            parameters = call.get('parameters', {})
+            # Handle both 'service' and 'service_id' fields - some LLMs return 'service' instead of 'service_id'
+            service_id = call.get('service_id') or call.get('service')
+
+            # Handle both 'action' and 'method' fields - some LLMs return 'method' instead of 'action'
+            action = call.get('action') or call.get('method')
+
+            # Collect parameters - start with any existing 'parameters' object
+            parameters = call.get('parameters', {}).copy()
+
+            # Add any other fields that aren't service/action identifiers to the parameters
+            # This handles cases where parameters are passed directly in the call object
+            # rather than nested under a 'parameters' key
+            for key, value in call.items():
+                if key not in ['service_id', 'service', 'action', 'method', 'parameters']:
+                    parameters[key] = value
 
             # Find the service
             if service_id not in service_lookup:
@@ -347,7 +495,11 @@ Your capabilities:
 
                 # Determine the endpoint based on the action
                 # This is a convention - you might need to adjust based on your actual service implementation
-                endpoint = f"{base_url}/{action.lstrip('/')}"  # Ensure action doesn't start with extra slash
+                if action:
+                    endpoint = f"{base_url}/{action.lstrip('/')}"  # Ensure action doesn't start with extra slash
+                else:
+                    # If no action is specified, use the base URL directly
+                    endpoint = base_url
 
                 # Prepare the request payload
                 payload = {
@@ -425,7 +577,11 @@ Your capabilities:
                 base_url = f"http://{service_host}:{service_port}"
 
                 # Determine the endpoint based on the action
-                endpoint = f"{base_url}/{action.lstrip('/')}"
+                if action:
+                    endpoint = f"{base_url}/{action.lstrip('/')}"  # Ensure action doesn't start with extra slash
+                else:
+                    # If no action is specified, use the base URL directly
+                    endpoint = base_url
 
                 # Prepare the request payload
                 payload = {

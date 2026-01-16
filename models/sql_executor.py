@@ -1,5 +1,5 @@
 import re
-from utils.multi_database_manager import multi_db_manager
+from database.utils.multi_database_manager import multi_db_manager
 from config.settings import TERMINATE_ON_POTENTIALLY_HARMFUL_SQL, ENABLE_SCREEN_LOGGING, DISABLE_DATABASES
 import logging
 

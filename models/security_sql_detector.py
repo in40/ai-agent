@@ -18,7 +18,12 @@ from config.settings import (
     SECURITY_LLM_API_PATH,
     OPENAI_API_KEY,
     DEEPSEEK_API_KEY,
-    ENABLE_SCREEN_LOGGING
+    ENABLE_SCREEN_LOGGING,
+    DEFAULT_LLM_PROVIDER,
+    DEFAULT_LLM_MODEL,
+    DEFAULT_LLM_HOSTNAME,
+    DEFAULT_LLM_PORT,
+    DEFAULT_LLM_API_PATH
 )
 from utils.ssh_keep_alive import SSHKeepAliveContext
 
@@ -35,26 +40,44 @@ class SecuritySQLDetector:
         """
         Initialize the SecuritySQLDetector with an LLM client
         """
+        # Determine if we should use the default model configuration
+        # If SECURITY_LLM_PROVIDER is empty or set to "default", use the default configuration
+        use_default = SECURITY_LLM_PROVIDER.lower() in ['', 'default']
+
+        # Set the actual configuration values based on whether to use defaults
+        if use_default:
+            provider = DEFAULT_LLM_PROVIDER
+            model = DEFAULT_LLM_MODEL
+            hostname = DEFAULT_LLM_HOSTNAME
+            port = DEFAULT_LLM_PORT
+            api_path = DEFAULT_LLM_API_PATH
+        else:
+            provider = SECURITY_LLM_PROVIDER
+            model = SECURITY_LLM_MODEL
+            hostname = SECURITY_LLM_HOSTNAME
+            port = SECURITY_LLM_PORT
+            api_path = SECURITY_LLM_API_PATH
+
         try:
             # Determine the LLM provider and configure accordingly
-            if SECURITY_LLM_PROVIDER.lower() == "openai":
+            if provider.lower() == "openai":
                 self.llm = ChatOpenAI(
-                    model=SECURITY_LLM_MODEL,
+                    model=model,
                     temperature=0.1,  # Low temperature for more consistent security analysis
                     api_key=OPENAI_API_KEY
                 )
-            elif SECURITY_LLM_PROVIDER.lower() == "deepseek":
+            elif provider.lower() == "deepseek":
                 # For DeepSeek, use ChatOpenAI with DeepSeek configuration
                 # Construct the base URL for DeepSeek
-                base_url = f"https://{SECURITY_LLM_HOSTNAME}:{SECURITY_LLM_PORT}{SECURITY_LLM_API_PATH}"
+                base_url = f"https://{hostname}:{port}{api_path}"
 
                 self.llm = ChatOpenAI(
-                    model=SECURITY_LLM_MODEL,
+                    model=model,
                     temperature=0.1,
                     api_key=DEEPSEEK_API_KEY,
                     base_url=base_url
                 )
-            elif SECURITY_LLM_PROVIDER.lower() == "gigachat":
+            elif provider.lower() == "gigachat":
                 # For GigaChat, use the GigaChat integration
                 from langchain_gigachat.chat_models import GigaChat
 
@@ -63,28 +86,28 @@ class SecuritySQLDetector:
                     self.llm = GigaChat(
                         credentials=os.getenv("GIGACHAT_CREDENTIALS"),
                         scope=os.getenv("GIGACHAT_SCOPE", "GIGACHAT_API_PERS"),
-                        model=SECURITY_LLM_MODEL,
+                        model=model,
                         temperature=0.1,
                         verify_ssl=os.getenv("GIGACHAT_VERIFY_SSL_CERTS", "true").lower() == "true"
                     )
                 elif os.getenv("GIGACHAT_ACCESS_TOKEN"):
                     self.llm = GigaChat(
                         access_token=os.getenv("GIGACHAT_ACCESS_TOKEN"),
-                        model=SECURITY_LLM_MODEL,
+                        model=model,
                         temperature=0.1,
                         verify_ssl=os.getenv("GIGACHAT_VERIFY_SSL_CERTS", "true").lower() == "true"
                     )
                 else:
                     raise ValueError("Either GIGACHAT_CREDENTIALS or GIGACHAT_ACCESS_TOKEN must be set for GigaChat provider")
-            elif SECURITY_LLM_PROVIDER.lower() == "lm studio":
+            elif provider.lower() == "lm studio":
                 # For LM Studio, use ChatOpenAI with local configuration
                 # langchain_openai.ChatOpenAI is already imported at the top of the file
 
                 # Construct the base URL for LM Studio
-                base_url = f"http://{SECURITY_LLM_HOSTNAME}:{SECURITY_LLM_PORT}{SECURITY_LLM_API_PATH}"
+                base_url = f"http://{hostname}:{port}{api_path}"
 
                 self.llm = ChatOpenAI(
-                    model=SECURITY_LLM_MODEL,
+                    model=model,
                     temperature=0.1,
                     base_url=base_url,
                     api_key="not-needed"  # LM Studio doesn't require a real API key
@@ -94,10 +117,10 @@ class SecuritySQLDetector:
                 from langchain_ollama import ChatOllama
 
                 # Construct the base URL for non-OpenAI providers
-                base_url = f"http://{SECURITY_LLM_HOSTNAME}:{SECURITY_LLM_PORT}{SECURITY_LLM_API_PATH}"
+                base_url = f"http://{hostname}:{port}{api_path}"
 
                 self.llm = ChatOllama(
-                    model=SECURITY_LLM_MODEL,
+                    model=model,
                     base_url=base_url,
                     temperature=0.1
                 )

@@ -7,7 +7,8 @@ from config.settings import (
     RESPONSE_LLM_PROVIDER, RESPONSE_LLM_MODEL, RESPONSE_LLM_HOSTNAME,
     RESPONSE_LLM_PORT, RESPONSE_LLM_API_PATH, OPENAI_API_KEY, DEEPSEEK_API_KEY,
     GIGACHAT_CREDENTIALS, GIGACHAT_SCOPE, GIGACHAT_ACCESS_TOKEN,
-    GIGACHAT_VERIFY_SSL_CERTS, ENABLE_SCREEN_LOGGING
+    GIGACHAT_VERIFY_SSL_CERTS, ENABLE_SCREEN_LOGGING, DEFAULT_LLM_PROVIDER,
+    DEFAULT_LLM_MODEL, DEFAULT_LLM_HOSTNAME, DEFAULT_LLM_PORT, DEFAULT_LLM_API_PATH
 )
 from utils.prompt_manager import PromptManager
 from utils.ssh_keep_alive import SSHKeepAliveContext
@@ -22,19 +23,37 @@ class ResponseOutput(BaseModel):
 
 class ResponseGenerator:
     def __init__(self):
+        # Determine if we should use the default model configuration
+        # If RESPONSE_LLM_PROVIDER is empty or set to "default", use the default configuration
+        use_default = RESPONSE_LLM_PROVIDER.lower() in ['', 'default']
+
+        # Set the actual configuration values based on whether to use defaults
+        if use_default:
+            provider = DEFAULT_LLM_PROVIDER
+            model = DEFAULT_LLM_MODEL
+            hostname = DEFAULT_LLM_HOSTNAME
+            port = DEFAULT_LLM_PORT
+            api_path = DEFAULT_LLM_API_PATH
+        else:
+            provider = RESPONSE_LLM_PROVIDER
+            model = RESPONSE_LLM_MODEL
+            hostname = RESPONSE_LLM_HOSTNAME
+            port = RESPONSE_LLM_PORT
+            api_path = RESPONSE_LLM_API_PATH
+
         # Log the configuration being used before creating the LLM
         if ENABLE_SCREEN_LOGGING:
-            logger.info(f"ResponseGenerator configured with provider: {RESPONSE_LLM_PROVIDER}, model: {RESPONSE_LLM_MODEL}")
+            logger.info(f"ResponseGenerator configured with provider: {provider}, model: {model}")
 
         # Initialize the prompt manager
         self.prompt_manager = PromptManager()
 
         # Create the LLM based on the provider
-        if RESPONSE_LLM_PROVIDER.lower() == 'gigachat':
+        if provider.lower() == 'gigachat':
             # Import GigaChat model when needed
             from utils.gigachat_integration import GigaChatModel
             self.llm = GigaChatModel(
-                model=RESPONSE_LLM_MODEL,
+                model=model,
                 temperature=0.7,  # Slightly higher temperature for more natural responses
                 credentials=GIGACHAT_CREDENTIALS,
                 scope=GIGACHAT_SCOPE,
@@ -43,26 +62,26 @@ class ResponseGenerator:
             )
         else:
             # Construct the base URL based on provider configuration for other providers
-            if RESPONSE_LLM_PROVIDER.lower() in ['openai', 'deepseek', 'qwen']:
+            if provider.lower() in ['openai', 'deepseek', 'qwen']:
                 # For cloud providers, use HTTPS with the specified hostname
                 # But for default OpenAI, allow using the default endpoint
-                if RESPONSE_LLM_PROVIDER.lower() == 'openai' and RESPONSE_LLM_HOSTNAME == "api.openai.com":
+                if provider.lower() == 'openai' and hostname == "api.openai.com":
                     base_url = None  # Use default OpenAI endpoint
                 else:
-                    base_url = f"https://{RESPONSE_LLM_HOSTNAME}:{RESPONSE_LLM_PORT}{RESPONSE_LLM_API_PATH}"
+                    base_url = f"https://{hostname}:{port}{api_path}"
             else:
                 # For local providers like LM Studio or Ollama, use custom base URL with HTTP
-                base_url = f"http://{RESPONSE_LLM_HOSTNAME}:{RESPONSE_LLM_PORT}{RESPONSE_LLM_API_PATH}"
+                base_url = f"http://{hostname}:{port}{api_path}"
 
             # Select the appropriate API key based on the provider
-            if RESPONSE_LLM_PROVIDER.lower() == 'deepseek':
+            if provider.lower() == 'deepseek':
                 api_key = DEEPSEEK_API_KEY or ("sk-fake-key" if base_url else DEEPSEEK_API_KEY)
             else:
                 api_key = OPENAI_API_KEY or ("sk-fake-key" if base_url else OPENAI_API_KEY)
 
             # Create the LLM with the determined base URL
             self.llm = ChatOpenAI(
-                model=RESPONSE_LLM_MODEL,
+                model=model,
                 temperature=0.7,  # Slightly higher temperature for more natural responses
                 api_key=api_key,
                 base_url=base_url

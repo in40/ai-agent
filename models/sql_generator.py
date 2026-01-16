@@ -6,7 +6,8 @@ from langchain_core.output_parsers import PydanticOutputParser
 from config.settings import (
     SQL_LLM_PROVIDER, SQL_LLM_MODEL, SQL_LLM_HOSTNAME, SQL_LLM_PORT,
     SQL_LLM_API_PATH, OPENAI_API_KEY, DEEPSEEK_API_KEY, GIGACHAT_CREDENTIALS, GIGACHAT_SCOPE,
-    GIGACHAT_ACCESS_TOKEN, GIGACHAT_VERIFY_SSL_CERTS, ENABLE_SCREEN_LOGGING
+    GIGACHAT_ACCESS_TOKEN, GIGACHAT_VERIFY_SSL_CERTS, ENABLE_SCREEN_LOGGING, DEFAULT_LLM_PROVIDER,
+    DEFAULT_LLM_MODEL, DEFAULT_LLM_HOSTNAME, DEFAULT_LLM_PORT, DEFAULT_LLM_API_PATH
 )
 from utils.prompt_manager import PromptManager
 from utils.ssh_keep_alive import SSHKeepAliveContext
@@ -24,9 +25,27 @@ class SQLOutput(BaseModel):
 
 class SQLGenerator:
     def __init__(self):
+        # Determine if we should use the default model configuration
+        # If SQL_LLM_PROVIDER is empty or set to "default", use the default configuration
+        use_default = SQL_LLM_PROVIDER.lower() in ['', 'default']
+
+        # Set the actual configuration values based on whether to use defaults
+        if use_default:
+            provider = DEFAULT_LLM_PROVIDER
+            model = DEFAULT_LLM_MODEL
+            hostname = DEFAULT_LLM_HOSTNAME
+            port = DEFAULT_LLM_PORT
+            api_path = DEFAULT_LLM_API_PATH
+        else:
+            provider = SQL_LLM_PROVIDER
+            model = SQL_LLM_MODEL
+            hostname = SQL_LLM_HOSTNAME
+            port = SQL_LLM_PORT
+            api_path = SQL_LLM_API_PATH
+
         # Log the configuration being used before creating the LLM
         if ENABLE_SCREEN_LOGGING:
-            logger.info(f"SQLGenerator configured with provider: {SQL_LLM_PROVIDER}, model: {SQL_LLM_MODEL}")
+            logger.info(f"SQLGenerator configured with provider: {provider}, model: {model}")
 
         # Initialize the prompt manager
         self.prompt_manager = PromptManager()
@@ -64,11 +83,11 @@ class SQLGenerator:
         ])
 
         # Create the LLM with structured output based on the provider
-        if SQL_LLM_PROVIDER.lower() == 'gigachat':
+        if provider.lower() == 'gigachat':
             # Import GigaChat model when needed
             from utils.gigachat_integration import GigaChatModel
             llm_base = GigaChatModel(
-                model=SQL_LLM_MODEL,
+                model=model,
                 temperature=0,  # Lower temperature for more consistent SQL generation
                 credentials=GIGACHAT_CREDENTIALS,
                 scope=GIGACHAT_SCOPE,
@@ -76,14 +95,14 @@ class SQLGenerator:
                 verify_ssl_certs=GIGACHAT_VERIFY_SSL_CERTS
             )
             self.llm = llm_base.with_structured_output(SQLOutput)  # Use structured output
-        elif SQL_LLM_PROVIDER.lower() == 'deepseek':
+        elif provider.lower() == 'deepseek':
             # DeepSeek doesn't support structured output, so we'll use regular output and parse manually
-            base_url = f"https://{SQL_LLM_HOSTNAME}:{SQL_LLM_PORT}{SQL_LLM_API_PATH}"
+            base_url = f"https://{hostname}:{port}{api_path}"
             api_key = DEEPSEEK_API_KEY or ("sk-fake-key" if base_url else DEEPSEEK_API_KEY)
 
             # Create the LLM with the determined base URL but without structured output
             llm_base = ChatOpenAI(
-                model=SQL_LLM_MODEL,
+                model=model,
                 temperature=0,  # Lower temperature for more consistent SQL generation
                 api_key=api_key,
                 base_url=base_url
@@ -92,23 +111,23 @@ class SQLGenerator:
             self.use_structured_output = False
         else:
             # Construct the base URL based on provider configuration for other providers
-            if SQL_LLM_PROVIDER.lower() in ['openai', 'qwen']:
+            if provider.lower() in ['openai', 'qwen']:
                 # For cloud providers, use HTTPS with the specified hostname
                 # But for default OpenAI, allow using the default endpoint
-                if SQL_LLM_PROVIDER.lower() == 'openai' and SQL_LLM_HOSTNAME == "api.openai.com":
+                if provider.lower() == 'openai' and hostname == "api.openai.com":
                     base_url = None  # Use default OpenAI endpoint
                 else:
-                    base_url = f"https://{SQL_LLM_HOSTNAME}:{SQL_LLM_PORT}{SQL_LLM_API_PATH}"
+                    base_url = f"https://{hostname}:{port}{api_path}"
             else:
                 # For local providers like LM Studio or Ollama, use custom base URL with HTTP
-                base_url = f"http://{SQL_LLM_HOSTNAME}:{SQL_LLM_PORT}{SQL_LLM_API_PATH}"
+                base_url = f"http://{hostname}:{port}{api_path}"
 
             # Select the appropriate API key based on the provider
             api_key = OPENAI_API_KEY or ("sk-fake-key" if base_url else OPENAI_API_KEY)
 
             # Create the LLM with the determined base URL and structured output
             llm_base = ChatOpenAI(
-                model=SQL_LLM_MODEL,
+                model=model,
                 temperature=0,  # Lower temperature for more consistent SQL generation
                 api_key=api_key,
                 base_url=base_url
