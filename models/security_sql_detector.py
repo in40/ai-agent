@@ -17,7 +17,8 @@ from config.settings import (
     SECURITY_LLM_PORT,
     SECURITY_LLM_API_PATH,
     OPENAI_API_KEY,
-    DEEPSEEK_API_KEY
+    DEEPSEEK_API_KEY,
+    ENABLE_SCREEN_LOGGING
 )
 from utils.ssh_keep_alive import SSHKeepAliveContext
 
@@ -175,6 +176,20 @@ class SecuritySQLDetector:
             schema_str = "No schema context provided"
         
         try:
+            # Log the full request to LLM, including all roles and prompts
+            if ENABLE_SCREEN_LOGGING:
+                # Get the full prompt with all messages (system and human) without invoking the LLM
+                full_prompt = self.security_analysis_prompt.format_messages(
+                    sql_query=sql_query,
+                    schema_context=schema_str
+                )
+                logger.info("SecuritySQLDetector full LLM request:")
+                for i, message in enumerate(full_prompt):
+                    if message.type == "system":
+                        logger.info(f"  System Message {i+1}: {message.content}")  # Full content without truncation
+                    else:
+                        logger.info(f"  Message {i+1} ({message.type}): {message.content}")
+
             # Use SSH keep-alive during the LLM call
             with SSHKeepAliveContext():
                 # Run the chain to analyze the query

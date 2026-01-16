@@ -100,3 +100,39 @@ USE_SECURITY_LLM = str_to_bool(os.getenv("USE_SECURITY_LLM"), True)  # Whether t
 
 # Logging Configuration
 ENABLE_SCREEN_LOGGING = str_to_bool(os.getenv("ENABLE_SCREEN_LOGGING"), False)
+
+# Model Disable Configuration
+DISABLE_PROMPT_GENERATION = str_to_bool(os.getenv("DISABLE_PROMPT_GENERATION"), False)
+DISABLE_RESPONSE_GENERATION = str_to_bool(os.getenv("DISABLE_RESPONSE_GENERATION"), False)
+
+# Handle both DISABLE_DATABASES and DATABASE_ENABLED for backward compatibility
+# If DISABLE_DATABASES is set, use it directly
+# If DATABASE_ENABLED is set, invert its value (DATABASE_ENABLED=false means DISABLE_DATABASES=true)
+disable_databases_env = os.getenv("DISABLE_DATABASES")
+database_enabled_env = os.getenv("DATABASE_ENABLED")
+
+if disable_databases_env is not None:
+    # Use DISABLE_DATABASES if it's explicitly set
+    DISABLE_DATABASES = str_to_bool(disable_databases_env, False)
+elif database_enabled_env is not None:
+    # If DATABASE_ENABLED is set, invert its value
+    # DATABASE_ENABLED=false means databases should be disabled
+    database_enabled = str_to_bool(database_enabled_env, True)  # Default to True if not set
+    DISABLE_DATABASES = not database_enabled
+else:
+    # Default to False (databases enabled) if neither is set
+    DISABLE_DATABASES = False
+
+# MCP LLM Configuration
+MCP_LLM_PROVIDER = os.getenv("MCP_LLM_PROVIDER", "")
+MCP_LLM_MODEL = os.getenv("MCP_LLM_MODEL", "")
+MCP_LLM_HOSTNAME = os.getenv("MCP_LLM_HOSTNAME", "")
+MCP_LLM_PORT = os.getenv("MCP_LLM_PORT", "")
+MCP_LLM_API_PATH = os.getenv("MCP_LLM_API_PATH", "")
+
+# Dedicated MCP LLM Configuration (separate model for MCP-related queries)
+DEDICATED_MCP_LLM_PROVIDER = os.getenv("DEDICATED_MCP_LLM_PROVIDER", "")
+DEDICATED_MCP_LLM_MODEL = os.getenv("DEDICATED_MCP_LLM_MODEL", "")
+DEDICATED_MCP_LLM_HOSTNAME = os.getenv("DEDICATED_MCP_LLM_HOSTNAME", "")
+DEDICATED_MCP_LLM_PORT = os.getenv("DEDICATED_MCP_LLM_PORT", "")
+DEDICATED_MCP_LLM_API_PATH = os.getenv("DEDICATED_MCP_LLM_API_PATH", "")

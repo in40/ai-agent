@@ -18,6 +18,9 @@ This project implements an enhanced AI agent using LangGraph for complex databas
 - **Query Type Tracking**: Tracks whether queries are initial or wider search queries for better processing
 - **Recursion Limits**: Implements recursion limits to prevent infinite loops during processing
 - **Previous SQL Query History**: Maintains a history of all previously generated SQL queries to prevent repetition of failed approaches and provide context for subsequent query generations
+- **Database Alias to Real Name Mapping**: Maps database aliases used internally to real database names for LLMs, ensuring accurate query generation
+- **MCP (Model Context Protocol) Integration**: Discover and interact with MCP services, with dedicated model for optimized MCP-related queries
+- **MCP Search Server**: MCP-compliant service for web search queries via Brave Search API, allowing LLM models to perform web searches for current information
 
 ## Architecture
 
