@@ -1,7 +1,7 @@
 import argparse
 import os
 from langgraph_agent import create_enhanced_agent_graph, AgentState
-from config.settings import ENABLE_SCREEN_LOGGING, str_to_bool
+from config.settings import ENABLE_SCREEN_LOGGING, str_to_bool, DISABLE_DATABASES
 import logging
 
 # Explicitly check the environment variable for screen logging
@@ -33,11 +33,13 @@ else:
     logging.basicConfig(level=logging.WARNING)
 
 from utils.multi_database_manager import multi_db_manager as DatabaseManager, reload_database_config
+from utils.markdown_renderer import print_markdown
 
 def main():
     parser = argparse.ArgumentParser(description='AI Agent for Natural Language to SQL Queries using LangGraph')
     parser.add_argument('--request', type=str, help='Natural language request to process')
     parser.add_argument('--database', type=str, default=None, help='Name of the database to use for queries (default: primary database from DATABASE_URL)')
+    parser.add_argument('--registry-url', type=str, help='URL of the MCP registry server')
 
     args = parser.parse_args()
 
@@ -61,18 +63,31 @@ def main():
             "all_db_results": {},
             "table_to_db_mapping": {},
             "table_to_real_db_mapping": {},
+            "response_prompt": "",
             "final_response": "",
             "messages": [],
             "validation_error": None,
             "retry_count": 0,
-            "database_name": args.database if args.database else "all_databases"
+            "execution_error": None,
+            "sql_generation_error": None,
+            "disable_sql_blocking": False,
+            "disable_databases": DISABLE_DATABASES,
+            "query_type": "initial",
+            "database_name": args.database if args.database else "all_databases",
+            "previous_sql_queries": [],
+            "registry_url": args.registry_url,
+            "discovered_services": [],
+            "mcp_service_results": [],
+            "use_mcp_results": False,
+            "mcp_tool_calls": [],
+            "mcp_capable_response": ""
         }
 
         try:
             # Run the graph with recursion limit to prevent infinite loops
             result = graph.invoke(initial_state, config={"configurable": {"thread_id": "default"}, "recursion_limit": 50})
             print("Final Response:")
-            print(result.get("final_response"))
+            print_markdown(result.get("final_response"))
         except Exception as e:
             print(f"Error processing request: {str(e)}")
     else:
@@ -109,13 +124,23 @@ def main():
                     "messages": [],
                     "validation_error": None,
                     "retry_count": 0,
-                    "database_name": args.database if args.database else "all_databases"
+                    "disable_sql_blocking": False,
+                    "disable_databases": DISABLE_DATABASES,
+                    "database_name": args.database if args.database else "all_databases",
+                    "query_type": "initial",
+                    "previous_sql_queries": [],
+                    "registry_url": args.registry_url,  # Include registry URL in state
+                    "discovered_services": [],
+                    "mcp_service_results": [],
+                    "use_mcp_results": False,
+                    "mcp_tool_calls": [],
+                    "mcp_capable_response": ""
                 }
 
                 # Run the graph with recursion limit to prevent infinite loops
                 result = graph.invoke(initial_state, config={"configurable": {"thread_id": "default"}, "recursion_limit": 50})
                 print("\nFinal Response:")
-                print(result.get("final_response"))
+                print_markdown(result.get("final_response"))
 
             except KeyboardInterrupt:
                 print("\nGoodbye!")

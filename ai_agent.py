@@ -3,7 +3,7 @@ from models.sql_generator import SQLGenerator
 from models.sql_executor import SQLExecutor
 from models.prompt_generator import PromptGenerator
 from models.response_generator import ResponseGenerator
-from config.settings import ENABLE_SCREEN_LOGGING
+from config.settings import ENABLE_SCREEN_LOGGING, DISABLE_DATABASES
 import logging
 import time
 
@@ -14,11 +14,11 @@ class AIAgent:
         # Initialize components
         from utils.multi_database_manager import multi_db_manager
         # Add the primary database if database_url is provided
-        if database_url:
+        if database_url and not DISABLE_DATABASES:
             # Extract the real database name from the URL to use as the configuration name
             db_name = multi_db_manager._extract_db_name_from_url(database_url)
             multi_db_manager.add_database(db_name, database_url)
-        else:
+        elif not DISABLE_DATABASES:
             # Use the primary database from config if available
             from config.settings import DATABASE_URL
             if DATABASE_URL:
@@ -26,11 +26,14 @@ class AIAgent:
                 db_name = multi_db_manager._extract_db_name_from_url(DATABASE_URL)
                 multi_db_manager.add_database(db_name, DATABASE_URL)
 
-        self.db_manager = multi_db_manager
+        self.db_manager = multi_db_manager if not DISABLE_DATABASES else None
         self.sql_generator = SQLGenerator()
-        self.sql_executor = SQLExecutor(self.db_manager)  # Will use multi_db_manager by default
+        self.sql_executor = SQLExecutor(self.db_manager) if not DISABLE_DATABASES else None  # Will use multi_db_manager by default
         self.prompt_generator = PromptGenerator()
         self.response_generator = ResponseGenerator()
+
+        # Store the disable databases setting
+        self.disable_databases = DISABLE_DATABASES
 
     def process_request(self, user_request, attached_files=None):
         """
@@ -38,9 +41,46 @@ class AIAgent:
         """
         start_time = time.time()
 
+        # Initialize conversation history to maintain full context
+        conversation_history = [
+            {"role": "user", "content": user_request}
+        ]
+
         try:
             if ENABLE_SCREEN_LOGGING:
                 logger.info(f"Processing request: {user_request}")
+
+            # Check if databases are disabled
+            if self.disable_databases:
+                if ENABLE_SCREEN_LOGGING:
+                    logger.info("Databases are disabled, skipping database operations")
+
+                # Generate response without database results
+                response_prompt = self.prompt_generator.generate_prompt_for_response_llm(
+                    user_request, [], attached_files
+                )
+
+                # Add the prompt generator's response to conversation history
+                conversation_history.append({"role": "system", "content": response_prompt})
+
+                final_response = self.response_generator.generate_natural_language_response(
+                    response_prompt, attached_files
+                )
+
+                # Add the final response to conversation history
+                conversation_history.append({"role": "assistant", "content": final_response})
+
+                end_time = time.time()
+                processing_time = end_time - start_time
+
+                return {
+                    "original_request": user_request,
+                    "generated_sql": None,
+                    "db_results": None,
+                    "final_response": final_response,
+                    "processing_time": processing_time,
+                    "conversation_history": conversation_history
+                }
 
             # Step 1: Get database schema
             if ENABLE_SCREEN_LOGGING:
@@ -86,7 +126,14 @@ class AIAgent:
             # Step 2: Generate SQL query using first LLM
             if ENABLE_SCREEN_LOGGING:
                 logger.info("Generating SQL query...")
-            sql_query = self.sql_generator.generate_sql(user_request, combined_schema_dump, attached_files, table_to_db_mapping, table_to_real_db_mapping)
+
+            # Include conversation history in the SQL generation request
+            sql_generation_context = f"Previous conversation:\n{self.format_conversation_history(conversation_history)}\n\nCurrent request: {user_request}"
+            sql_query = self.sql_generator.generate_sql(sql_generation_context, combined_schema_dump, attached_files, table_to_db_mapping, table_to_real_db_mapping)
+
+            # Add the SQL query to conversation history
+            conversation_history.append({"role": "assistant", "content": f"Generated SQL: {sql_query}"})
+
             if ENABLE_SCREEN_LOGGING:
                 logger.info(f"Generated SQL: {sql_query}")
 
@@ -106,6 +153,9 @@ class AIAgent:
 
                 # Generate a prompt for wider search strategies
                 wider_search_context = f"""
+                Previous conversation:
+                {self.format_conversation_history(conversation_history)}
+
                 The original user request was: "{user_request}"
 
                 The database schema is:
@@ -133,8 +183,17 @@ class AIAgent:
                 if ENABLE_SCREEN_LOGGING:
                     logger.info(f"Wider search suggestions: {wider_search_suggestions}")
 
+                # Add the wider search suggestions to conversation history
+                conversation_history.append({"role": "assistant", "content": f"Wider search suggestions: {wider_search_suggestions}"})
+
                 # Generate new SQL based on the wider suggestions
-                new_sql_query = self.sql_generator.generate_sql(wider_search_suggestions, combined_schema_dump, attached_files, table_to_db_mapping, table_to_real_db_mapping)
+                # Include conversation history in the SQL generation request
+                new_sql_generation_context = f"Previous conversation:\n{self.format_conversation_history(conversation_history)}\n\nWider search suggestions: {wider_search_suggestions}"
+                new_sql_query = self.sql_generator.generate_sql(new_sql_generation_context, combined_schema_dump, attached_files, table_to_db_mapping, table_to_real_db_mapping)
+
+                # Add the new SQL query to conversation history
+                conversation_history.append({"role": "assistant", "content": f"Generated new SQL based on wider search: {new_sql_query}"})
+
                 if ENABLE_SCREEN_LOGGING:
                     logger.info(f"Generated new SQL based on wider search: {new_sql_query}")
 
@@ -164,18 +223,32 @@ class AIAgent:
             # Step 4: Generate prompt for response LLM using second LLM
             if ENABLE_SCREEN_LOGGING:
                 logger.info("Generating prompt for response LLM...")
+
+            # Include conversation history in the prompt generation request
+            prompt_generation_context = f"Previous conversation:\n{self.format_conversation_history(conversation_history)}\n\nCurrent request: {user_request}"
             response_prompt = self.prompt_generator.generate_prompt_for_response_llm(
-                user_request, db_results, attached_files
+                prompt_generation_context, db_results, attached_files
             )
+
+            # Add the response prompt to conversation history
+            conversation_history.append({"role": "system", "content": response_prompt})
+
             if ENABLE_SCREEN_LOGGING:
                 logger.info(f"Generated response prompt: {response_prompt}")  # Full content without truncation
 
             # Step 5: Generate natural language response using third LLM
             if ENABLE_SCREEN_LOGGING:
                 logger.info("Generating natural language response...")
+
+            # Include conversation history in the final response generation
+            final_response_context = f"Previous conversation:\n{self.format_conversation_history(conversation_history)}\n\nResponse prompt: {response_prompt}"
             final_response = self.response_generator.generate_natural_language_response(
-                response_prompt, attached_files
+                final_response_context, attached_files
             )
+
+            # Add the final response to conversation history
+            conversation_history.append({"role": "assistant", "content": final_response})
+
             if ENABLE_SCREEN_LOGGING:
                 logger.info(f"Final response: {final_response}")  # Full content without truncation
 
@@ -187,7 +260,8 @@ class AIAgent:
                 "generated_sql": sql_query,
                 "db_results": db_results,
                 "final_response": final_response,
-                "processing_time": processing_time
+                "processing_time": processing_time,
+                "conversation_history": conversation_history
             }
 
         except Exception as e:
@@ -195,20 +269,65 @@ class AIAgent:
             processing_time = end_time - start_time
             if ENABLE_SCREEN_LOGGING:
                 logger.error(f"Error processing request: {str(e)}")
-            # Return error with processing time
-            return {
-                "original_request": user_request,
-                "generated_sql": None,
-                "db_results": None,
-                "final_response": f"Error processing request: {str(e)}",
-                "processing_time": processing_time
-            }
+
+            # If databases are disabled, return a simpler response
+            if self.disable_databases:
+                # Generate a response without database results in case of error
+                try:
+                    # Include conversation history in the error fallback
+                    error_fallback_context = f"Previous conversation:\n{self.format_conversation_history(conversation_history)}\n\nCurrent request: {user_request}"
+                    response_prompt = self.prompt_generator.generate_prompt_for_response_llm(
+                        error_fallback_context, [], attached_files
+                    )
+
+                    # Add the prompt to conversation history
+                    conversation_history.append({"role": "system", "content": response_prompt})
+
+                    final_response = self.response_generator.generate_natural_language_response(
+                        response_prompt, attached_files
+                    )
+
+                    # Add the final response to conversation history
+                    conversation_history.append({"role": "assistant", "content": final_response})
+
+                    return {
+                        "original_request": user_request,
+                        "generated_sql": None,
+                        "db_results": None,
+                        "final_response": final_response,
+                        "processing_time": processing_time,
+                        "conversation_history": conversation_history
+                    }
+                except Exception as fallback_error:
+                    # If even the fallback fails, return the error message
+                    return {
+                        "original_request": user_request,
+                        "generated_sql": None,
+                        "db_results": None,
+                        "final_response": f"Error processing request: {str(fallback_error)}",
+                        "processing_time": processing_time,
+                        "conversation_history": conversation_history
+                    }
+            else:
+                # Return error with processing time
+                return {
+                    "original_request": user_request,
+                    "generated_sql": None,
+                    "db_results": None,
+                    "final_response": f"Error processing request: {str(e)}",
+                    "processing_time": processing_time,
+                    "conversation_history": conversation_history
+                }
 
 
     def perform_additional_analysis(self, user_request, schema_dump):
         """
         Perform additional analysis based on schema and user request to find relevant data
         """
+        # If databases are disabled, return empty results
+        if self.disable_databases:
+            return []
+
         results = []
 
         # Check if there are name-related columns in the schema
@@ -238,6 +357,9 @@ class AIAgent:
             if all_names:
                 # Use the response generator to analyze names (e.g., gender detection)
                 name_analysis_prompt = f"""
+                Previous conversation:
+                {self.format_conversation_history(conversation_history)}
+
                 Here is a list of names from the database: {', '.join(all_names[:20])} (showing first 20)
 
                 Based on common knowledge, please categorize these names by gender (male/female/neutral)
@@ -292,6 +414,9 @@ class AIAgent:
 
                 if unique_domains:
                     domain_analysis_prompt = f"""
+                    Previous conversation:
+                    {self.format_conversation_history(conversation_history)}
+
                     Here are the email domains found in the database: {', '.join(unique_domains[:10])}
 
                     Provide insights about these domains that might be relevant to the original request: "{user_request}"
@@ -332,6 +457,9 @@ class AIAgent:
 
             if date_info:
                 date_analysis_prompt = f"""
+                Previous conversation:
+                {self.format_conversation_history(conversation_history)}
+
                 Here is date information from the database:
                 {str(date_info)}
 
@@ -349,6 +477,17 @@ class AIAgent:
 
         # If we have any analysis results, return them; otherwise return empty list
         return results if results else []
+
+    def format_conversation_history(self, conversation_history):
+        """
+        Format the conversation history into a readable string for inclusion in LLM prompts
+        """
+        formatted_history = ""
+        for entry in conversation_history:
+            role = entry.get("role", "unknown")
+            content = entry.get("content", "")
+            formatted_history += f"[{role.upper()}]: {content}\n\n"
+        return formatted_history
 
     def format_schema_dump(self, schema_dump):
         """

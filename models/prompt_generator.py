@@ -83,7 +83,7 @@ class PromptGenerator:
             ("system", system_prompt),
             ("human", """Original user request: {user_request}
 
-            Database query results: {db_results}
+            Query results: {db_results}
 
             Create a detailed prompt for another LLM to generate a natural language response based on these results.""")
         ])
@@ -312,10 +312,42 @@ class PromptGenerator:
     
     def format_db_results(self, db_results):
         """
-        Format database results into a readable string
+        Format results into a readable string, distinguishing between different sources
         """
         if not db_results:
             return "No results found."
-        
-        # Convert the results to JSON string for readability
-        return json.dumps(db_results, indent=2, default=str)
+
+        # Separate results by source
+        db_results_list = []
+        mcp_results_list = []
+        other_results_list = []
+
+        for result in db_results:
+            if isinstance(result, dict):
+                source = result.get("_source", "DATABASE")  # Default to DATABASE for backward compatibility
+                if source == "MCP_SERVICE":
+                    mcp_results_list.append(result)
+                elif source == "DATABASE":
+                    db_results_list.append(result)
+                else:
+                    other_results_list.append(result)
+            else:
+                # If result is not a dict, treat as database result for backward compatibility
+                db_results_list.append(result)
+
+        # Format each category separately
+        formatted_parts = []
+
+        if db_results_list:
+            formatted_parts.append("Database query results:")
+            formatted_parts.append(json.dumps(db_results_list, indent=2, default=str))
+
+        if mcp_results_list:
+            formatted_parts.append("MCP service results:")
+            formatted_parts.append(json.dumps(mcp_results_list, indent=2, default=str))
+
+        if other_results_list:
+            formatted_parts.append("Other results:")
+            formatted_parts.append(json.dumps(other_results_list, indent=2, default=str))
+
+        return "\n\n".join(formatted_parts)

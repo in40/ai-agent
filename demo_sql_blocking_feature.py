@@ -5,6 +5,7 @@ Demo script showcasing the SQL blocking feature
 
 import os
 from langgraph_agent import run_enhanced_agent
+from utils.markdown_renderer import print_markdown
 
 
 def demo_with_blocking_enabled():
@@ -14,9 +15,10 @@ def demo_with_blocking_enabled():
     
     # By default, SQL blocking is enabled based on TERMINATE_ON_POTENTIALLY_HARMFUL_SQL config
     result = run_enhanced_agent("Show me all users", disable_sql_blocking=False)
-    
+
     print(f"Generated SQL: {result['generated_sql']}")
-    print(f"Final Response: {result['final_response']}")
+    print("Final Response:")
+    print_markdown(result['final_response'])
     print(f"Validation Error: {result['validation_error']}")
     print()
 
@@ -28,9 +30,10 @@ def demo_with_blocking_disabled():
     
     # Disable SQL blocking to allow potentially harmful queries
     result = run_enhanced_agent("Delete all users", disable_sql_blocking=True)
-    
+
     print(f"Generated SQL: {result['generated_sql']}")
-    print(f"Final Response: {result['final_response']}")
+    print("Final Response:")
+    print_markdown(result['final_response'])
     print(f"Validation Error: {result['validation_error']}")
     print()
 
@@ -48,9 +51,10 @@ def demo_using_environment_variable():
     
     # Call without specifying disable_sql_blocking to use the environment variable
     result = run_enhanced_agent("Drop the users table")
-    
+
     print(f"Generated SQL: {result['generated_sql']}")
-    print(f"Final Response: {result['final_response']}")
+    print("Final Response:")
+    print_markdown(result['final_response'])
     print(f"Validation Error: {result['validation_error']}")
     
     # Restore original value

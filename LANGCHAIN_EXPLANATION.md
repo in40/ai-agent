@@ -422,3 +422,12 @@ Generated Prompt → ResponseGenerator → Natural Language Response
 ## Conclusion
 
 This AI Agent project demonstrates a practical implementation of LangChain's LCEL for creating a multi-step AI workflow. The project includes both a traditional linear architecture using LangChain's LCEL for simple, sequential operations and an enhanced architecture using LangGraph for complex, stateful workflows with conditional logic, error recovery, iterative refinement, and wider search strategies. The system effectively leverages LangChain's core components to create a robust natural language to SQL conversion system with configurable LLM providers and advanced security features.
+
+### Additional Features
+
+The system also includes:
+
+- **Database Alias to Real Name Mapping**: Maps database aliases used internally to real database names for LLMs, ensuring accurate query generation
+- **Previous SQL Query History**: Maintains a history of all previously generated SQL queries to prevent repetition of failed approaches and provide context for subsequent query generations
+- **MCP (Model Context Protocol) Integration**: Discover and interact with MCP services, with dedicated model for optimized MCP-related queries
+- **MCP Search Server**: MCP-compliant service for web search queries via Brave Search API, allowing LLM models to perform web searches for current information

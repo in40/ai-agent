@@ -8,7 +8,7 @@ import re
 from typing import Dict, Optional, List
 from sqlalchemy import create_engine, text
 from sqlalchemy.exc import SQLAlchemyError
-from config.settings import DATABASE_URL
+from config.settings import DATABASE_URL, DISABLE_DATABASES
 from config.database_aliases import get_db_alias_mapper
 import logging
 import time
@@ -23,11 +23,13 @@ class MultiDatabaseManager:
     
     def __init__(self):
         self.databases: Dict[str, DatabaseManager] = {}
-        # Add the default database if DATABASE_URL is configured
-        if DATABASE_URL:
-            # Extract the real database name from the URL to use as the configuration name
-            db_name = self._extract_db_name_from_url(DATABASE_URL)
-            self.add_database(db_name, DATABASE_URL)
+        # Only initialize databases if they are not disabled
+        if not DISABLE_DATABASES:
+            # Add the default database if DATABASE_URL is configured
+            if DATABASE_URL:
+                # Extract the real database name from the URL to use as the configuration name
+                db_name = self._extract_db_name_from_url(DATABASE_URL)
+                self.add_database(db_name, DATABASE_URL)
 
     def _extract_db_name_from_url(self, database_url: str) -> str:
         """
@@ -69,19 +71,24 @@ class MultiDatabaseManager:
     def add_database(self, name: str, database_url: str, **kwargs) -> bool:
         """
         Add a new database connection to the manager.
-        
+
         Args:
             name: A unique identifier for the database
             database_url: The connection URL for the database
             **kwargs: Additional options for the database connection
-            
+
         Returns:
             bool: True if the database was added successfully, False otherwise
         """
+        # If databases are disabled, return False to indicate no database was added
+        if DISABLE_DATABASES:
+            logger.info("Databases are disabled, skipping database addition")
+            return False
+
         if not self._is_valid_database_name(name):
             logger.error(f"Invalid database name: {name}")
             return False
-            
+
         if name in self.databases:
             existing_db_manager = self.databases[name]
             if existing_db_manager.database_url == database_url:
@@ -156,6 +163,11 @@ class MultiDatabaseManager:
         Returns:
             The schema dump for the specified database
         """
+        # If databases are disabled, return empty schema
+        if DISABLE_DATABASES:
+            logger.info("Databases are disabled, returning empty schema dump")
+            return {}
+
         db_manager = self.get_database(db_name)
         if not db_manager:
             raise ValueError(f"Database '{db_name}' not found in manager")
@@ -178,35 +190,45 @@ class MultiDatabaseManager:
     def execute_query(self, db_name: str, query: str):
         """
         Execute a query on a specific database.
-        
+
         Args:
             db_name: The name of the database to execute the query on
             query: The SQL query to execute
-            
+
         Returns:
             The results of the query
         """
+        # If databases are disabled, return empty results
+        if DISABLE_DATABASES:
+            logger.info("Databases are disabled, returning empty query results")
+            return []
+
         db_manager = self.get_database(db_name)
         if not db_manager:
             raise ValueError(f"Database '{db_name}' not found in manager")
-        
+
         return db_manager.execute_query(query)
     
     def test_connection(self, db_name: str) -> bool:
         """
         Test the connection to a specific database.
-        
+
         Args:
             db_name: The name of the database to test
-            
+
         Returns:
             bool: True if the connection is successful, False otherwise
         """
+        # If databases are disabled, return False to indicate no connection
+        if DISABLE_DATABASES:
+            logger.info("Databases are disabled, returning False for connection test")
+            return False
+
         db_manager = self.get_database(db_name)
         if not db_manager:
             logger.error(f"Database '{db_name}' not found in manager")
             return False
-        
+
         return db_manager.test_connection()
     
     def _is_valid_database_name(self, name: str) -> bool:
@@ -244,6 +266,11 @@ class DatabaseManager:
         Get a dump of the database schema (table names, column names, types, etc.)
         Supports both PostgreSQL and SQLite
         """
+        # If databases are disabled, return empty schema
+        if DISABLE_DATABASES:
+            logger.info("Databases are disabled, returning empty schema dump from DatabaseManager")
+            return {}
+
         current_time = time.time()
 
         # Check if we have a cached schema and it's still valid (not expired)
@@ -406,6 +433,11 @@ class DatabaseManager:
         """
         Execute a SQL query and return the results
         """
+        # If databases are disabled, return empty results
+        if DISABLE_DATABASES:
+            logger.info("Databases are disabled, returning empty query results from DatabaseManager")
+            return []
+
         try:
             with self.engine.connect() as connection:
                 result = connection.execute(text(query))
@@ -429,6 +461,11 @@ class DatabaseManager:
         """
         Test the database connection
         """
+        # If databases are disabled, return False to indicate no connection
+        if DISABLE_DATABASES:
+            logger.info("Databases are disabled, returning False for connection test from DatabaseManager")
+            return False
+
         try:
             with self.engine.connect() as connection:
                 connection.execute(text("SELECT 1"))
@@ -454,6 +491,11 @@ def add_database_from_config():
     - DB_{NAME}_NAME
     - DB_{NAME}_URL
     """
+    # If databases are disabled, skip adding databases from config
+    if DISABLE_DATABASES:
+        logger.info("Databases are disabled, skipping database configuration from environment variables")
+        return
+
     # Look for environment variables that define additional databases
     for key, value in os.environ.items():
         if key.startswith("DB_") and key.endswith("_URL"):
@@ -489,6 +531,11 @@ def reload_database_config():
     This function compares the current databases with the ones defined in environment variables
     and only adds/removes databases as needed to minimize unnecessary operations.
     """
+    # If databases are disabled, skip reloading database configurations
+    if DISABLE_DATABASES:
+        logger.info("Databases are disabled, skipping database configuration reload")
+        return
+
     # Get the databases that should be present based on environment variables
     desired_dbs = {}
 
@@ -552,4 +599,6 @@ def reload_database_config():
 
 
 # Initialize databases from environment variables when module is loaded
-add_database_from_config()
+# Only if databases are not disabled
+if not DISABLE_DATABASES:
+    add_database_from_config()

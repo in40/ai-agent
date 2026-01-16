@@ -1,6 +1,6 @@
 import re
 from utils.multi_database_manager import multi_db_manager
-from config.settings import TERMINATE_ON_POTENTIALLY_HARMFUL_SQL, ENABLE_SCREEN_LOGGING
+from config.settings import TERMINATE_ON_POTENTIALLY_HARMFUL_SQL, ENABLE_SCREEN_LOGGING, DISABLE_DATABASES
 import logging
 
 logger = logging.getLogger(__name__)
@@ -9,12 +9,19 @@ class SQLExecutor:
     def __init__(self, database_manager=None):
         # Use the global multi-database manager if none provided
         self.db_manager = database_manager or multi_db_manager
+        # Store the disable databases setting
+        self.disable_databases = DISABLE_DATABASES
 
     def execute_sql_and_get_results(self, sql_query, db_name=None, table_to_db_mapping=None):
         """
         Execute the SQL query and return the results
         If db_name is "all_databases" or None, execute on all databases and aggregate results
         """
+        # If databases are disabled, return empty results
+        if self.disable_databases:
+            logger.info("Databases are disabled, returning empty results for SQL execution")
+            return []
+
         # If db_name is None, use the primary database name from the database manager
         if db_name is None:
             # Get the first available database as the primary database
@@ -134,6 +141,11 @@ class SQLExecutor:
         Validate that all tables referenced in the SQL query exist in the specified database
         and that all columns referenced in the query exist in the corresponding tables
         """
+        # If databases are disabled, skip validation and return True
+        if self.disable_databases:
+            logger.info("Databases are disabled, skipping table existence validation")
+            return True
+
         import re
         import json
 
@@ -639,6 +651,10 @@ class SQLExecutor:
         NOTE: True cross-database joins are not supported by most SQL databases, so complex queries
         involving joins across databases will likely fail at execution time. This is expected behavior.
         """
+        # If databases are disabled, return empty results
+        if self.disable_databases:
+            logger.info("Databases are disabled, returning empty results for cross-database execution")
+            return []
         import re
         import json
 

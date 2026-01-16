@@ -50,6 +50,13 @@ The enhanced version of the agent uses LangGraph to provide:
 - Map original table names to their respective databases
 - Database alias to real name mapping system for improved LLM accuracy
 
+### MCP (Model Context Protocol) Integration
+- Discover and interact with MCP services
+- Generate and execute tool calls to MCP services
+- Dedicated MCP model for optimized MCP-related queries
+- Separate configuration for MCP-specific tasks
+- Fallback to original MCP model if dedicated model unavailable
+
 ### Advanced Security Analysis
 - Basic keyword matching for harmful SQL commands
 - Advanced LLM-based security analysis to reduce false positives
@@ -88,6 +95,32 @@ The enhanced version of the agent uses LangGraph to provide:
 - Supports both PostgreSQL and SQLite databases
 - Includes table and column comments in schema dumps
 - Improves accuracy and relevance of SQL queries
+
+### Database Alias to Real Name Mapping
+- Maps database aliases used internally to real database names for LLMs
+- Ensures LLMs receive accurate database names for better query generation
+- Automatically extracts real names from database URLs
+- Supports manual mapping via environment variables
+- Maintains backward compatibility with existing configurations
+
+### Previous SQL Query History
+- Maintains a history of all previously generated SQL queries
+- Prevents repetition of failed approaches
+- Provides context for subsequent query generations
+- Improves convergence on successful queries
+
+### MCP (Model Context Protocol) Integration
+- Discover and interact with MCP services
+- Generate and execute tool calls to MCP services
+- Dedicated MCP model for optimized MCP-related queries
+- Separate configuration for MCP-specific tasks
+- Fallback to original MCP model if dedicated model unavailable
+
+### MCP Search Server
+- MCP-compliant service for web search queries via Brave Search API
+- Allows LLM models to perform web searches for current information
+- Follows the same architecture patterns as other MCP services
+- Provides clean API for search queries with standardized response format
 
 ## Workflow
 
@@ -194,6 +227,18 @@ The agent can be configured via environment variables in the `.env` file:
 - `SECURITY_LLM_HOSTNAME`: Hostname for security LLM service (for non-OpenAI providers)
 - `SECURITY_LLM_PORT`: Port for security LLM service (for non-OpenAI providers)
 - `SECURITY_LLM_API_PATH`: API path for security LLM service (for non-OpenAI providers)
+
+### MCP Configuration
+- `MCP_LLM_PROVIDER`: Provider for MCP service queries (default: LM Studio)
+- `MCP_LLM_MODEL`: Model to use for MCP service queries (default: qwen2.5-coder-7b-instruct-abliterated@q3_k_m)
+- `MCP_LLM_HOSTNAME`: Hostname for MCP LLM service (for non-OpenAI providers)
+- `MCP_LLM_PORT`: Port for MCP LLM service (for non-OpenAI providers)
+- `MCP_LLM_API_PATH`: API path for MCP LLM service (for non-OpenAI providers)
+- `DEDICATED_MCP_LLM_PROVIDER`: Provider for dedicated MCP model (default: LM Studio)
+- `DEDICATED_MCP_LLM_MODEL`: Model to use for dedicated MCP model (default: qwen2.5-coder-7b-instruct-abliterated@q3_k_m)
+- `DEDICATED_MCP_LLM_HOSTNAME`: Hostname for dedicated MCP LLM service (for non-OpenAI providers)
+- `DEDICATED_MCP_LLM_PORT`: Port for dedicated MCP LLM service (for non-OpenAI providers)
+- `DEDICATED_MCP_LLM_API_PATH`: API path for dedicated MCP LLM service (for non-OpenAI providers)
 
 ### API Keys
 - `OPENAI_API_KEY`: API key for OpenAI services

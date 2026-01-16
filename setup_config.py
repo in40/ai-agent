@@ -230,6 +230,15 @@ def validate_oauth_token(token):
     return True, ""
 
 
+def validate_boolean_input(value):
+    """
+    Validation for boolean input (Y/N).
+    """
+    if value.lower() in ['y', 'n', 'yes', 'no']:
+        return True, ""
+    return False, "Please enter y or n"
+
+
 def mask_sensitive_data(value, is_db_password=False):
     """
     Mask sensitive data.
@@ -930,6 +939,246 @@ def main():
         validator=validate_api_path
     )
 
+    print("\nMCP Capable Model Configuration:")
+    print("-" * 30)
+
+    # Ask if user wants to configure MCP models separately
+    # Convert boolean values from existing config to y/N format for the default
+    existing_configure_mcp_value = existing_values.get("CONFIGURE_MCP_MODELS", "N")
+    if existing_configure_mcp_value.lower() in ['true', 'false']:
+        # Convert boolean string to y/N format
+        configure_mcp_default = "Y" if existing_configure_mcp_value.lower() == 'true' else "N"
+    else:
+        # Value is already in y/N format
+        configure_mcp_default = existing_configure_mcp_value if existing_configure_mcp_value in ['Y', 'N', 'y', 'n'] else "N"
+
+    configure_mcp_models_input = get_user_input(
+        "Configure MCP capable models separately? (y/N)",
+        default_value=configure_mcp_default,
+        validator=validate_boolean_input
+    )
+    configure_mcp_models = configure_mcp_models_input.lower() in ['y', 'yes']
+
+    if configure_mcp_models:
+        # MCP SQL LLM Configuration
+        mcp_sql_llm_provider = get_user_input(
+            "Enter the provider for MCP SQL generation LLM",
+            default_value=existing_values.get("MCP_SQL_LLM_PROVIDER", "OpenAI"),
+            validator=validate_provider
+        )
+
+        # Set default values based on provider for MCP SQL LLM
+        mcp_sql_defaults = {
+            'OpenAI': {'hostname': 'api.openai.com', 'port': '443', 'api_path': '/v1'},
+            'DeepSeek': {'hostname': 'api.deepseek.com', 'port': '443', 'api_path': '/v1'},
+            'Qwen': {'hostname': 'dashscope.aliyuncs.com', 'port': '443', 'api_path': '/api/v1'},
+            'LM Studio': {'hostname': 'localhost', 'port': '1234', 'api_path': '/v1'},
+            'Ollama': {'hostname': 'localhost', 'port': '11434', 'api_path': '/api/v1'},
+            'GigaChat': {'hostname': 'gigachat.devices.sberbank.ru', 'port': '443', 'api_path': '/api/v1'}
+        }
+
+        mcp_sql_default_hostname = mcp_sql_defaults[mcp_sql_llm_provider]['hostname']
+        mcp_sql_default_port = mcp_sql_defaults[mcp_sql_llm_provider]['port']
+        mcp_sql_default_api_path = mcp_sql_defaults[mcp_sql_llm_provider]['api_path']
+
+        mcp_sql_llm_model = get_user_input(
+            "Enter the model name for MCP SQL generation",
+            default_value=existing_values.get("MCP_SQL_LLM_MODEL", "qwen2.5-coder-7b-instruct-abliterated@q3_k_m"),
+            validator=validate_model_name
+        )
+
+        mcp_sql_llm_hostname = get_user_input(
+            "Enter the hostname for MCP SQL generation LLM",
+            default_value=existing_values.get("MCP_SQL_LLM_HOSTNAME", mcp_sql_default_hostname),
+            validator=validate_hostname
+        )
+
+        mcp_sql_llm_port = get_user_input(
+            "Enter the port for MCP SQL generation LLM",
+            default_value=existing_values.get("MCP_SQL_LLM_PORT", mcp_sql_default_port),
+            validator=validate_port
+        )
+
+        mcp_sql_llm_api_path = get_user_input(
+            "Enter the API path for MCP SQL generation LLM",
+            default_value=existing_values.get("MCP_SQL_LLM_API_PATH", mcp_sql_default_api_path),
+            validator=validate_api_path
+        )
+
+        # MCP Response LLM Configuration
+        mcp_response_llm_provider = get_user_input(
+            "Enter the provider for MCP response generation LLM",
+            default_value=existing_values.get("MCP_RESPONSE_LLM_PROVIDER", "OpenAI"),
+            validator=validate_provider
+        )
+
+        # Set default values based on provider for MCP Response LLM
+        mcp_response_defaults = {
+            'OpenAI': {'hostname': 'api.openai.com', 'port': '443', 'api_path': '/v1'},
+            'DeepSeek': {'hostname': 'api.deepseek.com', 'port': '443', 'api_path': '/v1'},
+            'Qwen': {'hostname': 'dashscope.aliyuncs.com', 'port': '443', 'api_path': '/v1'},
+            'LM Studio': {'hostname': 'localhost', 'port': '1234', 'api_path': '/v1'},
+            'Ollama': {'hostname': 'localhost', 'port': '11434', 'api_path': '/v1'},
+            'GigaChat': {'hostname': 'gigachat.devices.sberbank.ru', 'port': '443', 'api_path': '/v1'}
+        }
+
+        mcp_response_default_hostname = mcp_response_defaults[mcp_response_llm_provider]['hostname']
+        mcp_response_default_port = mcp_response_defaults[mcp_response_llm_provider]['port']
+        mcp_response_default_api_path = mcp_response_defaults[mcp_response_llm_provider]['api_path']
+
+        mcp_response_llm_model = get_user_input(
+            "Enter the model name for MCP response generation",
+            default_value=existing_values.get("MCP_RESPONSE_LLM_MODEL", "qwen2.5-coder-7b-instruct-abliterated@q3_k_m"),
+            validator=validate_model_name
+        )
+
+        mcp_response_llm_hostname = get_user_input(
+            "Enter the hostname for MCP response generation LLM",
+            default_value=existing_values.get("MCP_RESPONSE_LLM_HOSTNAME", mcp_response_default_hostname),
+            validator=validate_hostname
+        )
+
+        mcp_response_llm_port = get_user_input(
+            "Enter the port for MCP response generation LLM",
+            default_value=existing_values.get("MCP_RESPONSE_LLM_PORT", mcp_response_default_port),
+            validator=validate_port
+        )
+
+        mcp_response_llm_api_path = get_user_input(
+            "Enter the API path for MCP response generation LLM",
+            default_value=existing_values.get("MCP_RESPONSE_LLM_API_PATH", mcp_response_default_api_path),
+            validator=validate_api_path
+        )
+
+        # MCP Prompt LLM Configuration
+        mcp_prompt_llm_provider = get_user_input(
+            "Enter the provider for MCP prompt generation LLM",
+            default_value=existing_values.get("MCP_PROMPT_LLM_PROVIDER", "OpenAI"),
+            validator=validate_provider
+        )
+
+        # Set default values based on provider for MCP Prompt LLM
+        mcp_prompt_defaults = {
+            'OpenAI': {'hostname': 'api.openai.com', 'port': '443', 'api_path': '/v1'},
+            'DeepSeek': {'hostname': 'api.deepseek.com', 'port': '443', 'api_path': '/v1'},
+            'Qwen': {'hostname': 'dashscope.aliyuncs.com', 'port': '443', 'api_path': '/api/v1'},
+            'LM Studio': {'hostname': 'localhost', 'port': '1234', 'api_path': '/v1'},
+            'Ollama': {'hostname': 'localhost', 'port': '11434', 'api_path': '/v1'},
+            'GigaChat': {'hostname': 'gigachat.devices.sberbank.ru', 'port': '443', 'api_path': '/v1'}
+        }
+
+        mcp_prompt_default_hostname = mcp_prompt_defaults[mcp_prompt_llm_provider]['hostname']
+        mcp_prompt_default_port = mcp_prompt_defaults[mcp_prompt_llm_provider]['port']
+        mcp_prompt_default_api_path = mcp_prompt_defaults[mcp_prompt_llm_provider]['api_path']
+
+        mcp_prompt_llm_model = get_user_input(
+            "Enter the model name for MCP prompt generation",
+            default_value=existing_values.get("MCP_PROMPT_LLM_MODEL", "qwen2.5-coder-7b-instruct-abliterated@q3_k_m"),
+            validator=validate_model_name
+        )
+
+        mcp_prompt_llm_hostname = get_user_input(
+            "Enter the hostname for MCP prompt generation LLM",
+            default_value=existing_values.get("MCP_PROMPT_LLM_HOSTNAME", mcp_prompt_default_hostname),
+            validator=validate_hostname
+        )
+
+        mcp_prompt_llm_port = get_user_input(
+            "Enter the port for MCP prompt generation LLM",
+            default_value=existing_values.get("MCP_PROMPT_LLM_PORT", mcp_prompt_default_port),
+            validator=validate_port
+        )
+
+        mcp_prompt_llm_api_path = get_user_input(
+            "Enter the API path for MCP prompt generation LLM",
+            default_value=existing_values.get("MCP_PROMPT_LLM_API_PATH", mcp_prompt_default_api_path),
+            validator=validate_api_path
+        )
+    else:
+        # If not configuring MCP models separately, use the same as regular models
+        mcp_sql_llm_provider = sql_llm_provider
+        mcp_sql_llm_model = sql_llm_model
+        mcp_sql_llm_hostname = sql_llm_hostname
+        mcp_sql_llm_port = sql_llm_port
+        mcp_sql_llm_api_path = sql_llm_api_path
+
+        mcp_response_llm_provider = response_llm_provider
+        mcp_response_llm_model = response_llm_model
+        mcp_response_llm_hostname = response_llm_hostname
+        mcp_response_llm_port = response_llm_port
+        mcp_response_llm_api_path = response_llm_api_path
+
+        mcp_prompt_llm_provider = prompt_llm_provider
+        mcp_prompt_llm_model = prompt_llm_model
+        mcp_prompt_llm_hostname = prompt_llm_hostname
+        mcp_prompt_llm_port = prompt_llm_port
+        mcp_prompt_llm_api_path = prompt_llm_api_path
+
+    print("\nDedicated MCP Model Configuration:")
+    print("-" * 35)
+
+    # Ask if user wants to configure dedicated MCP model separately
+    existing_dedicated_mcp_value = existing_values.get("DEDICATED_MCP_LLM_PROVIDER", "")
+    has_dedicated_config = bool(existing_dedicated_mcp_value)
+
+    dedicated_mcp_enabled_input = get_user_input(
+        "Configure dedicated model for MCP-specific tasks? (y/N)",
+        default_value="y" if has_dedicated_config else "n"
+    ).lower() in ['y', 'yes']
+
+    if dedicated_mcp_enabled_input:
+        # Dedicated MCP LLM Configuration
+        dedicated_mcp_llm_provider = get_user_input(
+            "Enter the provider for dedicated MCP LLM",
+            default_value=existing_values.get("DEDICATED_MCP_LLM_PROVIDER", "LM Studio"),
+            validator=validate_provider
+        )
+
+        # Set default values based on provider for Dedicated MCP LLM
+        dedicated_mcp_defaults = {
+            'OpenAI': {'hostname': 'api.openai.com', 'port': '443', 'api_path': '/v1'},
+            'DeepSeek': {'hostname': 'api.deepseek.com', 'port': '443', 'api_path': '/v1'},
+            'Qwen': {'hostname': 'dashscope.aliyuncs.com', 'port': '443', 'api_path': '/v1'},
+            'LM Studio': {'hostname': 'localhost', 'port': '1234', 'api_path': '/v1'},
+            'Ollama': {'hostname': 'localhost', 'port': '11434', 'api_path': '/v1'},
+            'GigaChat': {'hostname': 'gigachat.devices.sberbank.ru', 'port': '443', 'api_path': '/v1'}
+        }
+
+        dedicated_mcp_default_hostname = dedicated_mcp_defaults[dedicated_mcp_llm_provider]['hostname']
+        dedicated_mcp_default_port = dedicated_mcp_defaults[dedicated_mcp_llm_provider]['port']
+        dedicated_mcp_default_api_path = dedicated_mcp_defaults[dedicated_mcp_llm_provider]['api_path']
+
+        dedicated_mcp_llm_model = get_user_input(
+            "Enter the model name for dedicated MCP tasks",
+            default_value=existing_values.get("DEDICATED_MCP_LLM_MODEL", "qwen2.5-coder-7b-instruct-abliterated@q3_k_m"),
+            validator=validate_model_name
+        )
+
+        dedicated_mcp_llm_hostname = get_user_input(
+            "Enter the hostname for dedicated MCP LLM",
+            default_value=existing_values.get("DEDICATED_MCP_LLM_HOSTNAME", dedicated_mcp_default_hostname),
+            validator=validate_hostname
+        )
+
+        dedicated_mcp_llm_port = get_user_input(
+            "Enter the port for dedicated MCP LLM",
+            default_value=existing_values.get("DEDICATED_MCP_LLM_PORT", dedicated_mcp_default_port),
+            validator=validate_port
+        )
+
+        dedicated_mcp_llm_api_path = get_user_input(
+            "Enter the API path for dedicated MCP LLM",
+            default_value=existing_values.get("DEDICATED_MCP_LLM_API_PATH", dedicated_mcp_default_api_path),
+            validator=validate_api_path
+        )
+    else:
+        # If not configuring dedicated MCP model, set values to empty
+        dedicated_mcp_llm_provider = ""
+        dedicated_mcp_llm_model = ""
+        dedicated_mcp_llm_hostname = ""
+        dedicated_mcp_llm_port = ""
+        dedicated_mcp_llm_api_path = ""
+
     print("\nSecurity Configuration:")
     print("-" * 20)
     # Convert boolean values from existing config to y/N format for the default
@@ -1014,8 +1263,57 @@ def main():
     enable_screen_logging = get_user_input(
         "Enable screen logging? (y/N)",
         default_value=logging_default,
-        validator=lambda x: (True, "") if x.lower() in ['y', 'n', 'yes', 'no'] else (False, "Please enter y or n")
+        validator=validate_boolean_input
     )
+
+    print("\nDatabase Usage Configuration:")
+    print("-" * 20)
+    # Convert boolean values from existing config to y/N format for the default
+    existing_db_enabled_value = existing_values.get("DATABASE_ENABLED", "Y")
+    if existing_db_enabled_value.lower() in ['true', 'false']:
+        # Convert boolean string to y/N format
+        db_enabled_default = "Y" if existing_db_enabled_value.lower() == 'true' else "N"
+    else:
+        # Value is already in y/N format
+        db_enabled_default = existing_db_enabled_value if existing_db_enabled_value in ['Y', 'N', 'y', 'n'] else "Y"
+
+    database_enabled_input = get_user_input(
+        "Enable database usage? (Y/n)",
+        default_value=db_enabled_default,
+        validator=validate_boolean_input
+    )
+
+    # Fix the inverted logic: when user enters Y/N, convert to appropriate value for DATABASE_ENABLED
+    # Y (yes enable) should result in DATABASE_ENABLED=true
+    # N (no disable) should result in DATABASE_ENABLED=false
+    database_enabled = "true" if database_enabled_input.lower() in ['y', 'yes'] else "false"
+
+    print("\nMCP (Model Context Protocol) Usage Configuration:")
+    print("-" * 20)
+    # Convert boolean values from existing config to y/N format for the default
+    existing_mcp_enabled_value = existing_values.get("MCP_ENABLED", "Y")
+    if existing_mcp_enabled_value.lower() in ['true', 'false']:
+        # Convert boolean string to y/N format
+        mcp_enabled_default = "Y" if existing_mcp_enabled_value.lower() == 'true' else "N"
+    else:
+        # Value is already in y/N format
+        mcp_enabled_default = existing_mcp_enabled_value if existing_mcp_enabled_value in ['Y', 'N', 'y', 'n'] else "Y"
+
+    mcp_enabled_input = get_user_input(
+        "Enable MCP (Model Context Protocol) usage? (Y/n)",
+        default_value=mcp_enabled_default,
+        validator=validate_boolean_input
+    )
+
+    # Convert user input to appropriate value for MCP_ENABLED
+    # Y (yes enable) should result in MCP_ENABLED=true
+    # N (no disable) should result in MCP_ENABLED=false
+    mcp_enabled = "true" if mcp_enabled_input.lower() in ['y', 'yes'] else "false"
+
+    # Convert configure_mcp_models to appropriate value for CONFIGURE_MCP_MODELS
+    # Y (yes enable) should result in CONFIGURE_MCP_MODELS=true
+    # N (no disable) should result in CONFIGURE_MCP_MODELS=false
+    configure_mcp_models_value = "true" if configure_mcp_models_input.lower() in ['y', 'yes'] else "false"
 
     # Create .env file content
     env_content = f"""# Database Configuration
@@ -1026,6 +1324,9 @@ DB_HOSTNAME={db_hostname}
 DB_PORT={db_port}
 DB_NAME={db_name}
 DATABASE_URL={db_url}
+DATABASE_ENABLED={database_enabled}
+MCP_ENABLED={mcp_enabled}
+CONFIGURE_MCP_MODELS={configure_mcp_models_value}
 """
 
     # Add additional database configurations to the .env file
@@ -1069,6 +1370,23 @@ PROMPT_LLM_HOSTNAME={prompt_llm_hostname}
 PROMPT_LLM_PORT={prompt_llm_port}
 PROMPT_LLM_API_PATH={prompt_llm_api_path}
 
+# MCP Capable Model Configuration
+MCP_SQL_LLM_PROVIDER={mcp_sql_llm_provider}
+MCP_SQL_LLM_MODEL={mcp_sql_llm_model}
+MCP_SQL_LLM_HOSTNAME={mcp_sql_llm_hostname}
+MCP_SQL_LLM_PORT={mcp_sql_llm_port}
+MCP_SQL_LLM_API_PATH={mcp_sql_llm_api_path}
+MCP_RESPONSE_LLM_PROVIDER={mcp_response_llm_provider}
+MCP_RESPONSE_LLM_MODEL={mcp_response_llm_model}
+MCP_RESPONSE_LLM_HOSTNAME={mcp_response_llm_hostname}
+MCP_RESPONSE_LLM_PORT={mcp_response_llm_port}
+MCP_RESPONSE_LLM_API_PATH={mcp_response_llm_api_path}
+MCP_PROMPT_LLM_PROVIDER={mcp_prompt_llm_provider}
+MCP_PROMPT_LLM_MODEL={mcp_prompt_llm_model}
+MCP_PROMPT_LLM_HOSTNAME={mcp_prompt_llm_hostname}
+MCP_PROMPT_LLM_PORT={mcp_prompt_llm_port}
+MCP_PROMPT_LLM_API_PATH={mcp_prompt_llm_api_path}
+
 # Security Configuration
 TERMINATE_ON_POTENTIALLY_HARMFUL_SQL=false
 
@@ -1080,6 +1398,13 @@ SECURITY_LLM_MODEL={security_llm_model}
 SECURITY_LLM_HOSTNAME={security_llm_hostname}
 SECURITY_LLM_PORT={security_llm_port}
 SECURITY_LLM_API_PATH={security_llm_api_path}
+
+# Dedicated MCP Model Configuration (separate model specifically for MCP-related queries)
+DEDICATED_MCP_LLM_PROVIDER={dedicated_mcp_llm_provider}
+DEDICATED_MCP_LLM_MODEL={dedicated_mcp_llm_model}
+DEDICATED_MCP_LLM_HOSTNAME={dedicated_mcp_llm_hostname}
+DEDICATED_MCP_LLM_PORT={dedicated_mcp_llm_port}
+DEDICATED_MCP_LLM_API_PATH={dedicated_mcp_llm_api_path}
 
 # Logging Configuration
 ENABLE_SCREEN_LOGGING={enable_screen_logging}
@@ -1094,6 +1419,9 @@ DB_HOSTNAME={db_hostname}
 DB_PORT={db_port}
 DB_NAME={db_name}
 DATABASE_URL={db_url.replace(db_password, mask_sensitive_data(db_password, True))}
+DATABASE_ENABLED={database_enabled}
+MCP_ENABLED={mcp_enabled}
+CONFIGURE_MCP_MODELS={configure_mcp_models_value}
 """
 
     # Add additional database configurations to the masked .env file
@@ -1138,6 +1466,23 @@ PROMPT_LLM_HOSTNAME={prompt_llm_hostname}
 PROMPT_LLM_PORT={prompt_llm_port}
 PROMPT_LLM_API_PATH={prompt_llm_api_path}
 
+# MCP Capable Model Configuration
+MCP_SQL_LLM_PROVIDER={mcp_sql_llm_provider}
+MCP_SQL_LLM_MODEL={mcp_sql_llm_model}
+MCP_SQL_LLM_HOSTNAME={mcp_sql_llm_hostname}
+MCP_SQL_LLM_PORT={mcp_sql_llm_port}
+MCP_SQL_LLM_API_PATH={mcp_sql_llm_api_path}
+MCP_RESPONSE_LLM_PROVIDER={mcp_response_llm_provider}
+MCP_RESPONSE_LLM_MODEL={mcp_response_llm_model}
+MCP_RESPONSE_LLM_HOSTNAME={mcp_response_llm_hostname}
+MCP_RESPONSE_LLM_PORT={mcp_response_llm_port}
+MCP_RESPONSE_LLM_API_PATH={mcp_response_llm_api_path}
+MCP_PROMPT_LLM_PROVIDER={mcp_prompt_llm_provider}
+MCP_PROMPT_LLM_MODEL={mcp_prompt_llm_model}
+MCP_PROMPT_LLM_HOSTNAME={mcp_prompt_llm_hostname}
+MCP_PROMPT_LLM_PORT={mcp_prompt_llm_port}
+MCP_PROMPT_LLM_API_PATH={mcp_prompt_llm_api_path}
+
 # Security Configuration
 TERMINATE_ON_POTENTIALLY_HARMFUL_SQL=false
 
@@ -1149,6 +1494,13 @@ SECURITY_LLM_MODEL={security_llm_model}
 SECURITY_LLM_HOSTNAME={security_llm_hostname}
 SECURITY_LLM_PORT={security_llm_port}
 SECURITY_LLM_API_PATH={security_llm_api_path}
+
+# Dedicated MCP Model Configuration (separate model specifically for MCP-related queries)
+DEDICATED_MCP_LLM_PROVIDER={dedicated_mcp_llm_provider}
+DEDICATED_MCP_LLM_MODEL={dedicated_mcp_llm_model}
+DEDICATED_MCP_LLM_HOSTNAME={dedicated_mcp_llm_hostname}
+DEDICATED_MCP_LLM_PORT={dedicated_mcp_llm_port}
+DEDICATED_MCP_LLM_API_PATH={dedicated_mcp_llm_api_path}
 
 # Logging Configuration
 ENABLE_SCREEN_LOGGING={enable_screen_logging}
@@ -1184,6 +1536,9 @@ DB_HOSTNAME={db_hostname}
 DB_PORT={db_port}
 DB_NAME={db_name}
 DATABASE_URL={db_url}
+DATABASE_ENABLED={database_enabled}
+MCP_ENABLED={mcp_enabled}
+CONFIGURE_MCP_MODELS={configure_mcp_models_value}
 """
 
         # Add example entries for additional database configurations
@@ -1236,6 +1591,23 @@ PROMPT_LLM_HOSTNAME={prompt_llm_hostname}
 PROMPT_LLM_PORT={prompt_llm_port}
 PROMPT_LLM_API_PATH={prompt_llm_api_path}
 
+# MCP Capable Model Configuration
+MCP_SQL_LLM_PROVIDER={mcp_sql_llm_provider}
+MCP_SQL_LLM_MODEL={mcp_sql_llm_model}
+MCP_SQL_LLM_HOSTNAME={mcp_sql_llm_hostname}
+MCP_SQL_LLM_PORT={mcp_sql_llm_port}
+MCP_SQL_LLM_API_PATH={mcp_sql_llm_api_path}
+MCP_RESPONSE_LLM_PROVIDER={mcp_response_llm_provider}
+MCP_RESPONSE_LLM_MODEL={mcp_response_llm_model}
+MCP_RESPONSE_LLM_HOSTNAME={mcp_response_llm_hostname}
+MCP_RESPONSE_LLM_PORT={mcp_response_llm_port}
+MCP_RESPONSE_LLM_API_PATH={mcp_response_llm_api_path}
+MCP_PROMPT_LLM_PROVIDER={mcp_prompt_llm_provider}
+MCP_PROMPT_LLM_MODEL={mcp_prompt_llm_model}
+MCP_PROMPT_LLM_HOSTNAME={mcp_prompt_llm_hostname}
+MCP_PROMPT_LLM_PORT={mcp_prompt_llm_port}
+MCP_PROMPT_LLM_API_PATH={mcp_prompt_llm_api_path}
+
 # Security Configuration
 TERMINATE_ON_POTENTIALLY_HARMFUL_SQL=false
 
@@ -1247,6 +1619,13 @@ SECURITY_LLM_MODEL=qwen2.5-coder-7b-instruct-abliterated@q3_k_m
 SECURITY_LLM_HOSTNAME=api.openai.com
 SECURITY_LLM_PORT=1234
 SECURITY_LLM_API_PATH=/v1
+
+# Dedicated MCP Model Configuration (separate model specifically for MCP-related queries)
+DEDICATED_MCP_LLM_PROVIDER=LM Studio
+DEDICATED_MCP_LLM_MODEL=qwen2.5-coder-7b-instruct-abliterated@q3_k_m
+DEDICATED_MCP_LLM_HOSTNAME=localhost
+DEDICATED_MCP_LLM_PORT=1234
+DEDICATED_MCP_LLM_API_PATH=/v1
 
 # Logging Configuration
 ENABLE_SCREEN_LOGGING=N

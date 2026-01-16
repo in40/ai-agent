@@ -63,6 +63,32 @@ The enhanced version of the agent uses LangGraph to provide:
 - Feedback loops to improve query generation
 - Prevention of infinite loops during refinement
 
+### Database Alias to Real Name Mapping
+- Maps database aliases used internally to real database names for LLMs
+- Ensures LLMs receive accurate database names for better query generation
+- Automatically extracts real names from database URLs
+- Supports manual mapping via environment variables
+- Maintains backward compatibility with existing configurations
+
+### Previous SQL Query History
+- Maintains a history of all previously generated SQL queries
+- Prevents repetition of failed approaches
+- Provides context for subsequent query generations
+- Improves convergence on successful queries
+
+### MCP (Model Context Protocol) Integration
+- Discover and interact with MCP services
+- Generate and execute tool calls to MCP services
+- Dedicated MCP model for optimized MCP-related queries
+- Separate configuration for MCP-specific tasks
+- Fallback to original MCP model if dedicated model unavailable
+
+### MCP Search Server
+- MCP-compliant service for web search queries via Brave Search API
+- Allows LLM models to perform web searches for current information
+- Follows the same architecture patterns as other MCP services
+- Provides clean API for search queries with standardized response format
+
 ## Workflow
 
 ### Enhanced LangGraph Architecture:
