@@ -1,6 +1,6 @@
 # AI Agent for Natural Language to SQL Queries
 
-This AI agent processes natural language requests from users, converts them to SQL queries, executes them against a database, and returns natural language responses. The system is built with both a traditional linear architecture and an enhanced LangGraph-based architecture for complex workflows.
+This AI agent processes natural language requests from users, converts them to SQL queries, executes them against a database, and returns natural language responses. The system is built with an enhanced LangGraph-based architecture for complex workflows with sophisticated error handling and recovery mechanisms.
 
 ## Architecture
 
@@ -15,26 +15,43 @@ The AI agent consists of 5 main components:
 ## Enhanced LangGraph Architecture
 
 The enhanced version of the agent uses LangGraph to provide:
-- Stateful workflow management
+- Stateful workflow management with comprehensive state tracking
 - Conditional logic for validation and error handling
-- Iterative refinement of SQL queries
-- Advanced error recovery mechanisms
+- Iterative refinement of SQL queries with security validation after refinement
+- Advanced error recovery mechanisms with configurable retry limits
 - Detailed execution monitoring and logging
 - Wider search strategies when initial queries return no results
 - Multi-provider LLM support (OpenAI, GigaChat, DeepSeek, Qwen, LM Studio, Ollama)
 - Multi-database support with schema aggregation
+- MCP (Model Context Protocol) integration for external service interaction
 
 ### LangGraph Nodes:
 1. **get_schema**: Retrieves database schema information from all available databases
-2. **generate_sql**: Creates SQL queries from natural language requests
-3. **validate_sql**: Performs safety and validation checks (with optional advanced LLM-based analysis)
-4. **execute_sql**: Executes the SQL query against all databases
-5. **refine_sql**: Improves queries based on errors or feedback
-6. **security_check_after_refinement**: Performs security check on refined SQL query
-7. **generate_wider_search_query**: Generates alternative queries when initial query returns no results
-8. **execute_wider_search**: Executes the wider search query
-9. **generate_prompt**: Creates specialized prompts for response generation
-10. **generate_response**: Creates natural language responses from results
+2. **discover_services**: Discovers MCP services from the registry
+3. **query_mcp_services**: Queries MCP services for information before attempting SQL database queries
+4. **generate_sql**: Creates SQL queries from natural language requests
+5. **validate_sql**: Performs safety and validation checks (with optional advanced LLM-based analysis)
+6. **execute_sql**: Executes the SQL query against all databases
+7. **refine_sql**: Improves queries based on errors or feedback
+8. **security_check_after_refinement**: Performs security check on refined SQL query
+9. **generate_wider_search_query**: Generates alternative queries when initial query returns no results
+10. **execute_wider_search**: Executes the wider search query
+11. **generate_prompt**: Creates specialized prompts for response generation
+12. **generate_response**: Creates natural language responses from results
+13. **execute_mcp_tool_calls_and_return**: Executes MCP tool calls and returns results when both prompt and response generation are disabled
+14. **return_mcp_response_to_llm**: Returns MCP responses directly to the LLM model when initiated by the LLM
+15. **await_mcp_response**: Awaits MCP response from the LLM model that was called with the MCP results
+
+### Conditional Logic:
+- **should_skip_database_operations**: Determines if database operations should be skipped based on the `disable_databases` flag
+- **should_generate_sql_after_mcp_query**: Routes to appropriate nodes based on MCP service results and database availability
+- **route_after_validation**: Routes to appropriate execution node based on query type and validation results
+- **should_execute_wider_search**: Determines if wider search should be performed when initial query returns no results
+- **should_refine_or_respond**: Determines if SQL should be refined or response generated based on errors and retry count
+- **should_validate_after_security_check**: Determines if validation should occur after security check or proceed to response
+- **should_continue_wider_search**: Determines next step after executing wider search based on results and errors
+- **should_skip_prompt_and_response_generation**: Skips prompt/response generation when both are disabled
+- **route_after_mcp_execution**: Routes MCP results to user or back to LLM for processing
 
 ## Key Features
 
@@ -43,6 +60,7 @@ The enhanced version of the agent uses LangGraph to provide:
 - Aggregate schema information from all databases
 - Execute queries across all databases and combine results
 - Map original table names to their respective databases
+- Cross-database query execution support
 
 ### Advanced Security Analysis
 - Basic keyword matching for harmful SQL commands
@@ -50,18 +68,20 @@ The enhanced version of the agent uses LangGraph to provide:
 - Context-aware analysis that considers database schema
 - Configurable security policies via environment variables
 - Support for both basic keyword matching and advanced LLM-based analysis
+- Security validation after query refinement
 
 ### Wider Search Strategies
 - Automatic fallback to wider search when initial queries return no results
 - Generation of alternative queries based on schema and original request
 - Iterative refinement of wider search strategies
-- Prevention of infinite loops during wider search
+- Prevention of infinite loops during wider search with configurable limits
 
 ### Enhanced Error Handling
-- Automatic retry mechanisms when SQL generation fails
+- Automatic retry mechanisms when SQL generation fails (up to 10 attempts)
 - Graceful degradation when database queries fail
 - Feedback loops to improve query generation
 - Prevention of infinite loops during refinement
+- Comprehensive error tracking across all node executions
 
 ### Database Alias to Real Name Mapping
 - Maps database aliases used internally to real database names for LLMs
@@ -77,11 +97,13 @@ The enhanced version of the agent uses LangGraph to provide:
 - Improves convergence on successful queries
 
 ### MCP (Model Context Protocol) Integration
-- Discover and interact with MCP services
+- Discover and interact with MCP services via registry
 - Generate and execute tool calls to MCP services
 - Dedicated MCP model for optimized MCP-related queries
 - Separate configuration for MCP-specific tasks
 - Fallback to original MCP model if dedicated model unavailable
+- MCP service result integration with database query results
+- Ability to return MCP results directly to LLM for processing
 
 ### MCP Search Server
 - MCP-compliant service for web search queries via Brave Search API
@@ -95,20 +117,44 @@ The enhanced version of the agent uses LangGraph to provide:
 - Provides a fallback when specific configurations are not set
 - Supports disabling specific model components to optimize performance
 
+### Configurable Component Disabling
+- Option to disable database operations entirely
+- Option to disable prompt generation for performance optimization
+- Option to disable response generation for performance optimization
+- Option to disable SQL blocking for trusted environments
+
 ## Workflow
 
 ### Enhanced LangGraph Architecture:
 1. User submits a natural language request
 2. The `get_schema` node retrieves database schema information from all available databases
-3. The `generate_sql` node creates a SQL query from the request and schema
-4. The `validate_sql` node performs safety checks (with optional advanced LLM-based analysis)
-5. If validation passes, the `execute_sql` node executes the query against all databases
-6. If validation or execution fails, the `refine_sql` node improves the query
-7. The `security_check_after_refinement` node validates refined queries for security issues
-8. If initial query returns no results, the `generate_wider_search_query` and `execute_wider_search` nodes try alternative strategies
-9. The `generate_prompt` node creates a specialized prompt for response generation
-10. The `generate_response` node creates a natural language response from results
-11. The response is returned to the user
+3. The `discover_services` node discovers MCP services from the registry
+4. The `query_mcp_services` node queries MCP services for information before attempting SQL database queries
+5. Based on MCP results and database availability, the system routes to appropriate nodes:
+   - If databases are disabled and MCP tool calls exist → `execute_mcp_tool_calls_and_return`
+   - If databases are disabled and MCP results are sufficient → `generate_prompt`
+   - If databases are enabled and MCP results should go to LLM → `return_mcp_response_to_llm`
+   - Otherwise → `generate_sql`
+6. The `generate_sql` node creates a SQL query from the request and schema
+7. The `validate_sql` node performs safety checks (with optional advanced LLM-based analysis)
+8. Based on validation results and query type, the system routes to:
+   - If validation failed → `refine_sql`
+   - If query type is 'wider_search' → `execute_wider_search`
+   - Otherwise → `execute_sql`
+9. The `execute_sql` node executes the query against all databases
+10. If initial query returns no results or has execution errors, the system may route to:
+   - `generate_wider_search_query` and `execute_wider_search` for alternative strategies
+   - Otherwise → `generate_prompt`
+11. If validation or execution fails, the `refine_sql` node improves the query
+12. The `security_check_after_refinement` node validates refined queries for security issues
+13. Based on security check results, the system routes to:
+   - If security check failed → `validate_sql` (for further refinement)
+   - Otherwise → `execute_sql` (to execute the secured refined query)
+14. The `generate_prompt` node creates a specialized prompt for response generation
+15. If both prompt and response generation are disabled, the system routes to `execute_mcp_tool_calls_and_return`
+16. Otherwise, the `generate_response` node creates a natural language response from results
+17. If MCP results need to be returned to LLM, the system goes through `return_mcp_response_to_llm` and `await_mcp_response`
+18. The final response is returned to the user
 
 ## Setup
 
@@ -176,13 +222,15 @@ The agent can be configured via environment variables in the `.env` file:
 - `DB_{NAME}_HOSTNAME`: Database hostname
 - `DB_{NAME}_PORT`: Database port
 - `DB_{NAME}_NAME`: Database name
+- `DISABLE_DATABASES`: Flag to disable all database operations (default: false)
+- `DEFAULT_DATABASE_ENABLED`: Flag to specifically enable/disable the default database (default: true)
 
 ### LLM Configuration
 - `SQL_LLM_MODEL`: Model to use for SQL generation (default: qwen2.5-coder-7b-instruct-abliterated@q3_k_m)
 - `RESPONSE_LLM_MODEL`: Model to use for response generation (default: qwen2.5-coder-7b-instruct-abliterated@q3_k_m)
 - `PROMPT_LLM_MODEL`: Model to use for prompt generation (default: qwen2.5-coder-7b-instruct-abliterated@q3_k_m)
 - `SECURITY_LLM_MODEL`: Model to use for security analysis (default: qwen2.5-coder-7b-instruct-abliterated@q3_k_m)
-- `SQL_LLM_PROVIDER`: Provider for SQL generation (OpenAI, GigaChat, DeepSeek, Qwen, LM Studio, Ollama)
+- `SQL_LLM_PROVIDER`: Provider for SQL generation (OpenAI, GigaChat, DeepSeek, Qwen, LM Studio, Ollama, default)
 - `RESPONSE_LLM_PROVIDER`: Provider for response generation
 - `PROMPT_LLM_PROVIDER`: Provider for prompt generation
 - `SECURITY_LLM_PROVIDER`: Provider for security analysis
@@ -200,7 +248,7 @@ The agent can be configured via environment variables in the `.env` file:
 - `SECURITY_LLM_API_PATH`: API path for security LLM service (for non-OpenAI providers)
 
 ### Default Model Configuration
-- `DEFAULT_LLM_PROVIDER`: Provider to use when specific configurations are not provided (e.g., 'LM Studio', 'OpenAI', 'Ollama')
+- `DEFAULT_LLM_PROVIDER`: Provider to use when specific configurations are not provided (e.g., 'LM Studio', 'OpenAI', 'Ollama', 'default')
 - `DEFAULT_LLM_MODEL`: Model name to use as default
 - `DEFAULT_LLM_HOSTNAME`: Hostname of the default LLM service
 - `DEFAULT_LLM_PORT`: Port of the default LLM service
@@ -229,6 +277,7 @@ The agent can be configured via environment variables in the `.env` file:
 - `MCP_LLM_HOSTNAME`: Hostname for MCP LLM service (default: localhost)
 - `MCP_LLM_PORT`: Port for MCP LLM service (default: 1234)
 - `MCP_LLM_API_PATH`: API path for MCP LLM service (default: /v1)
+- `REGISTRY_URL`: URL of the MCP registry server (can be passed via command line as well)
 
 ### Dedicated MCP Model Configuration
 - `DEDICATED_MCP_LLM_PROVIDER`: Provider for dedicated MCP-related queries (default: LM Studio)
@@ -246,6 +295,7 @@ The agent can be configured via environment variables in the `.env` file:
 - Multiple layers of protection against SQL injection
 - Configurable security policies via environment variables
 - Security check after refinement to ensure refined queries are safe
+- Protection against SQL injection through pattern detection and comment filtering
 
 ### Advanced Security LLM Analysis
 
@@ -320,15 +370,17 @@ Detailed logs are available for each node execution:
 - `[NODE WARNING]` - When a node generates a warning
 - `[GRAPH START]` - When the graph begins execution
 - `[GRAPH END]` - When the graph completes execution
+- `[TIME]` - Execution time measurements for performance analysis
 
 ## Performance Considerations
 
 - Each node is timed for performance analysis
-- Retry limits prevent infinite loops
+- Retry limits prevent infinite loops (maximum 10 attempts)
 - Schema caching reduces database load
 - Error handling prevents cascading failures
 - Wider search strategies are limited to prevent excessive database queries
 - Multi-database schema aggregation is cached for efficiency
+- Configurable component disabling for performance optimization
 
 ## Troubleshooting
 
@@ -342,3 +394,5 @@ If you encounter issues:
 6. If using wider search strategies, verify that schema information is complete
 7. For security analysis issues, ensure the security LLM is properly configured
 8. For multi-database issues, verify that all database configurations are correct
+9. For MCP integration issues, verify registry URL and service availability
+10. If experiencing recursion limit errors, simplify your request or check for complex query patterns

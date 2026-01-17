@@ -5,36 +5,53 @@
 ```mermaid
 graph TD
     A[Start: User Request] --> B[Get Schema Node]
-    B --> C[Generate SQL Node]
-    C --> D[Validate SQL Node]
-    
-    D -->|Unsafe/Invalid| E[Refine SQL Node]
-    D -->|Safe/Valid| F[Execute SQL Node]
-    
-    E --> G[Security Check After Refinement]
-    G -->|Needs Refinement| D
-    G -->|Safe| F
-    
-    F -->|Has Results| H[Generate Prompt Node]
-    F -->|No Results| I[Generate Wider Search Query Node]
-    
-    H --> J[Generate Response Node]
-    J --> K[End: Natural Language Response]
-    
-    I --> L[Validate Wider Search Query]
-    L -->|Invalid| E
-    L -->|Valid| M[Execute Wider Search Node]
-    
-    M -->|Has Results| H
-    M -->|No Results| I
-    M -->|Errors| E
-    
+    B --> C[Discover Services Node]
+    C --> D[Query MCP Services Node]
+
+    D -->|Databases Disabled & MCP Tool Calls Exist| Z[Execute MCP Tool Calls and Return Node]
+    D -->|Databases Disabled & MCP Results Sufficient| H[Generate Prompt Node]
+    D -->|Databases Enabled & MCP Results to LLM| AA[Return MCP Response to LLM Node]
+    D -->|Otherwise| E[Generate SQL Node]
+
+    E --> F[Validate SQL Node]
+    F -->|Unsafe/Invalid| G[Refine SQL Node]
+    F -->|Safe/Valid| H[Execute SQL Node]
+
+    G --> I[Security Check After Refinement]
+    I -->|Needs Refinement| F
+    I -->|Safe| H
+
+    H -->|Has Results| J[Generate Prompt Node]
+    H -->|No Results| K[Generate Wider Search Query Node]
+
+    J -->|Prompt & Response Gen Disabled| Z
+    J -->|Otherwise| L[Generate Response Node]
+
+    L --> M[End: Natural Language Response]
+
+    K --> N[Validate Wider Search Query]
+    N -->|Invalid| G
+    N -->|Valid| O[Execute Wider Search Node]
+
+    O -->|Has Results| J
+    O -->|No Results| K
+    O -->|Errors| G
+
+    AA --> BB[Await MCP Response Node]
+    BB --> J
+
+    Z -->|MCP Results to LLM| AA
+    Z -->|MCP Results to User| M
+
     style A fill:#e1f5fe
-    style K fill:#e8f5e8
-    style D fill:#fff3e0
-    style F fill:#f3e5f5
-    style I fill:#e0f2f1
-    style M fill:#e0f2f1
+    style M fill:#e8f5e8
+    style F fill:#fff3e0
+    style H fill:#f3e5f5
+    style K fill:#e0f2f1
+    style O fill:#e0f2f1
+    style Z fill:#fce4ec
+    style AA fill:#f1f8e9
+    style BB fill:#e8f5f1
 ```
 
 ## Error Handling Flow Diagram
