@@ -1288,6 +1288,54 @@ def generate_prompt_node(state: AgentState) -> AgentState:
     start_time = time.time()
     logger.info(f"[NODE START] generate_prompt_node - Generating specialized prompt for request: {state['user_request']}")
 
+    # Check if prompt generation is disabled
+    import os
+    from config.settings import str_to_bool
+    disable_prompt_generation = str_to_bool(os.getenv("DISABLE_PROMPT_GENERATION", "false"))
+    if disable_prompt_generation:
+        logger.info("[NODE SKIP] generate_prompt_node - Prompt generation is disabled, using default prompt")
+
+        # Use a default prompt when prompt generation is disabled
+        # Check if we have MCP service results to include in the prompt
+        mcp_service_results = state.get("mcp_service_results", [])
+
+        # If we have MCP service results, we should incorporate them into the default prompt
+        db_results = state.get("db_results", [])
+        if mcp_service_results:
+            # Add MCP service results to the db_results for the default prompt
+            # Format MCP results to be compatible with the default prompt
+            formatted_mcp_results = []
+            for result in mcp_service_results:
+                formatted_result = {
+                    "_source": "MCP_SERVICE",
+                    "service_id": result.get("service_id"),
+                    "action": result.get("action"),
+                    "result": result.get("result"),
+                    "status": result.get("status"),
+                    "error": result.get("error"),
+                    "timestamp": result.get("timestamp")
+                }
+                formatted_mcp_results.append(formatted_result)
+
+            # Combine database results with MCP service results
+            combined_results = db_results + formatted_mcp_results
+        else:
+            combined_results = db_results
+
+        # Create default prompt with combined results
+        import json
+        results_str = json.dumps(combined_results, indent=2, default=str) if combined_results else "No results found."
+        default_prompt = f"Based on the user request '{state['user_request']}' and the following database results, generate a natural language response:\n{results_str}"
+
+        elapsed_time = time.time() - start_time
+        logger.info(f"[NODE SUCCESS] generate_prompt_node - Used default prompt in {elapsed_time:.2f}s")
+        return {
+            **state,
+            "response_prompt": default_prompt,  # Store the default prompt for the next step
+            "query_type": state.get("query_type", "initial"),  # Preserve the query type
+            "previous_sql_queries": state.get("previous_sql_queries", [])  # Preserve previous SQL queries
+        }
+
     try:
         prompt_generator = PromptGenerator()
 
@@ -1590,6 +1638,40 @@ def generate_response_node(state: AgentState) -> AgentState:
     """
     start_time = time.time()
     logger.info(f"[NODE START] generate_response_node - Generating response for request: {state['user_request']}")
+
+    # Check if response generation is disabled
+    import os
+    from config.settings import str_to_bool
+    disable_response_generation = str_to_bool(os.getenv("DISABLE_RESPONSE_GENERATION", "false"))
+    if disable_response_generation:
+        logger.info("[NODE SKIP] generate_response_node - Response generation is disabled, using default response")
+
+        # Use a default response when response generation is disabled
+        # If we already have a final response from MCP processing, use that
+        existing_final_response = state.get("final_response", "")
+        if existing_final_response and "Error" not in existing_final_response:
+            # If we already have a processed response from MCP, use it
+            final_response = existing_final_response
+            logger.info("[NODE INFO] generate_response_node - Using existing MCP-processed response")
+        else:
+            # Otherwise, format the database results as a simple response
+            db_results = state.get("db_results", [])
+            if db_results:
+                # Format the database results as a simple response
+                import json
+                formatted_results = json.dumps(db_results, indent=2, default=str)
+                final_response = f"Query results:\n{formatted_results}"
+            else:
+                final_response = "No results found for the query."
+
+        elapsed_time = time.time() - start_time
+        logger.info(f"[NODE SUCCESS] generate_response_node - Used default response in {elapsed_time:.2f}s")
+        return {
+            **state,
+            "final_response": final_response,
+            "query_type": state.get("query_type", "initial"),  # Preserve the query type
+            "previous_sql_queries": state.get("previous_sql_queries", [])  # Preserve previous SQL queries
+        }
 
     try:
         # Use the specialized LLM model to generate the final response
@@ -1935,9 +2017,12 @@ def create_enhanced_agent_graph():
         """
         Conditional edge to determine if we should skip prompt and response generation
         """
-        from config.settings import DISABLE_PROMPT_GENERATION, DISABLE_RESPONSE_GENERATION
+        import os
+        from config.settings import str_to_bool
+        disable_prompt_generation = str_to_bool(os.getenv("DISABLE_PROMPT_GENERATION", "false"))
+        disable_response_generation = str_to_bool(os.getenv("DISABLE_RESPONSE_GENERATION", "false"))
 
-        if DISABLE_PROMPT_GENERATION and DISABLE_RESPONSE_GENERATION:
+        if disable_prompt_generation and disable_response_generation:
             logger.info("Both prompt and response generation are disabled, skipping to final response with MCP-capable model response")
             return "skip_to_final"
         else:
@@ -2502,13 +2587,18 @@ def await_mcp_response_node(state: AgentState) -> AgentState:
         # Get the already processed MCP results from the final_response field
         final_response = state.get("final_response", "")
 
+        # Also preserve the MCP service results in the state so they can be used by generate_prompt_node
+        # This ensures that even when prompt generation is disabled, the MCP results are available
+        mcp_service_results = state.get("mcp_service_results", [])
+
         elapsed_time = time.time() - start_time
         logger.info(f"[NODE SUCCESS] await_mcp_response_node - Passed through MCP response in {elapsed_time:.2f}s")
 
-        # Update the state with the final response (no additional processing needed)
+        # Update the state with the final response and preserve MCP service results
         return {
             **state,
             "final_response": final_response,
+            "mcp_service_results": mcp_service_results,  # Ensure MCP service results are preserved
             "query_type": state.get("query_type", "initial"),  # Preserve the query type
             "previous_sql_queries": state.get("previous_sql_queries", [])  # Preserve previous SQL queries
         }
@@ -2521,6 +2611,7 @@ def await_mcp_response_node(state: AgentState) -> AgentState:
         return {
             **state,
             "final_response": f"Error processing MCP results: {str(e)}",
+            "mcp_service_results": [],  # Reset MCP service results on error
             "query_type": state.get("query_type", "initial"),  # Preserve the query type
             "previous_sql_queries": state.get("previous_sql_queries", [])  # Preserve previous SQL queries
         }

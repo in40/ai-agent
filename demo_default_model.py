@@ -50,7 +50,14 @@ def demo_default_model_feature():
     print("   - Reduces the number of environment variables to manage")
     print("   - Provides a fallback when specific configurations are not set")
     print()
-    
+
+    print("6. Disabling Model Components:")
+    print("   - You can now disable specific model components to optimize performance")
+    print("   - Use DISABLE_PROMPT_GENERATION to skip the prompt generation LLM")
+    print("   - Use DISABLE_RESPONSE_GENERATION to skip the response generation LLM")
+    print("   - These can be used independently or together")
+    print()
+
     print("The default model feature is now active in your system!")
     print("All model classes (SQLGenerator, ResponseGenerator, etc.) will use the default configuration")
     print("when specific configurations are not provided or are set to 'default'.")

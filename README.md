@@ -89,6 +89,12 @@ The enhanced version of the agent uses LangGraph to provide:
 - Follows the same architecture patterns as other MCP services
 - Provides clean API for search queries with standardized response format
 
+### Default Model Configuration
+- Simplified configuration when using the same model for all tasks
+- Reduces the number of environment variables to manage
+- Provides a fallback when specific configurations are not set
+- Supports disabling specific model components to optimize performance
+
 ## Workflow
 
 ### Enhanced LangGraph Architecture:
@@ -134,7 +140,7 @@ The enhanced version of the agent uses LangGraph to provide:
    DB_{NAME}_PORT=5432
    DB_{NAME}_NAME=database_name
    ```
-   
+
    Or use direct URL:
    ```
    DB_{NAME}_URL=postgresql://username:password@hostname:port/database_name
@@ -157,101 +163,6 @@ python main.py
 python main.py --request "Show me all users from New York"
 ```
 
-### Basic Usage Example
-
-```python
-from langgraph_agent import run_enhanced_agent
-
-# Process a natural language request
-result = run_enhanced_agent("Show me all users from the database")
-
-print("Generated SQL:", result["generated_sql"])
-print("Results:", result["db_results"])
-print("Response:", result["final_response"])
-print("Execution log:", result["execution_log"])
-print("Query type:", result["query_type"])  # Either "initial" or "wider_search"
-```
-
-### Advanced Usage Example
-
-```python
-from langgraph_agent import create_enhanced_agent_graph, AgentState
-
-# Create the graph
-graph = create_enhanced_agent_graph()
-
-# Define initial state
-initial_state: AgentState = {
-    "user_request": "Get all users from the database",
-    "schema_dump": {},
-    "sql_query": "",
-    "db_results": [],
-    "response_prompt": "",  # Specialized prompt for response generation
-    "final_response": "",
-    "messages": [],
-    "validation_error": None,
-    "execution_error": None,
-    "sql_generation_error": None,
-    "retry_count": 0,
-    "disable_sql_blocking": False,
-    "query_type": "initial",  # Either "initial" or "wider_search"
-    "previous_sql_queries": [],  # History of all previously generated SQL queries
-    "table_to_real_db_mapping": {}  # Mapping from table names to real database names
-}
-
-# Run the graph
-result = graph.invoke(initial_state)
-```
-
-### Disabling SQL Blocking Example
-
-```python
-from langgraph_agent import run_enhanced_agent
-
-# Process a request with SQL blocking disabled
-result = run_enhanced_agent(
-    "Show me all users from the database",
-    disable_sql_blocking=True
-)
-
-print("Generated SQL:", result["generated_sql"])
-print("Results:", result["db_results"])
-print("Response:", result["final_response"])
-```
-
-### Using Default Model Configuration
-
-```python
-# To use the default model for all tasks, you can set:
-# export SQL_LLM_PROVIDER='default'
-# export RESPONSE_LLM_PROVIDER='default'
-# export PROMPT_LLM_PROVIDER='default'
-# export SECURITY_LLM_PROVIDER='default'
-
-# Or programmatically:
-from config.settings import (
-    DEFAULT_LLM_PROVIDER, DEFAULT_LLM_MODEL, DEFAULT_LLM_HOSTNAME,
-    DEFAULT_LLM_PORT, DEFAULT_LLM_API_PATH
-)
-
-# The system will use the default configuration when specific configurations are not provided
-# or are set to 'default'.
-```
-
-### Disabling Specific Model Components
-
-```python
-# To optimize performance, you can disable specific model components:
-
-# Disable prompt generation:
-# export DISABLE_PROMPT_GENERATION=true
-
-# Disable response generation:
-# export DISABLE_RESPONSE_GENERATION=true
-
-# Both can be used independently or together.
-```
-
 ## Configuration
 
 The agent can be configured via environment variables in the `.env` file:
@@ -265,14 +176,13 @@ The agent can be configured via environment variables in the `.env` file:
 - `DB_{NAME}_HOSTNAME`: Database hostname
 - `DB_{NAME}_PORT`: Database port
 - `DB_{NAME}_NAME`: Database name
-- `DB_ALIAS_{ALIAS_NAME}_REAL_NAME`: Manual mapping from database alias to real database name (e.g., `DB_ALIAS_SALES_REAL_NAME=production_sales_db`)
 
 ### LLM Configuration
 - `SQL_LLM_MODEL`: Model to use for SQL generation (default: qwen2.5-coder-7b-instruct-abliterated@q3_k_m)
 - `RESPONSE_LLM_MODEL`: Model to use for response generation (default: qwen2.5-coder-7b-instruct-abliterated@q3_k_m)
 - `PROMPT_LLM_MODEL`: Model to use for prompt generation (default: qwen2.5-coder-7b-instruct-abliterated@q3_k_m)
 - `SECURITY_LLM_MODEL`: Model to use for security analysis (default: qwen2.5-coder-7b-instruct-abliterated@q3_k_m)
-- `SQL_LLM_PROVIDER`: Provider for SQL generation (OpenAI, GigaChat, DeepSeek, Qwen, LM Studio, Ollama, default)
+- `SQL_LLM_PROVIDER`: Provider for SQL generation (OpenAI, GigaChat, DeepSeek, Qwen, LM Studio, Ollama)
 - `RESPONSE_LLM_PROVIDER`: Provider for response generation
 - `PROMPT_LLM_PROVIDER`: Provider for prompt generation
 - `SECURITY_LLM_PROVIDER`: Provider for security analysis
@@ -290,7 +200,7 @@ The agent can be configured via environment variables in the `.env` file:
 - `SECURITY_LLM_API_PATH`: API path for security LLM service (for non-OpenAI providers)
 
 ### Default Model Configuration
-- `DEFAULT_LLM_PROVIDER`: Provider to use when specific configurations are not provided (e.g., 'LM Studio', 'OpenAI', 'Ollama', 'default')
+- `DEFAULT_LLM_PROVIDER`: Provider to use when specific configurations are not provided (e.g., 'LM Studio', 'OpenAI', 'Ollama')
 - `DEFAULT_LLM_MODEL`: Model name to use as default
 - `DEFAULT_LLM_HOSTNAME`: Hostname of the default LLM service
 - `DEFAULT_LLM_PORT`: Port of the default LLM service
@@ -326,10 +236,6 @@ The agent can be configured via environment variables in the `.env` file:
 - `DEDICATED_MCP_LLM_HOSTNAME`: Hostname for dedicated MCP LLM service (default: localhost)
 - `DEDICATED_MCP_LLM_PORT`: Port for dedicated MCP LLM service (default: 1234)
 - `DEDICATED_MCP_LLM_API_PATH`: API path for dedicated MCP LLM service (default: /v1)
-
-### SSH Keep-Alive Configuration
-- `SSH_KEEP_ALIVE_INTERVAL`: Interval in seconds for sending keep-alive signals (default: 45)
-- `SSH_KEEP_ALIVE_TIMEOUT`: Timeout in seconds for SSH connections (default: 60)
 
 ## Security
 

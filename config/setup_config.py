@@ -1300,6 +1300,38 @@ def main():
         security_llm_port = "443"
         security_llm_api_path = "/v1"
 
+    print("\nModel Usage Configuration:")
+    print("-" * 20)
+    # Convert boolean values from existing config to y/N format for the default
+    existing_prompt_gen_value = existing_values.get("DISABLE_PROMPT_GENERATION", "N")
+    if existing_prompt_gen_value.lower() in ['true', 'false']:
+        # Convert boolean string to y/N format
+        prompt_gen_default = "Y" if existing_prompt_gen_value.lower() == 'true' else "N"
+    else:
+        # Value is already in y/N format
+        prompt_gen_default = existing_prompt_gen_value if existing_prompt_gen_value in ['Y', 'N', 'y', 'n'] else "N"
+
+    disable_prompt_generation = get_user_input(
+        "Disable prompt generation LLM? (y/N)",
+        default_value=prompt_gen_default,
+        validator=validate_boolean_input
+    )
+
+    # Convert boolean values from existing config to y/N format for the default
+    existing_response_gen_value = existing_values.get("DISABLE_RESPONSE_GENERATION", "N")
+    if existing_response_gen_value.lower() in ['true', 'false']:
+        # Convert boolean string to y/N format
+        response_gen_default = "Y" if existing_response_gen_value.lower() == 'true' else "N"
+    else:
+        # Value is already in y/N format
+        response_gen_default = existing_response_gen_value if existing_response_gen_value in ['Y', 'N', 'y', 'n'] else "N"
+
+    disable_response_generation = get_user_input(
+        "Disable response generation LLM? (y/N)",
+        default_value=response_gen_default,
+        validator=validate_boolean_input
+    )
+
     print("\nLogging Configuration:")
     print("-" * 20)
     # Convert boolean values from existing config to y/N format for the default
@@ -1520,6 +1552,11 @@ DEDICATED_MCP_LLM_API_PATH={dedicated_mcp_llm_api_path}
 
 # Logging Configuration
 ENABLE_SCREEN_LOGGING={enable_screen_logging}
+
+# Model Disable Configuration
+# Set to 'true' to disable specific model components
+DISABLE_PROMPT_GENERATION={"true" if disable_prompt_generation.lower() in ['y', 'yes'] else "false"}
+DISABLE_RESPONSE_GENERATION={"true" if disable_response_generation.lower() in ['y', 'yes'] else "false"}
 """
 
     # Create a masked version of the content for display purposes
@@ -1627,6 +1664,11 @@ DEDICATED_MCP_LLM_API_PATH={dedicated_mcp_llm_api_path}
 
 # Logging Configuration
 ENABLE_SCREEN_LOGGING={enable_screen_logging}
+
+# Model Disable Configuration
+# Set to 'true' to disable specific model components
+DISABLE_PROMPT_GENERATION={"true" if disable_prompt_generation.lower() in ['y', 'yes'] else "false"}
+DISABLE_RESPONSE_GENERATION={"true" if disable_response_generation.lower() in ['y', 'yes'] else "false"}
 """
 
     # Write to .env file with unmasked content
@@ -1768,6 +1810,11 @@ DEDICATED_MCP_LLM_API_PATH=/v1
 
 # Logging Configuration
 ENABLE_SCREEN_LOGGING=N
+
+# Model Disable Configuration
+# Set to 'true' to disable specific model components
+DISABLE_PROMPT_GENERATION=false
+DISABLE_RESPONSE_GENERATION=false
 """
         with open(example_env_path, 'w') as example_file:
             example_file.write(example_env_content)

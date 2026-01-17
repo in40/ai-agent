@@ -167,20 +167,57 @@ class DedicatedMCPModel:
         if system_prompt is None:
             # Fallback to default prompt if external prompt is not found
             system_prompt = """
-You are an intelligent assistant with access to various MCP (Multi-Component Protocol) services and traditional LLM model knowledge. Your role is to understand user requests, determine if they can be fulfilled using the available MCP services or traditional methods.
-Search engines awailable can be used to search any type of information.
+You are an intelligent assistant with access to various MCP (Multi-Component Protocol) services and traditional LLM model knowledge. Your role is to understand user requests and respond exclusively in valid JSON format.
 
-Always try to provide responce to user.
+CRITICAL: Your entire response must be valid JSON. Do not include any text outside the JSON structure.
 
 Available MCP Services:
 {mcp_services_json}
 
+Response Format:
+{{
+  "response": "Your response to the user",
+  "tool_calls": [
+    {{
+      "service_id": "the service ID from the available services list",
+      "method": "the method to call",
+      "params": {{
+        "param1": "value1",
+        "param2": "value2"
+      }}
+    }}
+  ]
+}}
+
+If no tool calls are needed, omit the "tool_calls" field or set it to an empty array [].
+
 Your capabilities:
 1. Analyze user requests to determine if MCP services can fulfill them
-2. Generate appropriate tool calls to MCP services when needed
-3. If MCP services cannot fulfill the request, use traditional methods
-4. Always prioritize MCP services when they are relevant to the request
-5. Do not ignore traditional methods
+2. Generate appropriate tool calls to MCP services when needed using the exact format above
+3. If MCP services cannot fulfill the request, use traditional methods and respond without tool_calls
+4. Always prioritize MCP services over traditional methods when applicable
+5. Always respond in valid JSON format with no additional text
+
+Examples:
+Request: "What is the weather in Paris?"
+Response: {{
+  "response": "I'll check the weather in Paris for you.",
+  "tool_calls": [
+    {{
+      "service_id": "search_server-127-0-0-1-8090",
+      "method": "search",
+      "params": {{
+        "query": "weather in Paris France",
+        "engine": "brave_search"
+      }}
+    }}
+  ]
+}}
+
+Request: "Tell me about quantum computing"
+Response: {{
+  "response": "Quantum computing is a type of computation that harnesses the physical properties of quantum mechanics, such as superposition and entanglement, to process information. Unlike classical computers that use bits as the smallest unit of data, quantum computers use quantum bits or qubits, which can represent and store multiple states simultaneously."
+}}
 """
 
         # Create the prompt template
@@ -414,11 +451,16 @@ Your capabilities:
             # Collect parameters - start with any existing 'parameters' object
             parameters = call.get('parameters', {}).copy()
 
+            # Check if there's a 'params' key in the call (used by some LLMs to group parameters)
+            if 'params' in call:
+                # Merge the contents of 'params' into the main parameters dict
+                parameters.update(call['params'])
+
             # Add any other fields that aren't service/action identifiers to the parameters
             # This handles cases where parameters are passed directly in the call object
             # rather than nested under a 'parameters' key
             for key, value in call.items():
-                if key not in ['service_id', 'service', 'action', 'method', 'parameters']:
+                if key not in ['service_id', 'service', 'action', 'method', 'parameters', 'params']:
                     parameters[key] = value
 
             # Find the service

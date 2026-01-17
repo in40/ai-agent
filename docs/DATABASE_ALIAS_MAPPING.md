@@ -3,6 +3,8 @@
 ## Overview
 This system enables the AI agent application to use convenient aliases internally while ensuring that LLMs receive the real database names from the configuration. This addresses the requirement that "when database name passed to llm models we need to use real database names from config file instead of alias used in app."
 
+Additionally, this system provides comprehensive multi-database support with schema aggregation, cross-database query execution, and intelligent table-to-database mapping.
+
 ## Components
 
 ### 1. DatabaseAliasMapper (`config/database_aliases.py`)
@@ -97,6 +99,26 @@ Mappings can be set up in two ways:
 - Enables better schema understanding for complex queries across multiple databases
 - Reduces errors caused by mismatched database references
 
+## Multi-Database Support Features
+
+### Schema Aggregation
+- Retrieves schema information from all configured databases
+- Combines schema information into a unified view for the LLM
+- Maintains separate schema information for each database
+- Provides comprehensive table and column metadata across all databases
+
+### Cross-Database Query Execution
+- Executes queries against multiple databases simultaneously
+- Aggregates results from multiple databases
+- Handles database-specific syntax variations
+- Manages connections to multiple databases efficiently
+
+### Intelligent Table-to-Database Mapping
+- Automatically determines which database contains specific tables
+- Routes queries to the appropriate database
+- Handles cross-database joins when supported
+- Provides fallback mechanisms for unavailable databases
+
 ## Example Flow
 1. Application defines additional database "analytics" pointing to "analytics_prod_db"
 2. System automatically creates mapping: "analytics" → "analytics_prod_db"
@@ -104,3 +126,28 @@ Mappings can be set up in two ways:
 4. Both alias and real name mappings are passed to LLM
 5. LLM generates SQL using real database name "analytics_prod_db"
 6. Application executes query using internal alias "analytics" but connects to real database
+
+## Multi-Database Configuration
+For multi-database support, configure additional databases using environment variables:
+
+```
+DB_{NAME}_TYPE=postgresql
+DB_{NAME}_USERNAME=username
+DB_{NAME}_PASSWORD=password
+DB_{NAME}_HOSTNAME=localhost
+DB_{NAME}_PORT=5432
+DB_{NAME}_NAME=database_name
+```
+
+Or use direct URL:
+```
+DB_{NAME}_URL=postgresql://username:password@hostname:port/database_name
+```
+
+## Benefits of Multi-Database Support
+- Access to data across multiple databases from a single interface
+- Unified schema view for complex queries spanning multiple databases
+- Efficient resource utilization through connection pooling
+- Reduced complexity in managing multiple data sources
+- Enhanced data integration capabilities
+- Scalability through distributed data storage

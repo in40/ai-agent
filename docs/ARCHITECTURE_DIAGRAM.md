@@ -6,19 +6,23 @@
                     ┌─────────────────┐
                     │   get_schema    │
                     │ (Multi-DB)      │
+                    │ (with real DB   │
+                    │  name mapping)  │
                     └─────────┬───────┘
                               │
                               ▼
                     ┌─────────────────┐
                     │  generate_sql   │
-                    │ (with previous │
-                    │  SQL queries)   │
+                    │ (with previous  │
+                    │  SQL queries,   │
+                    │  real DB names) │
                     └─────────┬───────┘
                               │
                               ▼
                     ┌─────────────────┐
                     │  validate_sql   │
                     │ (Security LLM)  │
+                    │ (after refine)  │
                     └─────────┬───────┘
                               │
                     ┌─────────┴─────────┐
@@ -44,40 +48,45 @@
           ▼                     ▼
     ┌─────────────────┐  ┌─────────────────┐
     │ generate_wider_ │  │ generate_prompt │
-    │ _search_query   │  │                 │
-    │ (with previous  │  └─────────┬───────┘
-    │  SQL queries)   │            │
-    └─────────┬───────┘    ┌───────┘
-              │            │
-              │    ┌───────┘
-              ▼    ▼
-    ┌─────────────────┐
-    │ execute_wider_  │
-    │ _search         │
-    │ (Multi-DB)      │
-    └─────────┬───────┘
-              │
-              ▼
-    ┌─────────────────┐
-    │ should_continue_│
-    │ _wider_search   │
-    └─────────┬───────┘
-              │
-    ┌─────────┴─────────┐
-    │                   │
-    ▼                   ▼
-┌─────────────┐  ┌─────────────────┐
-│generate_resp│  │  refine_sql     │
-│             │  │ (with previous  │
-└─────────────┘  │  SQL queries)   │
-         │       └─────────────────┘
-         │                  │
-         └──────────────────┘
-                    │
-                    ▼
-           ┌────────────┐
-           │   END      │
-           └────────────┘
+    │ _search_query   │  │ (specialized)   │
+    │ (with previous  │  │                 │
+    │  SQL queries)   │  └─────────┬───────┘
+    └─────────┬───────┘            │
+              │                    │
+              │            ┌───────┘
+              ▼            ▼
+    ┌─────────────────┐  ┌─────────────────┐
+    │ execute_wider_  │  │ query_mcp_      │
+    │ _search         │  │ _services       │
+    │ (Multi-DB)      │  │ (with dedicated│
+    └─────────┬───────┘  │  MCP model)     │
+              │          └─────────┬───────┘
+              │                    │
+              ▼                    ▼
+    ┌─────────────────┐  ┌─────────────────┐
+    │ should_continue_│  │ execute_mcp_    │
+    │ _wider_search   │  │ _tool_calls     │
+    └─────────┬───────┘  └─────────┬───────┘
+              │                    │
+    ┌─────────┴─────────┐          │
+    │                   │          ▼
+    ▼                   ▼  ┌─────────────────┐
+┌─────────────┐  ┌─────────────────┐ │return_mcp_    │
+│generate_resp│  │  refine_sql     │ │_response_to_  │
+│             │  │ (with previous  │ │_llm          │
+└─────────────┘  │  SQL queries)   │ └───────────────┘
+         │       └─────────────────┘         │
+         │                  │                │
+         └──────────────────┘                ▼
+                    │               ┌─────────────────┐
+                    │               │generate_response│
+                    ▼               │                 │
+           ┌────────────┐           └─────────────────┘
+           │   END      │                      │
+           └────────────┘                      ▼
+                                           ┌────────────┐
+                                           │   END      │
+                                           └────────────┘
 ```
 
 ## MCP Integration Architecture
