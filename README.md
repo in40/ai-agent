@@ -396,3 +396,27 @@ If you encounter issues:
 8. For multi-database issues, verify that all database configurations are correct
 9. For MCP integration issues, verify registry URL and service availability
 10. If experiencing recursion limit errors, simplify your request or check for complex query patterns
+
+## GUI Interface
+
+The LangGraph Visual Editor provides a web-based interface for:
+
+- Visualizing the agent's workflow graph
+- Interacting with the agent through a user-friendly interface
+- Monitoring execution in real-time
+- Debugging and troubleshooting workflows
+- Modifying configurations through the UI
+
+To start the GUI:
+```bash
+./run_gui.sh
+```
+
+Then navigate to http://localhost:8501 in your browser.
+
+The GUI includes:
+- Graph visualization of the LangGraph workflow
+- Input form for submitting natural language requests
+- Real-time display of execution results
+- Detailed logs and error messages
+- Configuration options for various agent parameters

@@ -32,3 +32,18 @@ test.db
 .env.local
 .env.*.local
 @run_search.sh
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+node_modules/
+dist/
+build/
+.nyc_output
+coverage/
+*.lcov
+.nyc_output/
+coverage/
+# React build artifacts
+build/

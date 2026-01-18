@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LangGraph Visual Editor Suite</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+        }
+        .interface-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            background-color: #fafafa;
+        }
+        .interface-card h2 {
+            margin-top: 0;
+            color: #3498db;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 10px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        .btn-react {
+            background-color: #61dafb;
+        }
+        .btn-react:hover {
+            background-color: #21b6fb;
+        }
+        .btn-streamlit {
+            background-color: #ff4646;
+        }
+        .btn-streamlit:hover {
+            background-color: #e03e3e;
+        }
+        .btn-studio {
+            background-color: #7289da;
+        }
+        .btn-studio:hover {
+            background-color: #5a6fb5;
+        }
+        .info {
+            background-color: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>LangGraph Visual Editor Suite</h1>
+        
+        <div class="info">
+            <p>This suite provides multiple interfaces for visualizing and editing your LangGraph workflows:</p>
+            <ul>
+                <li><strong>Streamlit Editor</strong>: Browser-based editor with visualization and simulation</li>
+                <li><strong>React Editor</strong>: Modern UI with drag-and-drop capabilities</li>
+                <li><strong>LangGraph Studio</strong>: Professional development environment (requires separate installation)</li>
+            </ul>
+        </div>
+        
+        <div class="interface-card">
+            <h2>1. Enhanced Streamlit Editor</h2>
+            <p>A comprehensive visual editor built with Streamlit featuring workflow visualization, editing, simulation, and debugging capabilities.</p>
+            <a href="/streamlit" class="btn btn-streamlit">Open Streamlit Editor</a>
+        </div>
+        
+        <div class="interface-card">
+            <h2>2. React Flow Editor</h2>
+            <p>A modern, interactive editor built with React Flow for creating and editing LangGraph workflows with drag-and-drop functionality.</p>
+            <a href="/react-editor" class="btn btn-react">Open React Editor</a>
+        </div>
+        
+        <div class="interface-card">
+            <h2>3. LangGraph Studio Integration</h2>
+            <p>Professional development environment for LangGraph with advanced debugging and visualization features.</p>
+            <p><strong>Note:</strong> Requires separate installation of LangGraph Studio (currently only available for Apple Silicon Macs).</p>
+            <button onclick="launchStudio()" class="btn btn-studio">Launch Studio Integration</button>
+            <p id="studio-status" style="margin-top: 10px;"></p>
+        </div>
+        
+        <div class="interface-card">
+            <h2>Documentation</h2>
+            <p>Learn more about the different interfaces and how to use them effectively.</p>
+            <a href="/docs/integration-guide" class="btn">View Documentation</a>
+        </div>
+    </div>
+
+    <script>
+        function launchStudio() {
+            const statusEl = document.getElementById('studio-status');
+            statusEl.innerHTML = 'Attempting to launch LangGraph Studio integration...';
+            
+            // This would make an API call to launch the studio in a real implementation
+            fetch('/api/launch-studio', {
+                method: 'POST',
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    statusEl.innerHTML = 'LangGraph Studio launched successfully! Access it at <a href="http://localhost:8080" target="_blank">http://localhost:8080</a>';
+                } else {
+                    statusEl.innerHTML = `Failed to launch: ${data.error}`;
+                }
+            })
+            .catch(error => {
+                statusEl.innerHTML = `Error launching Studio: ${error.message}`;
+            });
+        }
+    </script>
+</body>
+</html>
