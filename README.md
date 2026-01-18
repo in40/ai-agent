@@ -70,6 +70,14 @@ The enhanced version of the agent uses LangGraph to provide:
 - Support for both basic keyword matching and advanced LLM-based analysis
 - Security validation after query refinement
 
+### RAG (Retrieval-Augmented Generation) Support
+- Retrieve and utilize external documents to supplement responses
+- Support for various document formats (PDF, DOCX, TXT, HTML, MD)
+- Vector storage and similarity search capabilities
+- Seamless integration with existing LangGraph workflow
+- Configurable embedding models and vector stores
+- Automatic fallback to traditional SQL approach when appropriate
+
 ### Wider Search Strategies
 - Automatic fallback to wider search when initial queries return no results
 - Generation of alternative queries based on schema and original request
@@ -381,6 +389,22 @@ Detailed logs are available for each node execution:
 - Wider search strategies are limited to prevent excessive database queries
 - Multi-database schema aggregation is cached for efficiency
 - Configurable component disabling for performance optimization
+
+## RAG Configuration
+
+The RAG (Retrieval-Augmented Generation) component can be configured via environment variables in the `.env` file:
+
+### RAG Configuration
+- `RAG_ENABLED`: Enable or disable RAG functionality (default: true)
+- `RAG_EMBEDDING_MODEL`: Model to use for embeddings (default: all-MiniLM-L6-v2)
+- `RAG_VECTOR_STORE_TYPE`: Type of vector store to use (default: chroma)
+- `RAG_TOP_K_RESULTS`: Number of results to retrieve (default: 5)
+- `RAG_SIMILARITY_THRESHOLD`: Minimum similarity threshold (default: 0.7)
+- `RAG_CHUNK_SIZE`: Size of text chunks (default: 1000)
+- `RAG_CHUNK_OVERLAP`: Overlap between chunks (default: 100)
+- `RAG_CHROMA_PERSIST_DIR`: Directory for Chroma persistence (default: ./data/chroma_db)
+- `RAG_COLLECTION_NAME`: Name of the Chroma collection (default: documents)
+- `RAG_SUPPORTED_FILE_TYPES`: Supported file types (default: .txt,.pdf,.docx,.html,.md)
 
 ## Troubleshooting
 
