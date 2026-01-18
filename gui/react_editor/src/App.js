@@ -79,6 +79,62 @@ const initialNodes = [
     }
   },
   {
+    id: 'discover_services',
+    position: { x: 200, y: 150 },
+    data: {
+      label: 'Discover Services',
+      type: 'mcp',
+      description: 'Discovers available MCP services from the registry. Only runs when databases are disabled or MCP is enabled.',
+      editable: true,
+      logic: 'client = ServiceRegistryClient(registry_url)\nservices = client.list_all_services()',
+      nodeFunction: 'discover_services_node',
+      nextNode: 'query_mcp_services',
+      conditionalLogic: 'Always proceed to query_mcp_services'
+    },
+    type: 'default',
+    sourcePosition: Position.Right,
+    targetPosition: Position.Left,
+    style: {
+      border: '1px solid #555',
+      padding: '10px',
+      background: '#d2b4de',
+      borderRadius: '8px',
+      width: '120px',
+      height: '60px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center'
+    }
+  },
+  {
+    id: 'query_mcp_services',
+    position: { x: 400, y: 150 },
+    data: {
+      label: 'Query MCP Services',
+      type: 'mcp',
+      description: 'Queries discovered MCP services for information before attempting SQL database queries. Uses dedicated MCP model to generate appropriate tool calls.',
+      editable: true,
+      logic: 'mcp_model = DedicatedMCPModel()\ntool_calls = mcp_model.generate_mcp_tool_calls(user_request, discovered_services)\nresults = mcp_model.execute_mcp_tool_calls(tool_calls, discovered_services)',
+      nodeFunction: 'query_mcp_services_node',
+      nextNode: 'generate_sql',
+      conditionalLogic: 'If MCP results are sufficient, go to generate_prompt; if tool calls exist, go to execute_mcp_tool_calls_and_return; if results available for LLM, go to return_mcp_response_to_llm'
+    },
+    type: 'default',
+    sourcePosition: Position.Right,
+    targetPosition: Position.Left,
+    style: {
+      border: '1px solid #555',
+      padding: '10px',
+      background: '#d2b4de',
+      borderRadius: '8px',
+      width: '120px',
+      height: '60px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center'
+    }
+  },
+  {
     id: 'generate_sql',
     position: { x: 400, y: 0 },
     data: {
@@ -154,6 +210,90 @@ const initialNodes = [
       border: '1px solid #555',
       padding: '10px',
       background: '#d6eaf8',
+      borderRadius: '8px',
+      width: '120px',
+      height: '60px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center'
+    }
+  },
+  {
+    id: 'execute_mcp_tool_calls_and_return',
+    position: { x: 600, y: 150 },
+    data: {
+      label: 'Execute MCP Calls',
+      type: 'mcp',
+      description: 'Executes MCP tool calls and returns results directly to the user or LLM depending on configuration.',
+      editable: true,
+      logic: 'if mcp_tool_calls:\n  results = execute_tool_calls(mcp_tool_calls)\n  if return_mcp_results_to_llm:\n    return_to_llm(results)\n  else:\n    return results to user',
+      nodeFunction: 'execute_mcp_tool_calls_and_return_node',
+      nextNode: '__end__',
+      conditionalLogic: 'If return_mcp_results_to_llm is true, go to return_mcp_response_to_llm; otherwise go to end'
+    },
+    type: 'default',
+    sourcePosition: Position.Right,
+    targetPosition: Position.Left,
+    style: {
+      border: '1px solid #555',
+      padding: '10px',
+      background: '#d2b4de',
+      borderRadius: '8px',
+      width: '120px',
+      height: '60px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center'
+    }
+  },
+  {
+    id: 'return_mcp_response_to_llm',
+    position: { x: 800, y: 150 },
+    data: {
+      label: 'Return MCP to LLM',
+      type: 'mcp',
+      description: 'Returns MCP response directly to LLM for further processing and response generation.',
+      editable: true,
+      logic: 'mcp_response = format_mcp_results(mcp_service_results)\nllm_response = llm.process(mcp_response)',
+      nodeFunction: 'return_mcp_response_to_llm_node',
+      nextNode: 'await_mcp_response',
+      conditionalLogic: 'Always proceed to await_mcp_response'
+    },
+    type: 'default',
+    sourcePosition: Position.Right,
+    targetPosition: Position.Left,
+    style: {
+      border: '1px solid #555',
+      padding: '10px',
+      background: '#d2b4de',
+      borderRadius: '8px',
+      width: '120px',
+      height: '60px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center'
+    }
+  },
+  {
+    id: 'await_mcp_response',
+    position: { x: 1000, y: 150 },
+    data: {
+      label: 'Await MCP Response',
+      type: 'mcp',
+      description: 'Awaits the response from LLM after MCP results have been processed.',
+      editable: true,
+      logic: 'Wait for LLM to process MCP results\nUpdate state with final response',
+      nodeFunction: 'await_mcp_response_node',
+      nextNode: 'generate_prompt',
+      conditionalLogic: 'Always proceed to generate_prompt'
+    },
+    type: 'default',
+    sourcePosition: Position.Right,
+    targetPosition: Position.Left,
+    style: {
+      border: '1px solid #555',
+      padding: '10px',
+      background: '#d2b4de',
       borderRadius: '8px',
       width: '120px',
       height: '60px',
@@ -252,11 +392,21 @@ const initialNodes = [
 const initialEdges = [
   { id: 'e1', source: '__start__', target: 'get_schema', animated: true },
   { id: 'e2', source: 'get_schema', target: 'generate_sql', animated: true },
-  { id: 'e3', source: 'generate_sql', target: 'validate_sql', animated: true },
-  { id: 'e4', source: 'validate_sql', target: 'execute_sql', animated: true },
-  { id: 'e5', source: 'execute_sql', target: 'generate_prompt', animated: true },
-  { id: 'e6', source: 'generate_prompt', target: 'generate_response', animated: true },
-  { id: 'e7', source: 'generate_response', target: '__end__', animated: true },
+  { id: 'e3', source: 'get_schema', target: 'discover_services', animated: true, label: 'databases disabled' },
+  { id: 'e4', source: 'discover_services', target: 'query_mcp_services', animated: true },
+  { id: 'e5', source: 'query_mcp_services', target: 'generate_sql', animated: true, label: 'continue with SQL' },
+  { id: 'e6', source: 'query_mcp_services', target: 'generate_prompt', animated: true, label: 'MCP sufficient' },
+  { id: 'e7', source: 'query_mcp_services', target: 'execute_mcp_tool_calls_and_return', animated: true, label: 'execute tool calls' },
+  { id: 'e8', source: 'query_mcp_services', target: 'return_mcp_response_to_llm', animated: true, label: 'return to LLM' },
+  { id: 'e9', source: 'generate_sql', target: 'validate_sql', animated: true },
+  { id: 'e10', source: 'validate_sql', target: 'execute_sql', animated: true },
+  { id: 'e11', source: 'execute_sql', target: 'generate_prompt', animated: true },
+  { id: 'e12', source: 'execute_mcp_tool_calls_and_return', target: '__end__', animated: true, label: 'return to user' },
+  { id: 'e13', source: 'execute_mcp_tool_calls_and_return', target: 'return_mcp_response_to_llm', animated: true, label: 'return to LLM' },
+  { id: 'e14', source: 'return_mcp_response_to_llm', target: 'await_mcp_response', animated: true },
+  { id: 'e15', source: 'await_mcp_response', target: 'generate_prompt', animated: true },
+  { id: 'e16', source: 'generate_prompt', target: 'generate_response', animated: true },
+  { id: 'e17', source: 'generate_response', target: '__end__', animated: true },
 ];
 
 // Function to export workflow to JSON
@@ -488,7 +638,8 @@ const CustomNode = ({ data, id, xPos, yPos, nodes, setNodes, ...rest }) => {
       background: data.type === 'start' ? '#d5f5e3' :
                  data.type === 'end' ? '#f1948a' :
                  data.type === 'database' ? '#d6eaf8' :
-                 data.type === 'llm_calling' ? '#fadbd8' : '#ffffff',
+                 data.type === 'llm_calling' ? '#fadbd8' :
+                 data.type === 'mcp' ? '#d2b4de' : '#ffffff',
       borderRadius: data.type === 'start' || data.type === 'end' ? '50%' : '8px',
       width: data.type === 'start' || data.type === 'end' ? '80px' : '120px',
       height: data.type === 'start' || data.type === 'end' ? '80px' : '60px',
@@ -643,7 +794,8 @@ const LangGraphEditor = () => {
         background: type === 'start' ? '#d5f5e3' :
                    type === 'end' ? '#f1948a' :
                    type === 'database' ? '#d6eaf8' :
-                   type === 'llm_calling' ? '#fadbd8' : '#ffffff',
+                   type === 'llm_calling' ? '#fadbd8' :
+                   type === 'mcp' ? '#d2b4de' : '#ffffff',
         borderRadius: type === 'start' || type === 'end' ? '50%' : '8px',
         width: type === 'start' || type === 'end' ? '80px' : '120px',
         height: type === 'start' || type === 'end' ? '80px' : '60px',
@@ -699,6 +851,7 @@ const LangGraphEditor = () => {
           <option value="default">Default</option>
           <option value="database">Database</option>
           <option value="llm_calling">LLM Calling</option>
+          <option value="mcp">MCP</option>
           <option value="start">Start</option>
           <option value="end">End</option>
         </select>
@@ -710,6 +863,9 @@ const LangGraphEditor = () => {
         </button>
         <button onClick={() => addNode('llm_calling')} style={{ padding: '5px 10px' }}>
           Add LLM Node
+        </button>
+        <button onClick={() => addNode('mcp')} style={{ padding: '5px 10px' }}>
+          Add MCP Node
         </button>
         <button
           onClick={deleteSelectedNode}
