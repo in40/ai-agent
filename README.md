@@ -1,14 +1,14 @@
-# AI Agent for Natural Language to SQL Queries
+# AI Agent with MCP Architecture
 
-This AI agent processes natural language requests from users, converts them to SQL queries, executes them against a database, and returns natural language responses. The system is built with an enhanced LangGraph-based architecture for complex workflows with sophisticated error handling and recovery mechanisms.
+This AI agent processes natural language requests from users and leverages a flexible Model Context Protocol (MCP) architecture to interact with various services and tools. The system is built with an enhanced LangGraph-based architecture for complex workflows with sophisticated error handling and recovery mechanisms.
 
 ## Architecture
 
-The AI agent consists of 5 main components:
+The AI agent consists of multiple interconnected components that work together:
 
-1. **Database Manager**: Handles connections to databases (PostgreSQL, MySQL, etc.) and retrieves schema information
-2. **SQL Generator**: Uses an LLM to convert natural language requests to SQL queries
-3. **SQL Executor**: Safely executes SQL queries against the database with security validation
+1. **MCP Service Discovery**: Discovers and interacts with MCP services via registry
+2. **MCP Service Execution**: Executes tool calls to various MCP services (RAG, Search, SQL, DNS, etc.)
+3. **RAG (Retrieval-Augmented Generation)**: Retrieves and utilizes external documents to supplement responses
 4. **Prompt Generator**: Creates detailed prompts for the response LLM based on query results
 5. **Response Generator**: Uses an LLM to create natural language responses
 
@@ -17,18 +17,16 @@ The AI agent consists of 5 main components:
 The enhanced version of the agent uses LangGraph to provide:
 - Stateful workflow management with comprehensive state tracking
 - Conditional logic for validation and error handling
-- Iterative refinement of SQL queries with security validation after refinement
 - Advanced error recovery mechanisms with configurable retry limits
 - Detailed execution monitoring and logging
-- Wider search strategies when initial queries return no results
 - Multi-provider LLM support (OpenAI, GigaChat, DeepSeek, Qwen, LM Studio, Ollama)
-- Multi-database support with schema aggregation
 - MCP (Model Context Protocol) integration for external service interaction
+- Flexible architecture supporting various tools and services
 
 ### LangGraph Nodes:
 1. **get_schema**: Retrieves database schema information from all available databases
 2. **discover_services**: Discovers MCP services from the registry
-3. **query_mcp_services**: Queries MCP services for information before attempting SQL database queries
+3. **query_mcp_services**: Queries MCP services for information before attempting database queries
 4. **generate_sql**: Creates SQL queries from natural language requests
 5. **validate_sql**: Performs safety and validation checks (with optional advanced LLM-based analysis)
 6. **execute_sql**: Executes the SQL query against all databases
@@ -55,8 +53,37 @@ The enhanced version of the agent uses LangGraph to provide:
 
 ## Key Features
 
-### Multi-Database Support
-- Connect to multiple databases simultaneously
+### MCP (Model Context Protocol) Architecture
+- **Service Discovery**: Automatically discovers available MCP services via registry
+- **Flexible Tool Integration**: Supports various types of services (RAG, Search, SQL, DNS, etc.)
+- **Dynamic Tool Calling**: Generates and executes appropriate tool calls based on user requests
+- **Registry-Based Service Management**: Centralized service registry for service discovery and management
+- **Dedicated MCP Model**: Specialized model for optimized MCP-related queries and tool generation
+
+### MCP Services Ecosystem
+- **RAG Service**: Provides document retrieval and ingestion capabilities
+- **Search Service**: Enables web search functionality via Brave Search API
+- **SQL Service**: Handles database query generation and execution
+- **DNS Service**: Resolves hostnames to IP addresses
+- **Extensible Architecture**: Easy to add new MCP services following the same pattern
+
+### RAG (Retrieval-Augmented Generation) Support
+- Retrieve and utilize external documents to supplement responses
+- Support for various document formats (PDF, DOCX, TXT, HTML, MD)
+- Vector storage and similarity search capabilities
+- Seamless integration with existing LangGraph workflow
+- Configurable embedding models and vector stores
+- Automatic fallback to traditional approaches when appropriate
+
+### Enhanced Error Handling
+- Automatic retry mechanisms when service calls fail (up to 10 attempts)
+- Graceful degradation when service queries fail
+- Feedback loops to improve query generation
+- Prevention of infinite loops during refinement
+- Comprehensive error tracking across all node executions
+
+### Database Support (Optional)
+- Connect to multiple databases simultaneously (when enabled)
 - Aggregate schema information from all databases
 - Execute queries across all databases and combine results
 - Map original table names to their respective databases
@@ -69,55 +96,6 @@ The enhanced version of the agent uses LangGraph to provide:
 - Configurable security policies via environment variables
 - Support for both basic keyword matching and advanced LLM-based analysis
 - Security validation after query refinement
-
-### RAG (Retrieval-Augmented Generation) Support
-- Retrieve and utilize external documents to supplement responses
-- Support for various document formats (PDF, DOCX, TXT, HTML, MD)
-- Vector storage and similarity search capabilities
-- Seamless integration with existing LangGraph workflow
-- Configurable embedding models and vector stores
-- Automatic fallback to traditional SQL approach when appropriate
-
-### Wider Search Strategies
-- Automatic fallback to wider search when initial queries return no results
-- Generation of alternative queries based on schema and original request
-- Iterative refinement of wider search strategies
-- Prevention of infinite loops during wider search with configurable limits
-
-### Enhanced Error Handling
-- Automatic retry mechanisms when SQL generation fails (up to 10 attempts)
-- Graceful degradation when database queries fail
-- Feedback loops to improve query generation
-- Prevention of infinite loops during refinement
-- Comprehensive error tracking across all node executions
-
-### Database Alias to Real Name Mapping
-- Maps database aliases used internally to real database names for LLMs
-- Ensures LLMs receive accurate database names for better query generation
-- Automatically extracts real names from database URLs
-- Supports manual mapping via environment variables
-- Maintains backward compatibility with existing configurations
-
-### Previous SQL Query History
-- Maintains a history of all previously generated SQL queries
-- Prevents repetition of failed approaches
-- Provides context for subsequent query generations
-- Improves convergence on successful queries
-
-### MCP (Model Context Protocol) Integration
-- Discover and interact with MCP services via registry
-- Generate and execute tool calls to MCP services
-- Dedicated MCP model for optimized MCP-related queries
-- Separate configuration for MCP-specific tasks
-- Fallback to original MCP model if dedicated model unavailable
-- MCP service result integration with database query results
-- Ability to return MCP results directly to LLM for processing
-
-### MCP Search Server
-- MCP-compliant service for web search queries via Brave Search API
-- Allows LLM models to perform web searches for current information
-- Follows the same architecture patterns as other MCP services
-- Provides clean API for search queries with standardized response format
 
 ### Default Model Configuration
 - Simplified configuration when using the same model for all tasks
@@ -135,9 +113,9 @@ The enhanced version of the agent uses LangGraph to provide:
 
 ### Enhanced LangGraph Architecture:
 1. User submits a natural language request
-2. The `get_schema` node retrieves database schema information from all available databases
+2. The `get_schema` node retrieves database schema information from all available databases (if databases are enabled)
 3. The `discover_services` node discovers MCP services from the registry
-4. The `query_mcp_services` node queries MCP services for information before attempting SQL database queries
+4. The `query_mcp_services` node queries MCP services for information before attempting database queries
 5. Based on MCP results and database availability, the system routes to appropriate nodes:
    - If databases are disabled and MCP tool calls exist → `execute_mcp_tool_calls_and_return`
    - If databases are disabled and MCP results are sufficient → `generate_prompt`
@@ -182,27 +160,12 @@ The enhanced version of the agent uses LangGraph to provide:
    Or manually set up environment variables:
    ```bash
    cp .env.example .env
-   # Edit .env with your database URL and API keys
+   # Edit .env with your API keys and other configurations
    ```
 
-3. For multi-database support, configure additional databases using environment variables:
-   ```
-   DB_{NAME}_TYPE=postgresql
-   DB_{NAME}_USERNAME=username
-   DB_{NAME}_PASSWORD=password
-   DB_{NAME}_HOSTNAME=localhost
-   DB_{NAME}_PORT=5432
-   DB_{NAME}_NAME=database_name
-   ```
-
-   Or use direct URL:
-   ```
-   DB_{NAME}_URL=postgresql://username:password@hostname:port/database_name
-   ```
-
-4. Run the AI agent:
+3. Run the AI agent with MCP services:
    ```bash
-   python main.py
+   ./run_me.sh
    ```
 
 ## Usage
@@ -214,24 +177,12 @@ You can run the AI agent in interactive mode or pass a request directly:
 python main.py
 
 # Direct request
-python main.py --request "Show me all users from New York"
+python main.py --request "What is the current URALS price?"
 ```
 
 ## Configuration
 
 The agent can be configured via environment variables in the `.env` file:
-
-### Database Configuration
-- `DATABASE_URL`: PostgreSQL connection string for default database
-- `DB_{NAME}_URL`: Connection string for additional databases (e.g., `DB_ANALYTICS_URL`)
-- `DB_{NAME}_TYPE`: Database type (postgresql, mysql, sqlite, etc.)
-- `DB_{NAME}_USERNAME`: Database username
-- `DB_{NAME}_PASSWORD`: Database password
-- `DB_{NAME}_HOSTNAME`: Database hostname
-- `DB_{NAME}_PORT`: Database port
-- `DB_{NAME}_NAME`: Database name
-- `DISABLE_DATABASES`: Flag to disable all database operations (default: false)
-- `DEFAULT_DATABASE_ENABLED`: Flag to specifically enable/disable the default database (default: true)
 
 ### LLM Configuration
 - `SQL_LLM_MODEL`: Model to use for SQL generation (default: qwen2.5-coder-7b-instruct-abliterated@q3_k_m)
@@ -266,6 +217,7 @@ The agent can be configured via environment variables in the `.env` file:
 - `OPENAI_API_KEY`: API key for OpenAI services
 - `GIGACHAT_CREDENTIALS`: Your GigaChat authorization credentials
 - `GIGACHAT_SCOPE`: The scope for your GigaChat API access (default: GIGACHAT_API_PERS)
+- `BRAVE_SEARCH_API_KEY`: API key for Brave Search functionality
 
 ### Security Configuration
 - `SECURITY_LLM_MODEL`: Model to use for security analysis (default: qwen2.5-coder-7b-instruct-abliterated@q3_k_m)
@@ -293,6 +245,30 @@ The agent can be configured via environment variables in the `.env` file:
 - `DEDICATED_MCP_LLM_HOSTNAME`: Hostname for dedicated MCP LLM service (default: localhost)
 - `DEDICATED_MCP_LLM_PORT`: Port for dedicated MCP LLM service (default: 1234)
 - `DEDICATED_MCP_LLM_API_PATH`: API path for dedicated MCP LLM service (default: /v1)
+
+### Database Configuration (Optional)
+- `DATABASE_URL`: PostgreSQL connection string for default database
+- `DB_{NAME}_URL`: Connection string for additional databases (e.g., `DB_ANALYTICS_URL`)
+- `DB_{NAME}_TYPE`: Database type (postgresql, mysql, sqlite, etc.)
+- `DB_{NAME}_USERNAME`: Database username
+- `DB_{NAME}_PASSWORD`: Database password
+- `DB_{NAME}_HOSTNAME`: Database hostname
+- `DB_{NAME}_PORT`: Database port
+- `DB_{NAME}_NAME`: Database name
+- `DISABLE_DATABASES`: Flag to disable all database operations (default: false)
+- `DEFAULT_DATABASE_ENABLED`: Flag to specifically enable/disable the default database (default: true)
+
+### RAG Configuration
+- `RAG_ENABLED`: Enable or disable RAG functionality (default: true)
+- `RAG_EMBEDDING_MODEL`: Model to use for embeddings (default: all-MiniLM-L6-v2)
+- `RAG_VECTOR_STORE_TYPE`: Type of vector store to use (default: chroma)
+- `RAG_TOP_K_RESULTS`: Number of results to retrieve (default: 5)
+- `RAG_SIMILARITY_THRESHOLD`: Minimum similarity threshold (default: 0.7)
+- `RAG_CHUNK_SIZE`: Size of text chunks (default: 1000)
+- `RAG_CHUNK_OVERLAP`: Overlap between chunks (default: 100)
+- `RAG_CHROMA_PERSIST_DIR`: Directory for Chroma persistence (default: ./data/chroma_db)
+- `RAG_COLLECTION_NAME`: Name of the Chroma collection (default: documents)
+- `RAG_SUPPORTED_FILE_TYPES`: Supported file types (default: .txt,.pdf,.docx,.html,.md)
 
 ## Security
 
@@ -354,21 +330,6 @@ Set the provider to `GigaChat` for any of the model components:
 - `PROMPT_LLM_PROVIDER`: Set to `GigaChat` to use GigaChat for prompt generation
 - `SECURITY_LLM_PROVIDER`: Set to `GigaChat` to use GigaChat for security analysis
 
-## Schema Export with Comments
-
-The system now supports exporting database schema comments (for tables, columns, etc.) to help LLM models better understand the context of the database structure. This improves the accuracy and relevance of SQL queries generated by the AI agent.
-
-### PostgreSQL Implementation
-- Uses `pg_catalog.pg_description` to retrieve table and column comments
-- Joins with `pg_catalog.pg_statio_all_tables` to link comments to tables and columns
-- Table comments are retrieved separately from column comments
-- Column comments are retrieved alongside column metadata
-
-### SQLite Implementation
-- Extracts column comments from CREATE TABLE statements using regex patterns
-- Attempts to extract table comments from the end of CREATE TABLE statements (though SQLite typically strips these)
-- Since SQLite doesn't have native comment support, this implementation extracts comments from the original DDL if they exist
-
 ## Monitoring and Observability
 
 Detailed logs are available for each node execution:
@@ -390,36 +351,18 @@ Detailed logs are available for each node execution:
 - Multi-database schema aggregation is cached for efficiency
 - Configurable component disabling for performance optimization
 
-## RAG Configuration
-
-The RAG (Retrieval-Augmented Generation) component can be configured via environment variables in the `.env` file:
-
-### RAG Configuration
-- `RAG_ENABLED`: Enable or disable RAG functionality (default: true)
-- `RAG_EMBEDDING_MODEL`: Model to use for embeddings (default: all-MiniLM-L6-v2)
-- `RAG_VECTOR_STORE_TYPE`: Type of vector store to use (default: chroma)
-- `RAG_TOP_K_RESULTS`: Number of results to retrieve (default: 5)
-- `RAG_SIMILARITY_THRESHOLD`: Minimum similarity threshold (default: 0.7)
-- `RAG_CHUNK_SIZE`: Size of text chunks (default: 1000)
-- `RAG_CHUNK_OVERLAP`: Overlap between chunks (default: 100)
-- `RAG_CHROMA_PERSIST_DIR`: Directory for Chroma persistence (default: ./data/chroma_db)
-- `RAG_COLLECTION_NAME`: Name of the Chroma collection (default: documents)
-- `RAG_SUPPORTED_FILE_TYPES`: Supported file types (default: .txt,.pdf,.docx,.html,.md)
-
 ## Troubleshooting
 
 If you encounter issues:
 
 1. Check the logs for detailed error information
-2. Verify database connectivity
-3. Ensure LLM configurations are correct
+2. Verify LLM configurations are correct
+3. Ensure MCP registry and services are running
 4. Review the execution log for the sequence of operations
-5. Check that the database schema is accessible
-6. If using wider search strategies, verify that schema information is complete
-7. For security analysis issues, ensure the security LLM is properly configured
-8. For multi-database issues, verify that all database configurations are correct
-9. For MCP integration issues, verify registry URL and service availability
-10. If experiencing recursion limit errors, simplify your request or check for complex query patterns
+5. If using wider search strategies, verify that schema information is complete
+6. For security analysis issues, ensure the security LLM is properly configured
+7. For MCP integration issues, verify registry URL and service availability
+8. If experiencing recursion limit errors, simplify your request or check for complex query patterns
 
 ## GUI Interface
 

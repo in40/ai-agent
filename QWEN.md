@@ -35,4 +35,7 @@ incomplete_tasks = tracker.get_incomplete_tasks()
 ### Benefits
 - Resilience against server crashes or interruptions
 - Persistent tracking of work progress
-- Ability to resume from where work was left off
+- Ability to resume from where work was left offr
+
+## Qwen Added Memories
+- To run the AI agent, first activate the virtual environment with: source ai_agent_env/bin/activate
