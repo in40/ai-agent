@@ -145,7 +145,7 @@ def delete_prompt(pm):
 def main():
     """Main function to run the prompt management system."""
     # Initialize the prompt manager
-    pm = PromptManager()
+    pm = PromptManager("./core/prompts")
     
     print("Welcome to the LLM Prompt Management System!")
     

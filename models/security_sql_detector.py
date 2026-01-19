@@ -138,7 +138,7 @@ class SecuritySQLDetector:
 
         # Load the security analysis prompt from the external file
         from utils.prompt_manager import PromptManager
-        pm = PromptManager()
+        pm = PromptManager("./core/prompts")
         security_prompt_template = pm.get_prompt("security_sql_analysis")
 
         if security_prompt_template is None:

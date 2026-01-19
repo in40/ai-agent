@@ -52,7 +52,7 @@ def test_prompt_manager_loads_mcp_prompt():
         from utils.prompt_manager import PromptManager
         
         # Create a prompt manager instance
-        pm = PromptManager()
+        pm = PromptManager("./core/prompts")
         
         # Check if the MCP-capable prompt is listed
         available_prompts = pm.list_prompts()

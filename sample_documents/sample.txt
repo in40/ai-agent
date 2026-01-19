@@ -1,0 +1,34 @@
+# Sample Document for RAG Testing
+
+## Introduction
+This is a sample document created to test the RAG (Retrieval-Augmented Generation) functionality of the AI agent. The document contains various pieces of information that the AI should be able to retrieve and use when answering questions.
+
+## Company Information
+- Company Name: AI Solutions Inc.
+- Founded: 2020
+- Mission: To develop cutting-edge artificial intelligence solutions for businesses worldwide
+- Vision: To make AI accessible and beneficial for everyone
+
+## Products and Services
+Our company offers the following products and services:
+
+1. AI Consulting: Expert advice on implementing AI solutions in your business
+2. Custom AI Development: Tailored AI solutions for specific business needs
+3. AI Training: Comprehensive training programs for your team
+4. AI Maintenance: Ongoing support and maintenance for your AI systems
+
+## Contact Information
+- Email: info@aisolutions.com
+- Phone: +1-555-123-4567
+- Address: 123 AI Street, Tech City, TC 12345
+
+## Frequently Asked Questions
+
+Q: What is AI?
+A: Artificial Intelligence (AI) refers to the simulation of human intelligence in machines that are programmed to think like humans and mimic their actions.
+
+Q: How can AI benefit my business?
+A: AI can automate routine tasks, provide insights from data, improve customer service, and much more.
+
+Q: Is AI secure?
+A: Yes, with proper implementation and security measures, AI can be very secure.

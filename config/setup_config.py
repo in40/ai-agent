@@ -417,251 +417,281 @@ def main():
         except Exception as e:
             print(f"Warning: Could not read existing .env file: {e}")
 
-    # Collect configuration values
-    print("\nDefault Database Configuration:")
-    print("-" * 30)
-    print("This is the primary database that the application will use by default.")
-    print("You can later add additional databases if needed.\n")
+    # Main configuration blocks
+    print("\n=== MAIN CONFIGURATION BLOCKS ===")
+    print("We'll now configure different aspects of the application.")
+    print("For each block, you can choose whether to configure it or not.\n")
 
-    db_type = get_user_input(
-        "Enter your default database type",
-        default_value=existing_values.get("DB_TYPE", "postgresql"),
-        validator=validate_database_type
-    )
-
-    db_username = get_user_input(
-        "Enter your default database username",
-        default_value=existing_values.get("DB_USERNAME", "postgres"),
-        validator=validate_database_username
-    )
-
-    db_password = get_user_input(
-        "Enter your default database password",
-        default_value=existing_values.get("DB_PASSWORD", ""),  # Don't show password as default
-        sensitive=True,
-        is_db_password=True,
-        validator=validate_database_password
-    )
-
-    db_hostname = get_user_input(
-        "Enter your default database hostname",
-        default_value=existing_values.get("DB_HOSTNAME", "localhost"),
-        validator=validate_database_hostname
-    )
-
-    db_port = get_user_input(
-        "Enter your default database port",
-        default_value=existing_values.get("DB_PORT", "5432"),
-        validator=validate_database_port
-    )
-
-    db_name = get_user_input(
-        "Enter your default database name",
-        default_value=existing_values.get("DB_NAME", "ai_agent_db"),
-        validator=validate_database_name
-    )
-
-    # Construct the database URL
-    db_url = f"{db_type}://{db_username}:{db_password}@{db_hostname}:{db_port}/{db_name}"
-
-    # Ask if user wants to use this as the default database
-    print("\nDefault Database Usage Configuration:")
-    print("-" * 35)
-    # Convert boolean values from existing config to y/N format for the default
-    existing_default_db_enabled_value = existing_values.get("DEFAULT_DATABASE_ENABLED", "Y")
-    if existing_default_db_enabled_value.lower() in ['true', 'false']:
-        # Convert boolean string to y/N format
-        default_db_enabled_default = "Y" if existing_default_db_enabled_value.lower() == 'true' else "N"
+    # 1. DATABASE CONFIGURATION BLOCK (for SQL MCP server)
+    print("\nDATABASE CONFIGURATION:")
+    print("-" * 25)
+    print("Database configurations are used by the SQL MCP server.")
+    print("The AI client does not directly connect to databases.\n")
+    
+    # Ask if user wants to configure database
+    existing_db_enabled_value = existing_values.get("DATABASE_ENABLED", "Y")
+    if existing_db_enabled_value.lower() in ['true', 'false']:
+        db_enabled_default = "Y" if existing_db_enabled_value.lower() == 'true' else "N"
     else:
-        # Value is already in y/N format
-        default_db_enabled_default = existing_default_db_enabled_value if existing_default_db_enabled_value in ['Y', 'N', 'y', 'n'] else "Y"
+        db_enabled_default = existing_db_enabled_value if existing_db_enabled_value in ['Y', 'N', 'y', 'n'] else "Y"
 
-    default_database_enabled_input = get_user_input(
-        "Enable this as the default database? (Y/n)",
-        default_value=default_db_enabled_default,
+    database_enabled_input = get_user_input(
+        "Configure database settings for SQL MCP server? (Y/n)",
+        default_value=db_enabled_default,
         validator=validate_boolean_input
     )
+    database_enabled = "true" if database_enabled_input.lower() in ['y', 'yes'] else "false"
 
-    # Convert user input to appropriate value for DEFAULT_DATABASE_ENABLED
-    # Y (yes enable) should result in DEFAULT_DATABASE_ENABLED=true
-    # N (no disable) should result in DEFAULT_DATABASE_ENABLED=false
-    default_database_enabled = "true" if default_database_enabled_input.lower() in ['y', 'yes'] else "false"
+    if database_enabled == "true":
+        print("\nDefault Database Configuration:")
+        print("-" * 30)
+        print("This is the primary database that the SQL MCP server will use.")
+        print("You can later add additional databases if needed.\n")
 
-    # Ask if user wants to configure additional databases
-    print("\nAdditional Databases Configuration:")
-    print("-" * 35)
+        db_type = get_user_input(
+            "Enter your default database type",
+            default_value=existing_values.get("DB_TYPE"),
+            validator=validate_database_type
+        )
 
-    # Show existing additional databases if any
-    if additional_db_configs:
-        print(f"Found {len(additional_db_configs)} existing additional database configuration(s):")
-        for db_config in additional_db_configs:
-            # Mask password in the display
-            masked_url = db_config['url'].replace(db_config['password'], mask_sensitive_data(db_config['password'], True))
-            print(f"  - {db_config['name']}: {db_config['type']} database at {db_config['hostname']}:{db_config['port']}/{db_config['database_name']} (URL: {masked_url})")
+        db_username = get_user_input(
+            "Enter your default database username",
+            default_value=existing_values.get("DB_USERNAME"),
+            validator=validate_database_username
+        )
 
-    add_additional_dbs = get_user_input(
-        "Do you want to configure additional databases? (y/n)",
-        default_value="y" if additional_db_configs else "n"  # Default to 'y' if there are existing configs
-    ).lower() in ['y', 'yes']
+        db_password = get_user_input(
+            "Enter your default database password",
+            default_value=existing_values.get("DB_PASSWORD"),  # Don't show password as default
+            sensitive=True,
+            is_db_password=True,
+            validator=validate_database_password
+        )
 
-    if add_additional_dbs:
-        while True:
-            # Show existing databases and ask if user wants to modify them or add new ones
-            if additional_db_configs:
-                modify_existing = get_user_input(
-                    f"Modify existing databases ({len(additional_db_configs)} found) or add new? (m/a)",
-                    default_value="m"
-                ).lower()
+        db_hostname = get_user_input(
+            "Enter your default database hostname",
+            default_value=existing_values.get("DB_HOSTNAME"),
+            validator=validate_database_hostname
+        )
 
-                if modify_existing == 'm':
-                    # Let user select which database to modify or remove
-                    print("Select database to modify or remove:")
-                    for i, db_config in enumerate(additional_db_configs):
-                        print(f"  {i+1}. {db_config['name']} ({db_config['type']} at {db_config['hostname']})")
-                    print(f"  {len(additional_db_configs) + 1}. Add new database")
-                    print(f"  {len(additional_db_configs) + 2}. Done")
+        db_port = get_user_input(
+            "Enter your default database port",
+            default_value=existing_values.get("DB_PORT"),
+            validator=validate_database_port
+        )
 
-                    choice = get_user_input(
-                        f"Enter choice (1-{len(additional_db_configs) + 2})",
-                        validator=lambda x: (x.isdigit() and 1 <= int(x) <= len(additional_db_configs) + 2,
-                                           f"Please enter a number between 1 and {len(additional_db_configs) + 2}")
-                    )
-                    choice_num = int(choice)
+        db_name = get_user_input(
+            "Enter your default database name",
+            default_value=existing_values.get("DB_NAME"),
+            validator=validate_database_name
+        )
 
-                    if choice_num <= len(additional_db_configs):
-                        # Modify existing database
-                        idx = choice_num - 1
-                        db_config = additional_db_configs[idx]
+        # Construct the database URL
+        db_url = f"{db_type}://{db_username}:{db_password}@{db_hostname}:{db_port}/{db_name}"
 
-                        print(f"\nModifying database: {db_config['name']}")
+        # Ask if user wants to use this as the default database
+        print("\nDatabase Usage Configuration:")
+        print("-" * 35)
+        # Convert boolean values from existing config to y/N format for the default
+        existing_default_db_enabled_value = existing_values.get("DEFAULT_DATABASE_ENABLED", "Y")
+        if existing_default_db_enabled_value.lower() in ['true', 'false']:
+            # Convert boolean string to y/N format
+            default_db_enabled_default = "Y" if existing_default_db_enabled_value.lower() == 'true' else "N"
+        else:
+            # Value is already in y/N format
+            default_db_enabled_default = existing_default_db_enabled_value if existing_default_db_enabled_value in ['Y', 'N', 'y', 'n'] else "Y"
 
-                        # Ask for new values, using existing ones as defaults
-                        db_name_input = get_user_input(
-                            "Enter database name (used as identifier, e.g., 'analytics', 'reports')",
-                            default_value=db_config['name'],
-                            validator=lambda x: (bool(x and x.replace('_', '').replace('-', '').isalnum()),
-                                               "Database name must be alphanumeric with optional underscores or hyphens")
+        default_database_enabled_input = get_user_input(
+            "Enable this as the default database for SQL MCP server? (Y/n)",
+            default_value=default_db_enabled_default,
+            validator=validate_boolean_input
+        )
+
+        # Convert user input to appropriate value for DEFAULT_DATABASE_ENABLED
+        # Y (yes enable) should result in DEFAULT_DATABASE_ENABLED=true
+        # N (no disable) should result in DEFAULT_DATABASE_ENABLED=false
+        default_database_enabled = "true" if default_database_enabled_input.lower() in ['y', 'yes'] else "false"
+
+        # Ask if user wants to configure additional databases
+        print("\nAdditional Databases Configuration:")
+        print("-" * 35)
+
+        # Show existing additional databases if any
+        if additional_db_configs:
+            print(f"Found {len(additional_db_configs)} existing additional database configuration(s):")
+            for db_config in additional_db_configs:
+                # Mask password in the display
+                masked_url = db_config['url'].replace(db_config['password'], mask_sensitive_data(db_config['password'], True))
+                print(f"  - {db_config['name']}: {db_config['type']} database at {db_config['hostname']}:{db_config['port']}/{db_config['database_name']} (URL: {masked_url})")
+
+        add_additional_dbs = get_user_input(
+            "Do you want to configure additional databases for SQL MCP server? (y/n)",
+            default_value="y" if additional_db_configs else "n"  # Default to 'y' if there are existing configs
+        ).lower() in ['y', 'yes']
+
+        if add_additional_dbs:
+            while True:
+                # Show existing databases and ask if user wants to modify them or add new ones
+                if additional_db_configs:
+                    modify_existing = get_user_input(
+                        f"Modify existing databases ({len(additional_db_configs)} found) or add new? (m/a)",
+                        default_value="m"
+                    ).lower()
+
+                    if modify_existing == 'm':
+                        # Let user select which database to modify or remove
+                        print("Select database to modify or remove:")
+                        for i, db_config in enumerate(additional_db_configs):
+                            print(f"  {i+1}. {db_config['name']} ({db_config['type']} at {db_config['hostname']})")
+                        print(f"  {len(additional_db_configs) + 1}. Add new database")
+                        print(f"  {len(additional_db_configs) + 2}. Done")
+
+                        choice = get_user_input(
+                            f"Enter choice (1-{len(additional_db_configs) + 2})",
+                            validator=lambda x: (x.isdigit() and 1 <= int(x) <= len(additional_db_configs) + 2,
+                                               f"Please enter a number between 1 and {len(additional_db_configs) + 2}")
                         )
+                        choice_num = int(choice)
 
-                        db_type_input = get_user_input(
-                            "Enter database type (postgresql, mysql, sqlite, etc.)",
-                            default_value=db_config['type'],
-                            validator=validate_database_type
-                        )
+                        if choice_num <= len(additional_db_configs):
+                            # Modify existing database
+                            idx = choice_num - 1
+                            db_config = additional_db_configs[idx]
 
-                        db_username_input = get_user_input(
-                            "Enter database username",
-                            default_value=db_config['username'],
-                            validator=validate_database_username
-                        )
+                            print(f"\nModifying database: {db_config['name']}")
 
-                        db_password_input = get_user_input(
-                            "Enter database password",
-                            default_value=db_config['password'],  # Show existing password as default
-                            sensitive=True,
-                            is_db_password=True,
-                            validator=validate_database_password
-                        )
+                            # Ask for new values, using existing ones as defaults
+                            db_name_input = get_user_input(
+                                "Enter database name (used as identifier, e.g., 'analytics', 'reports')",
+                                default_value=db_config['name'],
+                                validator=lambda x: (bool(x and x.replace('_', '').replace('-', '').isalnum()),
+                                                   "Database name must be alphanumeric with optional underscores or hyphens")
+                            )
 
-                        db_hostname_input = get_user_input(
-                            "Enter database hostname",
-                            default_value=db_config['hostname'],
-                            validator=validate_database_hostname
-                        )
+                            db_type_input = get_user_input(
+                                "Enter database type (postgresql, mysql, sqlite, etc.)",
+                                default_value=db_config['type'],
+                                validator=validate_database_type
+                            )
 
-                        db_port_input = get_user_input(
-                            "Enter database port",
-                            default_value=db_config['port'],
-                            validator=validate_database_port
-                        )
+                            db_username_input = get_user_input(
+                                "Enter database username",
+                                default_value=db_config['username'],
+                                validator=validate_database_username
+                            )
 
-                        db_name_db = get_user_input(
-                            "Enter database name (actual database name)",
-                            default_value=db_config['database_name'],
-                            validator=validate_database_name
-                        )
+                            db_password_input = get_user_input(
+                                "Enter database password",
+                                default_value=db_config['password'],  # Show existing password as default
+                                sensitive=True,
+                                is_db_password=True,
+                                validator=validate_database_password
+                            )
 
-                        # Update the existing configuration
-                        additional_db_url = f"{db_type_input}://{db_username_input}:{db_password_input}@{db_hostname_input}:{db_port_input}/{db_name_db}"
+                            db_hostname_input = get_user_input(
+                                "Enter database hostname",
+                                default_value=db_config['hostname'],
+                                validator=validate_database_hostname
+                            )
 
-                        additional_db_configs[idx] = {
-                            'name': db_name_input,
-                            'url': additional_db_url,
-                            'type': db_type_input,
-                            'username': db_username_input,
-                            'password': db_password_input,
-                            'hostname': db_hostname_input,
-                            'port': db_port_input,
-                            'database_name': db_name_db
-                        }
+                            db_port_input = get_user_input(
+                                "Enter database port",
+                                default_value=db_config['port'],
+                                validator=validate_database_port
+                            )
 
-                        print(f"Updated database: {db_name_input}")
+                            db_name_db = get_user_input(
+                                "Enter database name (actual database name)",
+                                default_value=db_config['database_name'],
+                                validator=validate_database_name
+                            )
 
-                    elif choice_num == len(additional_db_configs) + 1:
-                        # Add new database
-                        print("\nEnter details for new additional database:")
-                        db_name_input = get_user_input(
-                            "Enter database name (used as identifier, e.g., 'analytics', 'reports')",
-                            validator=lambda x: (bool(x and x.replace('_', '').replace('-', '').isalnum()),
-                                               "Database name must be alphanumeric with optional underscores or hyphens")
-                        )
+                            # Update the existing configuration
+                            additional_db_url = f"{db_type_input}://{db_username_input}:{db_password_input}@{db_hostname_input}:{db_port_input}/{db_name_db}"
 
-                        db_type_input = get_user_input(
-                            "Enter database type (postgresql, mysql, sqlite, etc.)",
-                            default_value="postgresql",
-                            validator=validate_database_type
-                        )
+                            additional_db_configs[idx] = {
+                                'name': db_name_input,
+                                'url': additional_db_url,
+                                'type': db_type_input,
+                                'username': db_username_input,
+                                'password': db_password_input,
+                                'hostname': db_hostname_input,
+                                'port': db_port_input,
+                                'database_name': db_name_db
+                            }
 
-                        db_username_input = get_user_input(
-                            "Enter database username",
-                            default_value="postgres",
-                            validator=validate_database_username
-                        )
+                            print(f"Updated database: {db_name_input}")
 
-                        db_password_input = get_user_input(
-                            "Enter database password",
-                            sensitive=True,
-                            validator=validate_database_password
-                        )
+                        elif choice_num == len(additional_db_configs) + 1:
+                            # Add new database
+                            print("\nEnter details for new additional database:")
+                            db_name_input = get_user_input(
+                                "Enter database name (used as identifier, e.g., 'analytics', 'reports')",
+                                validator=lambda x: (bool(x and x.replace('_', '').replace('-', '').isalnum()),
+                                                   "Database name must be alphanumeric with optional underscores or hyphens")
+                            )
 
-                        db_hostname_input = get_user_input(
-                            "Enter database hostname",
-                            default_value="localhost",
-                            validator=validate_database_hostname
-                        )
+                            db_type_input = get_user_input(
+                                "Enter database type (postgresql, mysql, sqlite, etc.)",
+                                validator=validate_database_type
+                            )
 
-                        db_port_input = get_user_input(
-                            "Enter database port",
-                            default_value="5432",
-                            validator=validate_database_port
-                        )
+                            db_username_input = get_user_input(
+                                "Enter database username",
+                                validator=validate_database_username
+                            )
 
-                        db_name_db = get_user_input(
-                            "Enter database name (actual database name)",
-                            validator=validate_database_name
-                        )
+                            db_password_input = get_user_input(
+                                "Enter database password",
+                                sensitive=True,
+                                is_db_password=True,
+                                validator=validate_database_password
+                            )
 
-                        # Construct the additional database URL
-                        additional_db_url = f"{db_type_input}://{db_username_input}:{db_password_input}@{db_hostname_input}:{db_port_input}/{db_name_db}"
+                            db_hostname_input = get_user_input(
+                                "Enter database hostname",
+                                validator=validate_database_hostname
+                            )
 
-                        additional_db_configs.append({
-                            'name': db_name_input,
-                            'url': additional_db_url,
-                            'type': db_type_input,
-                            'username': db_username_input,
-                            'password': db_password_input,
-                            'hostname': db_hostname_input,
-                            'port': db_port_input,
-                            'database_name': db_name_db
-                        })
+                            db_port_input = get_user_input(
+                                "Enter database port",
+                                validator=validate_database_port
+                            )
 
-                        print(f"Added database: {db_name_input}")
+                            db_name_db = get_user_input(
+                                "Enter database name (actual database name)",
+                                validator=validate_database_name
+                            )
 
-                    elif choice_num == len(additional_db_configs) + 2:
-                        # Done
-                        break
+                            # Construct the additional database URL
+                            additional_db_url = f"{db_type_input}://{db_username_input}:{db_password_input}@{db_hostname_input}:{db_port_input}/{db_name_db}"
+
+                            additional_db_configs.append({
+                                'name': db_name_input,
+                                'url': additional_db_url,
+                                'type': db_type_input,
+                                'username': db_username_input,
+                                'password': db_password_input,
+                                'hostname': db_hostname_input,
+                                'port': db_port_input,
+                                'database_name': db_name_db
+                            })
+
+                            print(f"Added database: {db_name_input}")
+
+                        elif choice_num == len(additional_db_configs) + 2:
+                            # Done
+                            break
                 else:
-                    # Add new database option
+                    # No existing additional databases, just add new ones
+                    add_another = get_user_input(
+                        "Add another database? (y/n)",
+                        default_value="y"
+                    ).lower()
+
+                    if add_another not in ['y', 'yes']:
+                        break
+
                     print("\nEnter details for additional database:")
                     db_name_input = get_user_input(
                         "Enter database name (used as identifier, e.g., 'analytics', 'reports')",
@@ -671,32 +701,27 @@ def main():
 
                     db_type_input = get_user_input(
                         "Enter database type (postgresql, mysql, sqlite, etc.)",
-                        default_value="postgresql",
                         validator=validate_database_type
                     )
 
                     db_username_input = get_user_input(
                         "Enter database username",
-                        default_value="postgres",
                         validator=validate_database_username
                     )
 
                     db_password_input = get_user_input(
                         "Enter database password",
                         sensitive=True,
-                        is_db_password=True,
                         validator=validate_database_password
                     )
 
                     db_hostname_input = get_user_input(
                         "Enter database hostname",
-                        default_value="localhost",
                         validator=validate_database_hostname
                     )
 
                     db_port_input = get_user_input(
                         "Enter database port",
-                        default_value="5432",
                         validator=validate_database_port
                     )
 
@@ -720,538 +745,439 @@ def main():
                     })
 
                     print(f"Added database: {db_name_input}")
-            else:
-                # No existing additional databases, just add new ones
-                add_another = get_user_input(
-                    "Add another database? (y/n)",
-                    default_value="y"
-                ).lower()
-
-                if add_another not in ['y', 'yes']:
-                    break
-
-                print("\nEnter details for additional database:")
-                db_name_input = get_user_input(
-                    "Enter database name (used as identifier, e.g., 'analytics', 'reports')",
-                    validator=lambda x: (bool(x and x.replace('_', '').replace('-', '').isalnum()),
-                                       "Database name must be alphanumeric with optional underscores or hyphens")
-                )
-
-                db_type_input = get_user_input(
-                    "Enter database type (postgresql, mysql, sqlite, etc.)",
-                    default_value="postgresql",
-                    validator=validate_database_type
-                )
-
-                db_username_input = get_user_input(
-                    "Enter database username",
-                    default_value="postgres",
-                    validator=validate_database_username
-                )
-
-                db_password_input = get_user_input(
-                    "Enter database password",
-                    sensitive=True,
-                    validator=validate_database_password
-                )
-
-                db_hostname_input = get_user_input(
-                    "Enter database hostname",
-                    default_value="localhost",
-                    validator=validate_database_hostname
-                )
-
-                db_port_input = get_user_input(
-                    "Enter database port",
-                    default_value="5432",
-                    validator=validate_database_port
-                )
-
-                db_name_db = get_user_input(
-                    "Enter database name (actual database name)",
-                    validator=validate_database_name
-                )
-
-                # Construct the additional database URL
-                additional_db_url = f"{db_type_input}://{db_username_input}:{db_password_input}@{db_hostname_input}:{db_port_input}/{db_name_db}"
-
-                additional_db_configs.append({
-                    'name': db_name_input,
-                    'url': additional_db_url,
-                    'type': db_type_input,
-                    'username': db_username_input,
-                    'password': db_password_input,
-                    'hostname': db_hostname_input,
-                    'port': db_port_input,
-                    'database_name': db_name_db
-                })
-
-                print(f"Added database: {db_name_input}")
-
-    print("\nOpenAI Configuration:")
-    print("-" * 20)
-    openai_api_key = get_user_input(
-        "Enter your OpenAI API key (or leave empty if not using OpenAI)",
-        default_value=existing_values.get("OPENAI_API_KEY", ""),
-        sensitive=True,
-        validator=validate_openai_api_key
-    )
-
-    print("\nDeepSeek Configuration (optional):")
-    print("-" * 30)
-    deepseek_api_key = get_user_input(
-        "Enter your DeepSeek API key (or leave empty if not using DeepSeek)",
-        default_value=existing_values.get("DEEPSEEK_API_KEY", ""),
-        sensitive=True,
-        validator=validate_openai_api_key  # Using the same validation as OpenAI since they have similar format
-    )
-
-    print("\nGigaChat Configuration (optional):")
-    print("-" * 30)
-    gigachat_credentials = get_user_input(
-        "Enter your GigaChat credentials (or leave empty if not using GigaChat)",
-        default_value=existing_values.get("GIGACHAT_CREDENTIALS", ""),
-        sensitive=True,
-        validator=validate_gigachat_credentials
-    )
-
-    gigachat_scope = get_user_input(
-        "Enter your GigaChat scope",
-        default_value=existing_values.get("GIGACHAT_SCOPE", "GIGACHAT_API_PERS"),
-        validator=lambda x: (True, "") if x in ["GIGACHAT_API_PERS", "GIGACHAT_API_B2B", "GIGACHAT_API_CORP"] else (False, "Scope must be one of: GIGACHAT_API_PERS, GIGACHAT_API_B2B, GIGACHAT_API_CORP")
-    )
-
-    gigachat_access_token = get_user_input(
-        "Enter your GigaChat access token (or leave empty to use credentials)",
-        default_value=existing_values.get("GIGACHAT_ACCESS_TOKEN", ""),
-        sensitive=True,
-        validator=lambda x: (True, "") if not x or len(x) >= 10 else (False, "Access token should be at least 10 characters or empty")
-    )
-
-    print("\nBrave Search Configuration (optional):")
-    print("-" * 35)
-    brave_search_api_key = get_user_input(
-        "Enter your Brave Search API key (or leave empty if not using Brave Search)",
-        default_value=existing_values.get("BRAVE_SEARCH_API_KEY", ""),
-        sensitive=True,
-        validator=validate_brave_search_api_key
-    )
-
-    # Convert boolean values from existing config to y/N format for the default
-    existing_ssl_value = existing_values.get("GIGACHAT_VERIFY_SSL_CERTS", "Y")
-    if existing_ssl_value.lower() in ['true', 'false']:
-        # Convert boolean string to y/N format
-        ssl_default = "Y" if existing_ssl_value.lower() == 'true' else "N"
     else:
-        # Value is already in y/N format
-        ssl_default = existing_ssl_value if existing_ssl_value in ['Y', 'N', 'y', 'n'] else "Y"
+        # If database is disabled, set default values to preserve existing ones
+        db_type = existing_values.get("DB_TYPE", "postgresql")
+        db_username = existing_values.get("DB_USERNAME", "postgres")
+        db_password = existing_values.get("DB_PASSWORD", "")
+        db_hostname = existing_values.get("DB_HOSTNAME", "localhost")
+        db_port = existing_values.get("DB_PORT", "5432")
+        db_name = existing_values.get("DB_NAME", "ai_agent_db")
+        db_url = f"{db_type}://{db_username}:{db_password}@{db_hostname}:{db_port}/{db_name}"
+        default_database_enabled = existing_values.get("DEFAULT_DATABASE_ENABLED", "false")
+        additional_db_configs = []  # Reset additional databases when main database is disabled
 
-    gigachat_verify_ssl_certs = get_user_input(
-        "Verify SSL certificates for GigaChat? (Y/n)",
-        default_value=ssl_default,
-        validator=lambda x: (True, "") if x.lower() in ['y', 'n', 'yes', 'no'] else (False, "Please enter y or n")
-    )
-
-    print("\nLLM Model Configuration:")
-    print("-" * 20)
-
-    # SQL LLM Configuration
-    sql_llm_provider = get_user_input(
-        "Enter the provider for SQL generation LLM",
-        default_value=existing_values.get("SQL_LLM_PROVIDER", "OpenAI"),
-        validator=validate_provider
-    )
-
-    # Set default values based on provider for SQL LLM
-    sql_defaults = {
-        'OpenAI': {'hostname': 'api.openai.com', 'port': '443', 'api_path': '/v1'},
-        'DeepSeek': {'hostname': 'api.deepseek.com', 'port': '443', 'api_path': '/v1'},
-        'Qwen': {'hostname': 'dashscope.aliyuncs.com', 'port': '443', 'api_path': '/api/v1'},
-        'LM Studio': {'hostname': 'localhost', 'port': '1234', 'api_path': '/v1'},
-        'Ollama': {'hostname': 'localhost', 'port': '11434', 'api_path': '/api/v1'},
-        'GigaChat': {'hostname': 'gigachat.devices.sberbank.ru', 'port': '443', 'api_path': '/api/v1'}
-    }
-
-    sql_default_hostname = sql_defaults[sql_llm_provider]['hostname']
-    sql_default_port = sql_defaults[sql_llm_provider]['port']
-    sql_default_api_path = sql_defaults[sql_llm_provider]['api_path']
-
-    sql_llm_model = get_user_input(
-        "Enter the model name for SQL generation",
-        default_value=existing_values.get("SQL_LLM_MODEL", "qwen2.5-coder-7b-instruct-abliterated@q3_k_m"),
-        validator=validate_model_name
-    )
-
-    sql_llm_hostname = get_user_input(
-        "Enter the hostname for SQL generation LLM",
-        default_value=existing_values.get("SQL_LLM_HOSTNAME", sql_default_hostname),
-        validator=validate_hostname
-    )
-
-    sql_llm_port = get_user_input(
-        "Enter the port for SQL generation LLM",
-        default_value=existing_values.get("SQL_LLM_PORT", sql_default_port),
-        validator=validate_port
-    )
-
-    sql_llm_api_path = get_user_input(
-        "Enter the API path for SQL generation LLM",
-        default_value=existing_values.get("SQL_LLM_API_PATH", sql_default_api_path),
-        validator=validate_api_path
-    )
-
-    # Response LLM Configuration
-    response_llm_provider = get_user_input(
-        "Enter the provider for response generation LLM",
-        default_value=existing_values.get("RESPONSE_LLM_PROVIDER", "OpenAI"),
-        validator=validate_provider
-    )
-
-    # Set default values based on provider for Response LLM
-    response_defaults = {
-        'OpenAI': {'hostname': 'api.openai.com', 'port': '443', 'api_path': '/v1'},
-        'DeepSeek': {'hostname': 'api.deepseek.com', 'port': '443', 'api_path': '/v1'},
-        'Qwen': {'hostname': 'dashscope.aliyuncs.com', 'port': '443', 'api_path': '/v1'},
-        'LM Studio': {'hostname': 'localhost', 'port': '1234', 'api_path': '/v1'},
-        'Ollama': {'hostname': 'localhost', 'port': '11434', 'api_path': '/api/v1'},
-        'GigaChat': {'hostname': 'gigachat.devices.sberbank.ru', 'port': '443', 'api_path': '/api/v1'}
-    }
-
-    response_default_hostname = response_defaults[response_llm_provider]['hostname']
-    response_default_port = response_defaults[response_llm_provider]['port']
-    response_default_api_path = response_defaults[response_llm_provider]['api_path']
-
-    response_llm_model = get_user_input(
-        "Enter the model name for response generation",
-        default_value=existing_values.get("RESPONSE_LLM_MODEL", "qwen2.5-coder-7b-instruct-abliterated@q3_k_m"),
-        validator=validate_model_name
-    )
-
-    response_llm_hostname = get_user_input(
-        "Enter the hostname for response generation LLM",
-        default_value=existing_values.get("RESPONSE_LLM_HOSTNAME", response_default_hostname),
-        validator=validate_hostname
-    )
-
-    response_llm_port = get_user_input(
-        "Enter the port for response generation LLM",
-        default_value=existing_values.get("RESPONSE_LLM_PORT", response_default_port),
-        validator=validate_port
-    )
-
-    response_llm_api_path = get_user_input(
-        "Enter the API path for response generation LLM",
-        default_value=existing_values.get("RESPONSE_LLM_API_PATH", response_default_api_path),
-        validator=validate_api_path
-    )
-
-    # Prompt LLM Configuration
-    prompt_llm_provider = get_user_input(
-        "Enter the provider for prompt generation LLM",
-        default_value=existing_values.get("PROMPT_LLM_PROVIDER", "OpenAI"),
-        validator=validate_provider
-    )
-
-    # Set default values based on provider for Prompt LLM
-    prompt_defaults = {
-        'OpenAI': {'hostname': 'api.openai.com', 'port': '443', 'api_path': '/v1'},
-        'DeepSeek': {'hostname': 'api.deepseek.com', 'port': '443', 'api_path': '/v1'},
-        'Qwen': {'hostname': 'dashscope.aliyuncs.com', 'port': '443', 'api_path': '/api/v1'},
-        'LM Studio': {'hostname': 'localhost', 'port': '1234', 'api_path': '/v1'},
-        'Ollama': {'hostname': 'localhost', 'port': '11434', 'api_path': '/api/v1'},
-        'GigaChat': {'hostname': 'gigachat.devices.sberbank.ru', 'port': '443', 'api_path': '/api/v1'}
-    }
-
-    prompt_default_hostname = prompt_defaults[prompt_llm_provider]['hostname']
-    prompt_default_port = prompt_defaults[prompt_llm_provider]['port']
-    prompt_default_api_path = prompt_defaults[prompt_llm_provider]['api_path']
-
-    prompt_llm_model = get_user_input(
-        "Enter the model name for prompt generation",
-        default_value=existing_values.get("PROMPT_LLM_MODEL", "qwen2.5-coder-7b-instruct-abliterated@q3_k_m"),
-        validator=validate_model_name
-    )
-
-    prompt_llm_hostname = get_user_input(
-        "Enter the hostname for prompt generation LLM",
-        default_value=existing_values.get("PROMPT_LLM_HOSTNAME", prompt_default_hostname),
-        validator=validate_hostname
-    )
-
-    prompt_llm_port = get_user_input(
-        "Enter the port for prompt generation LLM",
-        default_value=existing_values.get("PROMPT_LLM_PORT", prompt_default_port),
-        validator=validate_port
-    )
-
-    prompt_llm_api_path = get_user_input(
-        "Enter the API path for prompt generation LLM",
-        default_value=existing_values.get("PROMPT_LLM_API_PATH", prompt_default_api_path),
-        validator=validate_api_path
-    )
-
-    print("\nMCP Capable Model Configuration:")
-    print("-" * 30)
-
-    # Ask if user wants to configure MCP models separately
-    # Convert boolean values from existing config to y/N format for the default
-    existing_configure_mcp_value = existing_values.get("CONFIGURE_MCP_MODELS", "N")
-    if existing_configure_mcp_value.lower() in ['true', 'false']:
-        # Convert boolean string to y/N format
-        configure_mcp_default = "Y" if existing_configure_mcp_value.lower() == 'true' else "N"
-    else:
-        # Value is already in y/N format
-        configure_mcp_default = existing_configure_mcp_value if existing_configure_mcp_value in ['Y', 'N', 'y', 'n'] else "N"
-
-    configure_mcp_models_input = get_user_input(
-        "Configure MCP capable models separately? (y/N)",
-        default_value=configure_mcp_default,
+    # 2. API KEYS CONFIGURATION BLOCK
+    print("\nAPI KEYS CONFIGURATION:")
+    print("-" * 25)
+    
+    # Ask if user wants to configure API keys
+    configure_api_keys_input = get_user_input(
+        "Configure API keys (OpenAI, DeepSeek, GigaChat, Brave Search)? (Y/n)",
+        default_value="Y",
         validator=validate_boolean_input
     )
-    configure_mcp_models = configure_mcp_models_input.lower() in ['y', 'yes']
+    configure_api_keys = configure_api_keys_input.lower() in ['y', 'yes']
 
-    if configure_mcp_models:
-        # MCP SQL LLM Configuration
-        mcp_sql_llm_provider = get_user_input(
-            "Enter the provider for MCP SQL generation LLM",
-            default_value=existing_values.get("MCP_SQL_LLM_PROVIDER", "OpenAI"),
+    if configure_api_keys:
+        print("\nOpenAI Configuration:")
+        print("-" * 20)
+        openai_api_key = get_user_input(
+            "Enter your OpenAI API key (or leave empty if not using OpenAI)",
+            default_value=existing_values.get("OPENAI_API_KEY"),
+            sensitive=True,
+            validator=validate_openai_api_key
+        )
+
+        print("\nDeepSeek Configuration (optional):")
+        print("-" * 30)
+        deepseek_api_key = get_user_input(
+            "Enter your DeepSeek API key (or leave empty if not using DeepSeek)",
+            default_value=existing_values.get("DEEPSEEK_API_KEY"),
+            sensitive=True,
+            validator=validate_openai_api_key  # Using the same validation as OpenAI since they have similar format
+        )
+
+        print("\nGigaChat Configuration (optional):")
+        print("-" * 30)
+        gigachat_credentials = get_user_input(
+            "Enter your GigaChat credentials (or leave empty if not using GigaChat)",
+            default_value=existing_values.get("GIGACHAT_CREDENTIALS"),
+            sensitive=True,
+            validator=validate_gigachat_credentials
+        )
+
+        gigachat_scope = get_user_input(
+            "Enter your GigaChat scope",
+            default_value=existing_values.get("GIGACHAT_SCOPE", "GIGACHAT_API_PERS"),
+            validator=lambda x: (True, "") if x in ["GIGACHAT_API_PERS", "GIGACHAT_API_B2B", "GIGACHAT_API_CORP"] else (False, "Scope must be one of: GIGACHAT_API_PERS, GIGACHAT_API_B2B, GIGACHAT_API_CORP")
+        )
+
+        gigachat_access_token = get_user_input(
+            "Enter your GigaChat access token (or leave empty to use credentials)",
+            default_value=existing_values.get("GIGACHAT_ACCESS_TOKEN"),
+            sensitive=True,
+            validator=lambda x: (True, "") if not x or len(x) >= 10 else (False, "Access token should be at least 10 characters or empty")
+        )
+
+        print("\nBrave Search Configuration (optional):")
+        print("-" * 35)
+        brave_search_api_key = get_user_input(
+            "Enter your Brave Search API key (or leave empty if not using Brave Search)",
+            default_value=existing_values.get("BRAVE_SEARCH_API_KEY"),
+            sensitive=True,
+            validator=validate_brave_search_api_key
+        )
+
+        # Convert boolean values from existing config to y/N format for the default
+        existing_ssl_value = existing_values.get("GIGACHAT_VERIFY_SSL_CERTS", "Y")
+        if existing_ssl_value.lower() in ['true', 'false']:
+            # Convert boolean string to y/N format
+            ssl_default = "Y" if existing_ssl_value.lower() == 'true' else "N"
+        else:
+            # Value is already in y/N format
+            ssl_default = existing_ssl_value if existing_ssl_value in ['Y', 'N', 'y', 'n'] else "Y"
+
+        gigachat_verify_ssl_certs = get_user_input(
+            "Verify SSL certificates for GigaChat? (Y/n)",
+            default_value=ssl_default,
+            validator=lambda x: (True, "") if x.lower() in ['y', 'n', 'yes', 'no'] else (False, "Please enter y or n")
+        )
+    else:
+        # Preserve existing values when API keys are disabled
+        openai_api_key = existing_values.get("OPENAI_API_KEY", "")
+        deepseek_api_key = existing_values.get("DEEPSEEK_API_KEY", "")
+        gigachat_credentials = existing_values.get("GIGACHAT_CREDENTIALS", "")
+        gigachat_scope = existing_values.get("GIGACHAT_SCOPE", "GIGACHAT_API_PERS")
+        gigachat_access_token = existing_values.get("GIGACHAT_ACCESS_TOKEN", "")
+        brave_search_api_key = existing_values.get("BRAVE_SEARCH_API_KEY", "")
+        gigachat_verify_ssl_certs = existing_values.get("GIGACHAT_VERIFY_SSL_CERTS", "Y")
+
+    # 3. LLM MODELS CONFIGURATION BLOCK
+    print("\nLLM MODELS CONFIGURATION:")
+    print("-" * 25)
+    
+    # Ask if user wants to configure LLM models
+    configure_llm_models_input = get_user_input(
+        "Configure LLM models (SQL, Response, Prompt, MCP)? (Y/n)",
+        default_value="Y",
+        validator=validate_boolean_input
+    )
+    configure_llm_models = configure_llm_models_input.lower() in ['y', 'yes']
+
+    if configure_llm_models:
+        print("\nDefault LLM Model Configuration:")
+        print("-" * 30)
+        print("Configure the default LLM model settings that will be used across the application.")
+        print("Specific model configurations (SQL, Response, Prompt, MCP) will inherit from these defaults unless overridden.\n")
+
+        # Default LLM Configuration
+        default_llm_provider = get_user_input(
+            "Enter the default provider for LLM models",
+            default_value=existing_values.get("DEFAULT_LLM_PROVIDER"),
             validator=validate_provider
         )
 
-        # Set default values based on provider for MCP SQL LLM
-        mcp_sql_defaults = {
+        # Set default values based on provider for Default LLM
+        default_llm_defaults = {
             'OpenAI': {'hostname': 'api.openai.com', 'port': '443', 'api_path': '/v1'},
             'DeepSeek': {'hostname': 'api.deepseek.com', 'port': '443', 'api_path': '/v1'},
             'Qwen': {'hostname': 'dashscope.aliyuncs.com', 'port': '443', 'api_path': '/api/v1'},
             'LM Studio': {'hostname': 'localhost', 'port': '1234', 'api_path': '/v1'},
             'Ollama': {'hostname': 'localhost', 'port': '11434', 'api_path': '/api/v1'},
-            'GigaChat': {'hostname': 'gigachat.devices.sberbank.ru', 'port': '443', 'api_path': '/api/v1'}
-        }
-
-        mcp_sql_default_hostname = mcp_sql_defaults[mcp_sql_llm_provider]['hostname']
-        mcp_sql_default_port = mcp_sql_defaults[mcp_sql_llm_provider]['port']
-        mcp_sql_default_api_path = mcp_sql_defaults[mcp_sql_llm_provider]['api_path']
-
-        mcp_sql_llm_model = get_user_input(
-            "Enter the model name for MCP SQL generation",
-            default_value=existing_values.get("MCP_SQL_LLM_MODEL", "qwen2.5-coder-7b-instruct-abliterated@q3_k_m"),
-            validator=validate_model_name
-        )
-
-        mcp_sql_llm_hostname = get_user_input(
-            "Enter the hostname for MCP SQL generation LLM",
-            default_value=existing_values.get("MCP_SQL_LLM_HOSTNAME", mcp_sql_default_hostname),
-            validator=validate_hostname
-        )
-
-        mcp_sql_llm_port = get_user_input(
-            "Enter the port for MCP SQL generation LLM",
-            default_value=existing_values.get("MCP_SQL_LLM_PORT", mcp_sql_default_port),
-            validator=validate_port
-        )
-
-        mcp_sql_llm_api_path = get_user_input(
-            "Enter the API path for MCP SQL generation LLM",
-            default_value=existing_values.get("MCP_SQL_LLM_API_PATH", mcp_sql_default_api_path),
-            validator=validate_api_path
-        )
-
-        # MCP Response LLM Configuration
-        mcp_response_llm_provider = get_user_input(
-            "Enter the provider for MCP response generation LLM",
-            default_value=existing_values.get("MCP_RESPONSE_LLM_PROVIDER", "OpenAI"),
-            validator=validate_provider
-        )
-
-        # Set default values based on provider for MCP Response LLM
-        mcp_response_defaults = {
-            'OpenAI': {'hostname': 'api.openai.com', 'port': '443', 'api_path': '/v1'},
-            'DeepSeek': {'hostname': 'api.deepseek.com', 'port': '443', 'api_path': '/v1'},
-            'Qwen': {'hostname': 'dashscope.aliyuncs.com', 'port': '443', 'api_path': '/v1'},
-            'LM Studio': {'hostname': 'localhost', 'port': '1234', 'api_path': '/v1'},
-            'Ollama': {'hostname': 'localhost', 'port': '11434', 'api_path': '/v1'},
             'GigaChat': {'hostname': 'gigachat.devices.sberbank.ru', 'port': '443', 'api_path': '/v1'}
         }
 
-        mcp_response_default_hostname = mcp_response_defaults[mcp_response_llm_provider]['hostname']
-        mcp_response_default_port = mcp_response_defaults[mcp_response_llm_provider]['port']
-        mcp_response_default_api_path = mcp_response_defaults[mcp_response_llm_provider]['api_path']
+        default_llm_default_hostname = default_llm_defaults[default_llm_provider]['hostname']
+        default_llm_default_port = default_llm_defaults[default_llm_provider]['port']
+        default_llm_default_api_path = default_llm_defaults[default_llm_provider]['api_path']
 
-        mcp_response_llm_model = get_user_input(
-            "Enter the model name for MCP response generation",
-            default_value=existing_values.get("MCP_RESPONSE_LLM_MODEL", "qwen2.5-coder-7b-instruct-abliterated@q3_k_m"),
+        default_llm_model = get_user_input(
+            "Enter the default model name",
+            default_value=existing_values.get("DEFAULT_LLM_MODEL"),
             validator=validate_model_name
         )
 
-        mcp_response_llm_hostname = get_user_input(
-            "Enter the hostname for MCP response generation LLM",
-            default_value=existing_values.get("MCP_RESPONSE_LLM_HOSTNAME", mcp_response_default_hostname),
+        default_llm_hostname = get_user_input(
+            "Enter the default hostname for LLM models",
+            default_value=existing_values.get("DEFAULT_LLM_HOSTNAME"),
             validator=validate_hostname
         )
 
-        mcp_response_llm_port = get_user_input(
-            "Enter the port for MCP response generation LLM",
-            default_value=existing_values.get("MCP_RESPONSE_LLM_PORT", mcp_response_default_port),
+        default_llm_port = get_user_input(
+            "Enter the default port for LLM models",
+            default_value=existing_values.get("DEFAULT_LLM_PORT"),
             validator=validate_port
         )
 
-        mcp_response_llm_api_path = get_user_input(
-            "Enter the API path for MCP response generation LLM",
-            default_value=existing_values.get("MCP_RESPONSE_LLM_API_PATH", mcp_response_default_api_path),
+        default_llm_api_path = get_user_input(
+            "Enter the default API path for LLM models",
+            default_value=existing_values.get("DEFAULT_LLM_API_PATH"),
             validator=validate_api_path
         )
 
-        # MCP Prompt LLM Configuration
-        mcp_prompt_llm_provider = get_user_input(
-            "Enter the provider for MCP prompt generation LLM",
-            default_value=existing_values.get("MCP_PROMPT_LLM_PROVIDER", "OpenAI"),
-            validator=validate_provider
+        # Ask if user wants to use the default configuration for all other LLM models
+        use_default_for_all = get_user_input(
+            "Use the same configuration for all other LLM models (SQL, Response, Prompt, MCP)? (Y/n)",
+            default_value="Y",
+            validator=validate_boolean_input
         )
+        
+        if use_default_for_all.lower() in ['y', 'yes']:
+            # Use the default configuration for all other models
+            sql_llm_provider = default_llm_provider
+            sql_llm_model = default_llm_model
+            sql_llm_hostname = default_llm_hostname
+            sql_llm_port = default_llm_port
+            sql_llm_api_path = default_llm_api_path
+            
+            response_llm_provider = default_llm_provider
+            response_llm_model = default_llm_model
+            response_llm_hostname = default_llm_hostname
+            response_llm_port = default_llm_port
+            response_llm_api_path = default_llm_api_path
+            
+            prompt_llm_provider = default_llm_provider
+            prompt_llm_model = default_llm_model
+            prompt_llm_hostname = default_llm_hostname
+            prompt_llm_port = default_llm_port
+            prompt_llm_api_path = default_llm_api_path
+            
+            mcp_llm_provider = default_llm_provider
+            mcp_llm_model = default_llm_model
+            mcp_llm_hostname = default_llm_hostname
+            mcp_llm_port = default_llm_port
+            mcp_llm_api_path = default_llm_api_path
+        else:
+            print("\nLLM Model Configuration:")
+            print("-" * 20)
 
-        # Set default values based on provider for MCP Prompt LLM
-        mcp_prompt_defaults = {
-            'OpenAI': {'hostname': 'api.openai.com', 'port': '443', 'api_path': '/v1'},
-            'DeepSeek': {'hostname': 'api.deepseek.com', 'port': '443', 'api_path': '/v1'},
-            'Qwen': {'hostname': 'dashscope.aliyuncs.com', 'port': '443', 'api_path': '/api/v1'},
-            'LM Studio': {'hostname': 'localhost', 'port': '1234', 'api_path': '/v1'},
-            'Ollama': {'hostname': 'localhost', 'port': '11434', 'api_path': '/v1'},
-            'GigaChat': {'hostname': 'gigachat.devices.sberbank.ru', 'port': '443', 'api_path': '/v1'}
-        }
+            # SQL LLM Configuration
+            sql_llm_provider = get_user_input(
+                "Enter the provider for SQL generation LLM",
+                default_value=existing_values.get("SQL_LLM_PROVIDER"),
+                validator=validate_provider
+            )
 
-        mcp_prompt_default_hostname = mcp_prompt_defaults[mcp_prompt_llm_provider]['hostname']
-        mcp_prompt_default_port = mcp_prompt_defaults[mcp_prompt_llm_provider]['port']
-        mcp_prompt_default_api_path = mcp_prompt_defaults[mcp_prompt_llm_provider]['api_path']
+            # Set default values based on provider for SQL LLM
+            sql_defaults = {
+                'OpenAI': {'hostname': 'api.openai.com', 'port': '443', 'api_path': '/v1'},
+                'DeepSeek': {'hostname': 'api.deepseek.com', 'port': '443', 'api_path': '/v1'},
+                'Qwen': {'hostname': 'dashscope.aliyuncs.com', 'port': '443', 'api_path': '/v1'},
+                'LM Studio': {'hostname': 'localhost', 'port': '1234', 'api_path': '/v1'},
+                'Ollama': {'hostname': 'localhost', 'port': '11434', 'api_path': '/v1'},
+                'GigaChat': {'hostname': 'gigachat.devices.sberbank.ru', 'port': '443', 'api_path': '/v1'}
+            }
 
-        mcp_prompt_llm_model = get_user_input(
-            "Enter the model name for MCP prompt generation",
-            default_value=existing_values.get("MCP_PROMPT_LLM_MODEL", "qwen2.5-coder-7b-instruct-abliterated@q3_k_m"),
-            validator=validate_model_name
-        )
+            sql_default_hostname = sql_defaults[sql_llm_provider]['hostname']
+            sql_default_port = sql_defaults[sql_llm_provider]['port']
+            sql_default_api_path = sql_defaults[sql_llm_provider]['api_path']
 
-        mcp_prompt_llm_hostname = get_user_input(
-            "Enter the hostname for MCP prompt generation LLM",
-            default_value=existing_values.get("MCP_PROMPT_LLM_HOSTNAME", mcp_prompt_default_hostname),
-            validator=validate_hostname
-        )
+            sql_llm_model = get_user_input(
+                "Enter the model name for SQL generation",
+                default_value=existing_values.get("SQL_LLM_MODEL"),
+                validator=validate_model_name
+            )
 
-        mcp_prompt_llm_port = get_user_input(
-            "Enter the port for MCP prompt generation LLM",
-            default_value=existing_values.get("MCP_PROMPT_LLM_PORT", mcp_prompt_default_port),
-            validator=validate_port
-        )
+            sql_llm_hostname = get_user_input(
+                "Enter the hostname for SQL generation LLM",
+                default_value=existing_values.get("SQL_LLM_HOSTNAME"),
+                validator=validate_hostname
+            )
 
-        mcp_prompt_llm_api_path = get_user_input(
-            "Enter the API path for MCP prompt generation LLM",
-            default_value=existing_values.get("MCP_PROMPT_LLM_API_PATH", mcp_prompt_default_api_path),
-            validator=validate_api_path
-        )
+            sql_llm_port = get_user_input(
+                "Enter the port for SQL generation LLM",
+                default_value=existing_values.get("SQL_LLM_PORT"),
+                validator=validate_port
+            )
+
+            sql_llm_api_path = get_user_input(
+                "Enter the API path for SQL generation LLM",
+                default_value=existing_values.get("SQL_LLM_API_PATH"),
+                validator=validate_api_path
+            )
+
+            # Response LLM Configuration
+            response_llm_provider = get_user_input(
+                "Enter the provider for response generation LLM",
+                default_value=existing_values.get("RESPONSE_LLM_PROVIDER"),
+                validator=validate_provider
+            )
+
+            # Set default values based on provider for Response LLM
+            response_defaults = {
+                'OpenAI': {'hostname': 'api.openai.com', 'port': '443', 'api_path': '/v1'},
+                'DeepSeek': {'hostname': 'api.deepseek.com', 'port': '443', 'api_path': '/v1'},
+                'Qwen': {'hostname': 'dashscope.aliyuncs.com', 'port': '443', 'api_path': '/v1'},
+                'LM Studio': {'hostname': 'localhost', 'port': '1234', 'api_path': '/v1'},
+                'Ollama': {'hostname': 'localhost', 'port': '11434', 'api_path': '/v1'},
+                'GigaChat': {'hostname': 'gigachat.devices.sberbank.ru', 'port': '443', 'api_path': '/v1'}
+            }
+
+            response_default_hostname = response_defaults[response_llm_provider]['hostname']
+            response_default_port = response_defaults[response_llm_provider]['port']
+            response_default_api_path = response_defaults[response_llm_provider]['api_path']
+
+            response_llm_model = get_user_input(
+                "Enter the model name for response generation",
+                default_value=existing_values.get("RESPONSE_LLM_MODEL"),
+                validator=validate_model_name
+            )
+
+            response_llm_hostname = get_user_input(
+                "Enter the hostname for response generation LLM",
+                default_value=existing_values.get("RESPONSE_LLM_HOSTNAME"),
+                validator=validate_hostname
+            )
+
+            response_llm_port = get_user_input(
+                "Enter the port for response generation LLM",
+                default_value=existing_values.get("RESPONSE_LLM_PORT"),
+                validator=validate_port
+            )
+
+            response_llm_api_path = get_user_input(
+                "Enter the API path for response generation LLM",
+                default_value=existing_values.get("RESPONSE_LLM_API_PATH"),
+                validator=validate_api_path
+            )
+
+            # Prompt LLM Configuration
+            prompt_llm_provider = get_user_input(
+                "Enter the provider for prompt generation LLM",
+                default_value=existing_values.get("PROMPT_LLM_PROVIDER"),
+                validator=validate_provider
+            )
+
+            # Set default values based on provider for Prompt LLM
+            prompt_defaults = {
+                'OpenAI': {'hostname': 'api.openai.com', 'port': '443', 'api_path': '/v1'},
+                'DeepSeek': {'hostname': 'api.deepseek.com', 'port': '443', 'api_path': '/v1'},
+                'Qwen': {'hostname': 'dashscope.aliyuncs.com', 'port': '443', 'api_path': '/v1'},
+                'LM Studio': {'hostname': 'localhost', 'port': '1234', 'api_path': '/v1'},
+                'Ollama': {'hostname': 'localhost', 'port': '11434', 'api_path': '/v1'},
+                'GigaChat': {'hostname': 'gigachat.devices.sberbank.ru', 'port': '443', 'api_path': '/v1'}
+            }
+
+            prompt_default_hostname = prompt_defaults[prompt_llm_provider]['hostname']
+            prompt_default_port = prompt_defaults[prompt_llm_provider]['port']
+            prompt_default_api_path = prompt_defaults[prompt_llm_provider]['api_path']
+
+            prompt_llm_model = get_user_input(
+                "Enter the model name for prompt generation",
+                default_value=existing_values.get("PROMPT_LLM_MODEL"),
+                validator=validate_model_name
+            )
+
+            prompt_llm_hostname = get_user_input(
+                "Enter the hostname for prompt generation LLM",
+                default_value=existing_values.get("PROMPT_LLM_HOSTNAME"),
+                validator=validate_hostname
+            )
+
+            prompt_llm_port = get_user_input(
+                "Enter the port for prompt generation LLM",
+                default_value=existing_values.get("PROMPT_LLM_PORT"),
+                validator=validate_port
+            )
+
+            prompt_llm_api_path = get_user_input(
+                "Enter the API path for prompt generation LLM",
+                default_value=existing_values.get("PROMPT_LLM_API_PATH"),
+                validator=validate_api_path
+            )
+
+            # MCP LLM Configuration - Integrated into the main LLM section
+            print("\nMCP LLM Configuration (for MCP-specific tasks):")
+            print("-" * 30)
+            mcp_llm_provider = get_user_input(
+                "Enter the provider for MCP LLM",
+                default_value=existing_values.get("MCP_LLM_PROVIDER"),
+                validator=validate_provider
+            )
+
+            # Set default values based on provider for MCP LLM
+            mcp_defaults = {
+                'OpenAI': {'hostname': 'api.openai.com', 'port': '443', 'api_path': '/v1'},
+                'DeepSeek': {'hostname': 'api.deepseek.com', 'port': '443', 'api_path': '/v1'},
+                'Qwen': {'hostname': 'dashscope.aliyuncs.com', 'port': '443', 'api_path': '/v1'},
+                'LM Studio': {'hostname': 'localhost', 'port': '1234', 'api_path': '/v1'},
+                'Ollama': {'hostname': 'localhost', 'port': '11434', 'api_path': '/v1'},
+                'GigaChat': {'hostname': 'gigachat.devices.sberbank.ru', 'port': '443', 'api_path': '/v1'}
+            }
+
+            mcp_default_hostname = mcp_defaults[mcp_llm_provider]['hostname']
+            mcp_default_port = mcp_defaults[mcp_llm_provider]['port']
+            mcp_default_api_path = mcp_defaults[mcp_llm_provider]['api_path']
+
+            mcp_llm_model = get_user_input(
+                "Enter the model name for MCP tasks",
+                default_value=existing_values.get("MCP_LLM_MODEL"),
+                validator=validate_model_name
+            )
+
+            mcp_llm_hostname = get_user_input(
+                "Enter the hostname for MCP LLM",
+                default_value=existing_values.get("MCP_LLM_HOSTNAME"),
+                validator=validate_hostname
+            )
+
+            mcp_llm_port = get_user_input(
+                "Enter the port for MCP LLM",
+                default_value=existing_values.get("MCP_LLM_PORT"),
+                validator=validate_port
+            )
+
+            mcp_llm_api_path = get_user_input(
+                "Enter the API path for MCP LLM",
+                default_value=existing_values.get("MCP_LLM_API_PATH"),
+                validator=validate_api_path
+            )
     else:
-        # If not configuring MCP models separately, use the same as regular models
-        mcp_sql_llm_provider = sql_llm_provider
-        mcp_sql_llm_model = sql_llm_model
-        mcp_sql_llm_hostname = sql_llm_hostname
-        mcp_sql_llm_port = sql_llm_port
-        mcp_sql_llm_api_path = sql_llm_api_path
+        # Preserve existing values when LLM models are disabled
+        default_llm_provider = existing_values.get("DEFAULT_LLM_PROVIDER", "OpenAI")
+        default_llm_model = existing_values.get("DEFAULT_LLM_MODEL", "qwen2.5-coder-7b-instruct-abliterated_at_q3_k_m")
+        default_llm_hostname = existing_values.get("DEFAULT_LLM_HOSTNAME", "api.openai.com")
+        default_llm_port = existing_values.get("DEFAULT_LLM_PORT", "443")
+        default_llm_api_path = existing_values.get("DEFAULT_LLM_API_PATH", "/v1")
+        
+        sql_llm_provider = existing_values.get("SQL_LLM_PROVIDER", "OpenAI")
+        sql_llm_model = existing_values.get("SQL_LLM_MODEL", "qwen2.5-coder-7b-instruct-abliterated_at_q3_k_m")
+        sql_llm_hostname = existing_values.get("SQL_LLM_HOSTNAME", "api.openai.com")
+        sql_llm_port = existing_values.get("SQL_LLM_PORT", "443")
+        sql_llm_api_path = existing_values.get("SQL_LLM_API_PATH", "/v1")
+        
+        response_llm_provider = existing_values.get("RESPONSE_LLM_PROVIDER", "OpenAI")
+        response_llm_model = existing_values.get("RESPONSE_LLM_MODEL", "qwen2.5-coder-7b-instruct-abliterated_at_q3_k_m")
+        response_llm_hostname = existing_values.get("RESPONSE_LLM_HOSTNAME", "api.openai.com")
+        response_llm_port = existing_values.get("RESPONSE_LLM_PORT", "443")
+        response_llm_api_path = existing_values.get("RESPONSE_LLM_API_PATH", "/v1")
+        
+        prompt_llm_provider = existing_values.get("PROMPT_LLM_PROVIDER", "OpenAI")
+        prompt_llm_model = existing_values.get("PROMPT_LLM_MODEL", "qwen2.5-coder-7b-instruct-abliterated_at_q3_k_m")
+        prompt_llm_hostname = existing_values.get("PROMPT_LLM_HOSTNAME", "api.openai.com")
+        prompt_llm_port = existing_values.get("PROMPT_LLM_PORT", "443")
+        prompt_llm_api_path = existing_values.get("PROMPT_LLM_API_PATH", "/v1")
+        
+        # MCP LLM values
+        mcp_llm_provider = existing_values.get("MCP_LLM_PROVIDER", "OpenAI")
+        mcp_llm_model = existing_values.get("MCP_LLM_MODEL", "qwen2.5-coder-7b-instruct-abliterated_at_q3_k_m")
+        mcp_llm_hostname = existing_values.get("MCP_LLM_HOSTNAME", "api.openai.com")
+        mcp_llm_port = existing_values.get("MCP_LLM_PORT", "443")
+        mcp_llm_api_path = existing_values.get("MCP_LLM_API_PATH", "/v1")
 
-        mcp_response_llm_provider = response_llm_provider
-        mcp_response_llm_model = response_llm_model
-        mcp_response_llm_hostname = response_llm_hostname
-        mcp_response_llm_port = response_llm_port
-        mcp_response_llm_api_path = response_llm_api_path
-
-        mcp_prompt_llm_provider = prompt_llm_provider
-        mcp_prompt_llm_model = prompt_llm_model
-        mcp_prompt_llm_hostname = prompt_llm_hostname
-        mcp_prompt_llm_port = prompt_llm_port
-        mcp_prompt_llm_api_path = prompt_llm_api_path
-
-    print("\nDedicated MCP Model Configuration:")
-    print("-" * 35)
-
-    # Ask if user wants to configure dedicated MCP model separately
-    existing_dedicated_mcp_value = existing_values.get("DEDICATED_MCP_LLM_PROVIDER", "")
-    has_dedicated_config = bool(existing_dedicated_mcp_value)
-
-    dedicated_mcp_enabled_input = get_user_input(
-        "Configure dedicated model for MCP-specific tasks? (y/N)",
-        default_value="y" if has_dedicated_config else "n"
-    ).lower() in ['y', 'yes']
-
-    if dedicated_mcp_enabled_input:
-        # Dedicated MCP LLM Configuration
-        dedicated_mcp_llm_provider = get_user_input(
-            "Enter the provider for dedicated MCP LLM",
-            default_value=existing_values.get("DEDICATED_MCP_LLM_PROVIDER", "LM Studio"),
-            validator=validate_provider
-        )
-
-        # Set default values based on provider for Dedicated MCP LLM
-        dedicated_mcp_defaults = {
-            'OpenAI': {'hostname': 'api.openai.com', 'port': '443', 'api_path': '/v1'},
-            'DeepSeek': {'hostname': 'api.deepseek.com', 'port': '443', 'api_path': '/v1'},
-            'Qwen': {'hostname': 'dashscope.aliyuncs.com', 'port': '443', 'api_path': '/v1'},
-            'LM Studio': {'hostname': 'localhost', 'port': '1234', 'api_path': '/v1'},
-            'Ollama': {'hostname': 'localhost', 'port': '11434', 'api_path': '/v1'},
-            'GigaChat': {'hostname': 'gigachat.devices.sberbank.ru', 'port': '443', 'api_path': '/v1'}
-        }
-
-        dedicated_mcp_default_hostname = dedicated_mcp_defaults[dedicated_mcp_llm_provider]['hostname']
-        dedicated_mcp_default_port = dedicated_mcp_defaults[dedicated_mcp_llm_provider]['port']
-        dedicated_mcp_default_api_path = dedicated_mcp_defaults[dedicated_mcp_llm_provider]['api_path']
-
-        dedicated_mcp_llm_model = get_user_input(
-            "Enter the model name for dedicated MCP tasks",
-            default_value=existing_values.get("DEDICATED_MCP_LLM_MODEL", "qwen2.5-coder-7b-instruct-abliterated@q3_k_m"),
-            validator=validate_model_name
-        )
-
-        dedicated_mcp_llm_hostname = get_user_input(
-            "Enter the hostname for dedicated MCP LLM",
-            default_value=existing_values.get("DEDICATED_MCP_LLM_HOSTNAME", dedicated_mcp_default_hostname),
-            validator=validate_hostname
-        )
-
-        dedicated_mcp_llm_port = get_user_input(
-            "Enter the port for dedicated MCP LLM",
-            default_value=existing_values.get("DEDICATED_MCP_LLM_PORT", dedicated_mcp_default_port),
-            validator=validate_port
-        )
-
-        dedicated_mcp_llm_api_path = get_user_input(
-            "Enter the API path for dedicated MCP LLM",
-            default_value=existing_values.get("DEDICATED_MCP_LLM_API_PATH", dedicated_mcp_default_api_path),
-            validator=validate_api_path
-        )
-    else:
-        # If not configuring dedicated MCP model, set values to empty
-        dedicated_mcp_llm_provider = ""
-        dedicated_mcp_llm_model = ""
-        dedicated_mcp_llm_hostname = ""
-        dedicated_mcp_llm_port = ""
-        dedicated_mcp_llm_api_path = ""
-
-    print("\nSecurity Configuration:")
-    print("-" * 20)
-    # Convert boolean values from existing config to y/N format for the default
+    # 4. SECURITY CONFIGURATION BLOCK
+    print("\nSECURITY CONFIGURATION:")
+    print("-" * 25)
+    
+    # Ask if user wants to configure security
     existing_security_value = existing_values.get("USE_SECURITY_LLM", "Y")
     if existing_security_value.lower() in ['true', 'false']:
-        # Convert boolean string to y/N format
         security_default = "Y" if existing_security_value.lower() == 'true' else "N"
     else:
-        # Value is already in y/N format
         security_default = existing_security_value if existing_security_value in ['Y', 'N', 'y', 'n'] else "Y"
 
-    use_security_llm = get_user_input(
+    use_security_llm_input = get_user_input(
         "Use advanced security LLM for SQL analysis? (Y/n)",
         default_value=security_default,
         validator=lambda x: (True, "") if x.lower() in ['y', 'n', 'yes', 'no'] else (False, "Please enter y or n")
     )
+    use_security_llm = use_security_llm_input.lower() in ['y', 'yes']
 
-    # Security LLM Configuration (only if security LLM is enabled)
-    if use_security_llm.lower() in ['y', 'yes']:
+    if use_security_llm:
         security_llm_provider = get_user_input(
             "Enter the provider for security LLM",
-            default_value=existing_values.get("SECURITY_LLM_PROVIDER", "OpenAI"),
+            default_value=existing_values.get("SECURITY_LLM_PROVIDER"),
             validator=validate_provider
         )
 
@@ -1261,8 +1187,8 @@ def main():
             'DeepSeek': {'hostname': 'api.deepseek.com', 'port': '443', 'api_path': '/v1'},
             'Qwen': {'hostname': 'dashscope.aliyuncs.com', 'port': '443', 'api_path': '/v1'},
             'LM Studio': {'hostname': 'localhost', 'port': '1234', 'api_path': '/v1'},
-            'Ollama': {'hostname': 'localhost', 'port': '11434', 'api_path': '/api/v1'},
-            'GigaChat': {'hostname': 'gigachat.devices.sberbank.ru', 'port': '443', 'api_path': '/api/v1'}
+            'Ollama': {'hostname': 'localhost', 'port': '11434', 'api_path': '/v1'},
+            'GigaChat': {'hostname': 'gigachat.devices.sberbank.ru', 'port': '443', 'api_path': '/v1'}
         }
 
         security_default_hostname = security_defaults[security_llm_provider]['hostname']
@@ -1271,185 +1197,194 @@ def main():
 
         security_llm_model = get_user_input(
             "Enter the model name for security analysis",
-            default_value=existing_values.get("SECURITY_LLM_MODEL", "qwen2.5-coder-7b-instruct-abliterated@q3_k_m"),
+            default_value=existing_values.get("SECURITY_LLM_MODEL"),
             validator=validate_model_name
         )
 
         security_llm_hostname = get_user_input(
             "Enter the hostname for security LLM",
-            default_value=existing_values.get("SECURITY_LLM_HOSTNAME", security_default_hostname),
+            default_value=existing_values.get("SECURITY_LLM_HOSTNAME"),
             validator=validate_hostname
         )
 
         security_llm_port = get_user_input(
             "Enter the port for security LLM",
-            default_value=existing_values.get("SECURITY_LLM_PORT", security_default_port),
+            default_value=existing_values.get("SECURITY_LLM_PORT"),
             validator=validate_port
         )
 
         security_llm_api_path = get_user_input(
             "Enter the API path for security LLM",
-            default_value=existing_values.get("SECURITY_LLM_API_PATH", security_default_api_path),
+            default_value=existing_values.get("SECURITY_LLM_API_PATH"),
             validator=validate_api_path
         )
     else:
         # Set default values when security LLM is disabled
-        security_llm_provider = "OpenAI"
-        security_llm_model = "qwen2.5-coder-7b-instruct-abliterated@q3_k_m"
-        security_llm_hostname = "api.openai.com"
-        security_llm_port = "443"
-        security_llm_api_path = "/v1"
+        security_llm_provider = existing_values.get("SECURITY_LLM_PROVIDER", "OpenAI")
+        security_llm_model = existing_values.get("SECURITY_LLM_MODEL", "qwen2.5-coder-7b-instruct-abliterated_at_q3_k_m")
+        security_llm_hostname = existing_values.get("SECURITY_LLM_HOSTNAME", "api.openai.com")
+        security_llm_port = existing_values.get("SECURITY_LLM_PORT", "443")
+        security_llm_api_path = existing_values.get("SECURITY_LLM_API_PATH", "/v1")
 
-    print("\nModel Usage Configuration:")
-    print("-" * 20)
-    # Convert boolean values from existing config to y/N format for the default
+    # 5. MCP REGISTRY CONFIGURATION BLOCK
+    print("\nMCP REGISTRY CONFIGURATION:")
+    print("-" * 25)
+    
+    # Ask if user wants to configure MCP registry
+    existing_mcp_enabled_value = existing_values.get("MCP_ENABLED", "Y")
+    if existing_mcp_enabled_value.lower() in ['true', 'false']:
+        mcp_enabled_default = "Y" if existing_mcp_enabled_value.lower() == 'true' else "N"
+    else:
+        mcp_enabled_default = existing_mcp_enabled_value if existing_mcp_enabled_value in ['Y', 'N', 'y', 'n'] else "Y"
+
+    mcp_enabled_input = get_user_input(
+        "Enable MCP (Model Context Protocol) services? (Y/n)",
+        default_value=mcp_enabled_default,
+        validator=validate_boolean_input
+    )
+    mcp_enabled = mcp_enabled_input.lower() in ['y', 'yes']
+
+    if mcp_enabled:
+        # MCP Registry Configuration - Only registry info needed
+        mcp_registry_url = get_user_input(
+            "Enter MCP registry URL",
+            default_value=existing_values.get("MCP_REGISTRY_URL", "http://127.0.0.1:8080")
+        )
+    else:
+        # Preserve existing values when MCP services are disabled
+        mcp_registry_url = existing_values.get("MCP_REGISTRY_URL", "http://127.0.0.1:8080")
+
+    # 6. RAG COMPONENT CONFIGURATION BLOCK
+    print("\nRAG COMPONENT CONFIGURATION:")
+    print("-" * 25)
+
+    # Ask if user wants to configure RAG
+    existing_rag_enabled_value = existing_values.get("RAG_ENABLED", "Y")
+    if existing_rag_enabled_value.lower() in ['true', 'false']:
+        rag_enabled_default = "Y" if existing_rag_enabled_value.lower() == 'true' else "N"
+    else:
+        rag_enabled_default = existing_rag_enabled_value if existing_rag_enabled_value in ['Y', 'N', 'y', 'n'] else "Y"
+
+    rag_enabled_input = get_user_input(
+        "Enable RAG functionality? (Y/n)",
+        default_value=rag_enabled_default,
+        validator=validate_boolean_input
+    )
+    rag_enabled = rag_enabled_input.lower() in ['y', 'yes']
+
+    if rag_enabled:
+        rag_embedding_model = get_user_input(
+            "Enter RAG embedding model",
+            default_value=existing_values.get("RAG_EMBEDDING_MODEL")
+        )
+
+        rag_vector_store_type = get_user_input(
+            "Enter RAG vector store type",
+            default_value=existing_values.get("RAG_VECTOR_STORE_TYPE")
+        )
+
+        rag_top_k_results = get_user_input(
+            "Enter RAG top-k results count",
+            default_value=existing_values.get("RAG_TOP_K_RESULTS"),
+            validator=lambda x: (x.isdigit() and int(x) > 0, "Must be a positive integer")
+        )
+
+        rag_similarity_threshold = get_user_input(
+            "Enter RAG similarity threshold",
+            default_value=existing_values.get("RAG_SIMILARITY_THRESHOLD"),
+            validator=lambda x: (float(x) >= 0 and float(x) <= 1, "Must be between 0 and 1")
+        )
+
+        rag_chunk_size = get_user_input(
+            "Enter RAG chunk size",
+            default_value=existing_values.get("RAG_CHUNK_SIZE"),
+            validator=lambda x: (x.isdigit() and int(x) > 0, "Must be a positive integer")
+        )
+
+        rag_chunk_overlap = get_user_input(
+            "Enter RAG chunk overlap",
+            default_value=existing_values.get("RAG_CHUNK_OVERLAP"),
+            validator=lambda x: (x.isdigit() and int(x) >= 0, "Must be a non-negative integer")
+        )
+
+        rag_chroma_persist_dir = get_user_input(
+            "Enter RAG Chroma persistence directory",
+            default_value=existing_values.get("RAG_CHROMA_PERSIST_DIR")
+        )
+
+        rag_collection_name = get_user_input(
+            "Enter RAG collection name",
+            default_value=existing_values.get("RAG_COLLECTION_NAME")
+        )
+
+        rag_supported_file_types = get_user_input(
+            "Enter supported file types for RAG (comma-separated)",
+            default_value=existing_values.get("RAG_SUPPORTED_FILE_TYPES")
+        )
+    else:
+        # Preserve existing values when RAG is disabled
+        rag_embedding_model = existing_values.get("RAG_EMBEDDING_MODEL", "all-MiniLM-L6-v2")
+        rag_vector_store_type = existing_values.get("RAG_VECTOR_STORE_TYPE", "chroma")
+        rag_top_k_results = existing_values.get("RAG_TOP_K_RESULTS", "5")
+        rag_similarity_threshold = existing_values.get("RAG_SIMILARITY_THRESHOLD", "0.7")
+        rag_chunk_size = existing_values.get("RAG_CHUNK_SIZE", "1000")
+        rag_chunk_overlap = existing_values.get("RAG_CHUNK_OVERLAP", "100")
+        rag_chroma_persist_dir = existing_values.get("RAG_CHROMA_PERSIST_DIR", "./data/chroma_db")
+        rag_collection_name = existing_values.get("RAG_COLLECTION_NAME", "documents")
+        rag_supported_file_types = existing_values.get("RAG_SUPPORTED_FILE_TYPES", ".txt,.pdf,.docx,.html,.md")
+
+    # 7. MODEL USAGE CONFIGURATION BLOCK
+    print("\nMODEL USAGE CONFIGURATION:")
+    print("-" * 25)
+    
+    # Ask if user wants to configure model usage
     existing_prompt_gen_value = existing_values.get("DISABLE_PROMPT_GENERATION", "N")
     if existing_prompt_gen_value.lower() in ['true', 'false']:
-        # Convert boolean string to y/N format
         prompt_gen_default = "Y" if existing_prompt_gen_value.lower() == 'true' else "N"
     else:
-        # Value is already in y/N format
         prompt_gen_default = existing_prompt_gen_value if existing_prompt_gen_value in ['Y', 'N', 'y', 'n'] else "N"
 
-    disable_prompt_generation = get_user_input(
+    disable_prompt_generation_input = get_user_input(
         "Disable prompt generation LLM? (y/N)",
         default_value=prompt_gen_default,
         validator=validate_boolean_input
     )
+    disable_prompt_generation = disable_prompt_generation_input.lower() in ['y', 'yes']
 
-    # Convert boolean values from existing config to y/N format for the default
     existing_response_gen_value = existing_values.get("DISABLE_RESPONSE_GENERATION", "N")
     if existing_response_gen_value.lower() in ['true', 'false']:
-        # Convert boolean string to y/N format
         response_gen_default = "Y" if existing_response_gen_value.lower() == 'true' else "N"
     else:
-        # Value is already in y/N format
         response_gen_default = existing_response_gen_value if existing_response_gen_value in ['Y', 'N', 'y', 'n'] else "N"
 
-    disable_response_generation = get_user_input(
+    disable_response_generation_input = get_user_input(
         "Disable response generation LLM? (y/N)",
         default_value=response_gen_default,
         validator=validate_boolean_input
     )
+    disable_response_generation = disable_response_generation_input.lower() in ['y', 'yes']
 
-    print("\nLogging Configuration:")
+    # 8. LOGGING CONFIGURATION BLOCK
+    print("\nLOGGING CONFIGURATION:")
     print("-" * 20)
-    # Convert boolean values from existing config to y/N format for the default
+    
+    # Ask if user wants to configure logging
     existing_logging_value = existing_values.get("ENABLE_SCREEN_LOGGING", "N")
     if existing_logging_value.lower() in ['true', 'false']:
-        # Convert boolean string to y/N format
         logging_default = "Y" if existing_logging_value.lower() == 'true' else "N"
     else:
-        # Value is already in y/N format
         logging_default = existing_logging_value if existing_logging_value in ['Y', 'N', 'y', 'n'] else "N"
 
-    enable_screen_logging = get_user_input(
+    enable_screen_logging_input = get_user_input(
         "Enable screen logging? (y/N)",
         default_value=logging_default,
         validator=validate_boolean_input
     )
-
-    print("\nDatabase Usage Configuration:")
-    print("-" * 20)
-    # Convert boolean values from existing config to y/N format for the default
-    existing_db_enabled_value = existing_values.get("DATABASE_ENABLED", "Y")
-    if existing_db_enabled_value.lower() in ['true', 'false']:
-        # Convert boolean string to y/N format
-        db_enabled_default = "Y" if existing_db_enabled_value.lower() == 'true' else "N"
-    else:
-        # Value is already in y/N format
-        db_enabled_default = existing_db_enabled_value if existing_db_enabled_value in ['Y', 'N', 'y', 'n'] else "Y"
-
-    database_enabled_input = get_user_input(
-        "Enable database usage? (Y/n)",
-        default_value=db_enabled_default,
-        validator=validate_boolean_input
-    )
-
-    # Fix the inverted logic: when user enters Y/N, convert to appropriate value for DATABASE_ENABLED
-    # Y (yes enable) should result in DATABASE_ENABLED=true
-    # N (no disable) should result in DATABASE_ENABLED=false
-    database_enabled = "true" if database_enabled_input.lower() in ['y', 'yes'] else "false"
-
-    print("\nDefault LLM Model Configuration:")
-    print("-" * 30)
-    print("Configure the default LLM model settings that will be used across the application.")
-    print("Specific model configurations (SQL, Response, Prompt) will inherit from these defaults unless overridden.\n")
-
-    # Default LLM Configuration
-    default_llm_provider = get_user_input(
-        "Enter the default provider for LLM models",
-        default_value=existing_values.get("DEFAULT_LLM_PROVIDER", "LM Studio"),
-        validator=validate_provider
-    )
-
-    # Set default values based on provider for Default LLM
-    default_llm_defaults = {
-        'OpenAI': {'hostname': 'api.openai.com', 'port': '443', 'api_path': '/v1'},
-        'DeepSeek': {'hostname': 'api.deepseek.com', 'port': '443', 'api_path': '/v1'},
-        'Qwen': {'hostname': 'dashscope.aliyuncs.com', 'port': '443', 'api_path': '/v1'},
-        'LM Studio': {'hostname': 'localhost', 'port': '1234', 'api_path': '/v1'},
-        'Ollama': {'hostname': 'localhost', 'port': '11434', 'api_path': '/v1'},
-        'GigaChat': {'hostname': 'gigachat.devices.sberbank.ru', 'port': '443', 'api_path': '/v1'}
-    }
-
-    default_llm_default_hostname = default_llm_defaults[default_llm_provider]['hostname']
-    default_llm_default_port = default_llm_defaults[default_llm_provider]['port']
-    default_llm_default_api_path = default_llm_defaults[default_llm_provider]['api_path']
-
-    default_llm_model = get_user_input(
-        "Enter the default model name",
-        default_value=existing_values.get("DEFAULT_LLM_MODEL", "qwen2.5-coder-7b-instruct-abliterated@q3_k_m"),
-        validator=validate_model_name
-    )
-
-    default_llm_hostname = get_user_input(
-        "Enter the default hostname for LLM models",
-        default_value=existing_values.get("DEFAULT_LLM_HOSTNAME", default_llm_default_hostname),
-        validator=validate_hostname
-    )
-
-    default_llm_port = get_user_input(
-        "Enter the default port for LLM models",
-        default_value=existing_values.get("DEFAULT_LLM_PORT", default_llm_default_port),
-        validator=validate_port
-    )
-
-    default_llm_api_path = get_user_input(
-        "Enter the default API path for LLM models",
-        default_value=existing_values.get("DEFAULT_LLM_API_PATH", default_llm_default_api_path),
-        validator=validate_api_path
-    )
-
-    print("\nMCP (Model Context Protocol) Usage Configuration:")
-    print("-" * 20)
-    # Convert boolean values from existing config to y/N format for the default
-    existing_mcp_enabled_value = existing_values.get("MCP_ENABLED", "Y")
-    if existing_mcp_enabled_value.lower() in ['true', 'false']:
-        # Convert boolean string to y/N format
-        mcp_enabled_default = "Y" if existing_mcp_enabled_value.lower() == 'true' else "N"
-    else:
-        # Value is already in y/N format
-        mcp_enabled_default = existing_mcp_enabled_value if existing_mcp_enabled_value in ['Y', 'N', 'y', 'n'] else "Y"
-
-    mcp_enabled_input = get_user_input(
-        "Enable MCP (Model Context Protocol) usage? (Y/n)",
-        default_value=mcp_enabled_default,
-        validator=validate_boolean_input
-    )
-
-    # Convert user input to appropriate value for MCP_ENABLED
-    # Y (yes enable) should result in MCP_ENABLED=true
-    # N (no disable) should result in MCP_ENABLED=false
-    mcp_enabled = "true" if mcp_enabled_input.lower() in ['y', 'yes'] else "false"
-
-    # Convert configure_mcp_models to appropriate value for CONFIGURE_MCP_MODELS
-    # Y (yes enable) should result in CONFIGURE_MCP_MODELS=true
-    # N (no disable) should result in CONFIGURE_MCP_MODELS=false
-    configure_mcp_models_value = "true" if configure_mcp_models_input.lower() in ['y', 'yes'] else "false"
+    enable_screen_logging = enable_screen_logging_input.lower() in ['y', 'yes']
 
     # Create .env file content
-    env_content = f"""# Database Configuration
+    # Always include all values in the .env file, but the application will determine which ones to use based on enable/disable flags
+    env_content = f"""# Database Configuration (for SQL MCP server)
 DB_TYPE={db_type}
 DB_USERNAME={db_username}
 DB_PASSWORD={db_password}
@@ -1460,7 +1395,7 @@ DATABASE_URL={db_url}
 DEFAULT_DATABASE_ENABLED={default_database_enabled}
 DATABASE_ENABLED={database_enabled}
 MCP_ENABLED={mcp_enabled}
-CONFIGURE_MCP_MODELS={configure_mcp_models_value}
+CONFIGURE_MCP_MODELS=false
 
 # Default LLM Model Configuration
 DEFAULT_LLM_PROVIDER={default_llm_provider}
@@ -1514,22 +1449,12 @@ PROMPT_LLM_HOSTNAME={prompt_llm_hostname}
 PROMPT_LLM_PORT={prompt_llm_port}
 PROMPT_LLM_API_PATH={prompt_llm_api_path}
 
-# MCP Capable Model Configuration
-MCP_SQL_LLM_PROVIDER={mcp_sql_llm_provider}
-MCP_SQL_LLM_MODEL={mcp_sql_llm_model}
-MCP_SQL_LLM_HOSTNAME={mcp_sql_llm_hostname}
-MCP_SQL_LLM_PORT={mcp_sql_llm_port}
-MCP_SQL_LLM_API_PATH={mcp_sql_llm_api_path}
-MCP_RESPONSE_LLM_PROVIDER={mcp_response_llm_provider}
-MCP_RESPONSE_LLM_MODEL={mcp_response_llm_model}
-MCP_RESPONSE_LLM_HOSTNAME={mcp_response_llm_hostname}
-MCP_RESPONSE_LLM_PORT={mcp_response_llm_port}
-MCP_RESPONSE_LLM_API_PATH={mcp_response_llm_api_path}
-MCP_PROMPT_LLM_PROVIDER={mcp_prompt_llm_provider}
-MCP_PROMPT_LLM_MODEL={mcp_prompt_llm_model}
-MCP_PROMPT_LLM_HOSTNAME={mcp_prompt_llm_hostname}
-MCP_PROMPT_LLM_PORT={mcp_prompt_llm_port}
-MCP_PROMPT_LLM_API_PATH={mcp_prompt_llm_api_path}
+# MCP LLM Configuration (integrated into main LLM section)
+MCP_LLM_PROVIDER={mcp_llm_provider}
+MCP_LLM_MODEL={mcp_llm_model}
+MCP_LLM_HOSTNAME={mcp_llm_hostname}
+MCP_LLM_PORT={mcp_llm_port}
+MCP_LLM_API_PATH={mcp_llm_api_path}
 
 # Security Configuration
 TERMINATE_ON_POTENTIALLY_HARMFUL_SQL=false
@@ -1543,24 +1468,32 @@ SECURITY_LLM_HOSTNAME={security_llm_hostname}
 SECURITY_LLM_PORT={security_llm_port}
 SECURITY_LLM_API_PATH={security_llm_api_path}
 
-# Dedicated MCP Model Configuration (separate model specifically for MCP-related queries)
-DEDICATED_MCP_LLM_PROVIDER={dedicated_mcp_llm_provider}
-DEDICATED_MCP_LLM_MODEL={dedicated_mcp_llm_model}
-DEDICATED_MCP_LLM_HOSTNAME={dedicated_mcp_llm_hostname}
-DEDICATED_MCP_LLM_PORT={dedicated_mcp_llm_port}
-DEDICATED_MCP_LLM_API_PATH={dedicated_mcp_llm_api_path}
-
 # Logging Configuration
 ENABLE_SCREEN_LOGGING={enable_screen_logging}
 
+# MCP Registry Configuration
+MCP_REGISTRY_URL={mcp_registry_url}
+
+# RAG Component Configuration
+RAG_ENABLED={rag_enabled}
+RAG_EMBEDDING_MODEL={rag_embedding_model}
+RAG_VECTOR_STORE_TYPE={rag_vector_store_type}
+RAG_TOP_K_RESULTS={rag_top_k_results}
+RAG_SIMILARITY_THRESHOLD={rag_similarity_threshold}
+RAG_CHUNK_SIZE={rag_chunk_size}
+RAG_CHUNK_OVERLAP={rag_chunk_overlap}
+RAG_CHROMA_PERSIST_DIR={rag_chroma_persist_dir}
+RAG_COLLECTION_NAME={rag_collection_name}
+RAG_SUPPORTED_FILE_TYPES={rag_supported_file_types}
+
 # Model Disable Configuration
 # Set to 'true' to disable specific model components
-DISABLE_PROMPT_GENERATION={"true" if disable_prompt_generation.lower() in ['y', 'yes'] else "false"}
-DISABLE_RESPONSE_GENERATION={"true" if disable_response_generation.lower() in ['y', 'yes'] else "false"}
+DISABLE_PROMPT_GENERATION={disable_prompt_generation}
+DISABLE_RESPONSE_GENERATION={disable_response_generation}
 """
 
     # Create a masked version of the content for display purposes
-    masked_env_content = f"""# Database Configuration
+    masked_env_content = f"""# Database Configuration (for SQL MCP server)
 DB_TYPE={db_type}
 DB_USERNAME={db_username}
 DB_PASSWORD={mask_sensitive_data(db_password, True)}
@@ -1571,7 +1504,7 @@ DATABASE_URL={db_url.replace(db_password, mask_sensitive_data(db_password, True)
 DEFAULT_DATABASE_ENABLED={default_database_enabled}
 DATABASE_ENABLED={database_enabled}
 MCP_ENABLED={mcp_enabled}
-CONFIGURE_MCP_MODELS={configure_mcp_models_value}
+CONFIGURE_MCP_MODELS=false
 
 # Default LLM Model Configuration
 DEFAULT_LLM_PROVIDER={default_llm_provider}
@@ -1626,22 +1559,12 @@ PROMPT_LLM_HOSTNAME={prompt_llm_hostname}
 PROMPT_LLM_PORT={prompt_llm_port}
 PROMPT_LLM_API_PATH={prompt_llm_api_path}
 
-# MCP Capable Model Configuration
-MCP_SQL_LLM_PROVIDER={mcp_sql_llm_provider}
-MCP_SQL_LLM_MODEL={mcp_sql_llm_model}
-MCP_SQL_LLM_HOSTNAME={mcp_sql_llm_hostname}
-MCP_SQL_LLM_PORT={mcp_sql_llm_port}
-MCP_SQL_LLM_API_PATH={mcp_sql_llm_api_path}
-MCP_RESPONSE_LLM_PROVIDER={mcp_response_llm_provider}
-MCP_RESPONSE_LLM_MODEL={mcp_response_llm_model}
-MCP_RESPONSE_LLM_HOSTNAME={mcp_response_llm_hostname}
-MCP_RESPONSE_LLM_PORT={mcp_response_llm_port}
-MCP_RESPONSE_LLM_API_PATH={mcp_response_llm_api_path}
-MCP_PROMPT_LLM_PROVIDER={mcp_prompt_llm_provider}
-MCP_PROMPT_LLM_MODEL={mcp_prompt_llm_model}
-MCP_PROMPT_LLM_HOSTNAME={mcp_prompt_llm_hostname}
-MCP_PROMPT_LLM_PORT={mcp_prompt_llm_port}
-MCP_PROMPT_LLM_API_PATH={mcp_prompt_llm_api_path}
+# MCP LLM Configuration (integrated into main LLM section)
+MCP_LLM_PROVIDER={mcp_llm_provider}
+MCP_LLM_MODEL={mcp_llm_model}
+MCP_LLM_HOSTNAME={mcp_llm_hostname}
+MCP_LLM_PORT={mcp_llm_port}
+MCP_LLM_API_PATH={mcp_llm_api_path}
 
 # Security Configuration
 TERMINATE_ON_POTENTIALLY_HARMFUL_SQL=false
@@ -1655,20 +1578,28 @@ SECURITY_LLM_HOSTNAME={security_llm_hostname}
 SECURITY_LLM_PORT={security_llm_port}
 SECURITY_LLM_API_PATH={security_llm_api_path}
 
-# Dedicated MCP Model Configuration (separate model specifically for MCP-related queries)
-DEDICATED_MCP_LLM_PROVIDER={dedicated_mcp_llm_provider}
-DEDICATED_MCP_LLM_MODEL={dedicated_mcp_llm_model}
-DEDICATED_MCP_LLM_HOSTNAME={dedicated_mcp_llm_hostname}
-DEDICATED_MCP_LLM_PORT={dedicated_mcp_llm_port}
-DEDICATED_MCP_LLM_API_PATH={dedicated_mcp_llm_api_path}
-
 # Logging Configuration
 ENABLE_SCREEN_LOGGING={enable_screen_logging}
 
+# MCP Registry Configuration
+MCP_REGISTRY_URL={mcp_registry_url}
+
+# RAG Component Configuration
+RAG_ENABLED={rag_enabled}
+RAG_EMBEDDING_MODEL={rag_embedding_model}
+RAG_VECTOR_STORE_TYPE={rag_vector_store_type}
+RAG_TOP_K_RESULTS={rag_top_k_results}
+RAG_SIMILARITY_THRESHOLD={rag_similarity_threshold}
+RAG_CHUNK_SIZE={rag_chunk_size}
+RAG_CHUNK_OVERLAP={rag_chunk_overlap}
+RAG_CHROMA_PERSIST_DIR={rag_chroma_persist_dir}
+RAG_COLLECTION_NAME={rag_collection_name}
+RAG_SUPPORTED_FILE_TYPES={rag_supported_file_types}
+
 # Model Disable Configuration
 # Set to 'true' to disable specific model components
-DISABLE_PROMPT_GENERATION={"true" if disable_prompt_generation.lower() in ['y', 'yes'] else "false"}
-DISABLE_RESPONSE_GENERATION={"true" if disable_response_generation.lower() in ['y', 'yes'] else "false"}
+DISABLE_PROMPT_GENERATION={disable_prompt_generation}
+DISABLE_RESPONSE_GENERATION={disable_response_generation}
 """
 
     # Write to .env file with unmasked content
@@ -1695,132 +1626,22 @@ DISABLE_RESPONSE_GENERATION={"true" if disable_response_generation.lower() in ['
         print(f"Error writing to .env file: {e}")
         sys.exit(1)
 
-    # Also update the .env.example file to reflect the new defaults (optional)
+    # Copy the example .env file to the project root if it doesn't exist
     example_env_path = project_root / ".env.example"
-    try:
-        example_env_content = f"""# Database Configuration
-DB_TYPE={db_type}
-DB_USERNAME={db_username}
-DB_PASSWORD={db_password}
-DB_HOSTNAME={db_hostname}
-DB_PORT={db_port}
-DB_NAME={db_name}
-DATABASE_URL={db_url}
-DEFAULT_DATABASE_ENABLED={default_database_enabled}
-DATABASE_ENABLED={database_enabled}
-MCP_ENABLED={mcp_enabled}
-CONFIGURE_MCP_MODELS={configure_mcp_models_value}
+    source_example_path = project_root / ".env.example"  # The file we just created
 
-# Default LLM Model Configuration
-DEFAULT_LLM_PROVIDER={default_llm_provider}
-DEFAULT_LLM_MODEL={default_llm_model}
-DEFAULT_LLM_HOSTNAME={default_llm_hostname}
-DEFAULT_LLM_PORT={default_llm_port}
-DEFAULT_LLM_API_PATH={default_llm_api_path}
-"""
-
-        # Add example entries for additional database configurations
-        if additional_db_configs:
-            for db_config in additional_db_configs:
-                db_name_upper = db_config['name'].upper()
-                example_env_content += f"# Example: DB_{db_name_upper}_URL={db_config['url']}\n"
-                example_env_content += f"# Example: DB_{db_name_upper}_TYPE={db_config['type']}\n"
-                example_env_content += f"# Example: DB_{db_name_upper}_USERNAME={db_config['username']}\n"
-                example_env_content += f"# Example: DB_{db_name_upper}_PASSWORD={db_config['password']}\n"
-                example_env_content += f"# Example: DB_{db_name_upper}_HOSTNAME={db_config['hostname']}\n"
-                example_env_content += f"# Example: DB_{db_name_upper}_PORT={db_config['port']}\n"
-                example_env_content += f"# Example: DB_{db_name_upper}_NAME={db_config['database_name']}\n"
-        else:
-            example_env_content += f"# Example additional database:\n# DB_ANALYTICS_URL=postgresql://username:password@hostname:port/dbname\n"
-            example_env_content += f"# DB_ANALYTICS_TYPE=postgresql\n"
-            example_env_content += f"# DB_ANALYTICS_USERNAME=username\n"
-            example_env_content += f"# DB_ANALYTICS_PASSWORD=password\n"
-            example_env_content += f"# DB_ANALYTICS_HOSTNAME=hostname\n"
-            example_env_content += f"# DB_ANALYTICS_PORT=5432\n"
-            example_env_content += f"# DB_ANALYTICS_NAME=dbname\n"
-
-        example_env_content += f"""
-# OpenAI API Key
-OPENAI_API_KEY={mask_sensitive_data(openai_api_key)}
-
-# DeepSeek API Key
-DEEPSEEK_API_KEY={mask_sensitive_data(deepseek_api_key)}
-
-# GigaChat Configuration
-GIGACHAT_CREDENTIALS={mask_sensitive_data(gigachat_credentials)}
-GIGACHAT_SCOPE={gigachat_scope}
-GIGACHAT_ACCESS_TOKEN={mask_sensitive_data(gigachat_access_token)}
-GIGACHAT_VERIFY_SSL_CERTS=y
-
-# Brave Search API Key
-BRAVE_SEARCH_API_KEY={mask_sensitive_data(brave_search_api_key)}
-
-# LLM Model Configuration
-SQL_LLM_PROVIDER={sql_llm_provider}
-SQL_LLM_MODEL={sql_llm_model}
-SQL_LLM_HOSTNAME={sql_llm_hostname}
-SQL_LLM_PORT={sql_llm_port}
-SQL_LLM_API_PATH={sql_llm_api_path}
-RESPONSE_LLM_PROVIDER={response_llm_provider}
-RESPONSE_LLM_MODEL={response_llm_model}
-RESPONSE_LLM_HOSTNAME={response_llm_hostname}
-RESPONSE_LLM_PORT={response_llm_port}
-RESPONSE_LLM_API_PATH={response_llm_api_path}
-PROMPT_LLM_PROVIDER={prompt_llm_provider}
-PROMPT_LLM_MODEL={prompt_llm_model}
-PROMPT_LLM_HOSTNAME={prompt_llm_hostname}
-PROMPT_LLM_PORT={prompt_llm_port}
-PROMPT_LLM_API_PATH={prompt_llm_api_path}
-
-# MCP Capable Model Configuration
-MCP_SQL_LLM_PROVIDER={mcp_sql_llm_provider}
-MCP_SQL_LLM_MODEL={mcp_sql_llm_model}
-MCP_SQL_LLM_HOSTNAME={mcp_sql_llm_hostname}
-MCP_SQL_LLM_PORT={mcp_sql_llm_port}
-MCP_SQL_LLM_API_PATH={mcp_sql_llm_api_path}
-MCP_RESPONSE_LLM_PROVIDER={mcp_response_llm_provider}
-MCP_RESPONSE_LLM_MODEL={mcp_response_llm_model}
-MCP_RESPONSE_LLM_HOSTNAME={mcp_response_llm_hostname}
-MCP_RESPONSE_LLM_PORT={mcp_response_llm_port}
-MCP_RESPONSE_LLM_API_PATH={mcp_response_llm_api_path}
-MCP_PROMPT_LLM_PROVIDER={mcp_prompt_llm_provider}
-MCP_PROMPT_LLM_MODEL={mcp_prompt_llm_model}
-MCP_PROMPT_LLM_HOSTNAME={mcp_prompt_llm_hostname}
-MCP_PROMPT_LLM_PORT={mcp_prompt_llm_port}
-MCP_PROMPT_LLM_API_PATH={mcp_prompt_llm_api_path}
-
-# Security Configuration
-TERMINATE_ON_POTENTIALLY_HARMFUL_SQL=false
-
-# Security LLM Configuration (for advanced SQL security analysis)
-# Whether to use the security LLM for analysis (set to false to use basic keyword matching only)
-USE_SECURITY_LLM=Y
-SECURITY_LLM_PROVIDER=LM Studio
-SECURITY_LLM_MODEL=qwen2.5-coder-7b-instruct-abliterated@q3_k_m
-SECURITY_LLM_HOSTNAME=api.openai.com
-SECURITY_LLM_PORT=1234
-SECURITY_LLM_API_PATH=/v1
-
-# Dedicated MCP Model Configuration (separate model specifically for MCP-related queries)
-DEDICATED_MCP_LLM_PROVIDER=LM Studio
-DEDICATED_MCP_LLM_MODEL=qwen2.5-coder-7b-instruct-abliterated@q3_k_m
-DEDICATED_MCP_LLM_HOSTNAME=localhost
-DEDICATED_MCP_LLM_PORT=1234
-DEDICATED_MCP_LLM_API_PATH=/v1
-
-# Logging Configuration
-ENABLE_SCREEN_LOGGING=N
-
-# Model Disable Configuration
-# Set to 'true' to disable specific model components
-DISABLE_PROMPT_GENERATION=false
-DISABLE_RESPONSE_GENERATION=false
-"""
-        with open(example_env_path, 'w') as example_file:
-            example_file.write(example_env_content)
-        print(f"Updated .env.example file with your configuration")
-    except Exception as e:
-        print(f"Warning: Could not update .env.example file: {e}")
+    if not example_env_path.exists():
+        try:
+            import shutil
+            if source_example_path.exists():
+                shutil.copy(source_example_path, example_env_path)
+                print(f"Created .env.example file from template")
+            else:
+                print(f"Note: .env.example template not found at {source_example_path}")
+        except Exception as e:
+            print(f"Warning: Could not create .env.example file: {e}")
+    else:
+        print(f"Note: .env.example file already exists at {example_env_path}")
 
     print("\nConfiguration completed successfully!")
     print("You can now run the AI Agent application.")

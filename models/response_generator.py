@@ -45,8 +45,8 @@ class ResponseGenerator:
         if ENABLE_SCREEN_LOGGING:
             logger.info(f"ResponseGenerator configured with provider: {provider}, model: {model}")
 
-        # Initialize the prompt manager
-        self.prompt_manager = PromptManager()
+        # Initialize the prompt manager with the correct prompts directory
+        self.prompt_manager = PromptManager("./core/prompts")
 
         # Create the LLM based on the provider
         if provider.lower() == 'gigachat':
@@ -90,8 +90,8 @@ class ResponseGenerator:
         # Define the prompt template for generating natural language responses using external prompt
         system_prompt = self.prompt_manager.get_prompt("response_generator")
         if system_prompt is None:
-            # Fallback to default prompt if external prompt is not found
-            system_prompt = "You are an expert at converting database results into natural language responses."
+            # If the external prompt is not found, raise an error to ensure prompts are maintained properly
+            raise FileNotFoundError("response_generator.txt not found in prompts directory. Please ensure the prompt file exists.")
 
         self.prompt = ChatPromptTemplate.from_messages([
             ("system", system_prompt),

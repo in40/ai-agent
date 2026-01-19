@@ -48,34 +48,13 @@ class SQLGenerator:
             logger.info(f"SQLGenerator configured with provider: {provider}, model: {model}")
 
         # Initialize the prompt manager
-        self.prompt_manager = PromptManager()
+        self.prompt_manager = PromptManager("./core/prompts")
 
         # Define the prompt template for SQL generation using external prompt
         system_prompt = self.prompt_manager.get_prompt("sql_generator")
         if system_prompt is None:
-            # Fallback to default prompt if external prompt is not found
-            system_prompt = """You are an expert SQL developer. Your task is to generate correct SQL queries based on natural language requests.
-
-            Database schema:
-            {schema_dump}
-
-            {db_mapping}
-
-            Instructions:
-            1. Generate only the SQL query without any additional text or explanation
-            2. Use proper SQL syntax for PostgreSQL
-            3. Make sure the query is safe and doesn't include any harmful commands
-            4. Use appropriate JOINs if needed to connect related tables
-            5. If the request is ambiguous, make reasonable assumptions based on the schema
-            6. Always use table aliases for better readability
-            7. Limit results if the query could return a large dataset unless specifically asked for all records
-            8. Use only tables available in the schema, don't make up any tables and table's names.
-            9. When referencing tables, use only the table name without database prefixes (PostgreSQL doesn't support cross-database references in a single query)
-            10. For example: customers, products (NOT sales_db.public.customers)
-            11. Respond with a JSON object containing the following field:
-                - sql_query: The generated SQL query
-            12. Respond ONLY with the JSON object, nothing else.
-            """
+            # If the external prompt is not found, raise an error to ensure prompts are maintained properly
+            raise FileNotFoundError("sql_generator.txt not found in prompts directory. Please ensure the prompt file exists.")
 
         self.prompt = ChatPromptTemplate.from_messages([
             ("system", system_prompt),

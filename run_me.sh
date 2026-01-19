@@ -35,6 +35,8 @@ fi
 MCP_REGISTRY_PID=""
 DNS_SERVER_PID=""
 WEB_SEARCH_SERVER_PID=""
+RAG_SERVER_PID=""
+SQL_SERVER_PID=""
 
 # Function to cleanup background processes
 cleanup() {
@@ -55,6 +57,16 @@ cleanup() {
         kill "$WEB_SEARCH_SERVER_PID"
     fi
 
+    if [ ! -z "$RAG_SERVER_PID" ] && kill -0 "$RAG_SERVER_PID" 2>/dev/null; then
+        echo "Stopping RAG MCP server (PID: $RAG_SERVER_PID)"
+        kill "$RAG_SERVER_PID"
+    fi
+
+    if [ ! -z "$SQL_SERVER_PID" ] && kill -0 "$SQL_SERVER_PID" 2>/dev/null; then
+        echo "Stopping SQL MCP server (PID: $SQL_SERVER_PID)"
+        kill "$SQL_SERVER_PID"
+    fi
+
     # Wait a bit for processes to terminate gracefully
     sleep 2
 
@@ -72,6 +84,16 @@ cleanup() {
     if [ ! -z "$WEB_SEARCH_SERVER_PID" ] && kill -0 "$WEB_SEARCH_SERVER_PID" 2>/dev/null; then
         echo "Force stopping Web search MCP server"
         kill -9 "$WEB_SEARCH_SERVER_PID" 2>/dev/null || true
+    fi
+
+    if [ ! -z "$RAG_SERVER_PID" ] && kill -0 "$RAG_SERVER_PID" 2>/dev/null; then
+        echo "Force stopping RAG MCP server"
+        kill -9 "$RAG_SERVER_PID" 2>/dev/null || true
+    fi
+
+    if [ ! -z "$SQL_SERVER_PID" ] && kill -0 "$SQL_SERVER_PID" 2>/dev/null; then
+        echo "Force stopping SQL MCP server"
+        kill -9 "$SQL_SERVER_PID" 2>/dev/null || true
     fi
 
     # Clean up the temporary log file
@@ -192,6 +214,44 @@ sleep 3
 # Check if Web search server is running
 if ! kill -0 "$WEB_SEARCH_SERVER_PID" 2>/dev/null; then
     echo "ERROR: Web search MCP server failed to start"
+    # Show the log if there was an error
+    if [ -f "$BACKGROUND_LOG_FILE" ]; then
+        cat "$BACKGROUND_LOG_FILE"
+    fi
+    exit 1
+fi
+
+# Start RAG MCP server in background
+echo "Starting RAG MCP server..."
+python -m rag_component.rag_mcp_server --host 127.0.0.1 --port 8091 --registry-url http://127.0.0.1:8080 >>"$BACKGROUND_LOG_FILE" 2>&1 &
+RAG_SERVER_PID=$!
+echo "RAG MCP server started with PID: $RAG_SERVER_PID"
+
+# Give the server a moment to start
+sleep 3
+
+# Check if RAG server is running
+if ! kill -0 "$RAG_SERVER_PID" 2>/dev/null; then
+    echo "ERROR: RAG MCP server failed to start"
+    # Show the log if there was an error
+    if [ -f "$BACKGROUND_LOG_FILE" ]; then
+        cat "$BACKGROUND_LOG_FILE"
+    fi
+    exit 1
+fi
+
+# Start SQL MCP server in background
+echo "Starting SQL MCP server..."
+python -m sql_mcp_server.sql_mcp_server --host 127.0.0.1 --port 8092 --registry-url http://127.0.0.1:8080 >>"$BACKGROUND_LOG_FILE" 2>&1 &
+SQL_SERVER_PID=$!
+echo "SQL MCP server started with PID: $SQL_SERVER_PID"
+
+# Give the server a moment to start
+sleep 3
+
+# Check if SQL server is running
+if ! kill -0 "$SQL_SERVER_PID" 2>/dev/null; then
+    echo "ERROR: SQL MCP server failed to start"
     # Show the log if there was an error
     if [ -f "$BACKGROUND_LOG_FILE" ]; then
         cat "$BACKGROUND_LOG_FILE"

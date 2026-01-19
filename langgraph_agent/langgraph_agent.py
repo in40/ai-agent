@@ -10,6 +10,7 @@ from langgraph.graph import StateGraph, END
 from database.utils.multi_database_manager import multi_db_manager as DatabaseManager, reload_database_config
 from models.sql_generator import SQLGenerator
 from models.sql_executor import SQLExecutor
+from sql_mcp_server.client import SQLMCPClient
 from models.prompt_generator import PromptGenerator
 from models.response_generator import ResponseGenerator
 from models.security_sql_detector import SecuritySQLDetector
@@ -205,7 +206,7 @@ def get_schema_node(state: AgentState) -> AgentState:
 
 def generate_sql_node(state: AgentState) -> AgentState:
     """
-    Node to generate SQL query
+    Node to generate SQL query using SQL MCP server
     """
     start_time = time.time()
     logger.info(f"[NODE START] generate_sql_node - Generating SQL for request: {state['user_request']}")
@@ -246,7 +247,8 @@ def generate_sql_node(state: AgentState) -> AgentState:
         }
 
     try:
-        sql_generator = SQLGenerator()
+        # Create SQL MCP client
+        sql_client = SQLMCPClient()
 
         # Check if there are previous errors to include in the request
         previous_errors = []
@@ -268,13 +270,19 @@ def generate_sql_node(state: AgentState) -> AgentState:
         # Get previous SQL queries from state, default to empty list if not present
         previous_sql_queries = state.get("previous_sql_queries", [])
 
-        sql_query = sql_generator.generate_sql(
-            user_request_with_errors,
-            state["schema_dump"],
+        # Call the SQL MCP server to generate the SQL
+        result = sql_client.generate_sql(
+            user_request=user_request_with_errors,
+            schema_dump=state["schema_dump"],
             previous_sql_queries=previous_sql_queries,
             table_to_db_mapping=state.get("table_to_db_mapping"),  # Pass the table-to-database mapping
             table_to_real_db_mapping=state.get("table_to_real_db_mapping")  # Pass the table-to-real-database mapping
         )
+
+        if not result["success"]:
+            raise Exception(result["error"])
+
+        sql_query = result["sql_query"]
         elapsed_time = time.time() - start_time
 
         # Update the list of previous SQL queries
@@ -817,7 +825,7 @@ def validate_sql_node(state: AgentState) -> AgentState:
 
 def execute_sql_node(state: AgentState) -> AgentState:
     """
-    Node to execute SQL query on appropriate databases based on table-to-database mapping
+    Node to execute SQL query on appropriate databases using SQL MCP server
     """
     start_time = time.time()
     logger.info(f"[NODE START] execute_sql_node - Executing SQL: {state['sql_query']}")
@@ -842,7 +850,13 @@ def execute_sql_node(state: AgentState) -> AgentState:
         # Get all available database names
         all_databases = DatabaseManager.list_databases()
 
+        # Create SQL MCP client
+        sql_client = SQLMCPClient()
+
         # Extract table names from the SQL query to determine which databases to use
+        # We'll call the SQL MCP server to get this information
+        # First, let's get the table names using the SQL MCP server's validation
+        # For now, we'll use a local SQLExecutor to extract table names
         sql_executor = SQLExecutor()
         table_names = sql_executor._extract_table_names(state["sql_query"])
 
@@ -901,12 +915,19 @@ def execute_sql_node(state: AgentState) -> AgentState:
         if len(databases_to_query) > 1:
             logger.info(f"[NODE INFO] execute_sql_node - Executing cross-database query on all databases")
             try:
-                # Use the special method to execute on appropriate databases
-                results = sql_executor.execute_sql_and_get_results(state["sql_query"], "all_databases", table_to_db_mapping)
+                # Use the SQL MCP server to execute the query
+                result = sql_client.execute_sql(
+                    sql_query=state["sql_query"],
+                    db_name="all_databases",
+                    table_to_db_mapping=table_to_db_mapping
+                )
+
+                if not result["success"]:
+                    raise Exception(result["error"])
 
                 # Since the results are already combined from multiple databases,
                 # we just need to add them to the combined_results
-                combined_results = results
+                combined_results = result["results"]
 
                 logger.info(f"[NODE INFO] execute_sql_node - Cross-database query executed, got {len(combined_results)} results")
             except Exception as e:
@@ -917,7 +938,17 @@ def execute_sql_node(state: AgentState) -> AgentState:
             # Execute on individual databases as before
             for db_name in databases_to_query:
                 try:
-                    results = sql_executor.execute_sql_and_get_results(state["sql_query"], db_name, table_to_db_mapping)
+                    # Use the SQL MCP server to execute the query
+                    result = sql_client.execute_sql(
+                        sql_query=state["sql_query"],
+                        db_name=db_name,
+                        table_to_db_mapping=table_to_db_mapping
+                    )
+
+                    if not result["success"]:
+                        raise Exception(result["error"])
+
+                    results = result["results"]
 
                     # Store results by database name
                     all_db_results[db_name] = results

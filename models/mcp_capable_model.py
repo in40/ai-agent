@@ -51,8 +51,8 @@ class MCPCapableModel:
         if ENABLE_SCREEN_LOGGING:
             logger.info(f"MCPCapableModel configured with provider: {PROMPT_LLM_PROVIDER}, model: {PROMPT_LLM_MODEL}")
 
-        # Initialize the prompt manager
-        self.prompt_manager = PromptManager()
+        # Initialize the prompt manager with the correct prompts directory
+        self.prompt_manager = PromptManager("./core/prompts")
 
         # Create the LLM based on the provider
         # Use MCP-specific configuration if available, otherwise fall back to prompt configuration
@@ -127,40 +127,8 @@ class MCPCapableModel:
         # Define the system prompt template for the MCP-capable model using external prompt
         system_prompt = self.prompt_manager.get_prompt("mcp_capable_model")
         if system_prompt is None:
-            # Fallback to default prompt if external prompt is not found
-            system_prompt = """
-You are an intelligent assistant with access to various MCP (Multi-Component Protocol) services. Your role is to understand user requests and determine if they can be fulfilled using the available MCP services.
-
-Available MCP Services:
-{mcp_services_json}
-
-Your capabilities:
-1. Analyze user requests to determine if MCP services can fulfill them
-2. Generate appropriate tool calls to MCP services when needed
-3. If MCP services cannot fulfill the request, indicate that traditional methods should be used
-4. Always prioritize MCP services when they are relevant to the request
-
-When generating tool calls, format them as JSON:
-{{
-  "tool_calls": [
-    {{
-      "service_id": "<service_id>",
-      "action": "<action_to_perform>",
-      "parameters": {{
-        "param1": "value1",
-        "param2": "value2"
-      }}
-    }}
-  ]
-}}
-
-If no MCP service can fulfill the request, respond with:
-{{
-  "tool_calls": []
-}}
-
-Always respond in valid JSON format.
-"""
+            # If the external prompt is not found, raise an error to ensure prompts are maintained properly
+            raise FileNotFoundError("mcp_capable_model.txt not found in prompts directory. Please ensure the prompt file exists.")
 
         # Create the prompt template
         self.prompt = ChatPromptTemplate.from_messages([

@@ -12,10 +12,10 @@ def demo_security_prompt_loading():
     print("=== Demo: Security Prompt Loading ===")
     
     # Show available prompts
-    pm = PromptManager()
+    pm = PromptManager("./core/prompts")
     prompts = pm.list_prompts()
     print(f"Available prompts: {prompts}")
-    
+
     # Get the security prompt
     security_prompt = pm.get_prompt('security_sql_analysis')
     if security_prompt:
@@ -56,9 +56,9 @@ def demo_security_detector_with_prompt():
 def demo_prompt_editing_capability():
     """Demonstrate that the prompt can be edited via the prompt editor"""
     print("=== Demo: Prompt Editing Capability ===")
-    
-    pm = PromptManager()
-    
+
+    pm = PromptManager("./core/prompts")
+
     # Show how to update the prompt
     print("The security prompt can be edited using the prompt editor:")
     print("  python prompt_editor.py")

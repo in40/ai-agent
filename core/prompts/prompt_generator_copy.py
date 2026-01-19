@@ -21,7 +21,7 @@ class PromptGenerator:
             logger.info(f"PromptGenerator configured with provider: {PROMPT_LLM_PROVIDER}, model: {PROMPT_LLM_MODEL}")
 
         # Initialize the prompt manager
-        self.prompt_manager = PromptManager()
+        self.prompt_manager = PromptManager("./core/prompts")
 
         # Create the LLM based on the provider
         if PROMPT_LLM_PROVIDER.lower() == 'gigachat':

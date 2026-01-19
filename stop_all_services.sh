@@ -36,4 +36,15 @@ else
     echo "No LangGraph Studio process found on port $PORT"
 fi
 
+# Stop Workflow API server
+echo "Stopping Workflow API server on port 5001..."
+PORT=5001
+PID=$(lsof -t -i:$PORT 2>/dev/null)
+if [ ! -z "$PID" ]; then
+    echo "Found Workflow API process $PID, stopping it..."
+    kill $PID
+else
+    echo "No Workflow API process found on port $PORT"
+fi
+
 echo "All services stopped!"

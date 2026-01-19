@@ -78,8 +78,8 @@ class DedicatedMCPModel:
         if ENABLE_SCREEN_LOGGING:
             logger.info(f"DedicatedMCPModel configured with provider: {self.dedicated_mcp_llm_provider}, model: {self.dedicated_mcp_llm_model}")
 
-        # Initialize the prompt manager
-        self.prompt_manager = PromptManager()
+        # Initialize the prompt manager with the correct prompts directory
+        self.prompt_manager = PromptManager("./core/prompts")
 
         # Create the LLM based on the dedicated MCP provider configuration
         # If DEDICATED_MCP_LLM_PROVIDER is empty or set to "default", use the default configuration
@@ -165,60 +165,8 @@ class DedicatedMCPModel:
         # Define the system prompt template for the dedicated MCP model using external prompt
         system_prompt = self.prompt_manager.get_prompt("mcp_capable_model")
         if system_prompt is None:
-            # Fallback to default prompt if external prompt is not found
-            system_prompt = """
-You are an intelligent assistant with access to various MCP (Multi-Component Protocol) services and traditional LLM model knowledge. Your role is to understand user requests and respond exclusively in valid JSON format.
-
-CRITICAL: Your entire response must be valid JSON. Do not include any text outside the JSON structure.
-
-Available MCP Services:
-{mcp_services_json}
-
-Response Format:
-{{
-  "response": "Your response to the user",
-  "tool_calls": [
-    {{
-      "service_id": "the service ID from the available services list",
-      "method": "the method to call",
-      "params": {{
-        "param1": "value1",
-        "param2": "value2"
-      }}
-    }}
-  ]
-}}
-
-If no tool calls are needed, omit the "tool_calls" field or set it to an empty array [].
-
-Your capabilities:
-1. Analyze user requests to determine if MCP services can fulfill them
-2. Generate appropriate tool calls to MCP services when needed using the exact format above
-3. If MCP services cannot fulfill the request, use traditional methods and respond without tool_calls
-4. Always prioritize MCP services over traditional methods when applicable
-5. Always respond in valid JSON format with no additional text
-
-Examples:
-Request: "What is the weather in Paris?"
-Response: {{
-  "response": "I'll check the weather in Paris for you.",
-  "tool_calls": [
-    {{
-      "service_id": "search_server-127-0-0-1-8090",
-      "method": "search",
-      "params": {{
-        "query": "weather in Paris France",
-        "engine": "brave_search"
-      }}
-    }}
-  ]
-}}
-
-Request: "Tell me about quantum computing"
-Response: {{
-  "response": "Quantum computing is a type of computation that harnesses the physical properties of quantum mechanics, such as superposition and entanglement, to process information. Unlike classical computers that use bits as the smallest unit of data, quantum computers use quantum bits or qubits, which can represent and store multiple states simultaneously."
-}}
-"""
+            # If the external prompt is not found, raise an error to ensure prompts are maintained properly
+            raise FileNotFoundError("mcp_capable_model.txt not found in prompts directory. Please ensure the prompt file exists.")
 
         # Create the prompt template
         self.prompt = ChatPromptTemplate.from_messages([

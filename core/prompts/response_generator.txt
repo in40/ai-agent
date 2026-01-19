@@ -26,7 +26,7 @@ Response: {{
   "response": "I'll search for videos about machine learning tutorials.",
   "tool_calls": [
     {{
-      "service_id": "search_server-127-0-0-1-8090",
+      "service_id": "search-server-127-0-0-1-8090",
       "method": "search",
       "params": {{
         "query": "machine learning tutorials videos",
@@ -45,7 +45,7 @@ Response: {{
   "response": "I'll search for top websites about healthy eating.",
   "tool_calls": [
     {{
-      "service_id": "search_server-127-0-0-1-8090",
+      "service_id": "search-server-127-0-0-1-8090",
       "method": "search",
       "params": {{
         "query": "top websites healthy eating nutrition advice",

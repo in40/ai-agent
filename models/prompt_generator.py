@@ -40,8 +40,8 @@ class PromptGenerator:
         if ENABLE_SCREEN_LOGGING:
             logger.info(f"PromptGenerator configured with provider: {provider}, model: {model}")
 
-        # Initialize the prompt manager
-        self.prompt_manager = PromptManager()
+        # Initialize the prompt manager with the correct prompts directory
+        self.prompt_manager = PromptManager("./core/prompts")
 
         # Create the LLM based on the provider
         if provider.lower() == 'gigachat':
@@ -85,18 +85,8 @@ class PromptGenerator:
         # Define the prompt template for generating a prompt for the response LLM using external prompt
         system_prompt = self.prompt_manager.get_prompt("prompt_generator")
         if system_prompt is None:
-            # Fallback to default prompt if external prompt is not found
-            system_prompt = """You are an expert at creating detailed prompts for language models.
-            Your task is to create a comprehensive prompt that will help another LLM generate
-            a detailed natural language response based on database query results and the original user request.
-
-            Guidelines:
-            1. The prompt should include the original user request
-            2. The prompt should include the database query results
-            3. The prompt should guide the response LLM on how to format and structure the answer
-            4. The prompt should specify the tone and level of detail required
-            5. The prompt should ensure the response is in natural language and easy to understand
-            """
+            # If the external prompt is not found, raise an error to ensure prompts are maintained properly
+            raise FileNotFoundError("prompt_generator.txt not found in prompts directory. Please ensure the prompt file exists.")
 
         self.prompt = ChatPromptTemplate.from_messages([
             ("system", system_prompt),
@@ -159,18 +149,8 @@ class PromptGenerator:
             # Define the prompt template for generating wider search strategies using external prompt
             system_prompt = self.prompt_manager.get_prompt("wider_search_generator")
             if system_prompt is None:
-                # Fallback to default prompt if external prompt is not found
-                system_prompt = """You are an expert at analyzing database schemas and suggesting wider search strategies when initial queries return no results. Your task is to provide specific suggestions for alternative queries that might yield relevant data based on the database schema and the original user request.
-
-    When the initial query returns no results, consider these strategies:
-    1. Use LIKE operators with wildcards for partial matches
-    2. Search in related tables that might contain relevant information
-    3. Use broader categories or classifications
-    4. Look for similar data patterns
-    5. Use full-text search if available
-    6. Suggest alternative search terms based on the schema and column names
-
-    Always reference specific table and column names from the provided schema. Be creative but practical in your suggestions, and ensure they align with the user's original intent."""
+                # If the external prompt is not found, raise an error to ensure prompts are maintained properly
+                raise FileNotFoundError("wider_search_generator.txt not found in prompts directory. Please ensure the prompt file exists.")
 
             # Check if the template expects specific variables
             has_schema_dump = "{schema_dump}" in system_prompt

@@ -29,7 +29,7 @@ class SQLGenerator:
             logger.info(f"SQLGenerator configured with provider: {SQL_LLM_PROVIDER}, model: {SQL_LLM_MODEL}")
 
         # Initialize the prompt manager
-        self.prompt_manager = PromptManager()
+        self.prompt_manager = PromptManager("./core/prompts")
 
         # Define the prompt template for SQL generation using external prompt
         system_prompt = self.prompt_manager.get_prompt("sql_generator")
