@@ -46,4 +46,4 @@ coverage/
 .nyc_output/
 coverage/
 # React build artifacts
-build/
+build/data/
