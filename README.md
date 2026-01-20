@@ -376,10 +376,13 @@ The LangGraph Visual Editor provides a web-based interface for:
 
 To start the GUI:
 ```bash
-./run_gui.sh
+cd gui
+streamlit run streamlit_app.py
 ```
 
 Then navigate to http://localhost:8501 in your browser.
+
+Note: Make sure you have installed the required dependencies by running `pip install -r requirements.txt` in the gui directory or the main project directory.
 
 The GUI includes:
 - Graph visualization of the LangGraph workflow
