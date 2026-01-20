@@ -19,13 +19,19 @@ PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 echo -e "${YELLOW}Activating virtual environment...${NC}"
 source "$PROJECT_ROOT/ai_agent_env/bin/activate"
 
-# Start Redis if not already running
-if ! nc -z localhost 6379; then
-    echo -e "${YELLOW}Starting Redis...${NC}"
-    redis-server --daemonize yes
-    sleep 2
+# Check if Redis is available and running
+if command -v redis-server >/dev/null 2>&1; then
+    if ! nc -z localhost 6379; then
+        echo -e "${YELLOW}Starting Redis...${NC}"
+        redis-server --daemonize yes
+        sleep 2
+        REDIS_STARTED=true
+    else
+        echo -e "${GREEN}Redis is already running${NC}"
+    fi
 else
-    echo -e "${GREEN}Redis is already running${NC}"
+    echo -e "${RED}Redis server not found. Please install Redis to use session management and rate limiting.${NC}"
+    echo -e "${YELLOW}Continuing without Redis...${NC}"
 fi
 
 # Start the auth service in the background
@@ -84,19 +90,21 @@ echo -e "${YELLOW}Press Ctrl+C to stop the system${NC}"
 # Function to handle shutdown
 cleanup() {
     echo -e "\n${YELLOW}Stopping AI Agent Microservices...${NC}"
-    
+
     # Kill all background processes
     for pid in $AUTH_PID $AGENT_PID $RAG_PID $GATEWAY_PID; do
         if [ ! -z "$pid" ]; then
             kill $pid 2>/dev/null || true
         fi
     done
-    
+
     # Stop Redis if we started it
-    if [ ! -z "$REDIS_STARTED" ]; then
-        redis-cli shutdown
+    if [ "$REDIS_STARTED" = true ]; then
+        if command -v redis-cli >/dev/null 2>&1; then
+            redis-cli shutdown
+        fi
     fi
-    
+
     echo -e "${GREEN}Microservices stopped.${NC}"
     exit 0
 }
