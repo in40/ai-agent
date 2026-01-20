@@ -1,4 +1,4 @@
-# AI Agent System - Backend and Frontend Architecture
+# AI Agent System - Backend and Frontend Architecture (v0.2)
 
 ## Overview
 
@@ -9,6 +9,17 @@ This project implements a split architecture for the AI Agent system, separating
 - **Command-Line Client**: Maintains original functionality with backend support
 - **Nginx Proxy**: Handles TLS termination and routing to backend services
 
+## v0.2 Security Enhancements
+
+Version 0.2 introduces significant security enhancements:
+
+- **Role-Based Access Control (RBAC)**: Fine-grained permissions for different user roles
+- **Rate Limiting**: Protection against API abuse with configurable limits
+- **Enhanced Input Validation**: Comprehensive validation and sanitization of all inputs
+- **Audit Logging**: Detailed logging of all user actions for security monitoring
+- **Session Management**: Improved session handling with automatic expiration
+- **API Key Support**: Programmatic access with secure API keys
+
 ## Architecture Components
 
 ### Backend API Server (`/backend/app.py`)
@@ -16,6 +27,9 @@ This project implements a split architecture for the AI Agent system, separating
 The backend provides:
 
 - **Authentication**: JWT-based authentication with register/login endpoints
+- **RBAC System**: Role-based permissions for fine-grained access control
+- **Rate Limiting**: Per-endpoint rate limiting to prevent abuse
+- **Input Validation**: Comprehensive validation and sanitization
 - **Agent API**: `/api/agent/query` for AI agent functionality
 - **RAG API**: `/api/rag/*` endpoints for document management and retrieval
 - **Service Proxies**: For Streamlit and React GUIs
@@ -96,7 +110,7 @@ config = {
    ```bash
    # Standalone mode
    python -m core.main
-   
+
    # Backend mode
    python backend/cli_client.py --backend-url https://localhost --auth-token YOUR_TOKEN
    ```
@@ -115,7 +129,7 @@ config = {
    ```bash
    # Start Streamlit
    streamlit run gui/enhanced_streamlit_app.py --server.port 8501
-   
+
    # Start React (in gui/react_editor/)
    cd gui/react_editor
    npm start
@@ -129,30 +143,33 @@ config = {
 ## API Endpoints
 
 ### Authentication
-- `POST /auth/register` - Register new user
-- `POST /auth/login` - Authenticate user
+- `POST /auth/register` - Register new user (rate limited: 5/5min)
+- `POST /auth/login` - Authenticate user (rate limited: 10/min)
 
 ### Agent
-- `POST /api/agent/query` - Process natural language request
-- `GET /api/agent/status` - Check agent status
+- `POST /api/agent/query` - Process natural language request (rate limited: 30/min, requires `write:agent`)
+- `GET /api/agent/status` - Check agent status (requires `read:agent`)
 
 ### RAG
-- `POST /api/rag/query` - Query RAG system
-- `POST /api/rag/ingest` - Ingest documents
-- `POST /api/rag/retrieve` - Retrieve documents
-- `POST /api/rag/lookup` - Lookup documents
+- `POST /api/rag/query` - Query RAG system (rate limited: 20/min, requires `read:rag`)
+- `POST /api/rag/ingest` - Ingest documents (rate limited: 10/min, requires `write:rag`)
+- `POST /api/rag/retrieve` - Retrieve documents (rate limited: 20/min, requires `read:rag`)
+- `POST /api/rag/lookup` - Lookup documents (rate limited: 20/min, requires `read:rag`)
 
 ### System
-- `GET /api/health` - Health check
-- `GET /api/config` - Get system configuration
-- `GET /api/services` - List available services
+- `GET /api/health` - Health check (rate limited: 60/min)
+- `GET /api/config` - Get system configuration (requires `read:system`)
+- `GET /api/services` - List available services (requires `read:system`)
 
 ## Security Features
 
 - **JWT Authentication**: All API endpoints require authentication
+- **Role-Based Access Control**: Fine-grained permissions per endpoint
+- **Rate Limiting**: Per-endpoint rate limiting to prevent abuse
+- **Input Validation**: Comprehensive validation and sanitization of all inputs
+- **Audit Logging**: Detailed logging of all user actions
+- **Session Management**: Secure session handling with automatic expiration
 - **HTTPS**: TLS encryption for all communications
-- **Input Validation**: Sanitizes all user inputs
-- **Rate Limiting**: Prevents abuse of services
 - **CORS Policy**: Restricts cross-origin requests
 
 ## Configuration
@@ -185,8 +202,20 @@ Run the comprehensive test suite:
 python backend/test_integrated_system.py
 ```
 
+For v0.2 security features:
+```bash
+python backend/test_security_v02.py
+```
+
 This tests:
 - Backend API functionality
 - Authentication system
+- RBAC permissions
+- Rate limiting
+- Input validation
 - Web client accessibility
 - Service availability
+
+## Migration from v0.1
+
+See `MIGRATION_GUIDE_v02.md` for details on migrating from v0.1 to v0.2.

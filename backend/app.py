@@ -20,6 +20,9 @@ from rag_component.main import RAGOrchestrator
 from config.settings import RESPONSE_LLM_PROVIDER, RESPONSE_LLM_MODEL
 from models.response_generator import ResponseGenerator
 
+# Import security module
+from backend.security import security_manager, require_permission, rate_limit, validate_input, Permission
+
 # Initialize Flask app
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your-secret-key-change-this-in-production')
@@ -41,7 +44,7 @@ logger = logging.getLogger(__name__)
 # In-memory user store (replace with database in production)
 users_db = {}
 
-# Authentication decorator
+# Authentication decorator (kept for backward compatibility)
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -69,16 +72,36 @@ def token_required(f):
 # Routes
 
 @app.route('/auth/register', methods=['POST'])
+@rate_limit(max_requests=5, window_seconds=300)  # 5 registrations per 5 minutes
 def register():
     """Register a new user"""
     try:
         data = request.get_json()
 
+        # Validate input
+        schema = {
+            'username': {
+                'type': str,
+                'required': True,
+                'min_length': 3,
+                'max_length': 50,
+                'sanitize': True
+            },
+            'password': {
+                'type': str,
+                'required': True,
+                'min_length': 8,
+                'max_length': 128,
+                'sanitize': True
+            }
+        }
+
+        validation_errors = validate_input(data, schema)
+        if validation_errors:
+            return jsonify({'message': f'Validation error: {validation_errors}'}), 400
+
         username = data.get('username')
         password = data.get('password')
-
-        if not username or not password:
-            return jsonify({'message': 'Username and password are required!'}), 400
 
         if username in users_db:
             return jsonify({'message': 'Username already exists!'}), 400
@@ -89,8 +112,18 @@ def register():
         # Store user (in production, use a database)
         users_db[username] = {
             'password': hashed_password,
-            'created_at': datetime.utcnow()
+            'created_at': datetime.utcnow(),
+            'role': 'user'  # Default role
         }
+
+        # Log audit event
+        security_manager.log_audit_event(
+            'system',
+            'create',
+            'user',
+            request.remote_addr,
+            success=True
+        )
 
         return jsonify({'message': 'User registered successfully!'}), 201
     except Exception as e:
@@ -98,49 +131,136 @@ def register():
         return jsonify({'message': 'Registration failed!'}), 500
 
 @app.route('/auth/login', methods=['POST'])
+@rate_limit(max_requests=10, window_seconds=60)  # 10 login attempts per minute
 def login():
     """Login a user and return JWT token"""
     try:
         data = request.get_json()
 
+        # Validate input
+        schema = {
+            'username': {
+                'type': str,
+                'required': True,
+                'min_length': 3,
+                'max_length': 50,
+                'sanitize': True
+            },
+            'password': {
+                'type': str,
+                'required': True,
+                'min_length': 8,
+                'max_length': 128,
+                'sanitize': True
+            }
+        }
+
+        validation_errors = validate_input(data, schema)
+        if validation_errors:
+            return jsonify({'message': f'Validation error: {validation_errors}'}), 400
+
         username = data.get('username')
         password = data.get('password')
 
-        if not username or not password:
-            return jsonify({'message': 'Username and password are required!'}), 400
-
         user = users_db.get(username)
         if not user or not check_password_hash(user['password'], password):
+            # Log failed login attempt
+            security_manager.log_audit_event(
+                username or 'unknown',
+                'login',
+                'auth',
+                request.remote_addr,
+                success=False
+            )
             return jsonify({'message': 'Invalid credentials!'}), 401
 
+        # Authenticate user and get permissions
+        user_info = security_manager.authenticate_user(username, password)
+        if not user_info:
+            return jsonify({'message': 'Authentication failed!'}), 401
+
         # Generate JWT token
-        token = jwt.encode({
-            'user_id': username,
-            'exp': datetime.utcnow() + timedelta(hours=24)
-        }, app.config['JWT_SECRET_KEY'], algorithm="HS256")
+        token = security_manager.generate_token(user_info)
+
+        # Create session
+        session_id = security_manager.create_session(
+            user_info,
+            request.remote_addr,
+            request.headers.get('User-Agent', 'Unknown')
+        )
+
+        # Log successful login
+        security_manager.log_audit_event(
+            username,
+            'login',
+            'auth',
+            request.remote_addr,
+            success=True
+        )
 
         return jsonify({
             'token': token,
-            'message': 'Login successful!'
+            'session_id': session_id,
+            'message': 'Login successful!',
+            'user_info': {
+                'user_id': user_info['user_id'],
+                'role': user_info['role'].value,
+                'permissions': [p.value for p in user_info['permissions']]
+            }
         }), 200
     except Exception as e:
         logger.error(f"Login error: {str(e)}")
+
+        # Log failed login attempt
+        username = data.get('username', 'unknown') if 'data' in locals() else 'unknown'
+        security_manager.log_audit_event(
+            username,
+            'login',
+            'auth',
+            request.remote_addr,
+            success=False
+        )
+
         return jsonify({'message': 'Login failed!'}), 500
 
 @app.route('/api/agent/query', methods=['POST'])
-@token_required
+@require_permission(Permission.WRITE_AGENT)
+@rate_limit(max_requests=30, window_seconds=60)  # 30 requests per minute
 def agent_query(current_user_id):
     """Endpoint for the main AI agent functionality"""
     try:
         data = request.get_json()
 
+        # Validate input
+        schema = {
+            'user_request': {
+                'type': str,
+                'required': True,
+                'min_length': 1,
+                'max_length': 2000,
+                'sanitize': True
+            },
+            'disable_sql_blocking': {
+                'type': bool,
+                'required': False
+            },
+            'disable_databases': {
+                'type': bool,
+                'required': False
+            }
+        }
+
+        validation_errors = validate_input(data, schema)
+        if validation_errors:
+            return jsonify({'error': f'Validation error: {validation_errors}'}), 400
+
         user_request = data.get('user_request')
-        if not user_request:
-            return jsonify({'error': 'user_request is required'}), 400
 
         # Extract optional parameters
         disable_sql_blocking = data.get('disable_sql_blocking', False)
         disable_databases = data.get('disable_databases', False)
+
+        start_time = time.time()
 
         # Run the agent
         result = run_enhanced_agent(
@@ -149,21 +269,38 @@ def agent_query(current_user_id):
             disable_databases=disable_databases
         )
 
+        # Add execution time to result
+        result['execution_time'] = time.time() - start_time
+
         return jsonify(result), 200
     except Exception as e:
         logger.error(f"Agent query error: {str(e)}")
         return jsonify({'error': f'Agent query failed: {str(e)}'}), 500
 
 @app.route('/api/rag/query', methods=['POST'])
-@token_required
+@require_permission(Permission.READ_RAG)
+@rate_limit(max_requests=20, window_seconds=60)  # 20 requests per minute
 def rag_query(current_user_id):
     """Endpoint for RAG queries"""
     try:
         data = request.get_json()
 
+        # Validate input
+        schema = {
+            'query': {
+                'type': str,
+                'required': True,
+                'min_length': 1,
+                'max_length': 1000,
+                'sanitize': True
+            }
+        }
+
+        validation_errors = validate_input(data, schema)
+        if validation_errors:
+            return jsonify({'error': f'Validation error: {validation_errors}'}), 400
+
         query = data.get('query')
-        if not query:
-            return jsonify({'error': 'query is required'}), 400
 
         # Initialize RAG orchestrator with appropriate LLM
         response_generator = ResponseGenerator()
@@ -183,15 +320,33 @@ def rag_query(current_user_id):
         return jsonify({'error': f'RAG query failed: {str(e)}'}), 500
 
 @app.route('/api/rag/ingest', methods=['POST'])
-@token_required
+@require_permission(Permission.WRITE_RAG)
+@rate_limit(max_requests=10, window_seconds=60)  # 10 requests per minute
 def rag_ingest(current_user_id):
     """Endpoint for ingesting documents into RAG"""
     try:
         data = request.get_json()
 
+        # Validate input
+        schema = {
+            'file_paths': {
+                'type': list,
+                'required': True,
+                'min_length': 1,
+                'max_length': 50  # Max 50 files at once
+            }
+        }
+
+        validation_errors = validate_input(data, schema)
+        if validation_errors:
+            return jsonify({'error': f'Validation error: {validation_errors}'}), 400
+
         file_paths = data.get('file_paths')
-        if not file_paths:
-            return jsonify({'error': 'file_paths is required'}), 400
+
+        # Additional validation for file paths
+        for path in file_paths:
+            if not isinstance(path, str) or len(path) == 0:
+                return jsonify({'error': 'Each file path must be a non-empty string'}), 400
 
         # Initialize RAG orchestrator with appropriate LLM
         response_generator = ResponseGenerator()
@@ -214,17 +369,36 @@ def rag_ingest(current_user_id):
         return jsonify({'error': f'RAG ingestion failed: {str(e)}'}), 500
 
 @app.route('/api/rag/retrieve', methods=['POST'])
-@token_required
+@require_permission(Permission.READ_RAG)
+@rate_limit(max_requests=20, window_seconds=60)  # 20 requests per minute
 def rag_retrieve(current_user_id):
     """Endpoint for retrieving documents from RAG"""
     try:
         data = request.get_json()
 
+        # Validate input
+        schema = {
+            'query': {
+                'type': str,
+                'required': True,
+                'min_length': 1,
+                'max_length': 1000,
+                'sanitize': True
+            },
+            'top_k': {
+                'type': int,
+                'required': False,
+                'min_value': 1,
+                'max_value': 100
+            }
+        }
+
+        validation_errors = validate_input(data, schema)
+        if validation_errors:
+            return jsonify({'error': f'Validation error: {validation_errors}'}), 400
+
         query = data.get('query')
         top_k = data.get('top_k', 5)  # Default to 5 results
-
-        if not query:
-            return jsonify({'error': 'query is required'}), 400
 
         # Initialize RAG orchestrator with appropriate LLM
         response_generator = ResponseGenerator()
@@ -244,15 +418,29 @@ def rag_retrieve(current_user_id):
         return jsonify({'error': f'RAG retrieval failed: {str(e)}'}), 500
 
 @app.route('/api/rag/lookup', methods=['POST'])
-@token_required
+@require_permission(Permission.READ_RAG)
+@rate_limit(max_requests=20, window_seconds=60)  # 20 requests per minute
 def rag_lookup(current_user_id):
     """Endpoint for looking up documents in RAG"""
     try:
         data = request.get_json()
 
+        # Validate input
+        schema = {
+            'query': {
+                'type': str,
+                'required': True,
+                'min_length': 1,
+                'max_length': 1000,
+                'sanitize': True
+            }
+        }
+
+        validation_errors = validate_input(data, schema)
+        if validation_errors:
+            return jsonify({'error': f'Validation error: {validation_errors}'}), 400
+
         query = data.get('query')
-        if not query:
-            return jsonify({'error': 'query is required'}), 400
 
         # Initialize RAG orchestrator with appropriate LLM
         response_generator = ResponseGenerator()
@@ -272,22 +460,31 @@ def rag_lookup(current_user_id):
         return jsonify({'error': f'RAG lookup failed: {str(e)}'}), 500
 
 @app.route('/api/health', methods=['GET'])
+@rate_limit(max_requests=60, window_seconds=60)  # 60 requests per minute
 def health_check():
     """Health check endpoint"""
     return jsonify({
         'status': 'healthy',
         'message': 'AI Agent Backend API is running',
-        'timestamp': datetime.utcnow().isoformat()
+        'timestamp': datetime.utcnow().isoformat(),
+        'version': '0.2.0'
     }), 200
 
 @app.route('/api/config', methods=['GET'])
-@token_required
+@require_permission(Permission.READ_SYSTEM)
 def get_config(current_user_id):
     """Get system configuration"""
     return jsonify({
         'databases_enabled': not os.getenv('DISABLE_DATABASES', 'false').lower() == 'true',
         'rag_enabled': os.getenv('RAG_ENABLED', 'true').lower() == 'true',
-        'sql_blocking_enabled': os.getenv('TERMINATE_ON_POTENTIALLY_HARMFUL_SQL', 'true').lower() == 'true'
+        'sql_blocking_enabled': os.getenv('TERMINATE_ON_POTENTIALLY_HARMFUL_SQL', 'true').lower() == 'true',
+        'version': '0.2.0',
+        'security_features': {
+            'rbac_enabled': True,
+            'rate_limiting': True,
+            'input_validation': True,
+            'audit_logging': True
+        }
     }), 200
 
 # Proxy routes for Streamlit and React GUIs (no authentication required for these)
@@ -381,40 +578,44 @@ def serve_static(path):
 
 # Additional API endpoints
 @app.route('/api/agent/status', methods=['GET'])
-@token_required
+@require_permission(Permission.READ_AGENT)
 def agent_status(current_user_id):
     """Get the status of the AI agent"""
     return jsonify({
         'status': 'running',
         'message': 'AI Agent is operational',
-        'timestamp': datetime.utcnow().isoformat()
+        'timestamp': datetime.utcnow().isoformat(),
+        'version': '0.2.0'
     }), 200
 
 @app.route('/api/rag/status', methods=['GET'])
-@token_required
+@require_permission(Permission.READ_RAG)
 def rag_status(current_user_id):
     """Get the status of the RAG component"""
     return jsonify({
         'status': 'running',
         'message': 'RAG component is operational',
-        'timestamp': datetime.utcnow().isoformat()
+        'timestamp': datetime.utcnow().isoformat(),
+        'version': '0.2.0'
     }), 200
 
 @app.route('/api/services', methods=['GET'])
-@token_required
+@require_permission(Permission.READ_SYSTEM)
 def get_services(current_user_id):
     """Get information about available services"""
     return jsonify({
         'services': [
-            {'name': 'AI Agent', 'endpoint': '/api/agent/query', 'method': 'POST'},
-            {'name': 'RAG Query', 'endpoint': '/api/rag/query', 'method': 'POST'},
-            {'name': 'RAG Ingest', 'endpoint': '/api/rag/ingest', 'method': 'POST'},
-            {'name': 'RAG Retrieve', 'endpoint': '/api/rag/retrieve', 'method': 'POST'},
-            {'name': 'RAG Lookup', 'endpoint': '/api/rag/lookup', 'method': 'POST'},
-            {'name': 'Authentication', 'endpoint': '/auth/login', 'method': 'POST'},
-            {'name': 'Health Check', 'endpoint': '/api/health', 'method': 'GET'}
+            {'name': 'AI Agent', 'endpoint': '/api/agent/query', 'method': 'POST', 'permission': 'write:agent'},
+            {'name': 'RAG Query', 'endpoint': '/api/rag/query', 'method': 'POST', 'permission': 'read:rag'},
+            {'name': 'RAG Ingest', 'endpoint': '/api/rag/ingest', 'method': 'POST', 'permission': 'write:rag'},
+            {'name': 'RAG Retrieve', 'endpoint': '/api/rag/retrieve', 'method': 'POST', 'permission': 'read:rag'},
+            {'name': 'RAG Lookup', 'endpoint': '/api/rag/lookup', 'method': 'POST', 'permission': 'read:rag'},
+            {'name': 'Authentication', 'endpoint': '/auth/login', 'method': 'POST', 'permission': 'none'},
+            {'name': 'Health Check', 'endpoint': '/api/health', 'method': 'GET', 'permission': 'none'},
+            {'name': 'System Config', 'endpoint': '/api/config', 'method': 'GET', 'permission': 'read:system'}
         ],
-        'timestamp': datetime.utcnow().isoformat()
+        'timestamp': datetime.utcnow().isoformat(),
+        'version': '0.2.0'
     }), 200
 
 if __name__ == '__main__':
