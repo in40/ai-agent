@@ -31,6 +31,7 @@ start_service() {
         return 1
     else
         echo -e "${GREEN}Starting $name on port $port...${NC}"
+        # Run the service with output redirected to log files to prevent interference
         nohup $cmd > $log_file 2>&1 &
         sleep 3  # Give the service time to start
 
