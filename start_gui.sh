@@ -25,7 +25,7 @@ start_service() {
     local cmd=$1
     local name=$2
     local port=$3
-    
+
     if check_port $port; then
         echo -e "${YELLOW}Warning: Port $port is already in use, skipping $name${NC}"
         return 1
@@ -33,7 +33,7 @@ start_service() {
         echo -e "${GREEN}Starting $name on port $port...${NC}"
         eval "$cmd" &
         sleep 3  # Give the service time to start
-        
+
         if check_port $port; then
             echo -e "${GREEN}$name successfully started on port $port${NC}"
             return 0
@@ -50,14 +50,14 @@ cd "$(dirname "$0")"
 # Start the main GUI server (port 8000)
 start_service "python gui/server.py" "Main Dashboard" "8000"
 
-# Start the Streamlit editor (port 8501)
-start_service "streamlit run gui/enhanced_streamlit_app.py --server.port 8501 --server.headless true" "Streamlit Editor" "8501"
+# Start the Streamlit editor (port 8501) - binding to all interfaces
+start_service "streamlit run gui/enhanced_streamlit_app.py --server.port 8501 --server.address 0.0.0.0 --server.headless true" "Streamlit Editor" "8501"
 
 echo -e "${GREEN}"
 echo "==================================================================="
 echo "LangGraph Visual Editor GUI components are now running:"
-echo "- Main Dashboard: http://localhost:8000"
-echo "- Streamlit Editor: http://localhost:8501"
+echo "- Main Dashboard: http://$(hostname -I | awk '{print $1}'):8000 or http://localhost:8000"
+echo "- Streamlit Editor: http://$(hostname -I | awk '{print $1}'):8501 or http://localhost:8501"
 echo ""
 echo "Note: To start the React Editor (port 3000), navigate to"
 echo "      gui/react_editor and run 'npm start'"
