@@ -1,18 +1,22 @@
-# AI Agent System - Backend and Frontend Architecture (v0.2)
+# AI Agent System - Microservices Architecture (v0.2)
 
 ## Overview
 
-This project implements a split architecture for the AI Agent system, separating backend services from client interfaces. The system consists of:
+This project implements a microservices architecture for the AI Agent system, decomposing the monolithic application into independent services. The system consists of:
 
-- **Backend API Server**: A Flask-based server providing authenticated endpoints
+- **Authentication Service**: Handles user authentication, authorization, and session management
+- **Agent Service**: Processes AI agent requests and generates responses
+- **RAG Service**: Manages document processing and retrieval
+- **API Gateway**: Routes requests to appropriate services
 - **Web Client**: A React-based single-page application with multiple tabs
 - **Command-Line Client**: Maintains original functionality with backend support
 - **Nginx Proxy**: Handles TLS termination and routing to backend services
 
-## v0.2 Security Enhancements
+## v0.2 Enhancements
 
-Version 0.2 introduces significant security enhancements:
+Version 0.2 introduces significant improvements:
 
+### Security Enhancements
 - **Role-Based Access Control (RBAC)**: Fine-grained permissions for different user roles
 - **Rate Limiting**: Protection against API abuse with configurable limits
 - **Enhanced Input Validation**: Comprehensive validation and sanitization of all inputs
@@ -20,20 +24,51 @@ Version 0.2 introduces significant security enhancements:
 - **Session Management**: Improved session handling with automatic expiration
 - **API Key Support**: Programmatic access with secure API keys
 
+### Scalability Enhancements
+- **Microservices Architecture**: Decomposed monolith into independent services
+- **Independent Scaling**: Each service can be scaled independently
+- **Distributed Deployment**: Services can be deployed across multiple machines
+- **Load Balancing**: Support for distributing requests across multiple instances
+- **Service Discovery**: Mechanisms for services to discover each other
+
 ## Architecture Components
 
-### Backend API Server (`/backend/app.py`)
+### Authentication Service (`/backend/services/auth/`)
 
-The backend provides:
+Handles user authentication, authorization, and session management:
 
-- **Authentication**: JWT-based authentication with register/login endpoints
-- **RBAC System**: Role-based permissions for fine-grained access control
-- **Rate Limiting**: Per-endpoint rate limiting to prevent abuse
-- **Input Validation**: Comprehensive validation and sanitization
-- **Agent API**: `/api/agent/query` for AI agent functionality
-- **RAG API**: `/api/rag/*` endpoints for document management and retrieval
-- **Service Proxies**: For Streamlit and React GUIs
-- **Static File Serving**: For the web client
+- User registration and login
+- JWT token generation and validation
+- Role-based access control (RBAC)
+- Session management
+- Audit logging
+
+### Agent Service (`/backend/services/agent/`)
+
+Handles AI agent requests and processing:
+
+- Natural language processing
+- SQL generation and execution
+- Response generation
+- Integration with LLM providers
+
+### RAG Service (`/backend/services/rag/`)
+
+Handles document processing and retrieval:
+
+- Document ingestion and indexing
+- Document retrieval and lookup
+- RAG query processing
+- Vector storage management
+
+### API Gateway (`/backend/services/gateway/`)
+
+Routes requests to appropriate services:
+
+- Single entry point for all client requests
+- Request routing to appropriate services
+- Cross-cutting concerns (authentication, logging, rate limiting)
+- Protocol translation if needed
 
 ### Web Client (`/backend/web_client/`)
 
@@ -67,7 +102,10 @@ Maintains all original functionality while adding:
 All services run on the same machine:
 
 ```
-Backend API: http://localhost:5000
+API Gateway: http://localhost:5000
+Authentication Service: http://localhost:5001
+Agent Service: http://localhost:5002
+RAG Service: http://localhost:5003
 Web Client: https://localhost (via nginx)
 Streamlit: http://localhost:8501
 React: http://localhost:3000
@@ -80,11 +118,11 @@ Services can be deployed across multiple machines using the configuration system
 ```python
 # config.py
 config = {
-    'backend': {
-        'host': 'backend.example.com',
-        'port': 5000
-    },
     'services': {
+        'auth_service_url': 'http://auth.example.com:5001',
+        'agent_service_url': 'http://agent.example.com:5002',
+        'rag_service_url': 'http://rag.example.com:5003',
+        'gateway_url': 'http://gateway.example.com:5000',
         'streamlit_url': 'http://streamlit.example.com:8501',
         'react_url': 'http://react.example.com:3000',
         'registry_url': 'http://registry.example.com:8080'
@@ -94,104 +132,105 @@ config = {
 
 ## Running the System
 
-### Quick Start
+### Quick Start with Docker Compose
+
+1. **Start all services**:
+   ```bash
+   cd /path/to/ai_agent/backend/services
+   docker-compose up --build
+   ```
+
+### Using the Startup Script
 
 1. **Start all services**:
    ```bash
    cd /path/to/ai_agent
-   ./backend/start_system.sh
-   ```
-
-2. **Access the web client**:
-   - Navigate to `https://localhost` (requires nginx setup)
-   - Or directly access `http://localhost:5000` for the web client
-
-3. **Use the command-line client**:
-   ```bash
-   # Standalone mode
-   python -m core.main
-
-   # Backend mode
-   python backend/cli_client.py --backend-url https://localhost --auth-token YOUR_TOKEN
+   ./backend/services/start_microservices.sh
    ```
 
 ### Manual Start
 
-1. **Start backend**:
+1. **Start Redis** (required for session management and rate limiting):
    ```bash
+   redis-server
+   ```
+
+2. **Start each service individually**:
+   ```bash
+   # Terminal 1: Start authentication service
    cd /path/to/ai_agent
    source ai_agent_env/bin/activate
    export PYTHONPATH=/path/to/ai_agent:$PYTHONPATH
-   python -m flask --app backend.app run --host=0.0.0.0 --port=5000
-   ```
+   python -m backend.services.auth.app
 
-2. **Start supporting services**:
-   ```bash
-   # Start Streamlit
-   streamlit run gui/enhanced_streamlit_app.py --server.port 8501
+   # Terminal 2: Start agent service
+   cd /path/to/ai_agent
+   source ai_agent_env/bin/activate
+   export PYTHONPATH=/path/to/ai_agent:$PYTHONPATH
+   python -m backend.services.agent.app
 
-   # Start React (in gui/react_editor/)
-   cd gui/react_editor
-   npm start
-   ```
+   # Terminal 3: Start RAG service
+   cd /path/to/ai_agent
+   source ai_agent_env/bin/activate
+   export PYTHONPATH=/path/to/ai_agent:$PYTHONPATH
+   python -m backend.services.rag.app
 
-3. **Configure nginx** (for production):
-   ```bash
-   ./backend/setup_nginx_tls.sh
+   # Terminal 4: Start API gateway
+   cd /path/to/ai_agent
+   source ai_agent_env/bin/activate
+   export PYTHONPATH=/path/to/ai_agent:$PYTHONPATH
+   python -m backend.services.gateway.app
    ```
 
 ## API Endpoints
 
-### Authentication
+### Through API Gateway (recommended)
 - `POST /auth/register` - Register new user (rate limited: 5/5min)
 - `POST /auth/login` - Authenticate user (rate limited: 10/min)
+- `POST /agent/query` - Process natural language request (rate limited: 30/min, requires `write:agent`)
+- `GET /agent/status` - Check agent status (requires `read:agent`)
+- `POST /rag/query` - Query RAG system (rate limited: 20/min, requires `read:rag`)
+- `POST /rag/ingest` - Ingest documents (rate limited: 10/min, requires `write:rag`)
+- `POST /rag/retrieve` - Retrieve documents (rate limited: 20/min, requires `read:rag`)
+- `POST /rag/lookup` - Lookup documents (rate limited: 20/min, requires `read:rag`)
+- `GET /health` - Health check (rate limited: 60/min)
 
-### Agent
-- `POST /api/agent/query` - Process natural language request (rate limited: 30/min, requires `write:agent`)
-- `GET /api/agent/status` - Check agent status (requires `read:agent`)
-
-### RAG
-- `POST /api/rag/query` - Query RAG system (rate limited: 20/min, requires `read:rag`)
-- `POST /api/rag/ingest` - Ingest documents (rate limited: 10/min, requires `write:rag`)
-- `POST /api/rag/retrieve` - Retrieve documents (rate limited: 20/min, requires `read:rag`)
-- `POST /api/rag/lookup` - Lookup documents (rate limited: 20/min, requires `read:rag`)
-
-### System
-- `GET /api/health` - Health check (rate limited: 60/min)
-- `GET /api/config` - Get system configuration (requires `read:system`)
-- `GET /api/services` - List available services (requires `read:system`)
+### Direct Service Access
+- Authentication Service: `http://localhost:5001`
+- Agent Service: `http://localhost:5002`
+- RAG Service: `http://localhost:5003`
 
 ## Security Features
 
-- **JWT Authentication**: All API endpoints require authentication
-- **Role-Based Access Control**: Fine-grained permissions per endpoint
-- **Rate Limiting**: Per-endpoint rate limiting to prevent abuse
-- **Input Validation**: Comprehensive validation and sanitization of all inputs
-- **Audit Logging**: Detailed logging of all user actions
+- **JWT Authentication**: Across all services
+- **Role-Based Access Control**: Enforced at service level
+- **Rate Limiting**: Per-service rate limiting
+- **Input Validation**: At service boundaries
+- **Audit Logging**: Per-service audit trails
 - **Session Management**: Secure session handling with automatic expiration
 - **HTTPS**: TLS encryption for all communications
 - **CORS Policy**: Restricts cross-origin requests
 
 ## Configuration
 
-The system uses a flexible configuration system:
+The system uses environment variables for configuration:
 
-```python
-from backend.config import config_manager
+```bash
+# Authentication service
+AUTH_SERVICE_URL=http://auth-service:5001
 
-# Get backend configuration
-backend_config = config_manager.get_backend_config()
+# Agent service
+AGENT_SERVICE_URL=http://agent-service:5002
 
-# Get services configuration
-services_config = config_manager.get_services_config()
+# RAG service
+RAG_SERVICE_URL=http://rag-service:5003
 
-# Update configuration
-config_manager.update_config({
-    'backend': {
-        'host': 'new-host.example.com',
-        'port': 5001
-    }
-})
+# API Gateway
+GATEWAY_PORT=5000
+
+# Redis
+REDIS_HOST=localhost
+REDIS_PORT=6379
 ```
 
 ## Testing
@@ -208,14 +247,23 @@ python backend/test_security_v02.py
 ```
 
 This tests:
-- Backend API functionality
+- Microservices functionality
 - Authentication system
 - RBAC permissions
 - Rate limiting
 - Input validation
+- Service communication
 - Web client accessibility
 - Service availability
 
 ## Migration from v0.1
 
 See `MIGRATION_GUIDE_v02.md` for details on migrating from v0.1 to v0.2.
+
+## Service Communication
+
+Services communicate internally using HTTP/REST APIs:
+
+- Client applications communicate with the API Gateway
+- The API Gateway forwards requests to appropriate services
+- Services may communicate with each other when needed
