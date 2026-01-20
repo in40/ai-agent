@@ -366,27 +366,73 @@ If you encounter issues:
 
 ## GUI Interface
 
-The LangGraph Visual Editor provides a web-based interface for:
+The LangGraph Visual Editor provides multiple web-based interfaces for interacting with the AI agent:
 
-- Visualizing the agent's workflow graph
-- Interacting with the agent through a user-friendly interface
-- Monitoring execution in real-time
-- Debugging and troubleshooting workflows
-- Modifying configurations through the UI
+- **Main Dashboard** (Port 8000): Central hub for accessing all GUI components
+- **Streamlit Editor** (Port 8501): Visual workflow designer with execution monitoring
+- **React Editor** (Port 3000): Advanced workflow editor with React Flow visualization
 
-To start the GUI:
+### Starting the GUI Suite
+
+The recommended way to start all GUI components is through the main server:
+
 ```bash
 cd gui
-streamlit run streamlit_app.py
+python server.py
+```
+
+This will:
+- Launch the main dashboard on http://localhost:8000
+- Automatically start the Streamlit editor on http://localhost:8501
+- Provide access instructions for the React editor
+
+### Individual Components
+
+#### Streamlit Editor (Alternative Method)
+For standalone access to the Streamlit interface:
+
+```bash
+cd gui
+streamlit run enhanced_streamlit_app.py
 ```
 
 Then navigate to http://localhost:8501 in your browser.
 
-Note: Make sure you have installed the required dependencies by running `pip install -r requirements.txt` in the gui directory or the main project directory.
+#### React Editor
+To run the React-based visual editor:
 
-The GUI includes:
+1. Navigate to the React editor directory:
+   ```bash
+   cd gui/react_editor
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Start the development server:
+   ```bash
+   npm start
+   ```
+
+4. Access the React editor at http://localhost:3000
+
+Note: The React editor communicates with backend services via the workflow API running on port 5001.
+
+### Features
+
+Both GUI interfaces provide:
 - Graph visualization of the LangGraph workflow
-- Input form for submitting natural language requests
-- Real-time display of execution results
+- Interactive node manipulation and inspection
+- Real-time execution monitoring
 - Detailed logs and error messages
 - Configuration options for various agent parameters
+- Node-specific logic descriptions and conditional pathways
+- Workflow export/import capabilities
+
+### Prerequisites
+
+Make sure you have installed the required dependencies by running `pip install -r requirements.txt` in the gui directory or the main project directory.
+
+For the React editor, you'll also need Node.js and npm installed on your system.
