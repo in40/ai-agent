@@ -25,13 +25,14 @@ start_service() {
     local cmd=$1
     local name=$2
     local port=$3
+    local log_file=$4
 
     if check_port $port; then
         echo -e "${YELLOW}Warning: Port $port is already in use, skipping $name${NC}"
         return 1
     else
         echo -e "${GREEN}Starting $name on port $port...${NC}"
-        eval "$cmd" &
+        nohup $cmd > $log_file 2>&1 &
         sleep 3  # Give the service time to start
 
         if check_port $port; then
@@ -48,10 +49,10 @@ start_service() {
 cd "$(dirname "$0")"
 
 # Start the main GUI server (port 8000)
-start_service "python gui/server.py" "Main Dashboard" "8000"
+start_service "python gui/server.py" "Main Dashboard" "8000" "gui_server.log"
 
 # Start the Streamlit editor (port 8501) - binding to all interfaces
-start_service "streamlit run gui/enhanced_streamlit_app.py --server.port 8501 --server.address 0.0.0.0 --server.headless true" "Streamlit Editor" "8501"
+start_service "streamlit run gui/enhanced_streamlit_app.py --server.port 8501 --server.address 0.0.0.0 --server.headless true" "Streamlit Editor" "8501" "streamlit_server.log"
 
 echo -e "${GREEN}"
 echo "==================================================================="
@@ -64,5 +65,5 @@ echo "      gui/react_editor and run 'npm start'"
 echo "==================================================================="
 echo -e "${NC}"
 
-# Keep the script running
-wait
+# Exit the script after starting all services
+exit 0
