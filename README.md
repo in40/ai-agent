@@ -376,11 +376,10 @@ The LangGraph Visual Editor suite provides specialized tools for visualizing, an
 
 ### Starting the Interface Suite
 
-The recommended way to start all LangGraph workflow interfaces is through the main server:
+The recommended way to start all LangGraph workflow interfaces is through the dedicated GUI script:
 
 ```bash
-cd gui
-python server.py
+./start_gui.sh
 ```
 
 This will:
@@ -393,6 +392,12 @@ This will:
 #### Enhanced Streamlit Editor
 The primary interface for LangGraph workflow analysis and debugging:
 
+Option 1: Using the dedicated GUI script (recommended):
+```bash
+./start_gui.sh
+```
+
+Option 2: Standalone access:
 ```bash
 cd gui
 streamlit run enhanced_streamlit_app.py
