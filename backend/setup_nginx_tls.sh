@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# Script to configure nginx with TLS support for the AI Agent system
+# Script to configure nginx with TLS support for the AI Agent system (microservices version)
 # This script will:
 # 1. Generate self-signed certificates (for testing purposes)
-# 2. Create nginx configuration
+# 2. Create nginx configuration for microservices
 # 3. Enable the site
 # 4. Restart nginx
 
@@ -15,14 +15,14 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
-echo -e "${GREEN}Setting up nginx with TLS for AI Agent system...${NC}"
+echo -e "${GREEN}Setting up nginx with TLS for AI Agent microservices system...${NC}"
 
 # Configuration variables
 DOMAIN_NAME=${DOMAIN_NAME:-"localhost"}
 SSL_DIR="/etc/ssl/ai_agent"
 NGINX_SITES_AVAILABLE="/etc/nginx/sites-available"
 NGINX_SITES_ENABLED="/etc/nginx/sites-enabled"
-CONFIG_FILE="$NGINX_SITES_AVAILABLE/ai_agent"
+CONFIG_FILE="$NGINX_SITES_AVAILABLE/ai_agent_microservices"
 
 # Create SSL directory if it doesn't exist
 sudo mkdir -p $SSL_DIR
@@ -39,15 +39,27 @@ else
     echo -e "${GREEN}SSL certificate already exists.${NC}"
 fi
 
-# Create nginx configuration
-echo -e "${YELLOW}Creating nginx configuration...${NC}"
+# Create nginx configuration for microservices
+echo -e "${YELLOW}Creating nginx configuration for microservices...${NC}"
 
 sudo tee $CONFIG_FILE > /dev/null <<EOF
-# AI Agent System Nginx Configuration
+# AI Agent System Nginx Configuration for Microservices
 # Auto-generated configuration
 
-upstream backend {
+upstream gateway {
     server localhost:5000;
+}
+
+upstream auth_service {
+    server localhost:5001;
+}
+
+upstream agent_service {
+    server localhost:5002;
+}
+
+upstream rag_service {
+    server localhost:5003;
 }
 
 upstream streamlit {
@@ -76,29 +88,29 @@ server {
     add_header X-XSS-Protection "1; mode=block";
     add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload";
 
-    # Main API routes
-    location /api/ {
-        proxy_pass http://backend;
+    # Main API Gateway routes (main entry point)
+    location / {
+        proxy_pass http://gateway;
         proxy_set_header Host \$host;
         proxy_set_header X-Real-IP \$remote_addr;
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto \$scheme;
         proxy_set_header Authorization \$http_authorization;
-        
+
         # WebSocket support if needed
         proxy_http_version 1.1;
         proxy_set_header Upgrade \$http_upgrade;
         proxy_set_header Connection "upgrade";
-        
+
         # Timeout settings
         proxy_connect_timeout 60s;
         proxy_send_timeout 60s;
         proxy_read_timeout 60s;
     }
 
-    # Authentication routes
+    # Direct service routes (for specific access if needed)
     location /auth/ {
-        proxy_pass http://backend;
+        proxy_pass http://auth_service/;
         proxy_set_header Host \$host;
         proxy_set_header X-Real-IP \$remote_addr;
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
@@ -106,18 +118,17 @@ server {
         proxy_set_header Authorization \$http_authorization;
     }
 
-    # Static files and web client
-    location / {
-        proxy_pass http://backend;
+    location /agent/ {
+        proxy_pass http://agent_service/;
         proxy_set_header Host \$host;
         proxy_set_header X-Real-IP \$remote_addr;
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_set_header Authorization \$http_authorization;
     }
 
-    # RAG routes
     location /rag/ {
-        proxy_pass http://backend;
+        proxy_pass http://rag_service/;
         proxy_set_header Host \$host;
         proxy_set_header X-Real-IP \$remote_addr;
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
@@ -133,12 +144,12 @@ server {
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto \$scheme;
         proxy_set_header Authorization \$http_authorization;
-        
+
         # WebSocket support for Streamlit
         proxy_http_version 1.1;
         proxy_set_header Upgrade \$http_upgrade;
         proxy_set_header Connection "upgrade";
-        
+
         # Timeout settings
         proxy_connect_timeout 60s;
         proxy_send_timeout 60s;
@@ -153,12 +164,12 @@ server {
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto \$scheme;
         proxy_set_header Authorization \$http_authorization;
-        
+
         # WebSocket support for React if needed
         proxy_http_version 1.1;
         proxy_set_header Upgrade \$http_upgrade;
         proxy_set_header Connection "upgrade";
-        
+
         # Timeout settings
         proxy_connect_timeout 60s;
         proxy_send_timeout 60s;
@@ -187,11 +198,11 @@ server {
 }
 EOF
 
-echo -e "${GREEN}Nginx configuration created.${NC}"
+echo -e "${GREEN}Nginx configuration for microservices created.${NC}"
 
 # Enable the site
 echo -e "${YELLOW}Enabling site...${NC}"
-sudo ln -sf $CONFIG_FILE $NGINX_SITES_ENABLED/ai_agent
+sudo ln -sf $CONFIG_FILE $NGINX_SITES_ENABLED/ai_agent_microservices
 
 echo -e "${GREEN}Site enabled.${NC}"
 
@@ -201,14 +212,14 @@ sudo nginx -t
 
 if [ $? -eq 0 ]; then
     echo -e "${GREEN}Nginx configuration is valid.${NC}"
-    
+
     # Restart nginx
     echo -e "${YELLOW}Restarting nginx...${NC}"
     sudo systemctl restart nginx
-    
+
     if [ $? -eq 0 ]; then
         echo -e "${GREEN}Nginx restarted successfully.${NC}"
-        echo -e "${GREEN}AI Agent system is now available at https://$DOMAIN_NAME${NC}"
+        echo -e "${GREEN}AI Agent microservices system is now available at https://$DOMAIN_NAME${NC}"
     else
         echo -e "${RED}Failed to restart nginx.${NC}"
         exit 1

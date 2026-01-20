@@ -91,9 +91,10 @@ Maintains all original functionality while adding:
 ### Nginx Configuration
 
 - **TLS Termination**: Handles HTTPS with SSL certificates
-- **Load Balancing**: Distributes requests to backend services
-- **Routing**: Directs requests to appropriate services
+- **Load Balancing**: Distributes requests to microservices
+- **Routing**: Directs requests to appropriate services via API Gateway
 - **Security**: Implements security headers and protections
+- **Entry Point**: API Gateway serves as the main entry point for all requests
 
 ## Deployment Options
 

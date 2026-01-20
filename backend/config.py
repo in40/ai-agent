@@ -77,7 +77,11 @@ class ConfigManager:
     def get_nginx_config(self) -> Dict[str, Any]:
         """Get nginx configuration"""
         return self.config.get('nginx', {})
-    
+
+    def get_backend_config(self) -> Dict[str, Any]:
+        """Get backend configuration"""
+        return self.config.get('backend', {})
+
     def get_services_config(self) -> Dict[str, Any]:
         """Get services configuration"""
         return self.config.get('services', {})
