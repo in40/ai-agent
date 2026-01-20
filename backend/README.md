@@ -132,15 +132,7 @@ config = {
 
 ## Running the System
 
-### Quick Start with Docker Compose
-
-1. **Start all services**:
-   ```bash
-   cd /path/to/ai_agent/backend/services
-   docker-compose up --build
-   ```
-
-### Using the Startup Script
+### Using the Startup Script (Recommended)
 
 1. **Start all services**:
    ```bash

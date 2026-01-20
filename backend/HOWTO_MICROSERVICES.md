@@ -49,26 +49,7 @@ docker run -d --name redis -p 6379:6379 redis:7-alpine
 
 ## Deployment Options
 
-### Option 1: Containerized Deployment (Recommended)
-
-Deploy all services using Docker Compose:
-
-```bash
-cd /path/to/ai_agent/backend/services
-docker-compose up --build
-```
-
-To run in detached mode:
-```bash
-docker-compose up --build -d
-```
-
-To scale specific services:
-```bash
-docker-compose up --scale agent-service=3 --build
-```
-
-### Option 2: Manual Deployment
+### Option 1: Manual Deployment
 
 Start each service individually:
 
@@ -106,7 +87,7 @@ export RAG_SERVICE_URL=http://localhost:5003
 python -m backend.services.gateway.app
 ```
 
-### Option 3: Using Startup Script
+### Option 2: Using Startup Script (Recommended)
 
 Use the provided startup script:
 
@@ -304,20 +285,11 @@ redis-cli ping
 
 # Check if services are listening on ports
 netstat -tuln | grep -E '500[0-4]'
-
-# Check Docker containers (if using containerized deployment)
-docker-compose ps
 ```
 
 View service logs:
 ```bash
-# For containerized deployment
-docker-compose logs auth-service
-docker-compose logs agent-service
-docker-compose logs rag-service
-docker-compose logs gateway
-
-# For manual deployment, check the log files created by the startup script
+# Check the log files created by the startup script
 tail -f auth_service.log
 tail -f agent_service.log
 tail -f rag_service.log
@@ -361,21 +333,15 @@ curl http://localhost:5000/health  # Gateway
 
 ### Scaling Commands
 
-With Docker Compose:
-```bash
-# Scale agent service to 3 instances
-docker-compose up --scale agent-service=3 --build
+For scaling, you would typically deploy additional instances of services on separate machines or processes. Since we're using a manual deployment approach, scaling involves:
 
-# Scale all services
-docker-compose up --scale auth-service=2 --scale agent-service=3 --scale rag-service=2 --build
-```
+1. Deploying additional instances of services on separate machines or processes
+2. Using a load balancer to distribute traffic among instances
 
 Monitor resource usage:
 ```bash
 # Monitor system resources
 htop
-# or
-docker stats  # for containerized deployment
 ```
 
 ### Performance Tuning

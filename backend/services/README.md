@@ -72,14 +72,6 @@ The API gateway serves as:
 
 ## Running the System
 
-### Quick Start with Docker Compose
-
-1. **Start all services**:
-   ```bash
-   cd /path/to/ai_agent/backend/services
-   docker-compose up --build
-   ```
-
 ### Manual Start
 
 1. **Start Redis** (required for session management and rate limiting):
@@ -94,19 +86,19 @@ The API gateway serves as:
    source ai_agent_env/bin/activate
    export PYTHONPATH=/path/to/ai_agent:$PYTHONPATH
    python -m backend.services.auth.app
-   
+
    # Terminal 2: Start agent service
    cd /path/to/ai_agent
    source ai_agent_env/bin/activate
    export PYTHONPATH=/path/to/ai_agent:$PYTHONPATH
    python -m backend.services.agent.app
-   
+
    # Terminal 3: Start RAG service
    cd /path/to/ai_agent
    source ai_agent_env/bin/activate
    export PYTHONPATH=/path/to/ai_agent:$PYTHONPATH
    python -m backend.services.rag.app
-   
+
    # Terminal 4: Start API gateway
    cd /path/to/ai_agent
    source ai_agent_env/bin/activate
@@ -114,7 +106,7 @@ The API gateway serves as:
    python -m backend.services.gateway.app
    ```
 
-### Using the Startup Script
+### Using the Startup Script (Recommended)
 
 1. **Start all services**:
    ```bash

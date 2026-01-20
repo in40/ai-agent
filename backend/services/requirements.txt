@@ -1,8 +1,0 @@
-flask>=2.0.0
-flask-cors>=3.0.0
-PyJWT>=2.0.0
-bcrypt>=3.2.0
-requests>=2.25.0
-langgraph>=0.0.40
-langchain-core>=0.1.0
-redis>=4.0.0
