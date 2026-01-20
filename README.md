@@ -364,17 +364,19 @@ If you encounter issues:
 7. For MCP integration issues, verify registry URL and service availability
 8. If experiencing recursion limit errors, simplify your request or check for complex query patterns
 
-## GUI Interface
+## LangGraph Workflow Visualization and Editing Interfaces
 
-The LangGraph Visual Editor provides multiple web-based interfaces for interacting with the AI agent:
+The LangGraph Visual Editor suite provides specialized tools for visualizing, analyzing, and editing the LangGraph workflow that powers the AI agent. These interfaces are specifically designed for workflow development and debugging rather than direct AI agent interaction.
 
-- **Main Dashboard** (Port 8000): Central hub for accessing all GUI components
-- **Streamlit Editor** (Port 8501): Visual workflow designer with execution monitoring
-- **React Editor** (Port 3000): Advanced workflow editor with React Flow visualization
+### Available Interfaces
 
-### Starting the GUI Suite
+- **Main Dashboard** (Port 8000): Central access point for all LangGraph workflow tools
+- **Enhanced Streamlit Editor** (Port 8501): Comprehensive visualization and debugging environment
+- **React Flow Editor** (Port 3000): Interactive workflow editor with drag-and-drop capabilities
 
-The recommended way to start all GUI components is through the main server:
+### Starting the Interface Suite
+
+The recommended way to start all LangGraph workflow interfaces is through the main server:
 
 ```bash
 cd gui
@@ -388,8 +390,8 @@ This will:
 
 ### Individual Components
 
-#### Streamlit Editor (Alternative Method)
-For standalone access to the Streamlit interface:
+#### Enhanced Streamlit Editor
+The primary interface for LangGraph workflow analysis and debugging:
 
 ```bash
 cd gui
@@ -398,8 +400,17 @@ streamlit run enhanced_streamlit_app.py
 
 Then navigate to http://localhost:8501 in your browser.
 
-#### React Editor
-To run the React-based visual editor:
+**Features:**
+- **Visualization Tab**: Interactive graph visualization with node coloring by type (database, MCP, response, LLM-calling nodes)
+- **Workflow Editing**: Conceptual editing of nodes and edges (actual changes require code modification)
+- **Detailed Node Information**: Comprehensive information about each node's purpose, logic, and conditional pathways
+- **Simulation Mode**: Run the workflow with sample inputs and different configurations
+- **Debugging Tools**: Set breakpoints, step through execution, and monitor execution history
+- **State Visualization**: Track state changes throughout workflow execution
+- **Export/Import**: Save and load workflow definitions
+
+#### React Flow Editor
+Advanced workflow editing interface using React Flow:
 
 1. Navigate to the React editor directory:
    ```bash
@@ -418,21 +429,32 @@ To run the React-based visual editor:
 
 4. Access the React editor at http://localhost:3000
 
-Note: The React editor communicates with backend services via the workflow API running on port 5001.
+**Features:**
+- **Interactive Canvas**: Drag-and-drop interface for workflow visualization
+- **Node Inspection**: Detailed view of node properties, logic, and conditional pathways
+- **Real-time Sync**: Automatically syncs with the current LangGraph workflow structure
+- **Export Capabilities**: Export workflows as JSON or Python LangGraph code
+- **API Integration**: Communicates with the workflow API running on port 5001
 
-### Features
+### LangGraph-Specific Capabilities
 
-Both GUI interfaces provide:
-- Graph visualization of the LangGraph workflow
-- Interactive node manipulation and inspection
-- Real-time execution monitoring
-- Detailed logs and error messages
-- Configuration options for various agent parameters
-- Node-specific logic descriptions and conditional pathways
-- Workflow export/import capabilities
+These interfaces provide specialized tools for understanding and modifying the LangGraph workflow:
+
+- **Node Type Classification**: Color-coded visualization of different node types:
+  - Green: Start/end nodes
+  - Blue: Database operation nodes
+  - Orange: MCP (Model Context Protocol) nodes
+  - Yellow: Response generation nodes
+  - Pink: LLM-calling nodes
+  - White: Default nodes
+
+- **Conditional Logic Visualization**: Clear representation of decision points and routing logic
+- **Execution Path Analysis**: Understanding how the workflow transitions between nodes based on conditions
+- **LLM Integration Points**: Identification of nodes that make calls to various LLMs (SQL, Response, Prompt, Security, MCP)
+- **Debugging Support**: Tools to pause execution at specific nodes and inspect state
 
 ### Prerequisites
 
-Make sure you have installed the required dependencies by running `pip install -r requirements.txt` in the gui directory or the main project directory.
+For the Streamlit editor, ensure you have installed the required dependencies by running `pip install -r requirements.txt` in the gui directory or the main project directory.
 
 For the React editor, you'll also need Node.js and npm installed on your system.
