@@ -397,7 +397,12 @@ Option 1: Using the dedicated GUI script (recommended):
 ./start_gui.sh
 ```
 
-Option 2: Standalone access:
+Option 2: Using the all-services script:
+```bash
+./start_all_services.sh
+```
+
+Option 3: Standalone access:
 ```bash
 cd gui
 streamlit run enhanced_streamlit_app.py
@@ -463,3 +468,29 @@ These interfaces provide specialized tools for understanding and modifying the L
 For the Streamlit editor, ensure you have installed the required dependencies by running `pip install -r requirements.txt` in the gui directory or the main project directory.
 
 For the React editor, you'll also need Node.js and npm installed on your system.
+
+## Service Management Scripts
+
+The project includes several scripts to manage the GUI services:
+
+### Starting Services
+- `start_gui.sh`: Starts the main dashboard and Streamlit editor
+- `start_all_services.sh`: Starts all GUI services (React Editor, Streamlit App, LangGraph Studio, and Workflow API)
+
+### Stopping Services
+- `stop_all_gui_services.sh`: Stops all running GUI services
+
+### Checking Service Status
+- `check_gui_services.sh`: Checks the status of all GUI services and reports which ones are running
+
+To use these scripts:
+```bash
+# Start all services
+./start_all_services.sh
+
+# Check service status
+./check_gui_services.sh
+
+# Stop all services
+./stop_all_gui_services.sh
+```

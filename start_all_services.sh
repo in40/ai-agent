@@ -77,6 +77,5 @@ echo "Workflow API: http://$(hostname -I | awk '{print $1}'):5001 or http://loca
 echo "==================================================================="
 echo -e "${NC}"
 
-# Show the running processes
-echo -e "${GREEN}Running processes:${NC}"
-jobs -l
+# Exit the script after starting all services
+exit 0
