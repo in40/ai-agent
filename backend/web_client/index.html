@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Agent Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #4cc9f0;
+            --light-bg: #f8f9fa;
+            --dark-bg: #212529;
+            --success-color: #4ade80;
+            --warning-color: #facc15;
+            --danger-color: #f87171;
+        }
+        
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .navbar-brand {
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+        
+        .navbar-brand i {
+            margin-right: 10px;
+        }
+        
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .tab-content {
+            padding: 20px;
+            background: white;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .response-container {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .rag-result {
+            background-color: #e8f4fd;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-left: 3px solid var(--accent-color);
+        }
+        
+        .rag-document {
+            background-color: #fffbeb;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-left: 3px solid var(--warning-color);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+        
+        .progress {
+            height: 10px;
+            margin-top: 10px;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+        
+        .status-active {
+            background-color: var(--success-color);
+        }
+        
+        .status-inactive {
+            background-color: var(--danger-color);
+        }
+        
+        iframe {
+            width: 100%;
+            height: 600px;
+            border: none;
+            border-radius: 8px;
+        }
+        
+        .rag-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .rag-controls input, .rag-controls select {
+            flex: 1;
+        }
+        
+        .rag-controls button {
+            flex-shrink: 0;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#"><i class="fas fa-robot"></i> AI Agent Dashboard</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" data-tab="main"><i class="fas fa-comment-dots"></i> Main Client</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-tab="streamlit"><i class="fab fa-python"></i> Streamlit GUI</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-tab="react"><i class="fab fa-react"></i> React GUI</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-tab="rag"><i class="fas fa-database"></i> RAG Functions</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user"></i> Account
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-4">
+        <!-- Status Bar -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <div class="status-indicator status-active"></div>
+                        <strong>Backend API</strong>
+                        <div class="small text-muted">Connected</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <div class="status-indicator status-active"></div>
+                        <strong>RAG System</strong>
+                        <div class="small text-muted">Ready</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <div class="status-indicator status-active"></div>
+                        <strong>Database</strong>
+                        <div class="small text-muted">Connected</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <div class="status-indicator status-active"></div>
+                        <strong>User</strong>
+                        <div class="small text-muted">Authenticated</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs Content -->
+        <div class="card">
+            <!-- Main Client Tab -->
+            <div id="main-tab" class="tab-content">
+                <h3><i class="fas fa-comment-dots"></i> Main AI Agent Interface</h3>
+                <p>Interact with the AI agent to process natural language requests and generate SQL queries.</p>
+                
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="mb-3">
+                            <label for="user-request" class="form-label">Your Request</label>
+                            <textarea 
+                                class="form-control" 
+                                id="user-request" 
+                                rows="4" 
+                                placeholder="Enter your natural language request here..."></textarea>
+                        </div>
+                        
+                        <div class="d-flex gap-2 mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="disable-sql-blocking">
+                                <label class="form-check-label" for="disable-sql-blocking">
+                                    Disable SQL Blocking
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="disable-databases">
+                                <label class="form-check-label" for="disable-databases">
+                                    Disable Databases
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <button id="submit-request" class="btn btn-primary">
+                            <span id="submit-spinner" class="loading-spinner hidden"></span>
+                            <i class="fas fa-paper-plane"></i> Submit Request
+                        </button>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="card bg-light">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0"><i class="fas fa-info-circle"></i> Request Info</h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text">
+                                    Enter a natural language request to be processed by the AI agent. 
+                                    The agent will generate SQL queries, execute them, and return results.
+                                </p>
+                                <p class="card-text">
+                                    <strong>Examples:</strong>
+                                    <ul>
+                                        <li>"Show me all users from the users table"</li>
+                                        <li>"Find customers who spent more than $1000"</li>
+                                        <li>"What are the top 5 products by sales?"</li>
+                                    </ul>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="row">
+                    <div class="col-12">
+                        <h4>Response</h4>
+                        <div id="response-container" class="response-container">
+                            <p class="text-muted">Submit a request to see the response here...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Streamlit GUI Tab -->
+            <div id="streamlit-tab" class="tab-content hidden">
+                <h3><i class="fab fa-python"></i> Streamlit GUI</h3>
+                <p>Interactive visualization and workflow editor using Streamlit.</p>
+                
+                <iframe id="streamlit-frame" src="/streamlit/" title="Streamlit GUI"></iframe>
+            </div>
+            
+            <!-- React GUI Tab -->
+            <div id="react-tab" class="tab-content hidden">
+                <h3><i class="fab fa-react"></i> React GUI</h3>
+                <p>Interactive workflow editor with drag-and-drop capabilities.</p>
+                
+                <iframe id="react-frame" src="/react/" title="React GUI"></iframe>
+            </div>
+            
+            <!-- RAG Functions Tab -->
+            <div id="rag-tab" class="tab-content hidden">
+                <h3><i class="fas fa-database"></i> RAG Functions</h3>
+                <p>Manage documents and perform retrieval-augmented generation tasks.</p>
+                
+                <ul class="nav nav-tabs" id="ragTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="ingest-tab" data-bs-toggle="tab" data-bs-target="#ingest-panel" type="button">
+                            <i class="fas fa-file-upload"></i> Ingest Documents
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="lookup-tab" data-bs-toggle="tab" data-bs-target="#lookup-panel" type="button">
+                            <i class="fas fa-search"></i> Lookup Documents
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="query-tab" data-bs-toggle="tab" data-bs-target="#query-panel" type="button">
+                            <i class="fas fa-question-circle"></i> Query RAG
+                        </button>
+                    </li>
+                </ul>
+                
+                <div class="tab-content p-3 bg-white border-start border-end border-bottom">
+                    <!-- Ingest Panel -->
+                    <div class="tab-pane fade show active" id="ingest-panel" role="tabpanel">
+                        <div class="rag-controls">
+                            <input type="text" class="form-control" id="document-path" placeholder="Path to document(s), separated by commas">
+                            <button id="ingest-docs-btn" class="btn btn-success">
+                                <i class="fas fa-file-upload"></i> Ingest
+                            </button>
+                        </div>
+                        <div id="ingest-status" class="alert alert-info hidden" role="alert">
+                            Ingesting documents...
+                        </div>
+                        <div id="ingest-result" class="alert alert-success hidden" role="alert">
+                            Documents ingested successfully!
+                        </div>
+                    </div>
+                    
+                    <!-- Lookup Panel -->
+                    <div class="tab-pane fade" id="lookup-panel" role="tabpanel">
+                        <div class="rag-controls">
+                            <input type="text" class="form-control" id="lookup-query" placeholder="Enter search query">
+                            <select class="form-select" id="top-k-select">
+                                <option value="5" selected>Top 5</option>
+                                <option value="10">Top 10</option>
+                                <option value="15">Top 15</option>
+                            </select>
+                            <button id="lookup-btn" class="btn btn-info">
+                                <i class="fas fa-search"></i> Lookup
+                            </button>
+                        </div>
+                        <div id="lookup-results" class="mt-3">
+                            <!-- Results will be populated here -->
+                        </div>
+                    </div>
+                    
+                    <!-- Query Panel -->
+                    <div class="tab-pane fade" id="query-panel" role="tabpanel">
+                        <div class="rag-controls">
+                            <input type="text" class="form-control" id="rag-query" placeholder="Enter your RAG query">
+                            <button id="query-rag-btn" class="btn btn-primary">
+                                <i class="fas fa-paper-plane"></i> Query
+                            </button>
+                        </div>
+                        <div id="rag-response" class="response-container mt-3">
+                            <p class="text-muted">Submit a query to see RAG results here...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Global variables
+        let currentTab = 'main';
+        const API_BASE_URL = window.location.origin;
+        const AUTH_TOKEN = localStorage.getItem('authToken') || '';
+        
+        // DOM Elements
+        const tabLinks = document.querySelectorAll('[data-tab]');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const submitRequestBtn = document.getElementById('submit-request');
+        const userRequestInput = document.getElementById('user-request');
+        const responseContainer = document.getElementById('response-container');
+        const submitSpinner = document.getElementById('submit-spinner');
+        const logoutBtn = document.getElementById('logout-btn');
+        
+        // RAG elements
+        const ingestDocsBtn = document.getElementById('ingest-docs-btn');
+        const documentPathInput = document.getElementById('document-path');
+        const lookupBtn = document.getElementById('lookup-btn');
+        const lookupQueryInput = document.getElementById('lookup-query');
+        const lookupResultsDiv = document.getElementById('lookup-results');
+        const queryRagBtn = document.getElementById('query-rag-btn');
+        const ragQueryInput = document.getElementById('rag-query');
+        const ragResponseDiv = document.getElementById('rag-response');
+        const ingestStatusDiv = document.getElementById('ingest-status');
+        const ingestResultDiv = document.getElementById('ingest-result');
+        
+        // Tab switching functionality
+        tabLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const tabId = link.getAttribute('data-tab');
+                
+                // Update active tab in navigation
+                tabLinks.forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+                
+                // Show selected tab content
+                tabContents.forEach(content => {
+                    content.classList.add('hidden');
+                });
+                document.getElementById(`${tabId}-tab`).classList.remove('hidden');
+                
+                currentTab = tabId;
+                
+                // Special handling for GUI tabs to reload iframes
+                if (tabId === 'streamlit' || tabId === 'react') {
+                    const frame = document.getElementById(`${tabId}-frame`);
+                    frame.src = frame.src;  // Reload iframe
+                }
+            });
+        });
+        
+        // Logout functionality
+        logoutBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('authToken');
+            window.location.href = 'login.html';  // Redirect to login page
+        });
+        
+        // Main client functionality
+        submitRequestBtn.addEventListener('click', async () => {
+            const userRequest = userRequestInput.value.trim();
+            if (!userRequest) {
+                alert('Please enter a request');
+                return;
+            }
+            
+            // Show loading spinner
+            submitSpinner.classList.remove('hidden');
+            submitRequestBtn.disabled = true;
+            
+            try {
+                const requestBody = {
+                    user_request: userRequest,
+                    disable_sql_blocking: document.getElementById('disable-sql-blocking').checked,
+                    disable_databases: document.getElementById('disable-databases').checked
+                };
+                
+                const response = await fetch(`${API_BASE_URL}/api/agent/query`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${AUTH_TOKEN}`
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                
+                // Display the response
+                responseContainer.innerHTML = `
+                    <h5>Final Response:</h5>
+                    <p>${result.final_response || 'No response generated'}</p>
+                    
+                    ${result.generated_sql ? `
+                    <h5>Generated SQL:</h5>
+                    <pre class="bg-light p-2 rounded">${result.generated_sql}</pre>
+                    ` : ''}
+                    
+                    ${result.db_results && result.db_results.length > 0 ? `
+                    <h5>Database Results (${result.db_results.length} records):</h5>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-striped">
+                            <thead>
+                                <tr>
+                                    ${Object.keys(result.db_results[0]).map(key => `<th>${key}</th>`).join('')}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${result.db_results.slice(0, 10).map(row => `
+                                    <tr>
+                                        ${Object.values(row).map(cell => `<td>${cell}</td>`).join('')}
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                    ${result.db_results.length > 10 ? `<p class="text-muted">... and ${result.db_results.length - 10} more records</p>` : ''}
+                    ` : '<p>No database results returned</p>'}
+                    
+                    <p><small class="text-muted">Processed in ${result.execution_time || 'unknown'} seconds</small></p>
+                `;
+            } catch (error) {
+                console.error('Error submitting request:', error);
+                responseContainer.innerHTML = `
+                    <div class="alert alert-danger">
+                        <strong>Error:</strong> ${error.message || 'Failed to process request'}
+                    </div>
+                `;
+            } finally {
+                // Hide loading spinner
+                submitSpinner.classList.add('hidden');
+                submitRequestBtn.disabled = false;
+            }
+        });
+        
+        // RAG Ingest functionality
+        ingestDocsBtn.addEventListener('click', async () => {
+            const filePaths = documentPathInput.value.trim();
+            if (!filePaths) {
+                alert('Please enter document paths');
+                return;
+            }
+            
+            // Show status
+            ingestStatusDiv.classList.remove('hidden');
+            ingestResultDiv.classList.add('hidden');
+            ingestDocsBtn.disabled = true;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/rag/ingest`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${AUTH_TOKEN}`
+                    },
+                    body: JSON.stringify({ file_paths: filePaths.split(',').map(p => p.trim()) })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                
+                // Show success message
+                ingestStatusDiv.classList.add('hidden');
+                ingestResultDiv.classList.remove('hidden');
+                ingestResultDiv.textContent = result.message || 'Documents ingested successfully!';
+                
+                // Clear input after success
+                documentPathInput.value = '';
+            } catch (error) {
+                console.error('Error ingesting documents:', error);
+                ingestStatusDiv.classList.add('hidden');
+                ingestResultDiv.classList.remove('hidden');
+                ingestResultDiv.className = 'alert alert-danger';
+                ingestResultDiv.textContent = `Error: ${error.message || 'Failed to ingest documents'}`;
+            } finally {
+                ingestDocsBtn.disabled = false;
+                
+                // Reset to success style after 3 seconds
+                setTimeout(() => {
+                    ingestResultDiv.className = 'alert alert-success hidden';
+                }, 3000);
+            }
+        });
+        
+        // RAG Lookup functionality
+        lookupBtn.addEventListener('click', async () => {
+            const query = lookupQueryInput.value.trim();
+            const topK = document.getElementById('top-k-select').value;
+            
+            if (!query) {
+                alert('Please enter a search query');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/rag/retrieve`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${AUTH_TOKEN}`
+                    },
+                    body: JSON.stringify({ query, top_k: parseInt(topK) })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                const documents = result.documents || [];
+                
+                // Display results
+                if (documents.length > 0) {
+                    lookupResultsDiv.innerHTML = documents.map(doc => `
+                        <div class="rag-document">
+                            <h6>${doc.title || 'Untitled Document'}</h6>
+                            <p>${doc.content?.substring(0, 200) || 'No content preview'}${doc.content?.length > 200 ? '...' : ''}</p>
+                            <small class="text-muted">Score: ${doc.score || 'N/A'} | Source: ${doc.source || 'Unknown'}</small>
+                        </div>
+                    `).join('');
+                } else {
+                    lookupResultsDiv.innerHTML = '<p class="text-muted">No documents found for your query.</p>';
+                }
+            } catch (error) {
+                console.error('Error looking up documents:', error);
+                lookupResultsDiv.innerHTML = `
+                    <div class="alert alert-danger">
+                        <strong>Error:</strong> ${error.message || 'Failed to lookup documents'}
+                    </div>
+                `;
+            }
+        });
+        
+        // RAG Query functionality
+        queryRagBtn.addEventListener('click', async () => {
+            const query = ragQueryInput.value.trim();
+            
+            if (!query) {
+                alert('Please enter a RAG query');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/rag/query`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${AUTH_TOKEN}`
+                    },
+                    body: JSON.stringify({ query })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                
+                // Display the response
+                ragResponseDiv.innerHTML = `
+                    <h5>RAG Response:</h5>
+                    <p>${result.response || result.answer || 'No response generated'}</p>
+                    
+                    ${result.context ? `
+                    <h6>Context:</h6>
+                    <p class="small">${result.context.substring(0, 500)}${result.context.length > 500 ? '...' : ''}</p>
+                    ` : ''}
+                    
+                    ${result.sources && result.sources.length > 0 ? `
+                    <h6>Sources:</h6>
+                    <ul>
+                        ${result.sources.map(source => `<li>${source.title || source.name || 'Unnamed source'}</li>`).join('')}
+                    </ul>
+                    ` : ''}
+                `;
+            } catch (error) {
+                console.error('Error querying RAG:', error);
+                ragResponseDiv.innerHTML = `
+                    <div class="alert alert-danger">
+                        <strong>Error:</strong> ${error.message || 'Failed to query RAG'}
+                    </div>
+                `;
+            }
+        });
+        
+        // Check authentication on page load
+        if (!AUTH_TOKEN) {
+            window.location.href = 'login.html';
+        }
+        
+        // Initialize tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    </script>
+</body>
+</html>

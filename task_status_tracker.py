@@ -1,97 +1,65 @@
 import json
 import os
 from datetime import datetime
-from typing import Dict, List, Optional
+from typing import List, Dict, Optional
 
-class TaskStatusTracker:
-    """
-    A simple task status tracker that persists task completion status to disk.
-    This allows resuming work if the server crashes or the session is interrupted.
-    """
+TODO_FILE_PATH = 'task_status.json'
+
+class TodoManager:
+    """Manages persistent storage of todo items across server restarts"""
     
-    def __init__(self, status_file: str = "task_status.json"):
-        self.status_file = status_file
-        self.status_data = self._load_status()
+    def __init__(self, file_path: str = TODO_FILE_PATH):
+        self.file_path = file_path
+        self.todos = self.load_todos()
     
-    def _load_status(self) -> Dict:
-        """Load task status from the file if it exists."""
-        if os.path.exists(self.status_file):
+    def load_todos(self) -> List[Dict]:
+        """Load todos from file, return empty list if file doesn't exist"""
+        if os.path.exists(self.file_path):
             try:
-                with open(self.status_file, 'r') as f:
-                    return json.load(f)
-            except (json.JSONDecodeError, IOError):
-                # If there's an error reading the file, start fresh
-                return {"tasks": {}, "last_updated": None}
-        else:
-            return {"tasks": {}, "last_updated": None}
+                with open(self.file_path, 'r') as f:
+                    data = json.load(f)
+                    # Ensure all todos have the required structure
+                    for todo in data:
+                        if 'id' not in todo:
+                            todo['id'] = str(datetime.now().timestamp())
+                        if 'status' not in todo:
+                            todo['status'] = 'pending'
+                        if 'content' not in todo:
+                            todo['content'] = 'Unnamed task'
+                    return data
+            except (json.JSONDecodeError, KeyError):
+                # If there's an error reading the file, return empty list
+                return []
+        return []
     
-    def _save_status(self):
-        """Save task status to the file."""
-        self.status_data["last_updated"] = datetime.now().isoformat()
-        with open(self.status_file, 'w') as f:
-            json.dump(self.status_data, f, indent=2)
+    def save_todos(self) -> bool:
+        """Save todos to file, return True if successful"""
+        try:
+            with open(self.file_path, 'w') as f:
+                json.dump(self.todos, f, indent=2, default=str)
+            return True
+        except Exception:
+            return False
     
-    def mark_task_completed(self, task_id: str, task_description: str = ""):
-        """Mark a task as completed and save to disk."""
-        self.status_data["tasks"][task_id] = {
-            "status": "completed",
-            "completed_at": datetime.now().isoformat(),
-            "description": task_description
-        }
-        self._save_status()
-        
-    def mark_task_in_progress(self, task_id: str, task_description: str = ""):
-        """Mark a task as in progress and save to disk."""
-        self.status_data["tasks"][task_id] = {
-            "status": "in_progress",
-            "started_at": datetime.now().isoformat(),
-            "description": task_description
-        }
-        self._save_status()
+    def get_todos(self) -> List[Dict]:
+        """Get current todos"""
+        return self.todos
     
-    def mark_task_pending(self, task_id: str, task_description: str = ""):
-        """Mark a task as pending and save to disk."""
-        self.status_data["tasks"][task_id] = {
-            "status": "pending",
-            "updated_at": datetime.now().isoformat(),
-            "description": task_description
-        }
-        self._save_status()
-    
-    def get_task_status(self, task_id: str) -> Optional[Dict]:
-        """Get the status of a specific task."""
-        return self.status_data["tasks"].get(task_id)
-    
-    def get_all_tasks(self) -> Dict:
-        """Get all tracked tasks."""
-        return self.status_data["tasks"]
-    
-    def get_completed_tasks(self) -> List[str]:
-        """Get a list of all completed task IDs."""
-        return [
-            task_id for task_id, task_data in self.status_data["tasks"].items()
-            if task_data.get("status") == "completed"
-        ]
-    
-    def get_incomplete_tasks(self) -> List[str]:
-        """Get a list of all incomplete task IDs."""
-        return [
-            task_id for task_id, task_data in self.status_data["tasks"].items()
-            if task_data.get("status") != "completed"
-        ]
+    def update_todos(self, new_todos: List[Dict]) -> bool:
+        """Update todos with new list and save to file"""
+        self.todos = new_todos
+        return self.save_todos()
 
-# Example usage:
-if __name__ == "__main__":
-    tracker = TaskStatusTracker()
-    
-    # Example of tracking a task
-    task_id = "analyze_react_editor"
-    tracker.mark_task_in_progress(task_id, "Analyze the React LangGraph editor for existing extended edit capabilities")
-    
-    # Simulate work being done...
-    
-    # Mark as completed
-    tracker.mark_task_completed(task_id)
-    
-    print(f"Task '{task_id}' marked as completed.")
-    print(f"All completed tasks: {tracker.get_completed_tasks()}")
+# Global instance
+todo_manager = TodoManager()
+
+def get_current_todos() -> List[Dict]:
+    """Get the current list of todos"""
+    return todo_manager.get_todos()
+
+def update_todos(new_todos: List[Dict]) -> bool:
+    """Update the todos list and persist to file"""
+    return todo_manager.update_todos(new_todos)
+
+# Load initial todos
+current_todos = get_current_todos()

@@ -38,8 +38,8 @@ stop_service_by_port() {
 
 # Stop services in reverse order
 stop_service_by_port "5001" "Workflow API"
-stop_service_by_port "8000" "LangGraph Studio"
-stop_service_by_port "8501" "Streamlit App"
+stop_service_by_port "8000" "Main Dashboard"
+stop_service_by_port "8501" "Streamlit Editor"
 stop_service_by_port "3000" "React Editor"
 
 echo -e "${GREEN}"

@@ -47,3 +47,20 @@ coverage/
 coverage/
 # React build artifacts
 build/data/
+
+# Database files
+*.sqlite3
+chroma/
+data/chroma_db/
+
+# Log files
+backend.log
+streamlit.log
+react.log
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+*~
+logs/
