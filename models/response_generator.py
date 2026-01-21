@@ -48,6 +48,20 @@ class ResponseGenerator:
         # Initialize the prompt manager with the correct prompts directory
         self.prompt_manager = PromptManager("./core/prompts")
 
+        # Define the prompt template for generating natural language responses using external prompt
+        system_prompt = self.prompt_manager.get_prompt("response_generator")
+        if system_prompt is None:
+            # If the external prompt is not found, raise an error to ensure prompts are maintained properly
+            raise FileNotFoundError("response_generator.txt not found in prompts directory. Please ensure the prompt file exists.")
+
+        # Store the prompt name for logging
+        self.prompt_name = "response_generator"
+
+        self.prompt = ChatPromptTemplate.from_messages([
+            ("system", system_prompt),
+            ("human", "{generated_prompt}")
+        ])
+
         # Create the LLM based on the provider
         if provider.lower() == 'gigachat':
             # Import GigaChat model when needed
@@ -87,17 +101,6 @@ class ResponseGenerator:
                 base_url=base_url
             )
 
-        # Define the prompt template for generating natural language responses using external prompt
-        system_prompt = self.prompt_manager.get_prompt("response_generator")
-        if system_prompt is None:
-            # If the external prompt is not found, raise an error to ensure prompts are maintained properly
-            raise FileNotFoundError("response_generator.txt not found in prompts directory. Please ensure the prompt file exists.")
-
-        self.prompt = ChatPromptTemplate.from_messages([
-            ("system", system_prompt),
-            ("human", "{generated_prompt}")
-        ])
-
         # Create the output parser (keeping it for potential future use)
         self.output_parser = StrOutputParser()
 
@@ -114,7 +117,7 @@ class ResponseGenerator:
             if ENABLE_SCREEN_LOGGING:
                 # Get the full prompt with all messages (system and human) without invoking the LLM
                 full_prompt = self.prompt.format_messages(generated_prompt=generated_prompt)
-                logger.info("ResponseGenerator full LLM request:")
+                logger.info(f"ResponseGenerator full LLM request using prompt file: {self.prompt_name}")
                 for i, message in enumerate(full_prompt):
                     logger.info(f"  Message {i+1} ({message.type}): {message.content}")
 

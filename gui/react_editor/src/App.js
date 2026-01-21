@@ -187,21 +187,21 @@ const refreshWorkflow = async (setNodes, setEdges) => {
     // Use environment variable for API URL with fallback
     // If not set, construct the API URL using the same host as the current page but different port
     // If the current host is localhost, try to use the actual IP address as well
-    let apiUrl = process.env.REACT_APP_API_URL;
+    let workflowApiUrl = process.env.REACT_APP_WORKFLOW_API_URL;
 
-    if (!apiUrl) {
+    if (!workflowApiUrl) {
       const currentHost = window.location.hostname;
       // If accessing from localhost, try to use a common pattern for the actual IP
       if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
         // Try to get the actual IP from the window.location, or default to a common IP pattern
         // For now, we'll use the known IP address of this server
-        apiUrl = 'http://192.168.51.138:5000';  // Changed from 5001 to 5000 (gateway service)
+        workflowApiUrl = 'http://192.168.51.138:5004';  // Workflow API service
       } else {
-        apiUrl = `http://${currentHost}:5000`;  // Changed from 5001 to 5000 (gateway service)
+        workflowApiUrl = `http://${currentHost}:5004`;  // Workflow API service
       }
     }
 
-    const endpoint = `${apiUrl}/api/workflow/current`;
+    const endpoint = `${workflowApiUrl}/api/workflow/current`;
 
     console.log(`Fetching from: ${endpoint}`);
 

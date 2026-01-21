@@ -56,6 +56,9 @@ class SQLGenerator:
             # If the external prompt is not found, raise an error to ensure prompts are maintained properly
             raise FileNotFoundError("sql_generator.txt not found in prompts directory. Please ensure the prompt file exists.")
 
+        # Store the prompt name for logging
+        self.prompt_name = "sql_generator"
+
         self.prompt = ChatPromptTemplate.from_messages([
             ("system", system_prompt),
             ("human", "{user_request}")
@@ -144,7 +147,7 @@ class SQLGenerator:
                     db_mapping=db_mapping_str,
                     previous_sql_queries=previous_sql_str
                 )
-                logger.info("SQLGenerator full LLM request:")
+                logger.info(f"SQLGenerator full LLM request using prompt file: {self.prompt_name}")
                 for i, message in enumerate(full_prompt):
                     if message.type == "system":
                         logger.info(f"  System Message {i+1}: {message.content}")  # Full content without truncation
