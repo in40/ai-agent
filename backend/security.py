@@ -98,32 +98,36 @@ class SecurityManager:
         """
         from werkzeug.security import check_password_hash
         
-        # In a real implementation, this would check against a database
-        # For now, we'll use the in-memory store from the main app
-        from backend.app import users_db
-        
-        user = users_db.get(username)
-        if user and check_password_hash(user['password'], password):
+        # For authentication, we now use the database
+        # Import the user database module
+        from database.user_db import user_db
+
+        # Verify user credentials using the database
+        user = user_db.get_user(username)
+        if user and user_db.verify_password(username, password):
+            # Determine user role from database
+            user_role = UserRole(user.get('role', 'user'))
             return {
                 'user_id': username,
-                'role': UserRole.USER,  # Default role
-                'permissions': self.role_permissions[UserRole.USER]
+                'role': user_role,
+                'permissions': self.role_permissions[user_role]
             }
         return None
     
     def generate_token(self, user_info: Dict, expiration_hours: int = 24) -> str:
         """
         Generate JWT token for authenticated user
-        
+
         Args:
             user_info: Dictionary containing user information
             expiration_hours: Token expiration in hours
-            
+
         Returns:
             JWT token string
         """
-        from backend.app import app
-        
+        # Use the JWT secret from the configuration manager to ensure consistency across services
+        jwt_secret = os.getenv('JWT_SECRET_KEY', 'fallback-jwt-secret-change-in-production')
+
         payload = {
             'user_id': user_info['user_id'],
             'role': user_info['role'].value,
@@ -131,33 +135,32 @@ class SecurityManager:
             'exp': datetime.utcnow() + timedelta(hours=expiration_hours),
             'iat': datetime.utcnow()
         }
-        
-        return jwt.encode(payload, app.config['JWT_SECRET_KEY'], algorithm="HS256")
+
+        return jwt.encode(payload, jwt_secret, algorithm="HS256")
     
     def verify_token(self, token: str) -> Optional[Dict]:
         """
         Verify JWT token and return user information
-        
+
         Args:
             token: JWT token to verify
-            
+
         Returns:
             User info dict if token is valid, None otherwise
         """
-        from backend.app import app
-        
+        # Use the JWT secret from environment variables to ensure consistency across services
+        jwt_secret = os.getenv('JWT_SECRET_KEY', 'fallback-jwt-secret-change-in-production')
+
         try:
             # Remove 'Bearer ' prefix if present
             if token.startswith('Bearer '):
                 token = token[7:]
-            
-            payload = jwt.decode(token, app.config['JWT_SECRET_KEY'], algorithms=["HS256"])
-            
-            # Check if user still exists and is active
-            from backend.app import users_db
-            if payload['user_id'] not in users_db:
-                return None
-                
+
+            payload = jwt.decode(token, jwt_secret, algorithms=["HS256"])
+
+            # In a microservices architecture, we can't rely on a shared in-memory users_db
+            # Instead, we'll just return the user info from the token
+            # In a real implementation, you might want to check against a centralized user service
             return {
                 'user_id': payload['user_id'],
                 'role': UserRole(payload['role']),

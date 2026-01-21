@@ -2850,11 +2850,8 @@ def generate_rag_response_node(state: AgentState) -> AgentState:
 
         # Use the augmented context to generate a response
         rag_context = state.get("rag_context", state["user_request"])
-        rag_response = response_generator.generate_response(
-            user_request=rag_context,
-            db_results=[],  # No database results for RAG
-            provider=RESPONSE_LLM_PROVIDER,
-            model=RESPONSE_LLM_MODEL
+        rag_response = response_generator.generate_natural_language_response(
+            generated_prompt=rag_context
         )
 
         elapsed_time = time.time() - start_time

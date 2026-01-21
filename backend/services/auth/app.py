@@ -19,6 +19,9 @@ import time
 # Import security components from shared module
 from backend.security import security_manager, validate_input, Permission, UserRole
 
+# Import database components
+from database.user_db import user_db
+
 # Initialize Flask app
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your-secret-key-change-this-in-production')
@@ -43,8 +46,13 @@ except:
     # Fallback to in-memory storage if Redis is not available
     redis_client = None
 
-# In-memory user store (replace with database in production)
-users_db = {}
+# Initialize the database
+try:
+    user_db.init_db()
+    logger.info("User database initialized successfully")
+except Exception as e:
+    logger.error(f"Failed to initialize user database: {e}")
+    raise
 
 
 def token_required(f):
@@ -112,7 +120,7 @@ def register():
     """Register a new user"""
     try:
         data = request.get_json()
-        
+
         # Validate input
         schema = {
             'username': {
@@ -130,36 +138,33 @@ def register():
                 'sanitize': True
             }
         }
-        
+
         validation_errors = validate_input(data, schema)
         if validation_errors:
             return jsonify({'message': f'Validation error: {validation_errors}'}), 400
-        
+
         username = data.get('username')
         password = data.get('password')
-        
-        if username in users_db:
+
+        # Check if user already exists using the database
+        existing_user = user_db.get_user(username)
+        if existing_user:
             return jsonify({'message': 'Username already exists!'}), 400
-        
-        # Hash the password
-        hashed_password = generate_password_hash(password)
-        
-        # Store user (in production, use a database)
-        users_db[username] = {
-            'password': hashed_password,
-            'created_at': datetime.utcnow(),
-            'role': 'user'  # Default role
-        }
-        
+
+        # Create user in database
+        success = user_db.create_user(username, password)
+        if not success:
+            return jsonify({'message': 'Registration failed!'}), 500
+
         # Log audit event
         security_manager.log_audit_event(
             'system',
-            'create', 
+            'create',
             'user',
             request.remote_addr,
             success=True
         )
-        
+
         return jsonify({'message': 'User registered successfully!'}), 201
     except Exception as e:
         logger.error(f"Registration error: {str(e)}")
@@ -171,7 +176,7 @@ def login():
     """Login a user and return JWT token"""
     try:
         data = request.get_json()
-        
+
         # Validate input
         schema = {
             'username': {
@@ -189,16 +194,17 @@ def login():
                 'sanitize': True
             }
         }
-        
+
         validation_errors = validate_input(data, schema)
         if validation_errors:
             return jsonify({'message': f'Validation error: {validation_errors}'}), 400
-        
+
         username = data.get('username')
         password = data.get('password')
-        
-        user = users_db.get(username)
-        if not user or not check_password_hash(user['password'], password):
+
+        # Verify user credentials using the database
+        user = user_db.get_user(username)
+        if not user or not user_db.verify_password(username, password):
             # Log failed login attempt
             security_manager.log_audit_event(
                 username or 'unknown',
@@ -208,22 +214,28 @@ def login():
                 success=False
             )
             return jsonify({'message': 'Invalid credentials!'}), 401
-        
-        # Authenticate user and get permissions
-        user_info = security_manager.authenticate_user(username, password)
-        if not user_info:
-            return jsonify({'message': 'Authentication failed!'}), 401
-        
+
+        # Update last login time
+        user_db.update_last_login(username)
+
+        # Create user info
+        user_role = UserRole(user.get('role', 'user'))  # Use the role from the database
+        user_info = {
+            'user_id': username,
+            'role': user_role,
+            'permissions': security_manager.role_permissions[user_role]
+        }
+
         # Generate JWT token
         token = security_manager.generate_token(user_info)
-        
+
         # Create session
         session_id = security_manager.create_session(
             user_info,
             request.remote_addr,
             request.headers.get('User-Agent', 'Unknown')
         )
-        
+
         # Log successful login
         security_manager.log_audit_event(
             username,
@@ -232,7 +244,7 @@ def login():
             request.remote_addr,
             success=True
         )
-        
+
         return jsonify({
             'token': token,
             'session_id': session_id,
@@ -245,7 +257,7 @@ def login():
         }), 200
     except Exception as e:
         logger.error(f"Login error: {str(e)}")
-        
+
         # Log failed login attempt
         username = data.get('username', 'unknown') if 'data' in locals() else 'unknown'
         security_manager.log_audit_event(
@@ -255,7 +267,7 @@ def login():
             request.remote_addr,
             success=False
         )
-        
+
         return jsonify({'message': 'Login failed!'}), 500
 
 

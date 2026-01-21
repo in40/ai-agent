@@ -1,12 +1,5 @@
 #!/bin/bash
-
-# Script to configure nginx with TLS support for the AI Agent system (microservices version)
-# This script will:
-# 1. Generate self-signed certificates (for testing purposes)
-# 2. Create nginx configuration for microservices
-# 3. Enable the site
-# 4. Restart nginx
-
+# Script to configure nginx with TLS for the AI Agent system
 set -e  # Exit on any error
 
 # Colors for output
@@ -15,35 +8,32 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
-echo -e "${GREEN}Setting up nginx with TLS for AI Agent microservices system...${NC}"
-
-# Configuration variables
-DOMAIN_NAME=${DOMAIN_NAME:-"localhost"}
-SSL_DIR="/etc/ssl/ai_agent"
-NGINX_SITES_AVAILABLE="/etc/nginx/sites-available"
-NGINX_SITES_ENABLED="/etc/nginx/sites-enabled"
-CONFIG_FILE="$NGINX_SITES_AVAILABLE/ai_agent_microservices"
+echo -e "${GREEN}Setting up nginx with TLS for AI Agent system...${NC}"
 
 # Create SSL directory if it doesn't exist
+SSL_DIR="/etc/ssl/ai_agent"
 sudo mkdir -p $SSL_DIR
 
 # Generate self-signed certificate if they don't exist
-if [ ! -f "$SSL_DIR/ai_agent.crt" ] || [ ! -f "$SSL_DIR/ai_agent.key" ]; then
+CERT_PATH="$SSL_DIR/ai_agent.crt"
+KEY_PATH="$SSL_DIR/ai_agent.key"
+
+if [ ! -f "$CERT_PATH" ] || [ ! -f "$KEY_PATH" ]; then
     echo -e "${YELLOW}Generating self-signed SSL certificate...${NC}"
     sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-        -keyout $SSL_DIR/ai_agent.key \
-        -out $SSL_DIR/ai_agent.crt \
-        -subj "/C=US/ST=State/L=City/O=Organization/CN=$DOMAIN_NAME"
-    echo -e "${GREEN}SSL certificate generated successfully.${NC}"
+        -keyout $KEY_PATH \
+        -out $CERT_PATH \
+        -subj "/C=US/ST=State/L=City/O=AI Agent System/CN=localhost"
+    echo -e "${GREEN}SSL certificate generated.${NC}"
 else
     echo -e "${GREEN}SSL certificate already exists.${NC}"
 fi
 
-# Create nginx configuration for microservices
-echo -e "${YELLOW}Creating nginx configuration for microservices...${NC}"
+# Create nginx configuration
+NGINX_CONFIG="/etc/nginx/sites-available/ai_agent"
 
-sudo tee $CONFIG_FILE > /dev/null <<EOF
-# AI Agent System Nginx Configuration for Microservices
+sudo tee $NGINX_CONFIG > /dev/null <<EOF
+# AI Agent System Nginx Configuration
 # Auto-generated configuration
 
 upstream gateway {
@@ -73,7 +63,7 @@ upstream react {
 # Main server with SSL
 server {
     listen 443 ssl http2;
-    server_name $DOMAIN_NAME;
+    server_name localhost;
 
     # SSL Configuration
     ssl_certificate $SSL_DIR/ai_agent.crt;
@@ -88,7 +78,7 @@ server {
     add_header X-XSS-Protection "1; mode=block";
     add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload";
 
-    # Main API Gateway routes (main entry point)
+    # Main API routes
     location / {
         proxy_pass http://gateway;
         proxy_set_header Host \$host;
@@ -96,19 +86,19 @@ server {
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto \$scheme;
         proxy_set_header Authorization \$http_authorization;
-
+        
         # WebSocket support if needed
         proxy_http_version 1.1;
         proxy_set_header Upgrade \$http_upgrade;
         proxy_set_header Connection "upgrade";
-
+        
         # Timeout settings
         proxy_connect_timeout 60s;
         proxy_send_timeout 60s;
         proxy_read_timeout 60s;
     }
 
-    # Direct service routes (for specific access if needed)
+    # Authentication routes
     location /auth/ {
         proxy_pass http://auth_service/;
         proxy_set_header Host \$host;
@@ -118,6 +108,7 @@ server {
         proxy_set_header Authorization \$http_authorization;
     }
 
+    # Agent routes
     location /agent/ {
         proxy_pass http://agent_service/;
         proxy_set_header Host \$host;
@@ -127,6 +118,7 @@ server {
         proxy_set_header Authorization \$http_authorization;
     }
 
+    # RAG routes
     location /rag/ {
         proxy_pass http://rag_service/;
         proxy_set_header Host \$host;
@@ -144,12 +136,12 @@ server {
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto \$scheme;
         proxy_set_header Authorization \$http_authorization;
-
+        
         # WebSocket support for Streamlit
         proxy_http_version 1.1;
         proxy_set_header Upgrade \$http_upgrade;
         proxy_set_header Connection "upgrade";
-
+        
         # Timeout settings
         proxy_connect_timeout 60s;
         proxy_send_timeout 60s;
@@ -164,12 +156,12 @@ server {
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto \$scheme;
         proxy_set_header Authorization \$http_authorization;
-
+        
         # WebSocket support for React if needed
         proxy_http_version 1.1;
         proxy_set_header Upgrade \$http_upgrade;
         proxy_set_header Connection "upgrade";
-
+        
         # Timeout settings
         proxy_connect_timeout 60s;
         proxy_send_timeout 60s;
@@ -193,16 +185,16 @@ server {
 # Redirect HTTP to HTTPS
 server {
     listen 80;
-    server_name $DOMAIN_NAME;
+    server_name localhost;
     return 301 https://\$server_name\$request_uri;
 }
 EOF
 
-echo -e "${GREEN}Nginx configuration for microservices created.${NC}"
+echo -e "${GREEN}Nginx configuration created.${NC}"
 
 # Enable the site
-echo -e "${YELLOW}Enabling site...${NC}"
-sudo ln -sf $CONFIG_FILE $NGINX_SITES_ENABLED/ai_agent_microservices
+NGINX_SITES_ENABLED="/etc/nginx/sites-enabled"
+sudo ln -sf $NGINX_CONFIG $NGINX_SITES_ENABLED/ai_agent
 
 echo -e "${GREEN}Site enabled.${NC}"
 
@@ -212,16 +204,16 @@ sudo nginx -t
 
 if [ $? -eq 0 ]; then
     echo -e "${GREEN}Nginx configuration is valid.${NC}"
-
-    # Restart nginx
-    echo -e "${YELLOW}Restarting nginx...${NC}"
-    sudo systemctl restart nginx
-
+    
+    # Reload nginx
+    echo -e "${YELLOW}Reloading nginx...${NC}"
+    sudo systemctl reload nginx
+    
     if [ $? -eq 0 ]; then
-        echo -e "${GREEN}Nginx restarted successfully.${NC}"
-        echo -e "${GREEN}AI Agent microservices system is now available at https://$DOMAIN_NAME${NC}"
+        echo -e "${GREEN}Nginx reloaded successfully.${NC}"
+        echo -e "${GREEN}AI Agent system is now available at https://localhost${NC}"
     else
-        echo -e "${RED}Failed to restart nginx.${NC}"
+        echo -e "${RED}Failed to reload nginx.${NC}"
         exit 1
     fi
 else

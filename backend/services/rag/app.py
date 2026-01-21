@@ -3,6 +3,7 @@ RAG Service for AI Agent System
 Handles document processing and retrieval
 """
 import os
+from pathlib import Path
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import logging
@@ -19,6 +20,8 @@ from backend.security import require_permission, validate_input, Permission
 
 # Initialize Flask app
 app = Flask(__name__)
+# Set maximum content length to 50MB
+app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50MB
 
 # Enable CORS for all routes
 CORS(app)
@@ -41,7 +44,7 @@ def health_check():
 
 @app.route('/query', methods=['POST'])
 @require_permission(Permission.READ_RAG)
-def rag_query():
+def rag_query(current_user_id):
     """Endpoint for RAG queries"""
     try:
         data = request.get_json()
@@ -83,7 +86,7 @@ def rag_query():
 
 @app.route('/ingest', methods=['POST'])
 @require_permission(Permission.WRITE_RAG)
-def rag_ingest():
+def rag_ingest(current_user_id):
     """Endpoint for ingesting documents into RAG"""
     try:
         data = request.get_json()
@@ -120,11 +123,11 @@ def rag_ingest():
         
         # Ingest documents
         success = rag_orchestrator.ingest_documents(file_paths)
-        
+
         if success:
             return jsonify({'message': 'Documents ingested successfully'}), 200
         else:
-            return jsonify({'error': 'Document ingestion failed'}), 500
+            return jsonify({'error': 'Document ingestion failed - check file paths and permissions'}), 400
     except Exception as e:
         logger.error(f"RAG ingestion error: {str(e)}")
         return jsonify({'error': f'RAG ingestion failed: {str(e)}'}), 500
@@ -132,7 +135,7 @@ def rag_ingest():
 
 @app.route('/retrieve', methods=['POST'])
 @require_permission(Permission.READ_RAG)
-def rag_retrieve():
+def rag_retrieve(current_user_id):
     """Endpoint for retrieving documents from RAG"""
     try:
         data = request.get_json()
@@ -181,7 +184,7 @@ def rag_retrieve():
 
 @app.route('/lookup', methods=['POST'])
 @require_permission(Permission.READ_RAG)
-def rag_lookup():
+def rag_lookup(current_user_id):
     """Endpoint for looking up documents in RAG"""
     try:
         data = request.get_json()
@@ -221,9 +224,126 @@ def rag_lookup():
         return jsonify({'error': f'RAG lookup failed: {str(e)}'}), 500
 
 
+@app.route('/upload', methods=['POST'])
+@require_permission(Permission.WRITE_RAG)
+def rag_upload(current_user_id):
+    """Endpoint for uploading documents to RAG"""
+    try:
+        from werkzeug.utils import secure_filename
+        import tempfile
+        import uuid
+
+        # Check if files were included in the request
+        if 'files' not in request.files:
+            return jsonify({'error': 'No files provided'}), 400
+
+        files = request.files.getlist('files')
+        if not files or all(f.filename == '' for f in files):
+            return jsonify({'error': 'No files selected'}), 400
+
+        # Validate file count
+        if len(files) > 10:  # Maximum 10 files at once
+            return jsonify({'error': 'Maximum 10 files allowed per upload'}), 400
+
+        # Temporary directory to store uploaded files
+        temp_dir = tempfile.mkdtemp()
+        file_paths = []
+        original_filenames = []  # Store original filenames
+
+        for file in files:
+            if file.filename == '':
+                continue
+
+            # Validate file type
+            original_filename = secure_filename(file.filename)
+            original_filenames.append(original_filename)  # Store original filename
+            file_ext = Path(original_filename).suffix.lower()
+            allowed_extensions = ['.txt', '.pdf', '.docx', '.html', '.md']
+
+            if file_ext not in allowed_extensions:
+                return jsonify({'error': f'File type {file_ext} not allowed. Allowed types: {allowed_extensions}'}), 400
+
+            # Validate file size (max 10MB)
+            # Seek to end to get file size, then reset position
+            file.seek(0, 2)  # Seek to end
+            size = file.tell()
+            file.seek(0)  # Reset position to beginning
+
+            if size > 10 * 1024 * 1024:  # 10MB
+                return jsonify({'error': 'File size exceeds 10MB limit'}), 400
+
+            # Generate unique filename to prevent conflicts
+            unique_filename = f"{uuid.uuid4()}_{original_filename}"
+            file_path = os.path.join(temp_dir, unique_filename)
+
+            # Save file
+            file.save(file_path)
+            file_paths.append(file_path)
+
+        if not file_paths:
+            return jsonify({'error': 'No valid files to process'}), 400
+
+        # Initialize RAG orchestrator with appropriate LLM
+        response_generator = ResponseGenerator()
+        llm = response_generator._get_llm_instance(
+            provider=RESPONSE_LLM_PROVIDER,
+            model=RESPONSE_LLM_MODEL
+        )
+
+        rag_orchestrator = RAGOrchestrator(llm=llm)
+
+        # Ingest documents from the uploaded files with original filenames
+        success = rag_orchestrator.ingest_documents_from_upload(file_paths, original_filenames)
+
+        # Clean up temporary files
+        import shutil
+        shutil.rmtree(temp_dir)
+
+        if success:
+            return jsonify({
+                'message': f'{len(file_paths)} document(s) uploaded and ingested successfully',
+                'file_count': len(file_paths)
+            }), 200
+        else:
+            return jsonify({'error': 'Document ingestion failed'}), 500
+    except Exception as e:
+        logger.error(f"RAG upload error: {str(e)}")
+        # Clean up temporary files in case of error
+        import shutil
+        try:
+            if 'temp_dir' in locals() and os.path.exists(temp_dir):
+                shutil.rmtree(temp_dir)
+        except Exception as cleanup_error:
+            logger.error(f"Error cleaning up temp directory: {cleanup_error}")
+        return jsonify({'error': f'RAG upload failed: {str(e)}'}), 500
+
+
+@app.route('/clear', methods=['POST'])
+@require_permission(Permission.WRITE_RAG)
+def rag_clear(current_user_id):
+    """Endpoint for clearing all documents from the RAG store"""
+    try:
+        # Initialize RAG orchestrator with appropriate LLM
+        response_generator = ResponseGenerator()
+        llm = response_generator._get_llm_instance(
+            provider=RESPONSE_LLM_PROVIDER,
+            model=RESPONSE_LLM_MODEL
+        )
+
+        rag_orchestrator = RAGOrchestrator(llm=llm)
+
+        # Clear the collection
+        rag_orchestrator.vector_store_manager.delete_collection()
+
+        return jsonify({'message': 'All documents cleared successfully'}), 200
+    except Exception as e:
+        logger.error(f"RAG clear error: {str(e)}")
+        return jsonify({'error': f'RAG clear failed: {str(e)}'}), 500
+
+
 @app.route('/status', methods=['GET'])
 @require_permission(Permission.READ_RAG)
-def rag_status():
+def rag_status(current_user_id):
     """Get the status of the RAG component"""
     return jsonify({
         'status': 'running',

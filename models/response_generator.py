@@ -150,3 +150,15 @@ class ResponseGenerator:
             logger.error(f"Error generating response: {e}")
             # Re-raise the exception to trigger the retry
             raise
+
+    def generate_response(self, generated_prompt, attached_files=None):
+        """
+        Alias for generate_natural_language_response to maintain backward compatibility
+        """
+        return self.generate_natural_language_response(generated_prompt, attached_files)
+
+    def _get_llm_instance(self, provider=None, model=None):
+        """
+        Returns the LLM instance for use by other components (e.g., RAG)
+        """
+        return self.llm

@@ -12,11 +12,10 @@ def generate_nginx_config():
     nginx_config = f"""# AI Agent System Nginx Configuration
 # Auto-generated configuration for microservices architecture
 
-events {{
-    worker_connections 1024;
-}}
-
 http {{
+
+    # Increase maximum upload size
+    client_max_body_size 100M;
     # Upstream services for microservices architecture
     upstream gateway {{
         server {config_manager.get_nginx_config().get('backend_proxy_url', 'http://localhost:5000').replace('http://', '')};

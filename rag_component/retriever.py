@@ -73,23 +73,25 @@ class Retriever:
     def get_relevant_documents(self, query: str) -> List[Dict[str, Any]]:
         """
         Get relevant documents formatted for use in the RAG pipeline.
-        
+
         Args:
             query: User query to find relevant documents for
-            
+
         Returns:
             List of dictionaries containing document content and metadata
         """
         docs_with_scores = self.retrieve_documents_with_scores(query)
-        
+
         # Format documents for RAG pipeline
         formatted_docs = []
         for doc, score in docs_with_scores:
             if score >= self.similarity_threshold:
                 formatted_docs.append({
                     "content": doc.page_content,
+                    "title": doc.metadata.get("title", "Untitled Document"),
+                    "source": doc.metadata.get("source", "Unknown"),
                     "metadata": doc.metadata,
                     "score": score
                 })
-        
+
         return formatted_docs

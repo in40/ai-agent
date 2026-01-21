@@ -54,13 +54,46 @@ chroma/
 data/chroma_db/
 
 # Log files
+*.log
 backend.log
 streamlit.log
 react.log
-*.log
+auth_service.log
+agent_service.log
+gateway_service.log
+gateway.log
+rag_service.log
+rag_server.log
+langgraph_server.log
+langgraph_studio.log
+streamlit_server.log
+react_server.log
+registry_server.log
+sql_server.log
+search_server.log
+workflow_api.log
+dns_server.log
+gui_server.log
+
+# Virtual environment
+ai_agent_env/
 
 # Temporary files
 *.tmp
 *.temp
 *~
+*.backup
+*.bak
+
+# Sensitive files
+.env
+
+# Process IDs
+service_pids.txt
+
+# Test files
+test_*.txt
+sample_*.txt
+
+# Temporary files
 logs/

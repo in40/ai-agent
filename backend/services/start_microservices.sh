@@ -34,6 +34,12 @@ else
     echo -e "${YELLOW}Continuing without Redis...${NC}"
 fi
 
+# Set consistent environment variables for all services
+export JWT_SECRET_KEY="consistent-secret-key-for-all-microservices"
+export SECRET_KEY="consistent-secret-key-for-all-microservices"
+export REDIS_HOST=localhost
+export REDIS_PORT=6379
+
 # Start the auth service in the background
 echo -e "${YELLOW}Starting authentication service...${NC}"
 cd "$PROJECT_ROOT"

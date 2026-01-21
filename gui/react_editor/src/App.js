@@ -16,6 +16,10 @@ import {
 // Import default node types
 import '@xyflow/react/dist/style.css';
 
+// Import RAG Component
+import RAGComponent from './components/RAGComponent';
+import './components/RAGComponent.css';
+
 // Define initial empty elements - will be populated from backend
 const initialNodes = [];
 const initialEdges = [];
@@ -191,9 +195,9 @@ const refreshWorkflow = async (setNodes, setEdges) => {
       if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
         // Try to get the actual IP from the window.location, or default to a common IP pattern
         // For now, we'll use the known IP address of this server
-        apiUrl = 'http://192.168.51.138:5001';
+        apiUrl = 'http://192.168.51.138:5000';  // Changed from 5001 to 5000 (gateway service)
       } else {
-        apiUrl = `http://${currentHost}:5001`;
+        apiUrl = `http://${currentHost}:5000`;  // Changed from 5001 to 5000 (gateway service)
       }
     }
 
@@ -245,9 +249,9 @@ const refreshWorkflow = async (setNodes, setEdges) => {
       if (!apiUrl) {
         const currentHost = window.location.hostname;
         if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
-          apiUrl = 'http://192.168.51.138:5001';
+          apiUrl = 'http://192.168.51.138:5000';  // Changed from 5001 to 5000 (gateway service)
         } else {
-          apiUrl = `http://${currentHost}:5001`;
+          apiUrl = `http://${currentHost}:5000`;  // Changed from 5001 to 5000 (gateway service)
         }
       }
 
@@ -369,6 +373,7 @@ function App() {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [workflowName, setWorkflowName] = useState('MyWorkflow');
+  const [activeTab, setActiveTab] = useState('editor'); // 'editor' or 'rag'
 
   // Load workflow from backend when component mounts
   useEffect(() => {
@@ -376,11 +381,13 @@ function App() {
     const loadWorkflow = async () => {
       // Small delay to ensure UI is ready
       await new Promise(resolve => setTimeout(resolve, 500));
-      refreshWorkflow(setNodes, setEdges);
+      if (activeTab === 'editor') {
+        refreshWorkflow(setNodes, setEdges);
+      }
     };
 
     loadWorkflow();
-  }, []);
+  }, [activeTab]);
 
   const onConnect = useCallback(
     (params) => setEdges((eds) => addEdge(params, eds)),
@@ -388,57 +395,103 @@ function App() {
   );
 
   return (
-    <div style={{ width: '100vw', height: '100vh' }}>
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-        connectionMode={ConnectionMode.Loose}
-        nodeTypes={nodeTypes}
-      >
-        <Controls />
-        <MiniMap />
-        <Background variant="dots" gap={12} size={1} />
-        
-        <Panel position="top-right">
-          <div style={{ padding: '10px', backgroundColor: 'white', borderRadius: '4px', border: '1px solid #ccc' }}>
-            <h3>Workflow Editor</h3>
-            <div>
-              <label>
-                Workflow Name:
-                <input 
-                  type="text" 
-                  value={workflowName} 
-                  onChange={(e) => setWorkflowName(e.target.value)}
-                  style={{ marginLeft: '5px' }}
-                />
-              </label>
-            </div>
-            <div style={{ marginTop: '10px' }}>
-              <button 
-                onClick={() => refreshWorkflow(setNodes, setEdges)}
-                style={{ marginRight: '5px', padding: '5px 10px', fontSize: '12px' }}
-              >
-                Refresh Workflow
-              </button>
-              <button 
-                onClick={() => exportWorkflow(nodes, edges, workflowName)}
-                style={{ marginRight: '5px', padding: '5px 10px', fontSize: '12px' }}
-              >
-                Export JSON
-              </button>
-              <button 
-                onClick={() => exportAsPythonCode(nodes, edges, workflowName)}
-                style={{ padding: '5px 10px', fontSize: '12px' }}
-              >
-                Export Python
-              </button>
-            </div>
+    <div style={{ width: '100vw', height: '100vh', display: 'flex', flexDirection: 'column' }}>
+      {/* Tab Navigation */}
+      <div style={{
+        display: 'flex',
+        borderBottom: '1px solid #ccc',
+        backgroundColor: '#f5f5f5',
+        padding: '10px'
+      }}>
+        <button
+          style={{
+            padding: '10px 20px',
+            cursor: 'pointer',
+            backgroundColor: activeTab === 'editor' ? '#007bff' : '#e0e0e0',
+            color: activeTab === 'editor' ? 'white' : '#333',
+            border: '1px solid #ccc',
+            borderRadius: '5px 5px 0 0',
+            marginRight: '5px'
+          }}
+          onClick={() => setActiveTab('editor')}
+        >
+          Workflow Editor
+        </button>
+        <button
+          style={{
+            padding: '10px 20px',
+            cursor: 'pointer',
+            backgroundColor: activeTab === 'rag' ? '#007bff' : '#e0e0e0',
+            color: activeTab === 'rag' ? 'white' : '#333',
+            border: '1px solid #ccc',
+            borderRadius: '5px 5px 0 0',
+            marginRight: '5px'
+          }}
+          onClick={() => setActiveTab('rag')}
+        >
+          RAG Functions
+        </button>
+      </div>
+
+      {/* Tab Content */}
+      <div style={{ flex: 1, overflow: 'hidden' }}>
+        {activeTab === 'editor' ? (
+          <ReactFlow
+            nodes={nodes}
+            edges={edges}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onConnect={onConnect}
+            connectionMode={ConnectionMode.Loose}
+            nodeTypes={nodeTypes}
+          >
+            <Controls />
+            <MiniMap />
+            <Background variant="dots" gap={12} size={1} />
+
+            <Panel position="top-right">
+              <div style={{ padding: '10px', backgroundColor: 'white', borderRadius: '4px', border: '1px solid #ccc' }}>
+                <h3>Workflow Editor</h3>
+                <div>
+                  <label>
+                    Workflow Name:
+                    <input
+                      type="text"
+                      value={workflowName}
+                      onChange={(e) => setWorkflowName(e.target.value)}
+                      style={{ marginLeft: '5px' }}
+                    />
+                  </label>
+                </div>
+                <div style={{ marginTop: '10px' }}>
+                  <button
+                    onClick={() => refreshWorkflow(setNodes, setEdges)}
+                    style={{ marginRight: '5px', padding: '5px 10px', fontSize: '12px' }}
+                  >
+                    Refresh Workflow
+                  </button>
+                  <button
+                    onClick={() => exportWorkflow(nodes, edges, workflowName)}
+                    style={{ marginRight: '5px', padding: '5px 10px', fontSize: '12px' }}
+                  >
+                    Export JSON
+                  </button>
+                  <button
+                    onClick={() => exportAsPythonCode(nodes, edges, workflowName)}
+                    style={{ padding: '5px 10px', fontSize: '12px' }}
+                  >
+                    Export Python
+                  </button>
+                </div>
+              </div>
+            </Panel>
+          </ReactFlow>
+        ) : (
+          <div style={{ padding: '20px', height: '100%', overflowY: 'auto' }}>
+            <RAGComponent />
           </div>
-        </Panel>
-      </ReactFlow>
+        )}
+      </div>
     </div>
   );
 }

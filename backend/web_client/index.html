@@ -137,11 +137,32 @@
             border-top-color: #fff;
             animation: spin 1s ease-in-out infinite;
         }
-        
+
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
-        
+
+        .btn-lookup-animated {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-lookup-animated::after {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -60%;
+            width: 20px;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(25deg);
+            transition: all 0.6s;
+        }
+
+        .btn-lookup-animated.loading::after {
+            left: 120%;
+        }
+
         .hidden {
             display: none;
         }
@@ -157,18 +178,6 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="#" data-tab="main"><i class="fas fa-comment-dots"></i> Main Client</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" data-tab="streamlit"><i class="fab fa-python"></i> Streamlit GUI</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" data-tab="react"><i class="fab fa-react"></i> React GUI</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" data-tab="rag"><i class="fas fa-database"></i> RAG Functions</a>
-                    </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                             <i class="fas fa-user"></i> Account
@@ -224,164 +233,190 @@
             </div>
         </div>
 
-        <!-- Tabs Content -->
+        <!-- Main Content Tabs -->
         <div class="card">
-            <!-- Main Client Tab -->
-            <div id="main-tab" class="tab-content">
-                <h3><i class="fas fa-comment-dots"></i> Main AI Agent Interface</h3>
-                <p>Interact with the AI agent to process natural language requests and generate SQL queries.</p>
-                
-                <div class="row">
-                    <div class="col-md-8">
-                        <div class="mb-3">
-                            <label for="user-request" class="form-label">Your Request</label>
-                            <textarea 
-                                class="form-control" 
-                                id="user-request" 
-                                rows="4" 
-                                placeholder="Enter your natural language request here..."></textarea>
-                        </div>
-                        
-                        <div class="d-flex gap-2 mb-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="disable-sql-blocking">
-                                <label class="form-check-label" for="disable-sql-blocking">
-                                    Disable SQL Blocking
-                                </label>
+            <ul class="nav nav-tabs" id="mainTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="main-tab" data-bs-toggle="tab" data-bs-target="#main-content" type="button">
+                        <i class="fas fa-comment-dots"></i> Main Client
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="rag-tab" data-bs-toggle="tab" data-bs-target="#rag-content" type="button">
+                        <i class="fas fa-database"></i> RAG Functions
+                    </button>
+                </li>
+            </ul>
+
+            <div class="tab-content p-4">
+                <!-- Main Client Content -->
+                <div id="main-content" class="tab-pane fade show active" role="tabpanel">
+                    <h3><i class="fas fa-comment-dots"></i> Main AI Agent Interface</h3>
+                    <p>Interact with the AI agent to process natural language requests and generate SQL queries.</p>
+
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <label for="user-request" class="form-label">Your Request</label>
+                                <textarea
+                                    class="form-control"
+                                    id="user-request"
+                                    rows="4"
+                                    placeholder="Enter your natural language request here..."></textarea>
                             </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="disable-databases">
-                                <label class="form-check-label" for="disable-databases">
-                                    Disable Databases
-                                </label>
+
+                            <div class="d-flex gap-2 mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="disable-sql-blocking">
+                                    <label class="form-check-label" for="disable-sql-blocking">
+                                        Disable SQL Blocking
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="disable-databases">
+                                    <label class="form-check-label" for="disable-databases">
+                                        Disable Databases
+                                    </label>
+                                </div>
+                            </div>
+
+                            <button id="submit-request" class="btn btn-primary">
+                                <span id="submit-spinner" class="loading-spinner" style="display: none;"></span>
+                                <i class="fas fa-paper-plane"></i> Submit Request
+                            </button>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-header">
+                                    <h5 class="card-title mb-0"><i class="fas fa-info-circle"></i> Request Info</h5>
+                                </div>
+                                <div class="card-body">
+                                    <p class="card-text">
+                                        Enter a natural language request to be processed by the AI agent.
+                                        The agent will generate SQL queries, execute them, and return results.
+                                    </p>
+                                    <p class="card-text">
+                                        <strong>Examples:</strong>
+                                        <ul>
+                                            <li>"Show me all users from the users table"</li>
+                                            <li>"Find customers who spent more than $1000"</li>
+                                            <li>"What are the top 5 products by sales?"</li>
+                                        </ul>
+                                    </p>
+                                </div>
                             </div>
                         </div>
-                        
-                        <button id="submit-request" class="btn btn-primary">
-                            <span id="submit-spinner" class="loading-spinner hidden"></span>
-                            <i class="fas fa-paper-plane"></i> Submit Request
-                        </button>
                     </div>
-                    
-                    <div class="col-md-4">
-                        <div class="card bg-light">
-                            <div class="card-header">
-                                <h5 class="card-title mb-0"><i class="fas fa-info-circle"></i> Request Info</h5>
-                            </div>
-                            <div class="card-body">
-                                <p class="card-text">
-                                    Enter a natural language request to be processed by the AI agent. 
-                                    The agent will generate SQL queries, execute them, and return results.
-                                </p>
-                                <p class="card-text">
-                                    <strong>Examples:</strong>
-                                    <ul>
-                                        <li>"Show me all users from the users table"</li>
-                                        <li>"Find customers who spent more than $1000"</li>
-                                        <li>"What are the top 5 products by sales?"</li>
-                                    </ul>
-                                </p>
+
+                    <hr>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <h4>Response</h4>
+                            <div id="response-container" class="response-container">
+                                <p class="text-muted">Submit a request to see the response here...</p>
                             </div>
                         </div>
                     </div>
                 </div>
-                
-                <hr>
-                
-                <div class="row">
-                    <div class="col-12">
-                        <h4>Response</h4>
-                        <div id="response-container" class="response-container">
-                            <p class="text-muted">Submit a request to see the response here...</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Streamlit GUI Tab -->
-            <div id="streamlit-tab" class="tab-content hidden">
-                <h3><i class="fab fa-python"></i> Streamlit GUI</h3>
-                <p>Interactive visualization and workflow editor using Streamlit.</p>
-                
-                <iframe id="streamlit-frame" src="/streamlit/" title="Streamlit GUI"></iframe>
-            </div>
-            
-            <!-- React GUI Tab -->
-            <div id="react-tab" class="tab-content hidden">
-                <h3><i class="fab fa-react"></i> React GUI</h3>
-                <p>Interactive workflow editor with drag-and-drop capabilities.</p>
-                
-                <iframe id="react-frame" src="/react/" title="React GUI"></iframe>
-            </div>
-            
-            <!-- RAG Functions Tab -->
-            <div id="rag-tab" class="tab-content hidden">
-                <h3><i class="fas fa-database"></i> RAG Functions</h3>
-                <p>Manage documents and perform retrieval-augmented generation tasks.</p>
-                
-                <ul class="nav nav-tabs" id="ragTabs" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="ingest-tab" data-bs-toggle="tab" data-bs-target="#ingest-panel" type="button">
-                            <i class="fas fa-file-upload"></i> Ingest Documents
-                        </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="lookup-tab" data-bs-toggle="tab" data-bs-target="#lookup-panel" type="button">
-                            <i class="fas fa-search"></i> Lookup Documents
-                        </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="query-tab" data-bs-toggle="tab" data-bs-target="#query-panel" type="button">
-                            <i class="fas fa-question-circle"></i> Query RAG
-                        </button>
-                    </li>
-                </ul>
-                
-                <div class="tab-content p-3 bg-white border-start border-end border-bottom">
-                    <!-- Ingest Panel -->
-                    <div class="tab-pane fade show active" id="ingest-panel" role="tabpanel">
-                        <div class="rag-controls">
-                            <input type="text" class="form-control" id="document-path" placeholder="Path to document(s), separated by commas">
-                            <button id="ingest-docs-btn" class="btn btn-success">
-                                <i class="fas fa-file-upload"></i> Ingest
+
+                <!-- RAG Functions Content -->
+                <div id="rag-content" class="tab-pane fade" role="tabpanel">
+                    <h3><i class="fas fa-database"></i> RAG Functions</h3>
+                    <p>Manage documents and perform retrieval-augmented generation tasks.</p>
+
+                    <ul class="nav nav-tabs mt-3" id="ragSubTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="ingest-tab" data-bs-toggle="tab" data-bs-target="#ingest-panel" type="button">
+                                <i class="fas fa-file-upload"></i> Ingest Documents
                             </button>
-                        </div>
-                        <div id="ingest-status" class="alert alert-info hidden" role="alert">
-                            Ingesting documents...
-                        </div>
-                        <div id="ingest-result" class="alert alert-success hidden" role="alert">
-                            Documents ingested successfully!
-                        </div>
-                    </div>
-                    
-                    <!-- Lookup Panel -->
-                    <div class="tab-pane fade" id="lookup-panel" role="tabpanel">
-                        <div class="rag-controls">
-                            <input type="text" class="form-control" id="lookup-query" placeholder="Enter search query">
-                            <select class="form-select" id="top-k-select">
-                                <option value="5" selected>Top 5</option>
-                                <option value="10">Top 10</option>
-                                <option value="15">Top 15</option>
-                            </select>
-                            <button id="lookup-btn" class="btn btn-info">
-                                <i class="fas fa-search"></i> Lookup
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="lookup-tab" data-bs-toggle="tab" data-bs-target="#lookup-panel" type="button">
+                                <i class="fas fa-search"></i> Lookup Documents
                             </button>
-                        </div>
-                        <div id="lookup-results" class="mt-3">
-                            <!-- Results will be populated here -->
-                        </div>
-                    </div>
-                    
-                    <!-- Query Panel -->
-                    <div class="tab-pane fade" id="query-panel" role="tabpanel">
-                        <div class="rag-controls">
-                            <input type="text" class="form-control" id="rag-query" placeholder="Enter your RAG query">
-                            <button id="query-rag-btn" class="btn btn-primary">
-                                <i class="fas fa-paper-plane"></i> Query
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="query-tab" data-bs-toggle="tab" data-bs-target="#query-panel" type="button">
+                                <i class="fas fa-question-circle"></i> Query RAG
                             </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content p-3 bg-white border-start border-end border-bottom mt-2">
+                        <!-- Ingest Panel -->
+                        <div class="tab-pane fade show active" id="ingest-panel" role="tabpanel">
+                            <!-- File Upload Section -->
+                            <div class="mb-4">
+                                <h5><i class="fas fa-cloud-upload-alt"></i> Upload Documents</h5>
+                                <div id="drop-zone" class="border-2 border-dashed border-primary rounded p-4 text-center mb-3" style="cursor: pointer; background-color: #f8f9fa;">
+                                    <i class="fas fa-file-upload fa-3x mb-3 text-primary"></i>
+                                    <p class="mb-0">Drag & drop files here or click to browse</p>
+                                    <p class="text-muted small mb-0">Supported formats: PDF, DOCX, TXT, HTML, MD</p>
+                                    <input type="file" id="file-upload" class="d-none" multiple accept=".txt,.pdf,.docx,.html,.md">
+                                </div>
+                                <div id="selected-files" class="mt-2" style="display: none;">
+                                    <h6>Selected files:</h6>
+                                    <ul id="file-list" class="list-group"></ul>
+                                </div>
+                                <div class="d-flex justify-content-between mt-2">
+                                    <button id="upload-btn" class="btn btn-primary" disabled>
+                                        <span id="upload-spinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
+                                        <i class="fas fa-upload"></i> Upload & Ingest
+                                    </button>
+                                    <div id="upload-progress" class="progress flex-grow-1 ms-3" style="height: 20px; display: none;">
+                                        <div id="upload-progress-bar" class="progress-bar" role="progressbar" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr>
+
+                            <!-- Legacy Path Input -->
+                            <div class="rag-controls">
+                                <input type="text" class="form-control" id="document-path" placeholder="Path to document(s), separated by commas (legacy)">
+                                <button id="ingest-docs-btn" class="btn btn-success">
+                                    <i class="fas fa-file-upload"></i> Ingest from Path
+                                </button>
+                            </div>
+                            <div id="ingest-status" class="alert alert-info mt-2" style="display: none;" role="alert">
+                                Processing documents...
+                            </div>
+                            <div id="ingest-result" class="alert alert-success mt-2" style="display: none;" role="alert">
+                                Documents processed successfully!
+                            </div>
                         </div>
-                        <div id="rag-response" class="response-container mt-3">
-                            <p class="text-muted">Submit a query to see RAG results here...</p>
+
+                        <!-- Lookup Panel -->
+                        <div class="tab-pane fade" id="lookup-panel" role="tabpanel">
+                            <div class="rag-controls">
+                                <input type="text" class="form-control" id="lookup-query" placeholder="Enter search query">
+                                <select class="form-select" id="top-k-select">
+                                    <option value="5" selected>Top 5</option>
+                                    <option value="10">Top 10</option>
+                                    <option value="15">Top 15</option>
+                                </select>
+                                <button id="lookup-btn" class="btn btn-info btn-lookup-animated">
+                                    <i class="fas fa-search"></i> Lookup
+                                </button>
+                            </div>
+                            <div id="lookup-results" class="mt-3">
+                                <!-- Results will be populated here -->
+                            </div>
+                        </div>
+
+                        <!-- Query Panel -->
+                        <div class="tab-pane fade" id="query-panel" role="tabpanel">
+                            <div class="rag-controls">
+                                <input type="text" class="form-control" id="rag-query" placeholder="Enter your RAG query">
+                                <button id="query-rag-btn" class="btn btn-primary">
+                                    <i class="fas fa-paper-plane"></i> Query
+                                </button>
+                            </div>
+                            <div id="rag-response" class="response-container mt-3">
+                                <p class="text-muted">Submit a query to see RAG results here...</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -395,16 +430,14 @@
         let currentTab = 'main';
         const API_BASE_URL = window.location.origin;
         const AUTH_TOKEN = localStorage.getItem('authToken') || '';
-        
+
         // DOM Elements
-        const tabLinks = document.querySelectorAll('[data-tab]');
-        const tabContents = document.querySelectorAll('.tab-content');
         const submitRequestBtn = document.getElementById('submit-request');
         const userRequestInput = document.getElementById('user-request');
         const responseContainer = document.getElementById('response-container');
         const submitSpinner = document.getElementById('submit-spinner');
         const logoutBtn = document.getElementById('logout-btn');
-        
+
         // RAG elements
         const ingestDocsBtn = document.getElementById('ingest-docs-btn');
         const documentPathInput = document.getElementById('document-path');
@@ -416,40 +449,15 @@
         const ragResponseDiv = document.getElementById('rag-response');
         const ingestStatusDiv = document.getElementById('ingest-status');
         const ingestResultDiv = document.getElementById('ingest-result');
-        
-        // Tab switching functionality
-        tabLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const tabId = link.getAttribute('data-tab');
-                
-                // Update active tab in navigation
-                tabLinks.forEach(l => l.classList.remove('active'));
-                link.classList.add('active');
-                
-                // Show selected tab content
-                tabContents.forEach(content => {
-                    content.classList.add('hidden');
-                });
-                document.getElementById(`${tabId}-tab`).classList.remove('hidden');
-                
-                currentTab = tabId;
-                
-                // Special handling for GUI tabs to reload iframes
-                if (tabId === 'streamlit' || tabId === 'react') {
-                    const frame = document.getElementById(`${tabId}-frame`);
-                    frame.src = frame.src;  // Reload iframe
-                }
-            });
-        });
-        
+
         // Logout functionality
         logoutBtn.addEventListener('click', (e) => {
             e.preventDefault();
             localStorage.removeItem('authToken');
             window.location.href = 'login.html';  // Redirect to login page
         });
-        
+
+
         // Main client functionality
         submitRequestBtn.addEventListener('click', async () => {
             const userRequest = userRequestInput.value.trim();
@@ -459,7 +467,7 @@
             }
             
             // Show loading spinner
-            submitSpinner.classList.remove('hidden');
+            submitSpinner.style.display = 'inline-block';
             submitRequestBtn.disabled = true;
             
             try {
@@ -526,11 +534,11 @@
                 `;
             } finally {
                 // Hide loading spinner
-                submitSpinner.classList.add('hidden');
+                submitSpinner.style.display = 'none';
                 submitRequestBtn.disabled = false;
             }
         });
-        
+
         // RAG Ingest functionality
         ingestDocsBtn.addEventListener('click', async () => {
             const filePaths = documentPathInput.value.trim();
@@ -540,8 +548,8 @@
             }
             
             // Show status
-            ingestStatusDiv.classList.remove('hidden');
-            ingestResultDiv.classList.add('hidden');
+            ingestStatusDiv.style.display = 'block';
+            ingestResultDiv.style.display = 'none';
             ingestDocsBtn.disabled = true;
             
             try {
@@ -561,38 +569,43 @@
                 const result = await response.json();
                 
                 // Show success message
-                ingestStatusDiv.classList.add('hidden');
-                ingestResultDiv.classList.remove('hidden');
+                ingestStatusDiv.style.display = 'none';
+                ingestResultDiv.style.display = 'block';
+                ingestResultDiv.className = 'alert alert-success mt-2';
                 ingestResultDiv.textContent = result.message || 'Documents ingested successfully!';
-                
+
                 // Clear input after success
                 documentPathInput.value = '';
             } catch (error) {
                 console.error('Error ingesting documents:', error);
-                ingestStatusDiv.classList.add('hidden');
-                ingestResultDiv.classList.remove('hidden');
-                ingestResultDiv.className = 'alert alert-danger';
+                ingestStatusDiv.style.display = 'none';
+                ingestResultDiv.style.display = 'block';
+                ingestResultDiv.className = 'alert alert-danger mt-2';
                 ingestResultDiv.textContent = `Error: ${error.message || 'Failed to ingest documents'}`;
             } finally {
                 ingestDocsBtn.disabled = false;
-                
+
                 // Reset to success style after 3 seconds
                 setTimeout(() => {
-                    ingestResultDiv.className = 'alert alert-success hidden';
+                    ingestResultDiv.style.display = 'none';
                 }, 3000);
             }
         });
-        
+
         // RAG Lookup functionality
         lookupBtn.addEventListener('click', async () => {
             const query = lookupQueryInput.value.trim();
             const topK = document.getElementById('top-k-select').value;
-            
+
             if (!query) {
                 alert('Please enter a search query');
                 return;
             }
-            
+
+            // Add animation to the lookup button
+            lookupBtn.classList.add('loading');
+            lookupBtn.disabled = true;
+
             try {
                 const response = await fetch(`${API_BASE_URL}/api/rag/retrieve`, {
                     method: 'POST',
@@ -602,20 +615,33 @@
                     },
                     body: JSON.stringify({ query, top_k: parseInt(topK) })
                 });
-                
+
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                
+
                 const result = await response.json();
                 const documents = result.documents || [];
-                
+
+                // Helper function to safely truncate content
+                function truncateContent(content) {
+                    if (typeof content === 'string') {
+                        return content.substring(0, 200) + (content.length > 200 ? '...' : '');
+                    } else if (content && typeof content === 'object') {
+                        // If content is an object, convert to string
+                        const contentStr = JSON.stringify(content);
+                        return contentStr.substring(0, 200) + (contentStr.length > 200 ? '...' : '');
+                    } else {
+                        return 'No content preview';
+                    }
+                }
+
                 // Display results
                 if (documents.length > 0) {
                     lookupResultsDiv.innerHTML = documents.map(doc => `
                         <div class="rag-document">
                             <h6>${doc.title || 'Untitled Document'}</h6>
-                            <p>${doc.content?.substring(0, 200) || 'No content preview'}${doc.content?.length > 200 ? '...' : ''}</p>
+                            <p>${truncateContent(doc.content)}</p>
                             <small class="text-muted">Score: ${doc.score || 'N/A'} | Source: ${doc.source || 'Unknown'}</small>
                         </div>
                     `).join('');
@@ -629,9 +655,13 @@
                         <strong>Error:</strong> ${error.message || 'Failed to lookup documents'}
                     </div>
                 `;
+            } finally {
+                // Remove animation from the lookup button
+                lookupBtn.classList.remove('loading');
+                lookupBtn.disabled = false;
             }
         });
-        
+
         // RAG Query functionality
         queryRagBtn.addEventListener('click', async () => {
             const query = ragQueryInput.value.trim();
@@ -656,24 +686,30 @@
                 }
                 
                 const result = await response.json();
-                
+
+                // Helper function to safely truncate context
+                function truncateContext(context) {
+                    if (typeof context === 'string') {
+                        return context.substring(0, 500) + (context.length > 500 ? '...' : '');
+                    } else {
+                        // Convert to string representation if it's not a string
+                        const contextStr = JSON.stringify(context);
+                        return contextStr.substring(0, 500) + (contextStr.length > 500 ? '...' : '');
+                    }
+                }
+
                 // Display the response
-                ragResponseDiv.innerHTML = `
-                    <h5>RAG Response:</h5>
-                    <p>${result.response || result.answer || 'No response generated'}</p>
-                    
-                    ${result.context ? `
-                    <h6>Context:</h6>
-                    <p class="small">${result.context.substring(0, 500)}${result.context.length > 500 ? '...' : ''}</p>
-                    ` : ''}
-                    
-                    ${result.sources && result.sources.length > 0 ? `
-                    <h6>Sources:</h6>
-                    <ul>
-                        ${result.sources.map(source => `<li>${source.title || source.name || 'Unnamed source'}</li>`).join('')}
-                    </ul>
-                    ` : ''}
-                `;
+                let responseHTML = `<h5>RAG Response:</h5><p>${result.response || result.answer || 'No response generated'}</p>`;
+
+                if (result.context) {
+                    responseHTML += `<h6>Context:</h6><p class="small">${truncateContext(result.context)}</p>`;
+                }
+
+                if (result.sources && result.sources.length > 0) {
+                    responseHTML += `<h6>Sources:</h6><ul>${result.sources.map(source => `<li>${source.title || source.name || 'Unnamed source'}</li>`).join('')}</ul>`;
+                }
+
+                ragResponseDiv.innerHTML = responseHTML;
             } catch (error) {
                 console.error('Error querying RAG:', error);
                 ragResponseDiv.innerHTML = `
@@ -683,16 +719,156 @@
                 `;
             }
         });
-        
+
         // Check authentication on page load
         if (!AUTH_TOKEN) {
             window.location.href = 'login.html';
         }
-        
+
         // Initialize tooltips
         const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
         tooltipTriggerList.map(function (tooltipTriggerEl) {
             return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
+        // Initialize Bootstrap tabs
+        const bsTabElements = [].slice.call(document.querySelectorAll('button[data-bs-toggle="tab"]'));
+        bsTabElements.map(function (tabElement) {
+            return new bootstrap.Tab(tabElement);
+        });
+
+        // File upload functionality
+        const fileUploadInput = document.getElementById('file-upload');
+        const dropZone = document.getElementById('drop-zone');
+        const uploadBtn = document.getElementById('upload-btn');
+        const fileList = document.getElementById('file-list');
+        const selectedFilesDiv = document.getElementById('selected-files');
+        const uploadSpinner = document.getElementById('upload-spinner');
+        const uploadProgress = document.getElementById('upload-progress');
+        const uploadProgressBar = document.getElementById('upload-progress-bar');
+        const uploadStatusDiv = document.getElementById('ingest-status');
+        const uploadResultDiv = document.getElementById('ingest-result');
+
+        // Handle file selection via input
+        fileUploadInput.addEventListener('change', function(e) {
+            handleFiles(this.files);
+        });
+
+        // Handle click on drop zone
+        dropZone.addEventListener('click', function() {
+            fileUploadInput.click();
+        });
+
+        // Drag and drop functionality
+        dropZone.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.classList.add('bg-light');
+        });
+
+        dropZone.addEventListener('dragleave', function() {
+            this.classList.remove('bg-light');
+        });
+
+        dropZone.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.classList.remove('bg-light');
+            handleFiles(e.dataTransfer.files);
+        });
+
+        function handleFiles(files) {
+            if (files.length === 0) return;
+
+            // Clear previous file list
+            fileList.innerHTML = '';
+
+            // Add each file to the list
+            Array.from(files).forEach(file => {
+                const listItem = document.createElement('li');
+                listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+                listItem.innerHTML = `
+                    <span>
+                        <i class="fas fa-file me-2"></i>
+                        ${file.name}
+                    </span>
+                    <span class="badge bg-secondary">${formatFileSize(file.size)}</span>
+                `;
+                fileList.appendChild(listItem);
+            });
+
+            // Show the selected files section
+            selectedFilesDiv.style.display = 'block';
+
+            // Enable the upload button
+            uploadBtn.disabled = false;
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // Upload button functionality
+        uploadBtn.addEventListener('click', async function() {
+            const files = fileUploadInput.files;
+            if (files.length === 0) {
+                alert('Please select at least one file to upload');
+                return;
+            }
+
+            // Show upload progress
+            uploadSpinner.classList.remove('d-none');
+            uploadProgress.style.display = 'flex';
+            uploadBtn.disabled = true;
+            uploadStatusDiv.style.display = 'block';
+            uploadStatusDiv.textContent = 'Uploading files...';
+            uploadResultDiv.style.display = 'none';
+
+            const formData = new FormData();
+            Array.from(files).forEach((file, index) => {
+                formData.append(`files`, file);
+            });
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/rag/upload`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${AUTH_TOKEN}`
+                    },
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+
+                // Update UI with success message
+                uploadStatusDiv.style.display = 'none';
+                uploadResultDiv.style.display = 'block';
+                uploadResultDiv.className = 'alert alert-success mt-2';
+                uploadResultDiv.textContent = result.message || 'Files uploaded and ingested successfully!';
+
+                // Reset file input and UI
+                fileUploadInput.value = '';
+                fileList.innerHTML = '';
+                selectedFilesDiv.style.display = 'none';
+                uploadBtn.disabled = true;
+            } catch (error) {
+                console.error('Error uploading files:', error);
+                uploadStatusDiv.style.display = 'none';
+                uploadResultDiv.style.display = 'block';
+                uploadResultDiv.className = 'alert alert-danger mt-2';
+                uploadResultDiv.textContent = `Error: ${error.message || 'Failed to upload files'}`;
+            } finally {
+                // Hide spinner and progress bar
+                uploadSpinner.classList.add('d-none');
+                uploadProgress.style.display = 'none';
+                uploadBtn.disabled = false;
+            }
         });
     </script>
 </body>

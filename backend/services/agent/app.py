@@ -40,7 +40,7 @@ def health_check():
 
 @app.route('/query', methods=['POST'])
 @require_permission(Permission.WRITE_AGENT)
-def agent_query():
+def agent_query(current_user_id):
     """Endpoint for the main AI agent functionality"""
     try:
         data = request.get_json()

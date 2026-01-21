@@ -1,81 +1,234 @@
 #!/bin/bash
-# Master script to start all LangGraph Editor services
+
+# Script to start all AI Agent services
+# This includes the microservices architecture and GUI components
+
+set -e  # Exit on any error
 
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-echo -e "${GREEN}Starting all LangGraph Editor services...${NC}"
+echo -e "${GREEN}Starting AI Agent System - All Services${NC}"
 
-# Function to check if a port is in use
+# Get the project root directory
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$PROJECT_ROOT"
+
+# Activate the virtual environment
+echo -e "${YELLOW}Activating virtual environment...${NC}"
+source "$PROJECT_ROOT/ai_agent_env/bin/activate" || {
+    echo -e "${RED}Error: Could not activate virtual environment. Please make sure it exists at $PROJECT_ROOT/ai_agent_env${NC}"
+    exit 1
+}
+
+# Check if Redis is available and running
+if command -v redis-server >/dev/null 2>&1; then
+    if ! nc -z localhost 6379 2>/dev/null; then
+        echo -e "${YELLOW}Starting Redis...${NC}"
+        redis-server --daemonize yes
+        sleep 2
+        REDIS_STARTED=true
+    else
+        echo -e "${GREEN}Redis is already running${NC}"
+    fi
+else
+    echo -e "${RED}Redis server not found. Please install Redis to use session management and rate limiting.${NC}"
+    echo -e "${YELLOW}Continuing without Redis...${NC}"
+fi
+
+# Set consistent environment variables for all services
+export JWT_SECRET_KEY="consistent-secret-key-for-all-microservices"
+export SECRET_KEY="consistent-secret-key-for-all-microservices"
+export REDIS_HOST=localhost
+export REDIS_PORT=6379
+export PYTHONPATH="$PROJECT_ROOT:$PYTHONPATH"
+
+# Function to check if a port is available
 check_port() {
     local port=$1
-    if lsof -Pi :$port -sTCP:LISTEN -t >/dev/null 2>&1; then
+    if nc -z localhost $port; then
+        echo "Port $port is in use"
+        return 1
+    else
+        echo "Port $port is available"
         return 0
-    else
-        return 1
     fi
 }
 
-# Function to start a service in background
-start_service() {
-    local cmd=$1
-    local name=$2
-    local port=$3
-    local log_file=$4
-
-    if check_port $port; then
-        echo -e "${YELLOW}Warning: Port $port is already in use, skipping $name${NC}"
-        return 1
-    else
-        echo -e "${GREEN}Starting $name on port $port...${NC}"
-        # Run the service with output redirected to log files to prevent interference
-        nohup $cmd > $log_file 2>&1 &
-        sleep 3  # Give the service time to start
-
-        if check_port $port; then
-            echo -e "${GREEN}$name successfully started on port $port${NC}"
-            return 0
-        else
-            echo -e "${RED}Failed to start $name on port $port${NC}"
-            return 1
-        fi
+# Function to kill process on a port
+kill_port() {
+    local port=$1
+    local pid=$(lsof -t -i:$port 2>/dev/null)
+    if [ ! -z "$pid" ]; then
+        echo -e "${YELLOW}Killing process on port $port (PID: $pid)...${NC}"
+        kill $pid 2>/dev/null || true
+        sleep 2
     fi
 }
 
-# Start React development server in the background
-start_service "/root/qwen_test/ai_agent/start_react_editor.sh" "React Editor" "3000" "react_server.log"
+echo -e "${BLUE}Checking and preparing ports...${NC}"
 
-# Wait a moment for the React server to start
+# Prepare ports for services
+echo "Preparing port 5001 for auth service..."
+kill_port 5001
+
+echo "Preparing port 5002 for agent service..."
+kill_port 5002
+
+echo "Preparing port 5003 for RAG service..."
+kill_port 5003
+
+echo "Preparing port 5000 for gateway..."
+kill_port 5000
+
+echo "Preparing port 8000 for LangGraph Studio..."
+kill_port 8000
+
+echo "Preparing port 8501 for Streamlit App..."
+kill_port 8501
+
+echo "Preparing port 3000 for React Editor..."
+kill_port 3000
+
+# Start the auth service in the background
+echo -e "${YELLOW}Starting authentication service on port 5001...${NC}"
+nohup python -m backend.services.auth.app > auth_service.log 2>&1 &
+AUTH_PID=$!
+echo -e "${GREEN}Authentication service started with PID $AUTH_PID${NC}"
+
+# Wait a moment for the auth service to start
+sleep 3
+
+# Start the agent service in the background
+echo -e "${YELLOW}Starting agent service on port 5002...${NC}"
+nohup python -m backend.services.agent.app > agent_service.log 2>&1 &
+AGENT_PID=$!
+echo -e "${GREEN}Agent service started with PID $AGENT_PID${NC}"
+
+# Wait a moment for the agent service to start
+sleep 3
+
+# Start the RAG service in the background
+echo -e "${YELLOW}Starting RAG service on port 5003...${NC}"
+nohup python -m backend.services.rag.app > rag_service.log 2>&1 &
+RAG_PID=$!
+echo -e "${GREEN}RAG service started with PID $RAG_PID${NC}"
+
+# Wait a moment for the RAG service to start
+sleep 3
+
+# Start the gateway in the background
+echo -e "${YELLOW}Starting API gateway on port 5000...${NC}"
+nohup python -m backend.services.gateway.app > gateway.log 2>&1 &
+GATEWAY_PID=$!
+echo -e "${GREEN}Gateway started with PID $GATEWAY_PID${NC}"
+
+# Wait a bit more for services to start
 sleep 5
 
-# Start Streamlit application in the background
-start_service "/root/qwen_test/ai_agent/start_streamlit.sh" "Streamlit App" "8501" "streamlit_server.log"
+# Start LangGraph Studio (port 8000)
+echo -e "${YELLOW}Starting LangGraph Studio on port 8000...${NC}"
+nohup python -c "
+import sys
+sys.path.insert(0, '$PROJECT_ROOT')
+from langgraph_cli.cli import main
+if __name__ == '__main__':
+    sys.argv = ['langgraph', 'serve', '--host', '0.0.0.0', '--port', '8000']
+    main()
+" > langgraph_studio.log 2>&1 &
+LANGGRAPH_PID=$!
+echo -e "${GREEN}LangGraph Studio started with PID $LANGGRAPH_PID${NC}"
 
-# Wait a moment for the Streamlit server to start
+# Wait for LangGraph Studio to start
+sleep 3
+
+# Start Streamlit App (port 8501)
+echo -e "${YELLOW}Starting Streamlit App on port 8501...${NC}"
+nohup streamlit run "$PROJECT_ROOT/gui/enhanced_streamlit_app.py" --server.address="0.0.0.0" --server.port=8501 --server.headless=true > streamlit_app.log 2>&1 &
+STREAMLIT_PID=$!
+echo -e "${GREEN}Streamlit App started with PID $STREAMLIT_PID${NC}"
+
+# Wait for Streamlit to start
+sleep 3
+
+# Start React Editor (port 3000)
+echo -e "${YELLOW}Starting React Editor on port 3000...${NC}"
+cd "$PROJECT_ROOT/gui/react_editor" && nohup npm start > react_editor.log 2>&1 &
+REACT_PID=$!
+echo -e "${GREEN}React Editor started with PID $REACT_PID${NC}"
+
+# Wait for React to start
 sleep 5
-
-# Start LangGraph Studio server in the background
-start_service "/root/qwen_test/ai_agent/start_langgraph_studio.sh" "LangGraph Studio" "8000" "langgraph_server.log"
-
-# Wait a moment for the LangGraph Studio server to start
-sleep 5
-
-# Start Workflow API server in the background
-start_service "cd /root/qwen_test/ai_agent/gui/react_editor && source ../../ai_agent_env/bin/activate && python3 workflow_api.py" "Workflow API" "5001" "workflow_api.log"
-sleep 3  # Wait a moment for the Workflow API server to start
 
 echo -e "${GREEN}"
-echo "==================================================================="
-echo "All services started successfully!"
-echo "React Editor: http://$(hostname -I | awk '{print $1}'):3000 or http://localhost:3000"
-echo "Streamlit App: http://$(hostname -I | awk '{print $1}'):8501 or http://localhost:8501"
-echo "LangGraph Studio: http://$(hostname -I | awk '{print $1}'):8000 or http://localhost:8000"
-echo "Workflow API: http://$(hostname -I | awk '{print $1}'):5001 or http://localhost:5001"
-echo "==================================================================="
+echo "=========================================================="
+echo "ALL AI AGENT SERVICES ARE NOW RUNNING"
+echo "=========================================================="
+echo "Web Client:          https://192.168.51.138 (via gateway)"
+echo "API Gateway:         http://192.168.51.138:5000"
+echo "Authentication:      http://192.168.51.138:5001"
+echo "Agent Service:       http://192.168.51.138:5002"
+echo "RAG Service:         http://192.168.51.138:5003"
+echo "LangGraph Studio:    http://192.168.51.138:8000"
+echo "Streamlit App:       http://192.168.51.138:8501"
+echo "React Editor:        http://192.168.51.138:3000"
+echo "=========================================================="
 echo -e "${NC}"
 
-# Exit the script after starting all services
+# Save PIDs to a file for later use
+cat > service_pids.txt << EOF
+AUTH_PID=$AUTH_PID
+AGENT_PID=$AGENT_PID
+RAG_PID=$RAG_PID
+GATEWAY_PID=$GATEWAY_PID
+LANGGRAPH_PID=$LANGGRAPH_PID
+STREAMLIT_PID=$STREAMLIT_PID
+REACT_PID=$REACT_PID
+EOF
+
+echo -e "${GREEN}Service PIDs saved to service_pids.txt${NC}"
+
+# Function to handle shutdown
+cleanup() {
+    echo -e "\n${YELLOW}Stopping all AI Agent services...${NC}"
+
+    # Read PIDs from file
+    if [ -f service_pids.txt ]; then
+        source service_pids.txt
+    fi
+
+    # Kill all background processes
+    for pid_var in AUTH_PID AGENT_PID RAG_PID GATEWAY_PID LANGGRAPH_PID STREAMLIT_PID REACT_PID; do
+        pid_val=${!pid_var}
+        if [ ! -z "$pid_val" ] && kill -0 $pid_val 2>/dev/null; then
+            echo -e "${YELLOW}Stopping $pid_var (PID: $pid_val)...${NC}"
+            kill $pid_val 2>/dev/null || true
+        fi
+    done
+
+    # Stop Redis if we started it
+    if [ "$REDIS_STARTED" = true ]; then
+        if command -v redis-cli >/dev/null 2>&1; then
+            echo -e "${YELLOW}Stopping Redis...${NC}"
+            redis-cli shutdown 2>/dev/null || true
+        fi
+    fi
+
+    # Remove PID file
+    rm -f service_pids.txt
+
+    echo -e "${GREEN}All services stopped.${NC}"
+    exit 0
+}
+
+# Trap SIGINT and SIGTERM
+trap cleanup INT TERM
+
+echo -e "${YELLOW}All services started successfully and are running in the background.${NC}"
+
+# Exit the script, leaving services running in background
 exit 0

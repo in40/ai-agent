@@ -58,6 +58,14 @@ class RAGOrchestrator:
                     # Split documents into chunks
                     docs = self.text_splitter.split_documents(docs)
 
+                # Add source metadata to each document if not already present
+                import os
+                for doc in docs:
+                    if not doc.metadata.get("source"):
+                        doc.metadata["source"] = file_path
+                    if not doc.metadata.get("title"):
+                        doc.metadata["title"] = os.path.basename(file_path)
+
                 all_docs.extend(docs)
 
             # Add documents to vector store
@@ -66,6 +74,44 @@ class RAGOrchestrator:
             return True
         except Exception as e:
             print(f"Error ingesting documents: {str(e)}")
+            return False
+
+    def ingest_documents_from_upload(self, file_paths: List[str], original_filenames: List[str], preprocess: bool = True) -> bool:
+        """
+        Ingest documents from web uploads into the vector store, preserving original filenames.
+
+        Args:
+            file_paths: List of temporary file paths to ingest
+            original_filenames: List of original filenames from the upload
+            preprocess: Whether to split documents into chunks
+
+        Returns:
+            True if ingestion was successful
+        """
+        try:
+            all_docs = []
+
+            for file_path, original_filename in zip(file_paths, original_filenames):
+                docs = self.document_loader.load_document(file_path)
+
+                if preprocess:
+                    # Split documents into chunks
+                    docs = self.text_splitter.split_documents(docs)
+
+                # Add source metadata to each document using original filename
+                for doc in docs:
+                    # Use "Web client upload" as the source and the original filename as title
+                    doc.metadata["source"] = "Web client upload"
+                    doc.metadata["title"] = original_filename
+
+                all_docs.extend(docs)
+
+            # Add documents to vector store
+            self.vector_store_manager.add_documents(all_docs)
+
+            return True
+        except Exception as e:
+            print(f"Error ingesting uploaded documents: {str(e)}")
             return False
 
     def ingest_documents_from_directory(self, directory_path: str, preprocess: bool = True) -> bool:
