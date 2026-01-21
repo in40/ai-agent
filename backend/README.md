@@ -1,4 +1,4 @@
-# AI Agent System - Microservices Architecture (v0.2)
+# AI Agent System - Microservices Architecture (v0.3)
 
 ## Overview
 
@@ -12,9 +12,9 @@ This project implements a microservices architecture for the AI Agent system, de
 - **Command-Line Client**: Maintains original functionality with backend support
 - **Nginx Proxy**: Handles TLS termination and routing to backend services
 
-## v0.2 Enhancements
+## v0.3 Enhancements
 
-Version 0.2 introduces significant improvements:
+Version 0.3 introduces significant improvements:
 
 ### Security Enhancements
 - **Role-Based Access Control (RBAC)**: Fine-grained permissions for different user roles
@@ -251,7 +251,7 @@ This tests:
 
 ## Migration from v0.1
 
-See `MIGRATION_GUIDE_v02.md` for details on migrating from v0.1 to v0.2.
+See `MIGRATION_GUIDE_v02.md` for details on migrating from v0.1 to v0.2, and see V03_SUMMARY.md for changes from v0.2 to v0.3.
 
 ## Service Communication
 

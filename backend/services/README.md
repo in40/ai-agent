@@ -1,8 +1,8 @@
-# AI Agent System - Microservices Architecture (v0.2)
+# AI Agent System - Microservices Architecture (v0.3)
 
 ## Overview
 
-This document describes the microservices architecture implemented in version 0.2 of the AI Agent system. The monolithic architecture has been decomposed into four independent services:
+This document describes the microservices architecture implemented in version 0.3 of the AI Agent system. The monolithic architecture has been decomposed into four independent services:
 
 1. **Authentication Service** - Handles user authentication, authorization, and session management
 2. **Agent Service** - Handles AI agent requests and processing

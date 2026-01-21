@@ -139,7 +139,7 @@ class TestSecurityFeatures(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.data)
         self.assertIn('version', data)
-        self.assertEqual(data['version'], '0.2.0')
+        self.assertEqual(data['version'], '0.3.0')
     
     def test_services_endpoint_contains_permissions(self):
         """Test that services endpoint returns permission info"""

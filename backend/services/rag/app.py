@@ -38,7 +38,7 @@ def health_check():
         'status': 'healthy',
         'service': 'rag',
         'timestamp': datetime.utcnow().isoformat(),
-        'version': '0.2.0'
+        'version': '0.3.0'
     }), 200
 
 
@@ -350,7 +350,7 @@ def rag_status(current_user_id):
         'service': 'rag',
         'message': 'RAG component is operational',
         'timestamp': datetime.utcnow().isoformat(),
-        'version': '0.2.0'
+        'version': '0.3.0'
     }), 200
 
 

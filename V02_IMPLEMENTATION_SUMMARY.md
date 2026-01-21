@@ -3,6 +3,8 @@
 ## Overview
 This document summarizes the implementation of version 0.2 of the AI Agent system with a microservices architecture and enhanced security features.
 
+**Note**: This system has been superseded by version 0.3. See V03_SUMMARY.md for the latest implementation details.
+
 ## Architecture Changes
 
 ### 1. Monolith to Microservices

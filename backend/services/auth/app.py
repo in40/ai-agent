@@ -111,7 +111,7 @@ def health_check():
         'status': 'healthy',
         'service': 'authentication',
         'timestamp': datetime.utcnow().isoformat(),
-        'version': '0.2.0'
+        'version': '0.3.0'
     }), 200
 
 
