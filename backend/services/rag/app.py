@@ -255,9 +255,11 @@ def rag_upload(current_user_id):
                 continue
 
             # Validate file type
-            original_filename = secure_filename(file.filename)
-            original_filenames.append(original_filename)  # Store original filename
-            file_ext = Path(original_filename).suffix.lower()
+            # Store the original filename before sanitizing for filesystem operations
+            original_filename_unsanitized = file.filename
+            original_filenames.append(original_filename_unsanitized)  # Store original unsanitized filename
+            secure_filename_for_fs = secure_filename(file.filename)  # Sanitize for filesystem operations
+            file_ext = Path(secure_filename_for_fs).suffix.lower()
             allowed_extensions = ['.txt', '.pdf', '.docx', '.html', '.md']
 
             if file_ext not in allowed_extensions:
@@ -272,8 +274,8 @@ def rag_upload(current_user_id):
             if size > 10 * 1024 * 1024:  # 10MB
                 return jsonify({'error': 'File size exceeds 10MB limit'}), 400
 
-            # Generate unique filename to prevent conflicts
-            unique_filename = f"{uuid.uuid4()}_{original_filename}"
+            # Generate unique filename to prevent conflicts, using the secure filename for filesystem
+            unique_filename = f"{uuid.uuid4()}_{secure_filename_for_fs}"
             file_path = os.path.join(temp_dir, unique_filename)
 
             # Save file

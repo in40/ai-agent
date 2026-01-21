@@ -62,11 +62,14 @@ class RAGOrchestrator:
                 import os
                 for doc in docs:
                     if not doc.metadata.get("source"):
-                        # Use the original filename as the source
+                        # Use the original filename as the source, preserving full name with non-Latin characters
                         doc.metadata["source"] = os.path.basename(file_path)
                     if not doc.metadata.get("title"):
                         # Use the original filename as the title
                         doc.metadata["title"] = os.path.basename(file_path)
+                    # Label the source as coming from local ingestion
+                    if not doc.metadata.get("upload_method"):
+                        doc.metadata["upload_method"] = "Local"
 
                 all_docs.extend(docs)
 
@@ -105,6 +108,8 @@ class RAGOrchestrator:
                     # Use the original filename as both source and title for web uploads
                     doc.metadata["source"] = original_filename
                     doc.metadata["title"] = original_filename
+                    # Label the source as coming from web upload
+                    doc.metadata["upload_method"] = "Web upload"
 
                 all_docs.extend(docs)
 
@@ -139,12 +144,16 @@ class RAGOrchestrator:
             for doc in docs:
                 # Update source to use just the filename for consistency
                 if doc.metadata.get("source"):
-                    # Change source from full path to just the filename
+                    # Change source from full path to just the filename, preserving non-Latin characters
                     doc.metadata["source"] = os.path.basename(doc.metadata["source"])
 
                 # If title is not set but source is, use the source as title
                 if not doc.metadata.get("title") and doc.metadata.get("source"):
                     doc.metadata["title"] = doc.metadata["source"]
+
+                # Label the source as coming from local ingestion
+                if not doc.metadata.get("upload_method"):
+                    doc.metadata["upload_method"] = "Local"
 
             # Add documents to vector store
             self.vector_store_manager.add_documents(docs)

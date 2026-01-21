@@ -86,10 +86,26 @@ class Retriever:
         formatted_docs = []
         for doc, score in docs_with_scores:
             if score >= self.similarity_threshold:
+                # Determine the source label based on upload method
+                upload_method = doc.metadata.get("upload_method", "")
+
+                # Update upload method labels to be more specific
+                if upload_method == "Web upload":
+                    source_label = "Client upload"
+                elif upload_method == "Local":
+                    source_label = "Local"
+                else:
+                    # Default to Unknown if no upload method is specified
+                    source_label = "Unknown"
+
+                # Add ChromaDB collection name to the source label
+                collection_name = self.vector_store_manager.collection_name if hasattr(self.vector_store_manager, 'collection_name') else "default"
+                source_label = f"{source_label} [Collection: {collection_name}]"
+
                 formatted_docs.append({
                     "content": doc.page_content,
                     "title": doc.metadata.get("title", "Untitled Document"),
-                    "source": doc.metadata.get("source", "Unknown"),
+                    "source": source_label,
                     "metadata": doc.metadata,
                     "score": score
                 })
