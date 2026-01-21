@@ -62,8 +62,10 @@ class RAGOrchestrator:
                 import os
                 for doc in docs:
                     if not doc.metadata.get("source"):
-                        doc.metadata["source"] = file_path
+                        # Use the original filename as the source
+                        doc.metadata["source"] = os.path.basename(file_path)
                     if not doc.metadata.get("title"):
+                        # Use the original filename as the title
                         doc.metadata["title"] = os.path.basename(file_path)
 
                 all_docs.extend(docs)
@@ -100,8 +102,8 @@ class RAGOrchestrator:
 
                 # Add source metadata to each document using original filename
                 for doc in docs:
-                    # Use "Web client upload" as the source and the original filename as title
-                    doc.metadata["source"] = "Web client upload"
+                    # Use the original filename as both source and title for web uploads
+                    doc.metadata["source"] = original_filename
                     doc.metadata["title"] = original_filename
 
                 all_docs.extend(docs)
@@ -131,6 +133,13 @@ class RAGOrchestrator:
             if preprocess:
                 # Split documents into chunks
                 docs = self.text_splitter.split_documents(docs)
+
+            # Add source metadata to each document if not already present
+            import os
+            for doc in docs:
+                if doc.metadata.get("source") and not doc.metadata.get("title"):
+                    # If source is set but title isn't, use the basename of the source as title
+                    doc.metadata["title"] = os.path.basename(doc.metadata["source"])
 
             # Add documents to vector store
             self.vector_store_manager.add_documents(docs)
