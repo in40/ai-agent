@@ -137,9 +137,14 @@ class RAGOrchestrator:
             # Add source metadata to each document if not already present
             import os
             for doc in docs:
-                if doc.metadata.get("source") and not doc.metadata.get("title"):
-                    # If source is set but title isn't, use the basename of the source as title
-                    doc.metadata["title"] = os.path.basename(doc.metadata["source"])
+                # Update source to use just the filename for consistency
+                if doc.metadata.get("source"):
+                    # Change source from full path to just the filename
+                    doc.metadata["source"] = os.path.basename(doc.metadata["source"])
+
+                # If title is not set but source is, use the source as title
+                if not doc.metadata.get("title") and doc.metadata.get("source"):
+                    doc.metadata["title"] = doc.metadata["source"]
 
             # Add documents to vector store
             self.vector_store_manager.add_documents(docs)
