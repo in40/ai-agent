@@ -94,6 +94,18 @@ kill_port 8501
 echo "Preparing port 3000 for React Editor..."
 kill_port 3000
 
+echo "Preparing port 5004 for Workflow API..."
+kill_port 5004
+
+# Start the workflow API in the background
+echo -e "${YELLOW}Starting workflow API on port 5004...${NC}"
+cd "$PROJECT_ROOT/gui/react_editor" && nohup python workflow_api.py > workflow_api.log 2>&1 &
+WORKFLOW_PID=$!
+echo -e "${GREEN}Workflow API started with PID $WORKFLOW_PID${NC}"
+
+# Wait a moment for the workflow API to start
+sleep 3
+
 # Start the auth service in the background
 echo -e "${YELLOW}Starting authentication service on port 5001...${NC}"
 nohup python -m backend.services.auth.app > auth_service.log 2>&1 &
@@ -170,6 +182,7 @@ echo "ALL AI AGENT SERVICES ARE NOW RUNNING"
 echo "=========================================================="
 echo "Web Client:          https://192.168.51.138 (via gateway)"
 echo "API Gateway:         http://192.168.51.138:5000"
+echo "Workflow API:        http://192.168.51.138:5004"
 echo "Authentication:      http://192.168.51.138:5001"
 echo "Agent Service:       http://192.168.51.138:5002"
 echo "RAG Service:         http://192.168.51.138:5003"
@@ -181,6 +194,7 @@ echo -e "${NC}"
 
 # Save PIDs to a file for later use
 cat > service_pids.txt << EOF
+WORKFLOW_PID=$WORKFLOW_PID
 AUTH_PID=$AUTH_PID
 AGENT_PID=$AGENT_PID
 RAG_PID=$RAG_PID
@@ -202,7 +216,7 @@ cleanup() {
     fi
 
     # Kill all background processes
-    for pid_var in AUTH_PID AGENT_PID RAG_PID GATEWAY_PID LANGGRAPH_PID STREAMLIT_PID REACT_PID; do
+    for pid_var in WORKFLOW_PID AUTH_PID AGENT_PID RAG_PID GATEWAY_PID LANGGRAPH_PID STREAMLIT_PID REACT_PID; do
         pid_val=${!pid_var}
         if [ ! -z "$pid_val" ] && kill -0 $pid_val 2>/dev/null; then
             echo -e "${YELLOW}Stopping $pid_var (PID: $pid_val)...${NC}"

@@ -139,11 +139,13 @@ class SecuritySQLDetector:
         # Load the security analysis prompt from the external file
         from utils.prompt_manager import PromptManager
         pm = PromptManager("./core/prompts")
-        security_prompt_template = pm.get_prompt("security_sql_analysis")
+        self.prompt_name = "security_sql_analysis"
+        security_prompt_template = pm.get_prompt(self.prompt_name)
 
         if security_prompt_template is None:
             # Fallback to default prompt if external file is not found
             logger.warning("Security prompt file not found, using default prompt")
+            self.prompt_name = "default_security_prompt"
             security_prompt_template = (
                 "You are a security expert specializing in SQL injection and database vulnerability assessment. "
                 "Analyze the provided SQL query for potential security vulnerabilities. "
@@ -206,7 +208,7 @@ class SecuritySQLDetector:
                     sql_query=sql_query,
                     schema_context=schema_str
                 )
-                logger.info("SecuritySQLDetector full LLM request:")
+                logger.info(f"SecuritySQLDetector full LLM request using prompt file: {self.prompt_name}")
                 for i, message in enumerate(full_prompt):
                     if message.type == "system":
                         logger.info(f"  System Message {i+1}: {message.content}")  # Full content without truncation

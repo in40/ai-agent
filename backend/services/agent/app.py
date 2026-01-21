@@ -76,11 +76,12 @@ def agent_query(current_user_id):
         
         start_time = time.time()
         
-        # Run the agent
+        # Run the agent - the new implementation doesn't use disable_sql_blocking and disable_databases
+        # Instead, it focuses on MCP services, so we'll pass an empty list of MCP servers for now
+        # In a real implementation, you would discover and pass the actual MCP servers
         result = run_enhanced_agent(
             user_request=user_request,
-            disable_sql_blocking=disable_sql_blocking,
-            disable_databases=disable_databases
+            mcp_servers=[]  # Pass empty list of MCP servers for now
         )
         
         # Add execution time to result

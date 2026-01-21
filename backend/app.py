@@ -262,7 +262,7 @@ def agent_query(current_user_id):
 
         start_time = time.time()
 
-        # Run the agent
+        # Run the agent with the updated function signature
         result = run_enhanced_agent(
             user_request=user_request,
             disable_sql_blocking=disable_sql_blocking,

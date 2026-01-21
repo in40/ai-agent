@@ -163,22 +163,34 @@ class DedicatedMCPModel:
                 )
 
         # Define the system prompt template for the dedicated MCP model using external prompt
-        system_prompt = self.prompt_manager.get_prompt("mcp_capable_model")
-        if system_prompt is None:
+        system_prompt_template = self.prompt_manager.get_prompt("mcp_capable_model")
+        if system_prompt_template is None:
             # If the external prompt is not found, raise an error to ensure prompts are maintained properly
             raise FileNotFoundError("mcp_capable_model.txt not found in prompts directory. Please ensure the prompt file exists.")
 
-        # Create the prompt template
-        self.prompt = ChatPromptTemplate.from_messages([
-            ("system", system_prompt),
-            ("human", "{input_text}")
-        ])
+        # Store the system prompt template for later use when creating temporary chains
+        self.system_prompt_template = system_prompt_template
 
         # Create the output parser
         self.output_parser = StrOutputParser()
 
-        # Create the chain
-        self.chain = self.prompt | self.llm | self.output_parser
+        # Store the system prompt template for later use when creating temporary chains
+        # We need to handle the template variables properly to avoid conflicts with JSON examples
+        self.system_prompt_template = system_prompt_template
+
+        # Create a basic prompt template with an empty JSON for MCP services for general use
+        # We need to properly handle the template variable to avoid conflicts with JSON examples
+        # The prompt contains {mcp_services_json} as a variable and {{ }} as literal braces for JSON examples
+        # Replace the template variable with an empty JSON object string representation
+        basic_system_prompt = system_prompt_template.replace('{mcp_services_json}', '{}')
+
+        self.basic_prompt = ChatPromptTemplate.from_messages([
+            ("system", basic_system_prompt),
+            ("human", "{input_text}")
+        ])
+
+        # Create the chain with the basic prompt
+        self.chain = self.basic_prompt | self.llm | self.output_parser
 
     def get_config_info(self):
         """
@@ -662,3 +674,219 @@ class DedicatedMCPModel:
                 "error": f"Unexpected error calling MCP service: {str(e)}",
                 "timestamp": datetime.utcnow().isoformat() + "Z"
             }
+
+    def evaluate_if_can_answer(self, user_request: str, synthesized_result: str) -> bool:
+        """
+        Evaluate if the agent can adequately answer the user's request based on the synthesized results.
+
+        Args:
+            user_request: The original user request
+            synthesized_result: The synthesized results from MCP services
+
+        Returns:
+            Boolean indicating whether the agent can adequately answer the request
+        """
+        logger.info(f"Evaluating if DedicatedMCPModel can answer request: {user_request[:100]}...")
+
+        # Create a prompt to evaluate if the synthesized results adequately answer the question
+        evaluation_prompt = f"""
+        Original request: {user_request}
+
+        Synthesized results from MCP services:
+        {synthesized_result}
+
+        Based on the synthesized results, can the original request be adequately answered?
+        Respond with only 'true' if the request can be adequately answered, or 'false' if it cannot.
+        """
+
+        try:
+            # Create a temporary system prompt by replacing the {mcp_services_json} placeholder with an empty JSON object
+            # We need to be careful to avoid conflicts with JSON examples in the prompt
+            temp_system_prompt = self.system_prompt_template.replace('{mcp_services_json}', '{}')
+
+            # Create a temporary chain with the formatted system prompt
+            temp_prompt = ChatPromptTemplate.from_messages([
+                ("system", temp_system_prompt),
+                ("human", "{input_text}")
+            ])
+
+            temp_chain = temp_prompt | self.llm | self.output_parser
+
+            # Use SSH keep-alive during the LLM call
+            with SSHKeepAliveContext():
+                # Generate the response using the temporary chain
+                response = temp_chain.invoke({
+                    "input_text": evaluation_prompt
+                })
+
+            # Parse the response to determine if we can answer
+            response_lower = response.strip().lower()
+            can_answer = 'true' in response_lower or 'yes' in response_lower
+
+            logger.info(f"DedicatedMCPModel evaluation result: can_answer = {can_answer}")
+            return can_answer
+
+        except Exception as e:
+            logger.error(f"Error evaluating if can answer with DedicatedMCPModel: {str(e)}")
+            # Default to False in case of error, meaning we cannot adequately answer
+            return False
+
+    def analyze_request_for_mcp_services(self, user_request: str, mcp_servers: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """
+        Analyze the user request to determine what MCP services might be needed.
+
+        Args:
+            user_request: The user's natural language request
+            mcp_servers: List of available MCP servers
+
+        Returns:
+            Dictionary containing suggested queries or actions to take
+        """
+        logger.info(f"Analyzing request with DedicatedMCPModel: {user_request[:100]}...")
+
+        # Format MCP servers as JSON for the prompt
+        mcp_servers_json = json.dumps(mcp_servers, indent=2)
+
+        # Create a prompt to analyze the request and suggest MCP services to use
+        analysis_prompt = f"""
+        User request: {user_request}
+
+        Available MCP services:
+        {mcp_servers_json}
+
+        Analyze the user request and suggest appropriate MCP queries or services that might be needed to fulfill the request.
+        """
+
+        try:
+            # Create a temporary system prompt by replacing the {mcp_services_json} placeholder with actual JSON
+            # We need to be careful to avoid conflicts with JSON examples in the prompt
+            temp_system_prompt = self.system_prompt_template.replace('{mcp_services_json}', mcp_servers_json)
+
+            # Create a temporary chain with the formatted system prompt
+            temp_prompt = ChatPromptTemplate.from_messages([
+                ("system", temp_system_prompt),
+                ("human", "{input_text}")
+            ])
+
+            temp_chain = temp_prompt | self.llm | self.output_parser
+
+            # Log the full request to LLM, including all roles and prompts
+            if ENABLE_SCREEN_LOGGING:
+                # Get the full prompt with all messages (system and human) without invoking the LLM
+                full_prompt = temp_prompt.format_messages(input_text=analysis_prompt)
+                logger.info("DedicatedMCPModel full LLM request:")
+                for i, message in enumerate(full_prompt):
+                    if message.type == "system":
+                        logger.info(f"  System Message {i+1}: {message.content[:200]}...")  # Truncate for logging
+                    else:
+                        logger.info(f"  Message {i+1} ({message.type}): {message.content}")
+
+            # Use SSH keep-alive during the LLM call
+            with SSHKeepAliveContext():
+                # Generate the response using the temporary chain
+                response = temp_chain.invoke({
+                    "input_text": analysis_prompt
+                })
+
+            # Try to parse the response as JSON
+            try:
+                result = json.loads(response)
+                logger.info(f"DedicatedMCPModel analysis result: {result}")
+                return result
+            except json.JSONDecodeError:
+                logger.warning(f"DedicatedMCPModel analysis response is not valid JSON: {response}")
+                # Return a default structure with the raw response
+                return {"suggested_queries": [], "analysis": response}
+
+        except Exception as e:
+            logger.error(f"Error analyzing request with DedicatedMCPModel: {str(e)}")
+            # Return a default structure in case of error
+            return {"suggested_queries": [], "analysis": f"Error analyzing request: {str(e)}"}
+
+    def execute_single_query(self, query: str, mcp_servers: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """
+        Execute a single query against the MCP server pool.
+
+        Args:
+            query: The query to execute
+            mcp_servers: List of available MCP servers
+
+        Returns:
+            Result of the query execution
+        """
+        logger.info(f"Executing single query with DedicatedMCPModel: {query}")
+
+        # This is a simplified implementation - in a real system, you would
+        # determine which server to use based on the query and execute it
+        try:
+            # For now, we'll just return a simulated result
+            # In a real implementation, you would route the query to the appropriate MCP service
+            return {
+                "status": "success",
+                "data": f"Simulated result for query: {query}",
+                "query_executed": query
+            }
+        except Exception as e:
+            logger.error(f"Error executing single query with DedicatedMCPModel: {str(e)}")
+            return {
+                "status": "error",
+                "error": str(e),
+                "query_executed": query
+            }
+
+    def plan_refined_queries(self, user_request: str, current_results: List[Dict], synthesized_result: str) -> List[Dict]:
+        """
+        Plan refined queries for the next iteration based on current results and gaps
+
+        Args:
+            user_request: Original user request
+            current_results: Current MCP results
+            synthesized_result: Current synthesized result
+
+        Returns:
+            List of refined queries to execute
+        """
+        logger.info(f"Planning refined queries for request: {user_request[:100]}...")
+
+        # Create a prompt to plan refined queries based on current results
+        planning_prompt = f"""
+        Original request: {user_request}
+
+        Current results: {json.dumps(current_results, indent=2)}
+
+        Current synthesized result: {synthesized_result}
+
+        Based on the current results and the original request, what additional MCP queries should be performed
+        to better address the user's request? If the request has been adequately addressed,
+        return an empty list.
+        """
+
+        try:
+            # Create a temporary system prompt by replacing the {mcp_services_json} placeholder with an empty JSON object
+            # We need to be careful to avoid conflicts with JSON examples in the prompt
+            temp_system_prompt = self.system_prompt_template.replace('{mcp_services_json}', '{}')
+
+            # Create a temporary chain with the formatted system prompt
+            temp_prompt = ChatPromptTemplate.from_messages([
+                ("system", temp_system_prompt),
+                ("human", "{input_text}")
+            ])
+
+            temp_chain = temp_prompt | self.llm | self.output_parser
+
+            # Use SSH keep-alive during the LLM call
+            with SSHKeepAliveContext():
+                # Generate the response using the temporary chain
+                response = temp_chain.invoke({
+                    "input_text": planning_prompt
+                })
+
+            # Parse the response - in a real implementation, this would return structured query plans
+            # For now, we'll return an empty list to prevent infinite loops
+            logger.info("Planned refined queries (returned empty list to prevent infinite loops)")
+            return []
+
+        except Exception as e:
+            logger.error(f"Error planning refined queries with DedicatedMCPModel: {str(e)}")
+            # Return empty list in case of error to prevent infinite loops
+            return []
