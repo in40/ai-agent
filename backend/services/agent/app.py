@@ -34,7 +34,7 @@ def health_check():
         'status': 'healthy',
         'service': 'agent',
         'timestamp': datetime.utcnow().isoformat(),
-        'version': '0.3.0'
+        'version': '0.5.0'
     }), 200
 
 
@@ -102,7 +102,7 @@ def agent_status():
         'service': 'agent',
         'message': 'AI Agent is operational',
         'timestamp': datetime.utcnow().isoformat(),
-        'version': '0.3.0'
+        'version': '0.5.0'
     }), 200
 
 

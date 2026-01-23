@@ -467,7 +467,7 @@ def health_check():
         'status': 'healthy',
         'message': 'AI Agent Backend API is running',
         'timestamp': datetime.utcnow().isoformat(),
-        'version': '0.3.0'
+        'version': '0.5.0'
     }), 200
 
 @app.route('/api/config', methods=['GET'])
@@ -478,7 +478,7 @@ def get_config(current_user_id):
         'databases_enabled': not os.getenv('DISABLE_DATABASES', 'false').lower() == 'true',
         'rag_enabled': os.getenv('RAG_ENABLED', 'true').lower() == 'true',
         'sql_blocking_enabled': os.getenv('TERMINATE_ON_POTENTIALLY_HARMFUL_SQL', 'true').lower() == 'true',
-        'version': '0.3.0',
+        'version': '0.5.0',
         'security_features': {
             'rbac_enabled': True,
             'rate_limiting': True,
@@ -585,7 +585,7 @@ def agent_status(current_user_id):
         'status': 'running',
         'message': 'AI Agent is operational',
         'timestamp': datetime.utcnow().isoformat(),
-        'version': '0.3.0'
+        'version': '0.5.0'
     }), 200
 
 @app.route('/api/rag/status', methods=['GET'])
@@ -596,7 +596,7 @@ def rag_status(current_user_id):
         'status': 'running',
         'message': 'RAG component is operational',
         'timestamp': datetime.utcnow().isoformat(),
-        'version': '0.3.0'
+        'version': '0.5.0'
     }), 200
 
 @app.route('/api/services', methods=['GET'])
@@ -615,7 +615,7 @@ def get_services(current_user_id):
             {'name': 'System Config', 'endpoint': '/api/config', 'method': 'GET', 'permission': 'read:system'}
         ],
         'timestamp': datetime.utcnow().isoformat(),
-        'version': '0.3.0'
+        'version': '0.5.0'
     }), 200
 
 if __name__ == '__main__':

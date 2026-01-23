@@ -14,7 +14,7 @@ The AI agent consists of multiple interconnected components that work together:
 
 ## Enhanced LangGraph Architecture
 
-The v0.4 version of the agent uses LangGraph to provide:
+The v0.5 version of the agent uses LangGraph to provide:
 - Stateful workflow management with comprehensive state tracking
 - Conditional logic for validation and error handling
 - Advanced error recovery mechanisms with configurable retry limits

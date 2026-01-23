@@ -41,7 +41,7 @@ def health_check():
         'status': 'healthy',
         'service': 'gateway',
         'timestamp': datetime.utcnow().isoformat(),
-        'version': '0.3.0',
+        'version': '0.5.0',
         'services': {
             'auth': AUTH_SERVICE_URL,
             'agent': AGENT_SERVICE_URL,
