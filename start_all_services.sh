@@ -47,8 +47,8 @@ export REDIS_HOST=localhost
 export REDIS_PORT=6379
 export PYTHONPATH="$PROJECT_ROOT:$PYTHONPATH"
 
-# Set Flask environment - change to 'production' to use Gunicorn
-export FLASK_ENV="${FLASK_ENV:-development}"
+# Set Flask environment - defaults to 'production' to use Gunicorn
+export FLASK_ENV="${FLASK_ENV:-production}"
 
 # Function to check if a port is available
 check_port() {
