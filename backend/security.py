@@ -96,7 +96,7 @@ class SecurityManager:
         Returns:
             User info dict if authentication succeeds, None otherwise
         """
-        from werkzeug.security import check_password_hash
+        import bcrypt
         
         # For authentication, we now use the database
         # Import the user database module

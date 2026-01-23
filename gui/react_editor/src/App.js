@@ -207,7 +207,7 @@ const refreshWorkflow = async (setNodes, setEdges) => {
 
     // Add timeout and more detailed error handling
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+    const timeoutId = setTimeout(() => controller.abort(), 600000); // 10 minute timeout
 
     const response = await fetch(endpoint, {
       signal: controller.signal,

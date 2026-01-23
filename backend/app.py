@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 from functools import wraps
 from flask import Flask, request, jsonify, session, Response
 from flask_cors import CORS
-from werkzeug.security import check_password_hash, generate_password_hash
+import bcrypt
 import logging
 from typing import Dict, Any, Optional
 import threading
@@ -107,7 +107,7 @@ def register():
             return jsonify({'message': 'Username already exists!'}), 400
 
         # Hash the password
-        hashed_password = generate_password_hash(password)
+        hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
         # Store user (in production, use a database)
         users_db[username] = {
@@ -163,7 +163,7 @@ def login():
         password = data.get('password')
 
         user = users_db.get(username)
-        if not user or not check_password_hash(user['password'], password):
+        if not user or not bcrypt.checkpw(password.encode('utf-8'), user['password'].encode('utf-8')):
             # Log failed login attempt
             security_manager.log_audit_event(
                 username or 'unknown',

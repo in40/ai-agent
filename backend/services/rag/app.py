@@ -229,9 +229,40 @@ def rag_lookup(current_user_id):
 def rag_upload(current_user_id):
     """Endpoint for uploading documents to RAG"""
     try:
-        from werkzeug.utils import secure_filename
+        import re
+        import os
         import tempfile
         import uuid
+
+        def secure_filename(filename: str) -> str:
+            """
+            Secure a filename by removing potentially dangerous characters and sequences.
+            """
+            if filename is None:
+                return ''
+
+            # Normalize the path to remove any Windows-style separators
+            filename = filename.replace('\\', '/')
+
+            # Get the basename to prevent directory traversal
+            filename = os.path.basename(filename)
+
+            # Remove leading dots and spaces
+            filename = filename.lstrip('. ')
+
+            # Replace any sequence of invalid characters with a single underscore
+            # Allow only alphanumeric, dots, dashes, and underscores
+            filename = re.sub(r'[^A-Za-z0-9.\-_]', '_', filename)
+
+            # Handle cases where the filename might be empty after sanitization
+            if not filename:
+                filename = "unnamed_file"
+
+            # Prevent hidden files by ensuring the name doesn't start with a dot
+            if filename.startswith('.'):
+                filename = f"unnamed{filename}"
+
+            return filename
 
         # Check if files were included in the request
         if 'files' not in request.files:

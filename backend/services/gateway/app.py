@@ -114,7 +114,8 @@ def proxy_auth(path=''):
             headers=headers,
             data=request.get_data(),
             cookies=request.cookies,
-            allow_redirects=False
+            allow_redirects=False,
+            timeout=600  # Increased timeout to 10 minutes for AI model responses
         )
         
         excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
@@ -146,7 +147,8 @@ def proxy_agent(path=''):
             headers=headers,
             data=request.get_data(),
             cookies=request.cookies,
-            allow_redirects=False
+            allow_redirects=False,
+            timeout=600  # Increased timeout to 10 minutes for AI model responses
         )
         
         excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
@@ -178,7 +180,8 @@ def proxy_rag(path=''):
             headers=headers,
             data=request.get_data(),
             cookies=request.cookies,
-            allow_redirects=False
+            allow_redirects=False,
+            timeout=600  # Increased timeout to 10 minutes for AI model responses
         )
         
         excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
@@ -205,7 +208,7 @@ def agent_query(current_user_id):
             'Authorization': request.headers.get('Authorization', '')
         }
 
-        resp = requests.post(url, json=request.get_json(), headers=headers)
+        resp = requests.post(url, json=request.get_json(), headers=headers, timeout=600)  # Increased timeout to 10 minutes for AI model responses
         return Response(resp.content, resp.status_code, resp.headers.items())
     except Exception as e:
         logger.error(f"Agent query convenience route error: {str(e)}")
@@ -224,7 +227,7 @@ def rag_query(current_user_id):
             'Authorization': request.headers.get('Authorization', '')
         }
 
-        resp = requests.post(url, json=request.get_json(), headers=headers)
+        resp = requests.post(url, json=request.get_json(), headers=headers, timeout=600)  # Increased timeout to 10 minutes for AI model responses
         return Response(resp.content, resp.status_code, resp.headers.items())
     except Exception as e:
         logger.error(f"RAG query convenience route error: {str(e)}")
@@ -243,7 +246,7 @@ def rag_ingest(current_user_id):
             'Authorization': request.headers.get('Authorization', '')
         }
 
-        resp = requests.post(url, json=request.get_json(), headers=headers)
+        resp = requests.post(url, json=request.get_json(), headers=headers, timeout=600)  # Increased timeout to 10 minutes for AI model responses
         # Return the response from the RAG service with its original status code
         excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
         headers = [(name, value) for (name, value) in resp.raw.headers.items()
@@ -267,7 +270,7 @@ def rag_retrieve(current_user_id):
             'Authorization': request.headers.get('Authorization', '')
         }
 
-        resp = requests.post(url, json=request.get_json(), headers=headers)
+        resp = requests.post(url, json=request.get_json(), headers=headers, timeout=600)  # Increased timeout to 10 minutes for AI model responses
         return Response(resp.content, resp.status_code, resp.headers.items())
     except Exception as e:
         logger.error(f"RAG retrieve convenience route error: {str(e)}")
@@ -286,7 +289,7 @@ def rag_lookup(current_user_id):
             'Authorization': request.headers.get('Authorization', '')
         }
 
-        resp = requests.post(url, json=request.get_json(), headers=headers)
+        resp = requests.post(url, json=request.get_json(), headers=headers, timeout=600)  # Increased timeout to 10 minutes for AI model responses
         return Response(resp.content, resp.status_code, resp.headers.items())
     except Exception as e:
         logger.error(f"RAG lookup convenience route error: {str(e)}")
@@ -322,7 +325,7 @@ def rag_upload(current_user_id):
         # Add authorization header
         forwarded_headers['Authorization'] = request.headers.get('Authorization', '')
 
-        resp = requests.post(url, files=files, headers=forwarded_headers, timeout=300)  # 5 minute timeout for large uploads
+        resp = requests.post(url, files=files, headers=forwarded_headers, timeout=600)  # 10 minute timeout for large uploads and processing
         return Response(resp.content, resp.status_code, resp.headers.items())
     except Exception as e:
         logger.error(f"RAG upload convenience route error: {str(e)}")
@@ -343,7 +346,7 @@ def rag_clear(current_user_id):
             'Authorization': request.headers.get('Authorization', '')
         }
 
-        resp = requests.post(url, json=request.get_json(), headers=headers)
+        resp = requests.post(url, json=request.get_json(), headers=headers, timeout=600)  # Increased timeout to 10 minutes for AI model responses
         # Return the response from the RAG service with its original status code
         excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
         headers = [(name, value) for (name, value) in resp.raw.headers.items()
@@ -366,7 +369,7 @@ def auth_validate():
             'Authorization': request.headers.get('Authorization', '')
         }
 
-        resp = requests.post(url, json=request.get_json(), headers=headers)
+        resp = requests.post(url, json=request.get_json(), headers=headers, timeout=600)  # Increased timeout to 10 minutes for AI model responses
         return Response(resp.content, resp.status_code, resp.headers.items())
     except Exception as e:
         logger.error(f"Auth validation convenience route error: {str(e)}")

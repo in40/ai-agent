@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 from functools import wraps
 from flask import Flask, request, jsonify, session
 from flask_cors import CORS
-from werkzeug.security import check_password_hash, generate_password_hash
+import bcrypt
 import logging
 from typing import Dict, Any, Optional
 import redis
