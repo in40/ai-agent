@@ -97,3 +97,7 @@ sample_*.txt
 
 # Temporary files
 logs/
+
+# Data files (not to be tracked in Git)
+data/
+chroma/
