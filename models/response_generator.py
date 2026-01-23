@@ -163,5 +163,68 @@ class ResponseGenerator:
     def _get_llm_instance(self, provider=None, model=None):
         """
         Returns the LLM instance for use by other components (e.g., RAG)
+        If provider or model are specified, creates a new instance with those parameters
         """
-        return self.llm
+        if provider is not None or model is not None:
+            # Use the specified provider/model or fall back to defaults
+            use_provider = provider or getattr(self, '_default_provider', RESPONSE_LLM_PROVIDER)
+            use_model = model or getattr(self, '_default_model', RESPONSE_LLM_MODEL)
+
+            # Determine if we should use the default model configuration
+            # Check if the provider is explicitly set to 'default'
+            use_default = use_provider.lower() in ['', 'default']
+
+            if use_default:
+                actual_provider = DEFAULT_LLM_PROVIDER
+                actual_model = DEFAULT_LLM_MODEL
+                actual_hostname = DEFAULT_LLM_HOSTNAME
+                actual_port = DEFAULT_LLM_PORT
+                actual_api_path = DEFAULT_LLM_API_PATH
+            else:
+                actual_provider = use_provider
+                actual_model = use_model
+                # For simplicity, we'll use the same hostname/port/api_path as the main instance
+                # In a more sophisticated implementation, you might want to pass these as well
+                actual_hostname = getattr(self, '_default_hostname', RESPONSE_LLM_HOSTNAME)
+                actual_port = getattr(self, '_default_port', RESPONSE_LLM_PORT)
+                actual_api_path = getattr(self, '_default_api_path', RESPONSE_LLM_API_PATH)
+
+            # Create the LLM based on the provider
+            if actual_provider.lower() == 'gigachat':
+                from utils.gigachat_integration import GigaChatModel
+                return GigaChatModel(
+                    model=actual_model,
+                    temperature=0.7,
+                    credentials=GIGACHAT_CREDENTIALS,
+                    scope=GIGACHAT_SCOPE,
+                    access_token=GIGACHAT_ACCESS_TOKEN,
+                    verify_ssl_certs=GIGACHAT_VERIFY_SSL_CERTS
+                )
+            else:
+                # Construct the base URL based on provider configuration for other providers
+                if actual_provider.lower() in ['openai', 'deepseek', 'qwen']:
+                    # For cloud providers, use HTTPS with the specified hostname
+                    if actual_provider.lower() == 'openai' and actual_hostname == "api.openai.com":
+                        base_url = None  # Use default OpenAI endpoint
+                    else:
+                        base_url = f"https://{actual_hostname}:{actual_port}{actual_api_path}"
+                else:
+                    # For local providers like LM Studio or Ollama, use custom base URL with HTTP
+                    base_url = f"http://{actual_hostname}:{actual_port}{actual_api_path}"
+
+                # Select the appropriate API key based on the provider
+                if actual_provider.lower() == 'deepseek':
+                    api_key = DEEPSEEK_API_KEY or ("sk-fake-key" if base_url else DEEPSEEK_API_KEY)
+                else:
+                    api_key = OPENAI_API_KEY or ("sk-fake-key" if base_url else OPENAI_API_KEY)
+
+                # Create the LLM with the determined base URL
+                return ChatOpenAI(
+                    model=actual_model,
+                    temperature=0.7,
+                    api_key=api_key,
+                    base_url=base_url
+                )
+        else:
+            # Return the default LLM instance
+            return self.llm
