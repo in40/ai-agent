@@ -145,8 +145,8 @@ if __name__ == '__main__':
                 'errorlog': '-',
             }
             StandaloneApplication(app, options).run()
-        except ImportError:
-            print("Gunicorn not installed. Please install it with: pip install gunicorn")
+        except Exception as e:
+            print(f"Gunicorn error: {type(e).__name__}: {e}")
             print("Running in development mode instead...")
             app.run(host='0.0.0.0', port=port, debug=False)
     else:
