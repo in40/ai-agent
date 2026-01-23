@@ -7,7 +7,8 @@ from config.settings import (
     SQL_LLM_PROVIDER, SQL_LLM_MODEL, SQL_LLM_HOSTNAME, SQL_LLM_PORT,
     SQL_LLM_API_PATH, OPENAI_API_KEY, DEEPSEEK_API_KEY, GIGACHAT_CREDENTIALS, GIGACHAT_SCOPE,
     GIGACHAT_ACCESS_TOKEN, GIGACHAT_VERIFY_SSL_CERTS, ENABLE_SCREEN_LOGGING, DEFAULT_LLM_PROVIDER,
-    DEFAULT_LLM_MODEL, DEFAULT_LLM_HOSTNAME, DEFAULT_LLM_PORT, DEFAULT_LLM_API_PATH
+    DEFAULT_LLM_MODEL, DEFAULT_LLM_HOSTNAME, DEFAULT_LLM_PORT, DEFAULT_LLM_API_PATH,
+    FORCE_DEFAULT_MODEL_FOR_ALL
 )
 from utils.prompt_manager import PromptManager
 from utils.ssh_keep_alive import SSHKeepAliveContext
@@ -25,9 +26,13 @@ class SQLOutput(BaseModel):
 
 class SQLGenerator:
     def __init__(self):
-        # Determine if we should use the default model configuration
-        # If SQL_LLM_PROVIDER is empty or set to "default", use the default configuration
-        use_default = SQL_LLM_PROVIDER.lower() in ['', 'default']
+        # Check if we should force the default model for all components
+        use_default = FORCE_DEFAULT_MODEL_FOR_ALL
+
+        # If not forcing default globally, check if this specific component should use default
+        if not use_default:
+            # If SQL_LLM_PROVIDER is empty or set to "default", use the default configuration
+            use_default = SQL_LLM_PROVIDER.lower() in ['', 'default']
 
         # Set the actual configuration values based on whether to use defaults
         if use_default:

@@ -36,7 +36,8 @@ from config.settings import (
     DEFAULT_LLM_MODEL,
     DEFAULT_LLM_HOSTNAME,
     DEFAULT_LLM_PORT,
-    DEFAULT_LLM_API_PATH
+    DEFAULT_LLM_API_PATH,
+    FORCE_DEFAULT_MODEL_FOR_ALL
 )
 from utils.prompt_manager import PromptManager
 from utils.ssh_keep_alive import SSHKeepAliveContext
@@ -81,9 +82,15 @@ class DedicatedMCPModel:
         # Initialize the prompt manager with the correct prompts directory
         self.prompt_manager = PromptManager("./core/prompts")
 
-        # Create the LLM based on the dedicated MCP provider configuration
+        # Check if we should force the default model for all components
+        if FORCE_DEFAULT_MODEL_FOR_ALL:
+            provider = DEFAULT_LLM_PROVIDER
+            model = DEFAULT_LLM_MODEL
+            hostname = DEFAULT_LLM_HOSTNAME
+            port = DEFAULT_LLM_PORT
+            api_path = DEFAULT_LLM_API_PATH
         # If DEDICATED_MCP_LLM_PROVIDER is empty or set to "default", use the default configuration
-        if DEDICATED_MCP_LLM_PROVIDER.lower() in ['', 'default']:
+        elif DEDICATED_MCP_LLM_PROVIDER.lower() in ['', 'default']:
             provider = DEFAULT_LLM_PROVIDER
             model = DEFAULT_LLM_MODEL
             hostname = DEFAULT_LLM_HOSTNAME

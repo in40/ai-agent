@@ -60,6 +60,9 @@ for key, value in os.environ.items():
                 db_url = f"{db_type}://{db_username}:{db_password}@{db_hostname}:{db_port}/{db_name_env}"
                 ADDITIONAL_DATABASES[db_name] = db_url
 
+# Force all components to use default model (overrides individual component settings)
+FORCE_DEFAULT_MODEL_FOR_ALL = str_to_bool(os.getenv("FORCE_DEFAULT_MODEL_FOR_ALL", "false"))
+
 # Default LLM Model configurations (used when specific model configs are not provided)
 DEFAULT_LLM_PROVIDER = os.getenv("DEFAULT_LLM_PROVIDER", "LM Studio")
 DEFAULT_LLM_MODEL = os.getenv("DEFAULT_LLM_MODEL", "qwen2.5-coder-7b-instruct-abliterated@q3_k_m")
