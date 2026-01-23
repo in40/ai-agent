@@ -2,7 +2,7 @@
 
 ## Overview
 
-As part of the v0.5 upgrade, we have successfully replaced all direct dependencies on Werkzeug with more modern and secure alternatives. This change improves the security posture of the application and reduces external dependencies.
+As part of the v0.5 upgrade, we have successfully replaced all direct dependencies on Werkzeug utility functions with more modern and secure alternatives, and updated the services to use production-ready WSGI servers. This change improves the security posture of the application, reduces external dependencies, and enhances production readiness.
 
 ## Changes Made
 
@@ -90,20 +90,34 @@ def secure_filename(filename: str) -> str:
     return filename
 ```
 
+## WSGI Server Updates
+
+Additionally, we've updated all services to support production-ready WSGI servers:
+
+- **Services Updated**: All backend services (app, agent, auth, rag, gateway) and workflow API
+- **Implementation**: Added support for Gunicorn as the production WSGI server
+- **Configuration**: Services now detect `FLASK_ENV=production` and switch to Gunicorn
+- **Benefits**: Better performance, stability, and concurrency for production deployments
+
 ## Benefits
 
 1. **Enhanced Security**: Direct bcrypt usage provides stronger password hashing with adaptive cost factors
 2. **Reduced Dependencies**: Eliminated direct dependency on Werkzeug for utility functions
-3. **Consistency**: Aligned with existing bcrypt usage in the project's database layer
-4. **Maintainability**: Custom secure_filename implementation gives more control over sanitization logic
-5. **Performance**: Direct bcrypt usage can be slightly faster than going through Werkzeug wrapper
+3. **Production Ready**: Services now use Gunicorn in production for better performance and stability
+4. **Consistency**: Aligned with existing bcrypt usage in the project's database layer
+5. **Maintainability**: Custom secure_filename implementation gives more control over sanitization logic
+6. **Performance**: Direct bcrypt usage can be slightly faster than going through Werkzeug wrapper, plus Gunicorn provides better concurrent request handling
 
 ## Files Modified
 
-- `backend/app.py` - Updated password hashing functions
+- `backend/app.py` - Updated password hashing functions and added Gunicorn support
 - `backend/security.py` - Updated import (though this file already used the database layer)
-- `backend/services/auth/app.py` - Updated import (though this file already used the database layer)
-- `backend/services/rag/app.py` - Replaced secure_filename with custom implementation
+- `backend/services/auth/app.py` - Updated import and added Gunicorn support
+- `backend/services/agent/app.py` - Added Gunicorn support
+- `backend/services/rag/app.py` - Replaced secure_filename with custom implementation and added Gunicorn support
+- `backend/services/gateway/app.py` - Added Gunicorn support
+- `gui/react_editor/workflow_api.py` - Added Gunicorn support
+- `requirements.txt` - Added gunicorn dependency
 - `V05_SUMMARY.md` - Updated to reflect Werkzeug replacement
 
 ## Verification

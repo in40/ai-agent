@@ -293,4 +293,40 @@ def health_check():
     return jsonify({'status': 'healthy', 'message': 'Workflow API is running'})
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5004, debug=True)
+    # Check if running in production mode
+    if os.getenv('FLASK_ENV') == 'production':
+        # Production: Use Gunicorn programmatically
+        from gunicorn.app.base import BaseApplication
+        from gunicorn.six import iteritems
+
+        class StandaloneApplication(BaseApplication):
+            def __init__(self, app, options=None):
+                self.options = options or {}
+                self.application = app
+                super(StandaloneApplication, self).__init__()
+
+            def load_config(self):
+                config = dict([(key, value) for key, value in iteritems(self.options)
+                               if key in self.cfg.settings and value is not None])
+                for key, value in iteritems(config):
+                    self.cfg.set(key.lower(), value)
+
+            def load(self):
+                return self.application
+
+        options = {
+            'bind': '0.0.0.0:5004',
+            'workers': 2,
+            'worker_class': 'sync',
+            'timeout': 600,  # 10 minutes to match our timeout configuration
+            'keepalive': 10,
+            'max_requests': 1000,
+            'max_requests_jitter': 100,
+            'preload_app': True,
+            'accesslog': '-',
+            'errorlog': '-',
+        }
+        StandaloneApplication(app, options).run()
+    else:
+        # Development: Use Flask's built-in server
+        app.run(host='0.0.0.0', port=5004, debug=True)
