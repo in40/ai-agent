@@ -1059,32 +1059,31 @@ def check_mcp_applicability_node(state: AgentState) -> AgentState:
         # Update state with filtered tool calls
         has_filtered_mcp_tool_call = len(filtered_tool_calls) > 0
 
-        # If RAG is enabled and LLM model requested any MCP tool call (after filtering), consider using RAG
-        # However, if RAG mode is set to "mcp", we'll only use RAG if MCP services are available
-        use_rag = False
-        if rag_enabled and has_filtered_mcp_tool_call:
-            if RAG_MODE == "local":
-                # Use local RAG
-                use_rag = True
-            elif RAG_MODE == "mcp":
-                # Only use RAG if MCP services are available and the system is configured to use them
-                # Check if there are any RAG MCP services available in the discovered services
-                discovered_services = state.get("discovered_services", [])
-                rag_mcp_services = [s for s in discovered_services if s.get("type") == "rag"]
+        # Determine if we should use RAG based on whether the LLM specifically requested RAG services
+        # Check if any of the filtered tool calls are for RAG services
+        rag_service_requested = any('rag' in call.get('service_id', '').lower() for call in filtered_tool_calls)
 
-                # If RAG MCP services are available, we'll use them; otherwise, we won't use RAG at all
-                if rag_mcp_services:
-                    use_rag = True
-                    logger.info(f"RAG MCP services available ({len(rag_mcp_services)} services), using RAG in MCP mode")
-                else:
-                    logger.info("RAG MCP mode selected but no RAG MCP services discovered, skipping RAG")
-                    use_rag = False
-            elif RAG_MODE == "hybrid":
-                # Use local RAG as fallback but prefer MCP if available
+        # Use RAG only if RAG is enabled AND the LLM specifically requested RAG services
+        use_rag = rag_enabled and rag_service_requested
+
+        # If RAG is not specifically requested but RAG services are available and RAG mode is "mcp",
+        # we might still want to use RAG as a fallback, but only if no other services were specifically requested
+        if not use_rag and rag_enabled and RAG_MODE == "mcp" and has_filtered_mcp_tool_call:
+            # Check if there are RAG MCP services available in the discovered services
+            discovered_services = state.get("discovered_services", [])
+            rag_mcp_services = [s for s in discovered_services if s.get("type") == "rag"]
+
+            # Check if there are ANY non-RAG services in the filtered tool calls
+            has_non_rag_service_requests = any(
+                'rag' not in call.get('service_id', '').lower() for call in filtered_tool_calls
+            )
+
+            # Only use RAG as fallback if no non-RAG services were specifically requested
+            if not has_non_rag_service_requests and rag_mcp_services:
                 use_rag = True
-            else:
-                # Default to local if mode is invalid
-                use_rag = True
+                logger.info(f"No non-RAG services requested, using RAG fallback ({len(rag_mcp_services)} services available)")
+            elif rag_mcp_services and has_non_rag_service_requests:
+                logger.info(f"RAG MCP services available ({len(rag_mcp_services)} services), but non-RAG services also requested")
 
         elapsed_time = time.time() - start_time
         logger.info(f"[NODE SUCCESS] check_mcp_applicability_node - MCP applicability check completed in {elapsed_time:.2f}s. Use RAG: {use_rag}, Mode: {RAG_MODE}")
