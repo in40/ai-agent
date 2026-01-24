@@ -94,7 +94,7 @@ def initialize_agent_state_node(state: AgentState) -> AgentState:
         "max_iterations": 3,  # Set max iterations to 3 by default
         "final_answer": "",
         "error_message": None,
-        "mcp_servers": state.get("mcp_servers", []),
+        "mcp_servers": state.get("mcp_servers", []),  # Will be populated by discover_services_node
         "refined_queries": [],
         "failure_reason": None,
         # Retain other fields for compatibility
@@ -116,7 +116,7 @@ def initialize_agent_state_node(state: AgentState) -> AgentState:
         "database_name": state.get("database_name", ""),
         "previous_sql_queries": state.get("previous_sql_queries", []),
         "registry_url": state.get("registry_url", None),
-        "discovered_services": state.get("discovered_services", []),
+        "discovered_services": state.get("discovered_services", []),  # Will be populated by discover_services_node
         "mcp_service_results": state.get("mcp_service_results", []),
         "use_mcp_results": state.get("use_mcp_results", False),
         "mcp_tool_calls": state.get("mcp_tool_calls", []),
@@ -131,6 +131,76 @@ def initialize_agent_state_node(state: AgentState) -> AgentState:
     }
 
 
+def discover_services_node(state: AgentState) -> AgentState:
+    """
+    Node to discover services from the MCP registry
+    """
+    start_time = time.time()
+    registry_url = state.get("registry_url")
+    logger.info(f"[NODE START] discover_services_node - Discovering services from registry: {registry_url}")
+
+    try:
+        # Only proceed if registry URL is provided
+        if not registry_url:
+            logger.info("[NODE INFO] discover_services_node - No registry URL provided, skipping service discovery")
+            return {
+                **state,
+                "mcp_servers": [],
+                "discovered_services": []
+            }
+
+        # Import the registry client
+        try:
+            from registry.registry_client import ServiceRegistryClient
+        except ImportError:
+            logger.warning("[NODE WARNING] discover_services_node - Registry client not available, skipping service discovery")
+            return {
+                **state,
+                "mcp_servers": [],
+                "discovered_services": []
+            }
+
+        # Create registry client and discover services
+        client = ServiceRegistryClient(registry_url)
+
+        # Discover all services from the registry
+        services = client.discover_services()
+
+        # Convert ServiceInfo objects to dictionaries for compatibility with the rest of the system
+        services_as_dicts = []
+        for service in services:
+            service_dict = {
+                "id": service.id,
+                "host": service.host,
+                "port": service.port,
+                "type": service.type,
+                "metadata": service.metadata
+            }
+            services_as_dicts.append(service_dict)
+
+        elapsed_time = time.time() - start_time
+        logger.info(f"[NODE SUCCESS] discover_services_node - Discovered {len(services_as_dicts)} services in {elapsed_time:.2f}s")
+
+        # Update the state with discovered services
+        # The mcp_servers field will now contain the discovered services
+        return {
+            **state,
+            "mcp_servers": services_as_dicts,
+            "discovered_services": services_as_dicts
+        }
+    except Exception as e:
+        elapsed_time = time.time() - start_time
+        error_msg = f"Error discovering services: {str(e)}"
+        logger.error(f"[NODE ERROR] discover_services_node - {error_msg} after {elapsed_time:.2f}s")
+
+        return {
+            **state,
+            "mcp_servers": [],
+            "discovered_services": [],
+            "error_message": error_msg
+        }
+
+
 def analyze_request_node(state: AgentState) -> AgentState:
     """
     Node to analyze the user request and determine how to proceed
@@ -141,6 +211,16 @@ def analyze_request_node(state: AgentState) -> AgentState:
     try:
         # Import required components
         from models.dedicated_mcp_model import DedicatedMCPModel
+        from config.settings import str_to_bool
+        import os
+
+        # Check service-specific enable settings
+        sql_enabled = str_to_bool(os.getenv("SQL_ENABLE", "true"))
+        web_search_enabled = str_to_bool(os.getenv("WEB_SEARCH_ENABLE", "true"))
+        dns_enabled = str_to_bool(os.getenv("DNS_ENABLE", "true"))
+        download_enabled = str_to_bool(os.getenv("DOWNLOAD_ENABLE", "true"))
+        rag_enabled = str_to_bool(os.getenv("RAG_ENABLED", "true"))
+
         mcp_model = DedicatedMCPModel()
 
         # Analyze the request to determine what MCP queries might be needed
@@ -149,13 +229,76 @@ def analyze_request_node(state: AgentState) -> AgentState:
             state["mcp_servers"]
         )
 
+        # Handle both possible keys for backward compatibility and correct structure
+        suggested_queries = analysis_result.get("suggested_queries", [])
+        tool_calls = analysis_result.get("tool_calls", [])
+
+        # If we have tool_calls (which is the actual structure returned by the model), use those
+        if tool_calls:
+            # Filter the tool calls based on enabled services
+            filtered_tool_calls = []
+            for call in tool_calls:
+                service_id = call.get('service_id', '').lower()
+
+                # Check if the service type is enabled
+                is_enabled = True
+                if 'sql' in service_id or 'database' in service_id:
+                    is_enabled = sql_enabled
+                elif 'search' in service_id or 'web' in service_id:
+                    is_enabled = web_search_enabled
+                elif 'dns' in service_id:
+                    is_enabled = dns_enabled
+                elif 'download' in service_id:
+                    is_enabled = download_enabled
+                elif 'rag' in service_id:
+                    is_enabled = rag_enabled
+
+                if is_enabled:
+                    filtered_tool_calls.append(call)
+
+            # Store the filtered tool calls in mcp_queries for execution
+            mcp_queries = filtered_tool_calls
+            final_tool_calls = filtered_tool_calls
+        elif suggested_queries:
+            # Fallback to suggested_queries if tool_calls is not present
+            # Also filter these if they contain service information
+            filtered_suggested_queries = []
+            for query in suggested_queries:
+                service_id = query.get('service_id', '').lower()
+
+                # Check if the service type is enabled
+                is_enabled = True
+                if 'sql' in service_id or 'database' in service_id:
+                    is_enabled = sql_enabled
+                elif 'search' in service_id or 'web' in service_id:
+                    is_enabled = web_search_enabled
+                elif 'dns' in service_id:
+                    is_enabled = dns_enabled
+                elif 'download' in service_id:
+                    is_enabled = download_enabled
+                elif 'rag' in service_id:
+                    is_enabled = rag_enabled
+
+                if is_enabled:
+                    filtered_suggested_queries.append(query)
+
+            mcp_queries = filtered_suggested_queries
+            final_tool_calls = []  # No tool calls in this case
+        else:
+            # If neither is present, use an empty list
+            mcp_queries = []
+            final_tool_calls = []
+
         # Update state with analysis
         elapsed_time = time.time() - start_time
         logger.info(f"[NODE SUCCESS] analyze_request_node - Analyzed request in {elapsed_time:.2f}s")
+        logger.info(f"[NODE INFO] analyze_request_node - Services enabled - SQL: {sql_enabled}, Web Search: {web_search_enabled}, DNS: {dns_enabled}, Download: {download_enabled}, RAG: {rag_enabled}")
+        logger.info(f"[NODE INFO] analyze_request_node - Original tool calls: {len(tool_calls)}, Filtered tool calls: {len(final_tool_calls)}")
 
         return {
             **state,
-            "mcp_queries": analysis_result.get("suggested_queries", []),
+            "mcp_queries": mcp_queries,
+            "mcp_tool_calls": final_tool_calls,  # Also store in the dedicated field for reference
             "iteration_count": state.get("iteration_count", 0)
         }
     except Exception as e:
@@ -166,6 +309,7 @@ def analyze_request_node(state: AgentState) -> AgentState:
         return {
             **state,
             "mcp_queries": [],
+            "mcp_tool_calls": [],
             "error_message": error_msg
         }
 
@@ -211,7 +355,41 @@ def execute_mcp_queries_node(state: AgentState) -> AgentState:
     Node to execute MCP queries in parallel or sequentially
     """
     start_time = time.time()
-    logger.info(f"[NODE START] execute_mcp_queries_node - Executing {len(state['mcp_queries'])} MCP queries")
+
+    # Import required components to check service enable settings
+    from config.settings import str_to_bool
+    import os
+
+    # Check service-specific enable settings
+    sql_enabled = str_to_bool(os.getenv("SQL_ENABLE", "true"))
+    web_search_enabled = str_to_bool(os.getenv("WEB_SEARCH_ENABLE", "true"))
+    dns_enabled = str_to_bool(os.getenv("DNS_ENABLE", "true"))
+    download_enabled = str_to_bool(os.getenv("DOWNLOAD_ENABLE", "true"))
+    rag_enabled = str_to_bool(os.getenv("RAG_ENABLE", "true"))
+
+    # Filter the queries based on enabled services
+    filtered_queries = []
+    for query in state["mcp_queries"]:
+        service_id = query.get('service_id', '').lower()
+
+        # Check if the service type is enabled
+        is_enabled = True
+        if 'sql' in service_id or 'database' in service_id:
+            is_enabled = sql_enabled
+        elif 'search' in service_id or 'web' in service_id:
+            is_enabled = web_search_enabled
+        elif 'dns' in service_id:
+            is_enabled = dns_enabled
+        elif 'download' in service_id:
+            is_enabled = download_enabled
+        elif 'rag' in service_id:
+            is_enabled = rag_enabled
+
+        if is_enabled:
+            filtered_queries.append(query)
+
+    logger.info(f"[NODE START] execute_mcp_queries_node - Executing {len(filtered_queries)} MCP queries (out of {len(state['mcp_queries'])} total)")
+    logger.info(f"[NODE INFO] execute_mcp_queries_node - Services enabled - SQL: {sql_enabled}, Web Search: {web_search_enabled}, DNS: {dns_enabled}, Download: {download_enabled}, RAG: {rag_enabled}")
 
     try:
         # Import required components
@@ -219,13 +397,22 @@ def execute_mcp_queries_node(state: AgentState) -> AgentState:
         mcp_model = DedicatedMCPModel()
 
         # Execute all planned queries against the MCP server pool
-        # This could be done in parallel or sequentially depending on requirements
-        results = []
-
-        for query in state["mcp_queries"]:
-            # Execute each query against the appropriate MCP server
-            result = mcp_model.execute_single_query(query, state["mcp_servers"])
-            results.append(result)
+        # If the queries are tool calls (which they should be after our fix), use execute_mcp_tool_calls
+        if filtered_queries:
+            # Check if the first query looks like a tool call (has service_id/method/params)
+            first_query = filtered_queries[0]
+            if isinstance(first_query, dict) and ('service_id' in first_query or 'service' in first_query):
+                # These appear to be tool calls, so use the execute_mcp_tool_calls method
+                results = mcp_model.execute_mcp_tool_calls(filtered_queries, state["mcp_servers"])
+            else:
+                # These appear to be regular queries, so execute them individually
+                results = []
+                for query in filtered_queries:
+                    result = mcp_model.execute_single_query(query, state["mcp_servers"])
+                    results.append(result)
+        else:
+            # No queries to execute after filtering
+            results = []
 
         elapsed_time = time.time() - start_time
         logger.info(f"[NODE SUCCESS] execute_mcp_queries_node - Executed {len(results)} queries successfully in {elapsed_time:.2f}s")
@@ -738,6 +925,10 @@ def plan_refined_queries_node(state: AgentState) -> AgentState:
             state["synthesized_result"]
         )
 
+        # Handle the case where refined_queries might be None
+        if refined_queries is None:
+            refined_queries = []
+
         elapsed_time = time.time() - start_time
         logger.info(f"[NODE SUCCESS] plan_refined_queries_node - Planned {len(refined_queries)} refined queries in {elapsed_time:.2f}s")
 
@@ -765,16 +956,47 @@ def generate_failure_response_node(state: AgentState) -> AgentState:
     start_time = time.time()
     logger.info(f"[NODE START] generate_failure_response_node - Generating failure response after {state['max_iterations']} iterations")
 
-    failure_reason = f"Unable to adequately answer the request after {state['max_iterations']} iterations."
+    try:
+        # Import required components
+        from models.response_generator import ResponseGenerator
+        response_generator = ResponseGenerator()
 
-    elapsed_time = time.time() - start_time
-    logger.info(f"[NODE SUCCESS] generate_failure_response_node - Generated failure response in {elapsed_time:.2f}s")
+        # Create a comprehensive prompt that includes all information gathered so far
+        failure_prompt = f"""
+        Original user request: {state['user_request']}
 
-    return {
-        **state,
-        "final_answer": "I was unable to find sufficient information to answer your request after multiple attempts.",
-        "failure_reason": failure_reason
-    }
+        Information gathered during processing:
+        {state.get('synthesized_result', 'No information was gathered.')}
+
+        Despite multiple attempts ({state['max_iterations']} iterations), we were unable to fully address the original request.
+        Please provide the best possible response based on the information that was gathered,
+        acknowledging the limitations of the available information.
+        """
+
+        # Generate a response based on the information gathered so far
+        final_answer = response_generator.generate_natural_language_response(failure_prompt)
+
+        failure_reason = f"Unable to adequately answer the request after {state['max_iterations']} iterations."
+
+        elapsed_time = time.time() - start_time
+        logger.info(f"[NODE SUCCESS] generate_failure_response_node - Generated failure response in {elapsed_time:.2f}s")
+
+        return {
+            **state,
+            "final_answer": final_answer,
+            "failure_reason": failure_reason
+        }
+    except Exception as e:
+        elapsed_time = time.time() - start_time
+        error_msg = f"Error generating failure response: {str(e)}"
+        logger.error(f"[NODE ERROR] generate_failure_response_node - {error_msg} after {elapsed_time:.2f}s")
+
+        # Fallback to the original generic message in case of error
+        return {
+            **state,
+            "final_answer": "I was unable to find sufficient information to answer your request after multiple attempts.",
+            "failure_reason": f"Unable to adequately answer the request after {state['max_iterations']} iterations."
+        }
 
 
 # Removed old nodes that are no longer used in the new workflow
@@ -783,43 +1005,101 @@ def generate_failure_response_node(state: AgentState) -> AgentState:
 # Removed old conditional functions that are no longer used in the new workflow
 
 
-def check_rag_applicability_node(state: AgentState) -> AgentState:
+def check_mcp_applicability_node(state: AgentState) -> AgentState:
     """
-    Node to check if RAG is applicable for the user request.
-    Determines whether to use RAG or proceed with traditional MCP approach.
+    Node to check if MCP (Model Control Protocol) services are applicable for the user request.
+    Determines whether to use RAG or proceed with direct MCP service calls approach.
     """
     start_time = time.time()
     user_request = state["user_request"]
-    logger.info(f"[NODE START] check_rag_applicability_node - Checking if RAG is applicable for request: {user_request[:100]}...")
+    logger.info(f"[NODE START] check_mcp_applicability_node - Checking if MCP services are applicable for request: {user_request[:100]}...")
 
     try:
-        # Import RAG components
+        # Import required components
         from rag_component import RAGOrchestrator
+        from rag_component.config import RAG_MODE
         from config.settings import str_to_bool
         import os
 
         # Check if RAG is enabled via configuration
         rag_enabled = str_to_bool(os.getenv("RAG_ENABLED", "true"))
 
-        # Determine if the request is better suited for RAG than MCP
-        # This is a simplified heuristic - in practice, you might use an LLM to determine this
-        sql_keywords = ["database", "table", "column", "query", "select", "from", "where", "count", "sum", "avg", "min", "max"]
-        is_sql_related = any(keyword in user_request.lower() for keyword in sql_keywords)
+        # Check if LLM model requested any MCP tool call (contains any service_id in tool_call section)
+        mcp_tool_calls = state.get("mcp_tool_calls", [])
+        has_any_mcp_tool_call = len(mcp_tool_calls) > 0
 
-        # If RAG is enabled and the request is not clearly SQL-related, consider using RAG
-        use_rag = rag_enabled and not is_sql_related
+        # Check service-specific enable settings
+        sql_enabled = str_to_bool(os.getenv("SQL_ENABLE", "true"))
+        web_search_enabled = str_to_bool(os.getenv("WEB_SEARCH_ENABLE", "true"))
+        dns_enabled = str_to_bool(os.getenv("DNS_ENABLE", "true"))
+        download_enabled = str_to_bool(os.getenv("DOWNLOAD_ENABLE", "true"))
+        rag_enabled_setting = str_to_bool(os.getenv("RAG_ENABLED", "true"))  # Use the original RAG setting
+
+        # Filter MCP tool calls based on enabled services
+        filtered_tool_calls = []
+        for call in mcp_tool_calls:
+            service_id = call.get('service_id', '').lower()
+
+            # Check if the service type is enabled
+            is_enabled = True
+            if 'sql' in service_id or 'database' in service_id:
+                is_enabled = sql_enabled
+            elif 'search' in service_id or 'web' in service_id:
+                is_enabled = web_search_enabled
+            elif 'dns' in service_id:
+                is_enabled = dns_enabled
+            elif 'download' in service_id:
+                is_enabled = download_enabled
+            elif 'rag' in service_id:
+                is_enabled = rag_enabled_setting
+
+            if is_enabled:
+                filtered_tool_calls.append(call)
+
+        # Update state with filtered tool calls
+        has_filtered_mcp_tool_call = len(filtered_tool_calls) > 0
+
+        # If RAG is enabled and LLM model requested any MCP tool call (after filtering), consider using RAG
+        # However, if RAG mode is set to "mcp", we'll only use RAG if MCP services are available
+        use_rag = False
+        if rag_enabled and has_filtered_mcp_tool_call:
+            if RAG_MODE == "local":
+                # Use local RAG
+                use_rag = True
+            elif RAG_MODE == "mcp":
+                # Only use RAG if MCP services are available and the system is configured to use them
+                # Check if there are any RAG MCP services available in the discovered services
+                discovered_services = state.get("discovered_services", [])
+                rag_mcp_services = [s for s in discovered_services if s.get("type") == "rag"]
+
+                # If RAG MCP services are available, we'll use them; otherwise, we won't use RAG at all
+                if rag_mcp_services:
+                    use_rag = True
+                    logger.info(f"RAG MCP services available ({len(rag_mcp_services)} services), using RAG in MCP mode")
+                else:
+                    logger.info("RAG MCP mode selected but no RAG MCP services discovered, skipping RAG")
+                    use_rag = False
+            elif RAG_MODE == "hybrid":
+                # Use local RAG as fallback but prefer MCP if available
+                use_rag = True
+            else:
+                # Default to local if mode is invalid
+                use_rag = True
 
         elapsed_time = time.time() - start_time
-        logger.info(f"[NODE SUCCESS] check_rag_applicability_node - RAG applicability check completed in {elapsed_time:.2f}s. Use RAG: {use_rag}")
+        logger.info(f"[NODE SUCCESS] check_mcp_applicability_node - MCP applicability check completed in {elapsed_time:.2f}s. Use RAG: {use_rag}, Mode: {RAG_MODE}")
+        logger.info(f"[NODE INFO] check_mcp_applicability_node - Services enabled - SQL: {sql_enabled}, Web Search: {web_search_enabled}, DNS: {dns_enabled}, Download: {download_enabled}, RAG: {rag_enabled_setting}")
+        logger.info(f"[NODE INFO] check_mcp_applicability_node - Original tool calls: {len(mcp_tool_calls)}, Filtered tool calls: {len(filtered_tool_calls)}")
 
         return {
             **state,
             "use_rag_flag": use_rag,
+            "mcp_tool_calls": filtered_tool_calls,  # Update with filtered tool calls
             "rag_query": user_request  # Use the original user request as the RAG query
         }
     except Exception as e:
         elapsed_time = time.time() - start_time
-        logger.error(f"[NODE ERROR] check_rag_applicability_node - Error checking RAG applicability after {elapsed_time:.2f}s: {str(e)}")
+        logger.error(f"[NODE ERROR] check_mcp_applicability_node - Error checking MCP applicability after {elapsed_time:.2f}s: {str(e)}")
 
         # On error, default to not using RAG to maintain existing functionality
         return {
@@ -839,21 +1119,65 @@ def retrieve_documents_node(state: AgentState) -> AgentState:
 
     try:
         # Import RAG components
+        from rag_component.config import RAG_MODE
         from rag_component import RAGOrchestrator
         from config.settings import RESPONSE_LLM_PROVIDER, RESPONSE_LLM_MODEL
         from models.response_generator import ResponseGenerator
+        from models.dedicated_mcp_model import DedicatedMCPModel
 
-        # Initialize the RAG orchestrator with the appropriate LLM
-        response_generator = ResponseGenerator()
-        llm = response_generator._get_llm_instance(
-            provider=RESPONSE_LLM_PROVIDER,
-            model=RESPONSE_LLM_MODEL
-        )
+        # Check the RAG mode to determine how to retrieve documents
+        if RAG_MODE == "mcp":
+            # Use MCP RAG service to retrieve documents
+            logger.info("Using MCP RAG service to retrieve documents")
 
-        rag_orchestrator = RAGOrchestrator(llm=llm)
+            # Get the RAG MCP service from discovered services
+            discovered_services = state.get("discovered_services", [])
+            rag_mcp_services = [s for s in discovered_services if s.get("type") == "rag"]
 
-        # Retrieve documents based on the user request
-        retrieved_docs = rag_orchestrator.retrieve_documents(state["rag_query"])
+            if not rag_mcp_services:
+                logger.warning("RAG MCP mode selected but no RAG MCP services available")
+                return {
+                    **state,
+                    "rag_documents": [],
+                    "rag_relevance_score": 0.0
+                }
+
+            # Use the first available RAG MCP service
+            rag_service = rag_mcp_services[0]
+
+            # Create a dedicated MCP model instance to handle the RAG service call
+            mcp_model = DedicatedMCPModel()
+
+            # Prepare parameters for the RAG query
+            rag_parameters = {
+                "query": state["rag_query"],
+                "top_k": 5  # Use default top_k, could be configurable
+            }
+
+            # Call the RAG MCP service
+            rag_results = mcp_model._call_mcp_service(rag_service, "query_documents", rag_parameters)
+
+            if rag_results.get("status") == "success":
+                retrieved_docs = rag_results.get("result", {}).get("results", [])
+                logger.info(f"Successfully retrieved {len(retrieved_docs)} documents from RAG MCP service")
+            else:
+                logger.error(f"Error from RAG MCP service: {rag_results.get('error', 'Unknown error')}")
+                retrieved_docs = []
+        else:
+            # Use local RAG implementation
+            logger.info("Using local RAG implementation to retrieve documents")
+
+            # Initialize the RAG orchestrator with the appropriate LLM
+            response_generator = ResponseGenerator()
+            llm = response_generator._get_llm_instance(
+                provider=RESPONSE_LLM_PROVIDER,
+                model=RESPONSE_LLM_MODEL
+            )
+
+            rag_orchestrator = RAGOrchestrator(llm=llm)
+
+            # Retrieve documents based on the user request
+            retrieved_docs = rag_orchestrator.retrieve_documents(state["rag_query"])
 
         # Calculate average relevance score
         if retrieved_docs:
@@ -975,8 +1299,9 @@ def create_enhanced_agent_graph():
 
     # Add nodes to the workflow based on the proposed diagram
     workflow.add_node("initialize_agent_state", initialize_agent_state_node)
+    workflow.add_node("discover_services", discover_services_node)  # New node for discovering MCP services
     workflow.add_node("analyze_request", analyze_request_node)
-    workflow.add_node("check_rag_applicability", check_rag_applicability_node)
+    workflow.add_node("check_mcp_applicability", check_mcp_applicability_node)
     workflow.add_node("retrieve_documents", retrieve_documents_node)
     workflow.add_node("augment_context", augment_context_node)
     workflow.add_node("generate_rag_response", generate_rag_response_node)
@@ -1021,12 +1346,13 @@ def create_enhanced_agent_graph():
             return "generate_failure_response"
 
     # Define the workflow edges based on the proposed diagram
-    workflow.add_edge("initialize_agent_state", "analyze_request")
-    workflow.add_edge("analyze_request", "check_rag_applicability")
+    workflow.add_edge("initialize_agent_state", "discover_services")
+    workflow.add_edge("discover_services", "analyze_request")
+    workflow.add_edge("analyze_request", "check_mcp_applicability")
 
     # Add conditional edge for RAG vs MCP decision
     workflow.add_conditional_edges(
-        "check_rag_applicability",
+        "check_mcp_applicability",
         should_use_rag,
         {
             "use_rag": "retrieve_documents",  # Use RAG approach
@@ -1110,10 +1436,14 @@ class AgentMonitoringCallback:
         logger.info(f"[GRAPH END] Completed in {total_time:.2f}s, retries: {state.get('retry_count', 0)}")
 
 
-def run_enhanced_agent(user_request: str, mcp_servers: List[Dict[str, Any]] = None, disable_sql_blocking: bool = False, disable_databases: bool = False) -> Dict[str, Any]:
+def run_enhanced_agent(user_request: str, mcp_servers: List[Dict[str, Any]] = None, disable_sql_blocking: bool = False, disable_databases: bool = False, registry_url: str = None) -> Dict[str, Any]:
     """
     Convenience function to run the enhanced agent with a user request
     """
+    # Import the registry URL from config if not provided
+    from config.settings import MCP_REGISTRY_URL
+    effective_registry_url = registry_url or MCP_REGISTRY_URL
+
     # Create the new graph
     graph = create_enhanced_agent_graph()
 
@@ -1128,7 +1458,7 @@ def run_enhanced_agent(user_request: str, mcp_servers: List[Dict[str, Any]] = No
         "max_iterations": 3,
         "final_answer": "",
         "error_message": None,
-        "mcp_servers": mcp_servers or [],
+        "mcp_servers": mcp_servers or [],  # This will be overridden by discover_services_node if registry_url is provided
         "refined_queries": [],
         "failure_reason": None,
         # Fields retained for compatibility
@@ -1149,7 +1479,7 @@ def run_enhanced_agent(user_request: str, mcp_servers: List[Dict[str, Any]] = No
         "query_type": "initial",
         "database_name": "",
         "previous_sql_queries": [],
-        "registry_url": None,
+        "registry_url": effective_registry_url,
         "discovered_services": [],
         "mcp_service_results": [],
         "use_mcp_results": False,
@@ -1207,7 +1537,7 @@ def run_enhanced_agent(user_request: str, mcp_servers: List[Dict[str, Any]] = No
                 "query_type": "initial",
                 "database_name": "",
                 "previous_sql_queries": [],
-                "registry_url": None,
+                "registry_url": effective_registry_url,
                 "discovered_services": [],
                 "mcp_service_results": [],
                 "use_mcp_results": False,
