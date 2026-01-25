@@ -262,11 +262,15 @@ def agent_query(current_user_id):
 
         start_time = time.time()
 
+        # Get registry URL from environment or data
+        registry_url = data.get('registry_url', os.getenv('MCP_REGISTRY_URL', 'http://127.0.0.1:8080'))
+
         # Run the agent with the updated function signature
         result = run_enhanced_agent(
             user_request=user_request,
             disable_sql_blocking=disable_sql_blocking,
-            disable_databases=disable_databases
+            disable_databases=disable_databases,
+            registry_url=registry_url
         )
 
         # Add execution time to result

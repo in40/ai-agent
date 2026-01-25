@@ -308,13 +308,13 @@ def rag_upload(current_user_id):
         import requests
         from flask import request
 
-        # Prepare files for forwarding
+        # Prepare files for forwarding - properly handle multiple files with same key
         files = []
-        for key, file_storage in request.files.items():
+        for i, file_storage in enumerate(request.files.getlist('files')):
             if file_storage and file_storage.filename != '':
                 # Read the file content to avoid stream issues
                 file_content = file_storage.read()
-                files.append((key, (file_storage.filename, file_content, file_storage.content_type)))
+                files.append(('files', (file_storage.filename, file_content, file_storage.content_type or 'application/octet-stream')))
 
         # Prepare headers (excluding Content-Type which will be set by requests for multipart)
         forwarded_headers = {}
@@ -355,6 +355,69 @@ def rag_clear(current_user_id):
         return response
     except Exception as e:
         logger.error(f"RAG clear convenience route error: {str(e)}")
+        return jsonify({'error': 'RAG service unavailable'}), 503
+
+
+@app.route('/api/rag/upload_progress/<session_id>', methods=['GET'])
+@require_permission(Permission.WRITE_RAG)
+def rag_upload_progress(current_user_id, session_id):
+    """Convenience route for getting RAG upload progress"""
+    try:
+        # Forward to RAG service
+        url = f"{RAG_SERVICE_URL}/upload_progress/{session_id}"
+        headers = {
+            'Authorization': request.headers.get('Authorization', '')
+        }
+
+        resp = requests.get(url, headers=headers, timeout=600)  # Increased timeout to 10 minutes for AI model responses
+        # Return the response from the RAG service with its original status code
+        excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
+        headers = [(name, value) for (name, value) in resp.raw.headers.items()
+                   if name.lower() not in excluded_headers]
+        response = Response(resp.content, resp.status_code, headers)
+        return response
+    except Exception as e:
+        logger.error(f"RAG upload progress convenience route error: {str(e)}")
+        return jsonify({'error': 'RAG service unavailable'}), 503
+
+
+@app.route('/api/rag/upload_with_progress', methods=['POST'])
+@require_permission(Permission.WRITE_RAG)
+def rag_upload_with_progress(current_user_id):
+    """Convenience route for RAG upload with progress"""
+    try:
+        # Forward to RAG service
+        url = f"{RAG_SERVICE_URL}/upload_with_progress"
+
+        # Handle multipart form data for file uploads
+        import requests
+        from flask import request
+
+        # Prepare files for forwarding - properly handle multiple files with same key
+        files = []
+        for i, file_storage in enumerate(request.files.getlist('files')):
+            if file_storage and file_storage.filename != '':
+                # Read the file content to avoid stream issues
+                file_content = file_storage.read()
+                # Ensure content_type is not None, use a default if needed
+                content_type = file_storage.content_type or 'application/octet-stream'
+                files.append(('files', (file_storage.filename, file_content, content_type)))
+
+        # Prepare headers (excluding Content-Type which will be set by requests for multipart)
+        forwarded_headers = {}
+        for key, value in request.headers:
+            if key.lower() not in ['content-type', 'content-length']:
+                forwarded_headers[key] = value
+
+        # Add authorization header
+        forwarded_headers['Authorization'] = request.headers.get('Authorization', '')
+
+        resp = requests.post(url, files=files, headers=forwarded_headers, timeout=600)  # 10 minute timeout for large uploads and processing
+        return Response(resp.content, resp.status_code, resp.headers.items())
+    except Exception as e:
+        logger.error(f"RAG upload with progress convenience route error: {str(e)}")
+        import traceback
+        logger.error(traceback.format_exc())
         return jsonify({'error': 'RAG service unavailable'}), 503
 
 

@@ -506,13 +506,17 @@
                                     <h6>Selected files:</h6>
                                     <ul id="file-list" class="list-group"></ul>
                                 </div>
+                                <div id="individual-file-progress" class="mt-3" style="display: none;">
+                                    <h6>Individual File Progress:</h6>
+                                    <div id="file-progress-container"></div>
+                                </div>
                                 <div class="d-flex justify-content-between mt-2">
                                     <button id="upload-btn" class="btn btn-primary btn-animated" disabled>
                                         <span id="upload-spinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
                                         <i class="fas fa-upload"></i> Upload & Ingest
                                     </button>
-                                    <div id="upload-progress" class="progress flex-grow-1 ms-3" style="height: 20px; display: none;">
-                                        <div id="upload-progress-bar" class="progress-bar" role="progressbar" style="width: 0%"></div>
+                                    <div id="overall-upload-progress" class="progress flex-grow-1 ms-3" style="height: 20px; display: none;">
+                                        <div id="overall-upload-progress-bar" class="progress-bar" role="progressbar" style="width: 0%"></div>
                                     </div>
                                 </div>
                             </div>
@@ -892,9 +896,24 @@
                     lookupResultsDiv.innerHTML = documents.map(doc => {
                         // Render document content with markdown
                         const renderedContent = md.render(truncateContent(doc.content));
+
+                        // Add download link if available
+                        let downloadLink = '';
+                        if (doc.download_url) {
+                            const filename = doc.source || 'document';
+                            downloadLink = `<a href="${doc.download_url}" target="_blank" class="btn btn-sm btn-outline-primary ms-2" title="Download original file">
+                                <i class="fas fa-download"></i> Download
+                            </a>`;
+                        }
+
                         return `
                             <div class="rag-document">
-                                <h6>${doc.title || 'Untitled Document'}</h6>
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <h6 class="mb-0">${doc.title || 'Untitled Document'}</h6>
+                                    <div>
+                                        ${downloadLink}
+                                    </div>
+                                </div>
                                 <div class="markdown-body">${renderedContent}</div>
                                 <small class="text-muted">Score: ${doc.score || 'N/A'} | Source: ${doc.source || 'Unknown'}</small>
                             </div>
@@ -1076,10 +1095,14 @@
         const fileList = document.getElementById('file-list');
         const selectedFilesDiv = document.getElementById('selected-files');
         const uploadSpinner = document.getElementById('upload-spinner');
-        const uploadProgress = document.getElementById('upload-progress');
-        const uploadProgressBar = document.getElementById('upload-progress-bar');
+        const uploadProgress = document.getElementById('upload-progress');  // Old element - kept for backward compatibility
+        const overallUploadProgress = document.getElementById('overall-upload-progress');
+        const overallUploadProgressBar = document.getElementById('overall-upload-progress-bar');
+        const uploadProgressBar = document.getElementById('upload-progress-bar');  // Old element - kept for backward compatibility
         const uploadStatusDiv = document.getElementById('ingest-status');
         const uploadResultDiv = document.getElementById('ingest-result');
+        const individualFileProgress = document.getElementById('individual-file-progress');
+        const fileProgressContainer = document.getElementById('file-progress-container');
 
         // Handle file selection via input
         fileUploadInput.addEventListener('change', function(e) {
@@ -1152,12 +1175,33 @@
 
             // Show upload progress with animation
             uploadSpinner.classList.remove('d-none');
-            uploadProgress.style.display = 'flex';
+            overallUploadProgress.style.display = 'flex';
             uploadBtn.classList.add('loading');
             uploadBtn.disabled = true;
             uploadStatusDiv.style.display = 'block';
-            uploadStatusDiv.textContent = 'Uploading files...';
+            uploadStatusDiv.textContent = 'Initializing upload...';
             uploadResultDiv.style.display = 'none';
+
+            // Show individual file progress container
+            individualFileProgress.style.display = 'block';
+            fileProgressContainer.innerHTML = '';
+
+            // Create progress bars for each file
+            Array.from(files).forEach((file, index) => {
+                const fileProgressDiv = document.createElement('div');
+                fileProgressDiv.className = 'file-progress-item mb-2';
+                fileProgressDiv.id = `file-progress-${index}`;
+                fileProgressDiv.innerHTML = `
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="small"><i class="fas fa-file me-1"></i> ${file.name}</span>
+                        <span class="small text-muted" id="file-status-${index}">Pending</span>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div id="file-progress-bar-${index}" class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                `;
+                fileProgressContainer.appendChild(fileProgressDiv);
+            });
 
             const formData = new FormData();
             Array.from(files).forEach((file, index) => {
@@ -1165,7 +1209,8 @@
             });
 
             try {
-                const response = await fetch(`${API_BASE_URL}/api/rag/upload`, {
+                // Use the new endpoint that returns a session ID for progress tracking
+                const response = await fetch(`${API_BASE_URL}/api/rag/upload_with_progress`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${AUTH_TOKEN}`
@@ -1179,17 +1224,146 @@
 
                 const result = await response.json();
 
-                // Update UI with success message
-                uploadStatusDiv.style.display = 'none';
-                uploadResultDiv.style.display = 'block';
-                uploadResultDiv.className = 'alert alert-success mt-2';
-                uploadResultDiv.textContent = result.message || 'Files uploaded and ingested successfully!';
+                // Check if we got a session ID for progress tracking
+                if (result.session_id) {
+                    // Start polling for progress updates
+                    const sessionId = result.session_id;
 
-                // Reset file input and UI
-                fileUploadInput.value = '';
-                fileList.innerHTML = '';
-                selectedFilesDiv.style.display = 'none';
-                uploadBtn.disabled = true;
+                    // Update status to indicate we're tracking progress
+                    uploadStatusDiv.textContent = 'Upload initiated, tracking progress...';
+
+                    // Poll for progress updates
+                    const pollInterval = setInterval(async () => {
+                        try {
+                            const progressResponse = await fetch(`${API_BASE_URL}/api/rag/upload_progress/${sessionId}`, {
+                                method: 'GET',
+                                headers: {
+                                    'Authorization': `Bearer ${AUTH_TOKEN}`
+                                }
+                            });
+
+                            if (progressResponse.ok) {
+                                const progressData = await progressResponse.json();
+
+                                // Update the overall progress bar
+                                if (progressData.progress !== undefined) {
+                                    overallUploadProgressBar.style.width = `${progressData.progress}%`;
+                                }
+
+                                // Update status message
+                                if (progressData.status) {
+                                    uploadStatusDiv.textContent = progressData.status;
+                                }
+
+                                // Update individual file progress if available
+                                if (progressData.results) {
+                                    Object.entries(progressData.results).forEach(([filename, fileResult]) => {
+                                        // Find the file index by name
+                                        const fileIndex = Array.from(files).findIndex(file => file.name === filename);
+                                        if (fileIndex !== -1) {
+                                            const statusSpan = document.getElementById(`file-status-${fileIndex}`);
+                                            const progressBar = document.getElementById(`file-progress-bar-${fileIndex}`);
+
+                                            if (statusSpan && progressBar) {
+                                                // Update status text and progress bar based on file status
+                                                if (fileResult.status === 'completed') {
+                                                    statusSpan.textContent = 'Completed';
+                                                    statusSpan.className = 'small text-success';
+                                                    progressBar.style.width = '100%';
+                                                    progressBar.className = 'progress-bar bg-success';
+                                                } else if (fileResult.status === 'failed') {
+                                                    statusSpan.textContent = 'Failed';
+                                                    statusSpan.className = 'small text-danger';
+                                                    progressBar.style.width = '100%';
+                                                    progressBar.className = 'progress-bar bg-danger';
+                                                } else if (fileResult.status === 'uploading') {
+                                                    statusSpan.textContent = 'Uploading...';
+                                                    statusSpan.className = 'small text-primary';
+                                                    progressBar.style.width = '50%'; // Indicate ongoing process
+                                                    progressBar.className = 'progress-bar bg-primary progress-bar-striped progress-bar-animated';
+                                                } else if (fileResult.status === 'pending') {
+                                                    statusSpan.textContent = 'Pending';
+                                                    statusSpan.className = 'small text-muted';
+                                                    progressBar.style.width = '0%';
+                                                    progressBar.className = 'progress-bar bg-secondary';
+                                                } else {
+                                                    statusSpan.textContent = fileResult.status || 'Processing';
+                                                    statusSpan.className = 'small text-info';
+                                                    progressBar.style.width = `${fileResult.progress || 0}%`;
+                                                    progressBar.className = 'progress-bar bg-info';
+                                                }
+                                            }
+                                        }
+                                    });
+                                }
+
+                                // Check if completed
+                                if (progressData.progress === 100) {
+                                    clearInterval(pollInterval);
+
+                                    // Update UI with completion message
+                                    uploadStatusDiv.style.display = 'none';
+                                    uploadResultDiv.style.display = 'block';
+                                    uploadResultDiv.className = 'alert alert-success mt-2';
+
+                                    // Show detailed results for each file
+                                    let resultMessage = '<h6>Upload Results:</h6><ul class="list-unstyled">';
+                                    for (const [filename, fileResult] of Object.entries(progressData.results || {})) {
+                                        const statusClass = fileResult.status === 'completed' ? 'text-success' : 'text-danger';
+                                        resultMessage += `<li class="${statusClass}"><i class="fas fa-${fileResult.status === 'completed' ? 'check-circle' : 'times-circle'} me-1"></i> ${fileResult.message}</li>`;
+                                    }
+                                    resultMessage += '</ul>';
+                                    uploadResultDiv.innerHTML = resultMessage;
+
+                                    // Reset file input and UI
+                                    fileUploadInput.value = '';
+                                    fileList.innerHTML = '';
+                                    selectedFilesDiv.style.display = 'none';
+                                    uploadBtn.disabled = true;
+                                }
+                            } else {
+                                // If progress endpoint returns error, stop polling and show error
+                                clearInterval(pollInterval);
+                                throw new Error(`Progress tracking failed with status: ${progressResponse.status}`);
+                            }
+                        } catch (progressError) {
+                            // If there's an error getting progress, stop polling and show error
+                            clearInterval(pollInterval);
+                            console.error('Error getting progress:', progressError);
+
+                            uploadStatusDiv.style.display = 'none';
+                            uploadResultDiv.style.display = 'block';
+                            uploadResultDiv.className = 'alert alert-danger mt-2';
+
+                            // Initialize markdown-it for error messages
+                            const md = window.markdownit({
+                                html: true,
+                                linkify: true,
+                                typographer: true
+                            });
+
+                            // Render error message with markdown
+                            const renderedError = md.render(progressError.message || 'Failed to track upload progress');
+
+                            uploadResultDiv.innerHTML = `<strong>Error:</strong> <div class="markdown-body">${renderedError}</div>`;
+                        }
+                    }, 1000); // Poll every second
+                } else {
+                    // Fallback to the original behavior if no session ID was returned
+                    overallUploadProgressBar.style.width = '100%';
+
+                    // Update UI with success message
+                    uploadStatusDiv.style.display = 'none';
+                    uploadResultDiv.style.display = 'block';
+                    uploadResultDiv.className = 'alert alert-success mt-2';
+                    uploadResultDiv.textContent = result.message || 'Files uploaded and ingested successfully!';
+
+                    // Reset file input and UI
+                    fileUploadInput.value = '';
+                    fileList.innerHTML = '';
+                    selectedFilesDiv.style.display = 'none';
+                    uploadBtn.disabled = true;
+                }
             } catch (error) {
                 console.error('Error uploading files:', error);
                 uploadStatusDiv.style.display = 'none';
@@ -1208,9 +1382,8 @@
 
                 uploadResultDiv.innerHTML = `<strong>Error:</strong> <div class="markdown-body">${renderedError}</div>`;
             } finally {
-                // Hide spinner and progress bar
+                // Hide spinner and ensure progress bar is updated
                 uploadSpinner.classList.add('d-none');
-                uploadProgress.style.display = 'none';
                 uploadBtn.classList.remove('loading');
                 uploadBtn.disabled = false;
             }

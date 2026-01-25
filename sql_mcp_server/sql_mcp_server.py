@@ -221,7 +221,7 @@ class SQLMCPServer:
             # Start the server (using aiohttp)
             await self._start_server()
 
-            # Register with the MCP registry (optional for testing)
+            # Register with the MCP registry using the wrapper which handles heartbeats automatically
             try:
                 await self.register_with_registry()
             except Exception as reg_error:
@@ -268,9 +268,9 @@ class SQLMCPServer:
         self.runner = runner  # Keep reference to prevent garbage collection
 
     async def register_with_registry(self):
-        """Register this server with the MCP service registry."""
+        """Register this server with the MCP service registry using the wrapper that handles heartbeats."""
         try:
-            from registry.registry_client import ServiceInfo
+            from registry.registry_client import ServiceInfo, MCPServiceWrapper
 
             service_info = ServiceInfo(
                 id=f"sql-server-{self.host.replace('.', '-')}-{self.port}",
@@ -321,8 +321,19 @@ class SQLMCPServer:
                 }
             )
 
-            self.registry_client.register_service(service_info, ttl=60)
-            logger.info("Successfully registered SQL service with MCP registry")
+            # Create and start the service wrapper which handles registration and heartbeats automatically
+            self.service_wrapper = MCPServiceWrapper(
+                service_info=service_info,
+                registry_url=self.registry_url,
+                heartbeat_interval=20,  # Send heartbeat every 20 seconds
+                ttl=45  # TTL of 45 seconds (should be greater than heartbeat interval)
+            )
+
+            if self.service_wrapper.start():
+                logger.info("Successfully registered SQL service with MCP registry and started heartbeating")
+            else:
+                logger.error("Failed to register SQL service with MCP registry")
+                raise Exception("Failed to register with registry")
 
         except Exception as e:
             logger.error(f"Error registering with MCP registry: {str(e)}", exc_info=True)
@@ -333,11 +344,9 @@ class SQLMCPServer:
         try:
             logger.info("Stopping SQL MCP Server...")
 
-            # Unregister from the registry (optional for testing)
-            try:
-                self.registry_client.unregister_service(f"sql-server-{self.host.replace('.', '-')}-{self.port}")
-            except Exception as reg_error:
-                logger.warning(f"Registry unregistration failed (this is OK for testing): {reg_error}")
+            # Stop the service wrapper which handles unregistration
+            if hasattr(self, 'service_wrapper'):
+                self.service_wrapper.stop()
 
             # Stop the server
             if hasattr(self, 'runner'):

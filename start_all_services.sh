@@ -100,6 +100,24 @@ kill_port 3000
 echo "Preparing port 5004 for Workflow API..."
 kill_port 5004
 
+echo "Preparing port 8080 for MCP Service Registry..."
+kill_port 8080
+
+echo "Preparing port 8089 for DNS MCP Server..."
+kill_port 8089
+
+echo "Preparing port 8090 for Search MCP Server..."
+kill_port 8090
+
+echo "Preparing port 8091 for RAG MCP Server..."
+kill_port 8091
+
+echo "Preparing port 8092 for SQL MCP Server..."
+kill_port 8092
+
+echo "Preparing port 8093 for Download MCP Server..."
+kill_port 8093
+
 # Start the workflow API in the background
 echo -e "${YELLOW}Starting workflow API on port 5004...${NC}"
 cd "$PROJECT_ROOT/gui/react_editor" && nohup python workflow_api.py > workflow_api.log 2>&1 &
@@ -179,6 +197,90 @@ echo -e "${GREEN}React Editor started with PID $REACT_PID${NC}"
 # Wait for React to start
 sleep 5
 
+# Start MCP Service Registry (port 8080)
+echo -e "${YELLOW}Starting MCP Service Registry on port 8080...${NC}"
+nohup python -m registry.start_registry_server --host 127.0.0.1 --port 8080 > mcp_registry.log 2>&1 &
+REGISTRY_PID=$!
+
+# Wait a moment for the registry to start
+sleep 3
+
+# Check if the registry actually started successfully
+if ps -p $REGISTRY_PID > /dev/null; then
+    echo -e "${GREEN}MCP Service Registry started with PID $REGISTRY_PID${NC}"
+
+    # Test the registry briefly to ensure it's responding
+    if curl -s -f -m 10 "http://127.0.0.1:8080/health" > /dev/null 2>&1; then
+        echo -e "${GREEN}✓ Registry server is responding to health checks${NC}"
+    else
+        echo -e "${YELLOW}⚠ Registry server may still be starting up${NC}"
+
+        # Retry after a few seconds
+        sleep 5
+        if curl -s -f -m 10 "http://127.0.0.1:8080/health" > /dev/null 2>&1; then
+            echo -e "${GREEN}✓ Registry server is now responding to health checks${NC}"
+        else
+            echo -e "${RED}✗ Registry server is not responding to health checks${NC}"
+            echo -e "${YELLOW}Check mcp_registry.log for more details${NC}"
+        fi
+    fi
+else
+    echo -e "${RED}✗ Failed to start MCP Service Registry${NC}"
+    if [ -f mcp_registry.log ]; then
+        echo -e "${RED}Last 10 lines of registry log:${NC}"
+        tail -n 10 mcp_registry.log
+    fi
+    exit 1
+fi
+
+# Wait for registry to be fully ready
+sleep 3
+
+# Start DNS MCP Server (port 8089)
+echo -e "${YELLOW}Starting DNS MCP Server on port 8089...${NC}"
+nohup python -m search_server.mcp_dns_server --host 127.0.0.1 --port 8089 --registry-url http://127.0.0.1:8080 > dns_mcp_server.log 2>&1 &
+DNS_PID=$!
+echo -e "${GREEN}DNS MCP Server started with PID $DNS_PID${NC}"
+
+# Wait for DNS server to start
+sleep 2
+
+# Start Search MCP Server (port 8090)
+echo -e "${YELLOW}Starting Search MCP Server on port 8090...${NC}"
+nohup python -m search_server.mcp_search_server --host 127.0.0.1 --port 8090 --registry-url http://127.0.0.1:8080 > search_mcp_server.log 2>&1 &
+SEARCH_PID=$!
+echo -e "${GREEN}Search MCP Server started with PID $SEARCH_PID${NC}"
+
+# Wait for Search server to start
+sleep 2
+
+# Start RAG MCP Server (port 8091)
+echo -e "${YELLOW}Starting RAG MCP Server on port 8091...${NC}"
+nohup python -m rag_component.rag_mcp_server --host 127.0.0.1 --port 8091 --registry-url http://127.0.0.1:8080 > rag_mcp_server.log 2>&1 &
+RAG_MCP_PID=$!
+echo -e "${GREEN}RAG MCP Server started with PID $RAG_MCP_PID${NC}"
+
+# Wait for RAG MCP server to start
+sleep 2
+
+# Start SQL MCP Server (port 8092)
+echo -e "${YELLOW}Starting SQL MCP Server on port 8092...${NC}"
+nohup python -m sql_mcp_server.sql_mcp_server --host 127.0.0.1 --port 8092 --registry-url http://127.0.0.1:8080 > sql_mcp_server.log 2>&1 &
+SQL_PID=$!
+echo -e "${GREEN}SQL MCP Server started with PID $SQL_PID${NC}"
+
+# Wait for SQL server to start
+sleep 3
+
+# Start Download MCP Server (port 8093)
+echo -e "${YELLOW}Starting Download MCP Server on port 8093...${NC}"
+nohup python -m download_server.download_mcp_server --host 127.0.0.1 --port 8093 --registry-url http://127.0.0.1:8080 > download_mcp_server.log 2>&1 &
+DOWNLOAD_PID=$!
+echo -e "${GREEN}Download MCP Server started with PID $DOWNLOAD_PID${NC}"
+
+# Wait for Download server to start
+sleep 3
+
 echo -e "${GREEN}"
 echo "=========================================================="
 echo "ALL AI AGENT SERVICES ARE NOW RUNNING"
@@ -192,6 +294,12 @@ echo "RAG Service:         http://192.168.51.138:5003"
 echo "LangGraph Studio:    http://192.168.51.138:8000"
 echo "Streamlit App:       http://192.168.51.138:8501"
 echo "React Editor:        http://192.168.51.138:3000"
+echo "MCP Service Registry: http://192.168.51.138:8080"
+echo "DNS MCP Server:      http://192.168.51.138:8089"
+echo "Search MCP Server:   http://192.168.51.138:8090"
+echo "RAG MCP Server:      http://192.168.51.138:8091"
+echo "SQL MCP Server:      http://192.168.51.138:8092"
+echo "Download MCP Server: http://192.168.51.138:8093"
 echo "=========================================================="
 echo -e "${NC}"
 
@@ -205,6 +313,12 @@ GATEWAY_PID=$GATEWAY_PID
 LANGGRAPH_PID=$LANGGRAPH_PID
 STREAMLIT_PID=$STREAMLIT_PID
 REACT_PID=$REACT_PID
+REGISTRY_PID=$REGISTRY_PID
+DNS_PID=$DNS_PID
+SEARCH_PID=$SEARCH_PID
+RAG_MCP_PID=$RAG_MCP_PID
+SQL_PID=$SQL_PID
+DOWNLOAD_PID=$DOWNLOAD_PID
 EOF
 
 echo -e "${GREEN}Service PIDs saved to service_pids.txt${NC}"
@@ -219,7 +333,7 @@ cleanup() {
     fi
 
     # Kill all background processes
-    for pid_var in WORKFLOW_PID AUTH_PID AGENT_PID RAG_PID GATEWAY_PID LANGGRAPH_PID STREAMLIT_PID REACT_PID; do
+    for pid_var in WORKFLOW_PID AUTH_PID AGENT_PID RAG_PID GATEWAY_PID LANGGRAPH_PID STREAMLIT_PID REACT_PID REGISTRY_PID DNS_PID SEARCH_PID RAG_MCP_PID SQL_PID DOWNLOAD_PID; do
         pid_val=${!pid_var}
         if [ ! -z "$pid_val" ] && kill -0 $pid_val 2>/dev/null; then
             echo -e "${YELLOW}Stopping $pid_var (PID: $pid_val)...${NC}"

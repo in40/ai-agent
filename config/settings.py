@@ -145,9 +145,25 @@ MCP_LLM_HOSTNAME = os.getenv("MCP_LLM_HOSTNAME", DEFAULT_LLM_HOSTNAME)
 MCP_LLM_PORT = os.getenv("MCP_LLM_PORT", DEFAULT_LLM_PORT)
 MCP_LLM_API_PATH = os.getenv("MCP_LLM_API_PATH", DEFAULT_LLM_API_PATH)
 
+# MCP Registry Configuration
+MCP_REGISTRY_URL = os.getenv("MCP_REGISTRY_URL", "http://127.0.0.1:8080")
+
 # Dedicated MCP LLM Configuration (separate model for MCP-related queries)
 DEDICATED_MCP_LLM_PROVIDER = os.getenv("DEDICATED_MCP_LLM_PROVIDER", DEFAULT_LLM_PROVIDER)
 DEDICATED_MCP_LLM_MODEL = os.getenv("DEDICATED_MCP_LLM_MODEL", DEFAULT_LLM_MODEL)
 DEDICATED_MCP_LLM_HOSTNAME = os.getenv("DEDICATED_MCP_LLM_HOSTNAME", DEFAULT_LLM_HOSTNAME)
 DEDICATED_MCP_LLM_PORT = os.getenv("DEDICATED_MCP_LLM_PORT", DEFAULT_LLM_PORT)
 DEDICATED_MCP_LLM_API_PATH = os.getenv("DEDICATED_MCP_LLM_API_PATH", DEFAULT_LLM_API_PATH)
+
+# Embedding Model Configuration (for RAG component)
+EMBEDDING_PROVIDER = os.getenv("EMBEDDING_PROVIDER", "huggingface")  # Options: huggingface, openai, gigachat, deepseek, ollama, etc.
+EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "all-MiniLM-L6-v2")
+EMBEDDING_HOSTNAME = os.getenv("EMBEDDING_HOSTNAME", "localhost")
+EMBEDDING_PORT = os.getenv("EMBEDDING_PORT", "1234")
+EMBEDDING_API_PATH = os.getenv("EMBEDDING_API_PATH", "/v1")
+
+# MCP Registry Configuration
+MCP_REGISTRY_URL = os.getenv("MCP_REGISTRY_URL", "http://127.0.0.1:8080")
+
+# RAG File Storage Configuration
+RAG_FILE_STORAGE_DIR = os.getenv("RAG_FILE_STORAGE_DIR", "./data/rag_uploaded_files")

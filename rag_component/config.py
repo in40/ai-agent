@@ -9,7 +9,16 @@ from config.settings import str_to_bool
 
 # RAG Configuration
 RAG_ENABLED = str_to_bool(os.getenv("RAG_ENABLED", "true"))
-RAG_EMBEDDING_MODEL = os.getenv("RAG_EMBEDDING_MODEL", "all-MiniLM-L6-v2")
+RAG_MODE = os.getenv("RAG_MODE", "local").lower()  # Options: "local", "mcp", "hybrid"
+
+# Embedding Configuration - Use centralized settings if RAG-specific settings are not provided
+from config.settings import EMBEDDING_PROVIDER, EMBEDDING_MODEL
+# Only use RAG-specific provider/model if they are explicitly set in the environment
+rag_embedding_provider_env = os.getenv("RAG_EMBEDDING_PROVIDER")
+rag_embedding_model_env = os.getenv("RAG_EMBEDDING_MODEL")
+
+RAG_EMBEDDING_PROVIDER = rag_embedding_provider_env if rag_embedding_provider_env is not None else EMBEDDING_PROVIDER
+RAG_EMBEDDING_MODEL = rag_embedding_model_env if rag_embedding_model_env is not None else EMBEDDING_MODEL
 RAG_VECTOR_STORE_TYPE = os.getenv("RAG_VECTOR_STORE_TYPE", "chroma")
 RAG_TOP_K_RESULTS = int(os.getenv("RAG_TOP_K_RESULTS", "5"))
 RAG_SIMILARITY_THRESHOLD = float(os.getenv("RAG_SIMILARITY_THRESHOLD", "0.7"))
@@ -22,3 +31,6 @@ RAG_COLLECTION_NAME = os.getenv("RAG_COLLECTION_NAME", "documents")
 
 # Document processing configuration
 RAG_SUPPORTED_FILE_TYPES = os.getenv("RAG_SUPPORTED_FILE_TYPES", ".txt,.pdf,.docx,.html,.md").split(',')
+
+# File storage configuration
+RAG_FILE_STORAGE_DIR = os.getenv("RAG_FILE_STORAGE_DIR", "./data/rag_uploaded_files")

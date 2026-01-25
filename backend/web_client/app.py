@@ -1,6 +1,7 @@
 import os
 import json
 import requests
+import uuid
 from flask import Flask, request, jsonify, render_template, session
 from flask_cors import CORS
 import jwt
@@ -8,6 +9,8 @@ from functools import wraps
 from datetime import datetime, timedelta
 import logging
 from typing import Dict, Any, Optional
+import threading
+import time
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -23,34 +26,31 @@ CORS(app)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# In-memory store for auth tokens (in production, use a database or Redis)
-tokens_db = {}
+# Import security components to use the centralized authentication
+from backend.security import security_manager, require_permission, Permission
+
 
 def token_required(f):
-    """Decorator to require a valid authentication token"""
+    """Decorator to require a valid authentication token - compatible with backend services"""
     @wraps(f)
     def decorated(*args, **kwargs):
         token = request.headers.get('Authorization')
-        
+
         if not token:
             return jsonify({'message': 'Token is missing!'}), 401
-        
+
         try:
-            # Remove 'Bearer ' prefix if present
-            if token.startswith('Bearer '):
-                token = token[7:]
-            
-            # Decode the token to verify it's valid
-            # In a real implementation, you would verify against a known secret
-            # For this example, we'll just check if it exists in our tokens_db
-            if token not in tokens_db:
-                raise jwt.InvalidTokenError("Token not found in database")
-                
+            # Use the centralized security manager to verify the token
+            # The security manager expects the full token with Bearer prefix
+            user_info = security_manager.verify_token(token)
+            if not user_info:
+                raise jwt.InvalidTokenError("Token not valid")
+
         except jwt.ExpiredSignatureError:
             return jsonify({'message': 'Token has expired!'}), 401
         except jwt.InvalidTokenError:
             return jsonify({'message': 'Token is invalid!'}), 401
-        
+
         return f(*args, **kwargs)
     return decorated
 
@@ -70,70 +70,48 @@ def health_check():
 
 @app.route('/api/auth/register', methods=['POST'])
 def register():
-    """Register a new user"""
+    """Register a new user - forwards to backend service"""
     try:
         data = request.get_json()
-        
+
         username = data.get('username')
         password = data.get('password')
-        
+
         if not username or not password:
             return jsonify({'message': 'Username and password are required!'}), 400
-        
-        # In a real implementation, you would hash the password and store it in a database
-        # For this example, we'll just store it in memory
-        user_id = len(tokens_db) + 1  # Simple ID generation
-        tokens_db[user_id] = {
-            'username': username,
-            'password': password,  # In production, hash this!
-            'created_at': datetime.utcnow()
-        }
-        
-        return jsonify({'message': 'User registered successfully!'}), 201
+
+        # Forward registration request to the backend service
+        backend_response = requests.post(
+            f"{app.config['BACKEND_API_URL']}/auth/register",
+            json=data
+        )
+
+        # Return the response from the backend service
+        return jsonify(backend_response.json()), backend_response.status_code
     except Exception as e:
         logger.error(f"Registration error: {str(e)}")
         return jsonify({'message': 'Registration failed!'}), 500
 
 @app.route('/api/auth/login', methods=['POST'])
 def login():
-    """Authenticate a user and return a token"""
+    """Authenticate a user and return a token - forwards to backend service"""
     try:
         data = request.get_json()
-        
+
         username = data.get('username')
         password = data.get('password')
-        
+
         if not username or not password:
             return jsonify({'message': 'Username and password are required!'}), 400
-        
-        # Find user in our in-memory store
-        user_id = None
-        for uid, user_data in tokens_db.items():
-            if user_data['username'] == username and user_data['password'] == password:
-                user_id = uid
-                break
-        
-        if not user_id:
-            return jsonify({'message': 'Invalid credentials!'}), 401
-        
-        # Generate a token (in a real implementation, use proper JWT signing)
-        token = jwt.encode({
-            'user_id': user_id,
-            'username': username,
-            'exp': datetime.utcnow() + timedelta(hours=24)
-        }, app.config['SECRET_KEY'], algorithm="HS256")
-        
-        # Store the token
-        tokens_db[token] = {
-            'user_id': user_id,
-            'username': username,
-            'created_at': datetime.utcnow()
-        }
-        
-        return jsonify({
-            'token': token,
-            'message': 'Login successful!'
-        }), 200
+
+        # Forward login request to the backend service
+        backend_response = requests.post(
+            f"{app.config['BACKEND_API_URL']}/auth/login",
+            json=data
+        )
+
+        # Return the response from the backend service
+        return jsonify(backend_response.json()), backend_response.status_code
     except Exception as e:
         logger.error(f"Login error: {str(e)}")
         return jsonify({'message': 'Login failed!'}), 500
@@ -288,22 +266,34 @@ def proxy_streamlit(subpath):
 def rag_upload():
     """Upload documents to the RAG system"""
     try:
+        # Debug: Print out information about received files
+        print(f"DEBUG: Received {len(request.files.getlist('files'))} files in upload")
+        for i, file_storage in enumerate(request.files.getlist('files')):
+            if file_storage and file_storage.filename:
+                file_content = file_storage.read()
+                print(f"DEBUG: File {i+1} - filename='{file_storage.filename}', size={len(file_content)}")
+                file_storage.seek(0)  # Reset file pointer after reading size
+
         # Prepare multipart form data
         files = []
-        for key, file_storage in request.files.items():
+        for i, file_storage in enumerate(request.files.getlist('files')):
             if file_storage and file_storage.filename != '':
                 # Read the file content to avoid stream issues
                 file_content = file_storage.read()
-                files.append((key, (file_storage.filename, file_content, file_storage.content_type)))
+                # Ensure content_type is not None, use a default if needed
+                content_type = file_storage.content_type or 'application/octet-stream'
+                files.append(('files', (file_storage.filename, file_content, content_type)))
+
+        print(f"DEBUG: Forwarding {len(files)} files to backend")
+        for i, (key, (filename, _, _)) in enumerate(files):
+            print(f"DEBUG: Forwarding file {i+1}: {filename}")
 
         # Forward headers
         headers = {'Authorization': request.headers.get('Authorization')}
 
-        # Make request directly to RAG service (bypassing gateway to avoid circular reference)
-        import requests
-        rag_service_url = os.environ.get('RAG_SERVICE_URL', 'http://localhost:5003')
+        # Make request to the backend API (which should route through the gateway)
         backend_response = requests.post(
-            f"{rag_service_url}/upload",
+            f"{app.config['BACKEND_API_URL']}/api/rag/upload",
             files=files,
             headers=headers
         )
@@ -317,6 +307,75 @@ def rag_upload():
         import traceback
         logger.error(traceback.format_exc())
         return jsonify({'error': f'RAG upload failed: {str(e)}'}), 500
+
+
+@app.route('/api/rag/upload_with_progress', methods=['POST'])
+@token_required
+def rag_upload_with_progress():
+    """Upload documents to the RAG system with progress tracking - forwards to backend service"""
+    try:
+        # Debug: Print out information about received files
+        print(f"DEBUG: Received {len(request.files.getlist('files'))} files in upload_with_progress")
+        for i, file_storage in enumerate(request.files.getlist('files')):
+            if file_storage and file_storage.filename:
+                file_content = file_storage.read()
+                print(f"DEBUG: File {i+1} - filename='{file_storage.filename}', size={len(file_content)}")
+                file_storage.seek(0)  # Reset file pointer after reading size
+
+        # Prepare multipart form data
+        files = []
+        for i, file_storage in enumerate(request.files.getlist('files')):
+            if file_storage and file_storage.filename != '':
+                # Read the file content to avoid stream issues
+                file_content = file_storage.read()
+                # Ensure content_type is not None, use a default if needed
+                content_type = file_storage.content_type or 'application/octet-stream'
+                files.append(('files', (file_storage.filename, file_content, content_type)))
+
+        print(f"DEBUG: Forwarding {len(files)} files to backend")
+        for i, (key, (filename, _, _)) in enumerate(files):
+            print(f"DEBUG: Forwarding file {i+1}: {filename}")
+
+        # Forward headers
+        headers = {'Authorization': request.headers.get('Authorization')}
+
+        # Make request to the backend API (which should route through the gateway)
+        backend_response = requests.post(
+            f"{app.config['BACKEND_API_URL']}/api/rag/upload_with_progress",
+            files=files,
+            headers=headers
+        )
+
+        if backend_response.status_code != 200:
+            return jsonify({'error': 'Backend RAG upload service error'}), backend_response.status_code
+
+        return jsonify(backend_response.json()), 200
+    except Exception as e:
+        logger.error(f"RAG upload with progress error: {str(e)}")
+        import traceback
+        logger.error(traceback.format_exc())
+        return jsonify({'error': f'RAG upload with progress failed: {str(e)}'}), 500
+
+
+@app.route('/api/rag/upload_progress/<session_id>', methods=['GET'])
+@token_required
+def get_upload_progress(session_id):
+    """Get the upload progress for a specific session - forwards to backend service"""
+    try:
+        # Forward the request to the backend service to get upload progress
+        headers = {'Authorization': request.headers.get('Authorization')}
+
+        # Use the backend API URL to get progress from the RAG service
+        backend_response = requests.get(
+            f"{app.config['BACKEND_API_URL']}/api/rag/upload_progress/{session_id}",
+            headers=headers
+        )
+
+        # Return the response from the backend service
+        return jsonify(backend_response.json()), backend_response.status_code
+    except Exception as e:
+        logger.error(f"Get upload progress error: {str(e)}")
+        return jsonify({'error': f'Failed to get upload progress: {str(e)}'}), 500
 
 
 @app.route('/react/<path:subpath>')
@@ -334,4 +393,4 @@ def proxy_react(subpath):
         return jsonify({'error': f'React proxy failed: {str(e)}'}), 500
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=False)
+    app.run(host='0.0.0.0', port=5005, debug=False)

@@ -1258,6 +1258,13 @@ def main():
     print("\nRAG COMPONENT CONFIGURATION:")
     print("-" * 25)
 
+    # Set default values for embedding provider configuration
+    embedding_provider = existing_values.get("EMBEDDING_PROVIDER", "huggingface")
+    embedding_hostname = existing_values.get("EMBEDDING_HOSTNAME", "localhost")
+    embedding_port = existing_values.get("EMBEDDING_PORT", "1234")
+    embedding_api_path = existing_values.get("EMBEDDING_API_PATH", "/v1")
+    rag_embedding_provider = existing_values.get("RAG_EMBEDDING_PROVIDER", "")
+
     # Ask if user wants to configure RAG
     existing_rag_enabled_value = existing_values.get("RAG_ENABLED", "Y")
     if existing_rag_enabled_value.lower() in ['true', 'false']:
@@ -1273,6 +1280,32 @@ def main():
     rag_enabled = rag_enabled_input.lower() in ['y', 'yes']
 
     if rag_enabled:
+        # Override defaults with user input for embedding provider configuration
+        embedding_provider = get_user_input(
+            "Enter embedding provider (huggingface/openai/deepseek/gigachat/ollama/lm studio)",
+            default_value=embedding_provider
+        )
+
+        embedding_hostname = get_user_input(
+            "Enter embedding provider hostname",
+            default_value=embedding_hostname
+        )
+
+        embedding_port = get_user_input(
+            "Enter embedding provider port",
+            default_value=embedding_port
+        )
+
+        embedding_api_path = get_user_input(
+            "Enter embedding provider API path",
+            default_value=embedding_api_path
+        )
+
+        rag_embedding_provider = get_user_input(
+            "Enter RAG-specific embedding provider (leave empty to use global setting)",
+            default_value=rag_embedding_provider
+        )
+
         rag_embedding_model = get_user_input(
             "Enter RAG embedding model",
             default_value=existing_values.get("RAG_EMBEDDING_MODEL")
@@ -1474,8 +1507,16 @@ ENABLE_SCREEN_LOGGING={enable_screen_logging}
 # MCP Registry Configuration
 MCP_REGISTRY_URL={mcp_registry_url}
 
+# Embedding Model Configuration (for RAG component)
+EMBEDDING_PROVIDER={embedding_provider}
+EMBEDDING_MODEL={rag_embedding_model}
+EMBEDDING_HOSTNAME={embedding_hostname}
+EMBEDDING_PORT={embedding_port}
+EMBEDDING_API_PATH={embedding_api_path}
+
 # RAG Component Configuration
 RAG_ENABLED={rag_enabled}
+RAG_EMBEDDING_PROVIDER={rag_embedding_provider}
 RAG_EMBEDDING_MODEL={rag_embedding_model}
 RAG_VECTOR_STORE_TYPE={rag_vector_store_type}
 RAG_TOP_K_RESULTS={rag_top_k_results}
@@ -1584,8 +1625,16 @@ ENABLE_SCREEN_LOGGING={enable_screen_logging}
 # MCP Registry Configuration
 MCP_REGISTRY_URL={mcp_registry_url}
 
+# Embedding Model Configuration (for RAG component)
+EMBEDDING_PROVIDER={embedding_provider}
+EMBEDDING_MODEL={rag_embedding_model}
+EMBEDDING_HOSTNAME={embedding_hostname}
+EMBEDDING_PORT={embedding_port}
+EMBEDDING_API_PATH={embedding_api_path}
+
 # RAG Component Configuration
 RAG_ENABLED={rag_enabled}
+RAG_EMBEDDING_PROVIDER={rag_embedding_provider}
 RAG_EMBEDDING_MODEL={rag_embedding_model}
 RAG_VECTOR_STORE_TYPE={rag_vector_store_type}
 RAG_TOP_K_RESULTS={rag_top_k_results}

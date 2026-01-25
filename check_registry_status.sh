@@ -105,10 +105,18 @@ else
         if [ $? -eq 0 ] && [ -n "$SERVICES" ]; then
             SERVICE_COUNT=$(echo $SERVICES | jq -r '.services | length' 2>/dev/null || echo "0")
             echo "  - Registered services: $SERVICE_COUNT"
-            
+
             if [ "$SERVICE_COUNT" -gt 0 ]; then
                 echo "  - Service list:"
+
+                # Extract and display services in a more readable format
                 echo $SERVICES | jq -r '.services[] | "    - \(.id) at \(.host):\(.port) (\(.type))"' 2>/dev/null || echo "    Unable to parse service list"
+
+                # Count specific types of services
+                echo "  - Service breakdown:"
+                echo $SERVICES | jq -r '.services[] | .type' 2>/dev/null | sort | uniq -c | while read count type; do
+                    echo "    - $count $type service(s)"
+                done
             fi
         fi
     else

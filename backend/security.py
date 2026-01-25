@@ -125,8 +125,8 @@ class SecurityManager:
         Returns:
             JWT token string
         """
-        # Use the JWT secret from the configuration manager to ensure consistency across services
-        jwt_secret = os.getenv('JWT_SECRET_KEY', 'fallback-jwt-secret-change-in-production')
+        # Use environment variable for JWT secret, with fallback to consistent default that matches auth service
+        jwt_secret = os.getenv('JWT_SECRET_KEY', 'jwt-secret-string-change-this-too')
 
         payload = {
             'user_id': user_info['user_id'],
@@ -148,8 +148,8 @@ class SecurityManager:
         Returns:
             User info dict if token is valid, None otherwise
         """
-        # Use the JWT secret from environment variables to ensure consistency across services
-        jwt_secret = os.getenv('JWT_SECRET_KEY', 'fallback-jwt-secret-change-in-production')
+        # Use environment variable for JWT secret, with fallback to consistent default that matches auth service
+        jwt_secret = os.getenv('JWT_SECRET_KEY', 'jwt-secret-string-change-this-too')
 
         try:
             # Remove 'Bearer ' prefix if present

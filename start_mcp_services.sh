@@ -13,7 +13,7 @@ echo "Starting MCP services at $(date)" > "$LOG_FILE"
 
 # Start the MCP service registry
 echo "Starting MCP Service Registry on port 8080..."
-python -m registry.registry_server --host 127.0.0.1 --port 8080 >>"$LOG_FILE" 2>&1 &
+python -m registry.start_registry_server --host 127.0.0.1 --port 8080 >>"$LOG_FILE" 2>&1 &
 REGISTRY_PID=$!
 
 # Give the registry a moment to start

@@ -7,6 +7,7 @@ import json
 import threading
 import time
 import logging
+import socket
 from datetime import datetime, timedelta
 from dataclasses import dataclass, asdict
 from typing import Dict, Optional, List, Any
@@ -529,6 +530,7 @@ class ServiceRegistryServer:
 
     def start(self):
         """Start the HTTP server"""
+        httpd = None
         try:
             # Create a custom handler class that has access to the registry
             class Handler(ServiceRegistryHTTPHandler):
@@ -541,8 +543,15 @@ class ServiceRegistryServer:
                     registry = self.server.registry
                     registry.logger.info(f"HTTP {format % args} from {self.client_address[0]}")
 
-            # Create the HTTP server
-            httpd = socketserver.TCPServer((self.host, self.port), Handler)
+            # Create the HTTP server with address reuse enabled
+            # We need to ensure SO_REUSEADDR is set before binding
+            class ReusableTCPServer(socketserver.ThreadingTCPServer):
+                def server_bind(self):
+                    self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+                    super().server_bind()
+
+            httpd = ReusableTCPServer((self.host, self.port), Handler)
+
             # Attach the registry to the server so handlers can access it
             httpd.registry = self.registry
 
@@ -553,14 +562,21 @@ class ServiceRegistryServer:
             httpd.serve_forever()
         except KeyboardInterrupt:
             self.logger.info("Received interrupt signal. Shutting down...")
+            if httpd:
+                httpd.shutdown()  # Properly shutdown the server
+                httpd.server_close()  # Close the server socket
         except Exception as e:
             self.logger.error(f"Error starting server: {str(e)}")
+            if httpd:
+                httpd.shutdown()  # Properly shutdown the server
+                httpd.server_close()  # Close the server socket
             raise
 
     def stop(self):
         """Stop the HTTP server"""
         if self.httpd:
             self.httpd.shutdown()
+            self.httpd.server_close()  # Ensure the socket is closed
 
 
 def main():

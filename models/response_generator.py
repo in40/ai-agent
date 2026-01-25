@@ -152,10 +152,29 @@ class ResponseGenerator:
                 # Fallback to returning the string response if structured parsing fails
                 response_text = response
 
+            # Log the full LLM request and response for debugging
+            from utils.llm_request_logger import log_llm_request_details
+            log_llm_request_details(
+                provider=RESPONSE_LLM_PROVIDER,
+                model=RESPONSE_LLM_MODEL,
+                prompt=str(full_prompt) if 'full_prompt' in locals() else generated_prompt,
+                response=response_text
+            )
+
             return response_text
 
         except Exception as e:
             logger.error(f"Error generating response: {e}")
+
+            # Log the error for debugging
+            from utils.llm_request_logger import log_llm_request_details
+            log_llm_request_details(
+                provider=RESPONSE_LLM_PROVIDER,
+                model=RESPONSE_LLM_MODEL,
+                prompt=generated_prompt,
+                error=str(e)
+            )
+
             # Re-raise the exception to trigger the retry
             raise
 

@@ -94,14 +94,34 @@ class RAGOrchestrator:
             True if ingestion was successful
         """
         try:
+            from .file_storage_manager import FileStorageManager
+            import os
+
+            print(f"DEBUG: Starting ingestion for {len(file_paths)} files")
+            print(f"DEBUG: File paths: {file_paths}")
+            print(f"DEBUG: Original filenames: {original_filenames}")
+
+            # Initialize file storage manager
+            file_storage_manager = FileStorageManager()
+
+            # Store the original files with their original filenames preserved
+            stored_file_paths = file_storage_manager.store_files(file_paths, original_filenames)
+            print(f"DEBUG: Stored file paths: {stored_file_paths}")
+
             all_docs = []
 
-            for file_path, original_filename in zip(file_paths, original_filenames):
+            for i, (file_path, original_filename, stored_file_path) in enumerate(zip(file_paths, original_filenames, stored_file_paths)):
+                print(f"DEBUG: Processing file {i+1}/{len(file_paths)}: {original_filename}")
+                print(f"DEBUG: File path: {file_path}")
+                print(f"DEBUG: Stored file path: {stored_file_path}")
+
                 docs = self.document_loader.load_document(file_path)
+                print(f"DEBUG: Loaded {len(docs)} documents from {original_filename}")
 
                 if preprocess:
                     # Split documents into chunks
                     docs = self.text_splitter.split_documents(docs)
+                    print(f"DEBUG: After preprocessing, {len(docs)} documents for {original_filename}")
 
                 # Add source metadata to each document using original filename
                 for doc in docs:
@@ -110,15 +130,29 @@ class RAGOrchestrator:
                     doc.metadata["title"] = original_filename
                     # Label the source as coming from web upload
                     doc.metadata["upload_method"] = "Web upload"
+                    # Add the stored file path for download capability
+                    doc.metadata["stored_file_path"] = stored_file_path
+                    # Extract the unique ID from the stored file path (the directory name)
+                    stored_dir = os.path.dirname(stored_file_path)
+                    doc.metadata["file_id"] = os.path.basename(stored_dir)
 
                 all_docs.extend(docs)
+                print(f"DEBUG: Total docs accumulated: {len(all_docs)}")
+
+            print(f"DEBUG: Adding {len(all_docs)} total documents to vector store")
 
             # Add documents to vector store
             self.vector_store_manager.add_documents(all_docs)
 
+            # Clean up temporary files after successful storage
+            file_storage_manager.cleanup_temp_files(file_paths)
+            print(f"DEBUG: Completed ingestion for all {len(file_paths)} files")
+
             return True
         except Exception as e:
             print(f"Error ingesting uploaded documents: {str(e)}")
+            import traceback
+            traceback.print_exc()
             return False
 
     def ingest_documents_from_directory(self, directory_path: str, preprocess: bool = True) -> bool:
