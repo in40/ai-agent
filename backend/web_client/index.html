@@ -1107,6 +1107,8 @@
         // Handle file selection via input
         fileUploadInput.addEventListener('change', function(e) {
             handleFiles(this.files);
+            // Clear the input so the same file can be selected again if needed
+            this.value = '';
         });
 
         // Handle click on drop zone
@@ -1130,14 +1132,30 @@
             handleFiles(e.dataTransfer.files);
         });
 
+        // Maintain a list of selected files
+        let selectedFiles = [];
+
         function handleFiles(files) {
             if (files.length === 0) return;
 
+            // Add new files to the existing list
+            Array.from(files).forEach(file => {
+                // Check if file is already in the list to avoid duplicates
+                if (!selectedFiles.some(existingFile => existingFile.name === file.name && existingFile.size === file.size)) {
+                    selectedFiles.push(file);
+                }
+            });
+
+            // Refresh the file list display
+            refreshFileList();
+        }
+
+        function refreshFileList() {
             // Clear previous file list
             fileList.innerHTML = '';
 
-            // Add each file to the list
-            Array.from(files).forEach(file => {
+            // Add each file to the list with a remove button
+            selectedFiles.forEach((file, index) => {
                 const listItem = document.createElement('li');
                 listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
                 listItem.innerHTML = `
@@ -1145,16 +1163,35 @@
                         <i class="fas fa-file me-2"></i>
                         ${file.name}
                     </span>
-                    <span class="badge bg-secondary">${formatFileSize(file.size)}</span>
+                    <div class="d-flex align-items-center">
+                        <span class="badge bg-secondary me-2">${formatFileSize(file.size)}</span>
+                        <button type="button" class="btn btn-sm btn-outline-danger remove-file-btn" data-index="${index}">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
                 `;
                 fileList.appendChild(listItem);
             });
 
-            // Show the selected files section
-            selectedFilesDiv.style.display = 'block';
+            // Add event listeners to remove buttons
+            document.querySelectorAll('.remove-file-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    selectedFiles.splice(index, 1);
+                    refreshFileList(); // Refresh the list after removal
 
-            // Enable the upload button
-            uploadBtn.disabled = false;
+                    // If no files left, disable the upload button
+                    if (selectedFiles.length === 0) {
+                        uploadBtn.disabled = true;
+                    }
+                });
+            });
+
+            // Show the selected files section if there are files
+            if (selectedFiles.length > 0) {
+                selectedFilesDiv.style.display = 'block';
+                uploadBtn.disabled = false;
+            }
         }
 
         function formatFileSize(bytes) {
@@ -1167,8 +1204,7 @@
 
         // Upload button functionality
         uploadBtn.addEventListener('click', async function() {
-            const files = fileUploadInput.files;
-            if (files.length === 0) {
+            if (selectedFiles.length === 0) {
                 alert('Please select at least one file to upload');
                 return;
             }
@@ -1187,7 +1223,7 @@
             fileProgressContainer.innerHTML = '';
 
             // Create progress bars for each file
-            Array.from(files).forEach((file, index) => {
+            selectedFiles.forEach((file, index) => {
                 const fileProgressDiv = document.createElement('div');
                 fileProgressDiv.className = 'file-progress-item mb-2';
                 fileProgressDiv.id = `file-progress-${index}`;
@@ -1204,7 +1240,7 @@
             });
 
             const formData = new FormData();
-            Array.from(files).forEach((file, index) => {
+            selectedFiles.forEach((file, index) => {
                 formData.append(`files`, file);
             });
 
