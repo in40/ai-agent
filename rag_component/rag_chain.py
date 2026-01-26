@@ -34,27 +34,34 @@ class RAGChain:
             "Helpful Answer:"
         )
         
-        # Create the RAG chain
-        self.rag_chain = (
-            {"context": self.retriever.get_relevant_documents, "question": RunnablePassthrough()}
-            | self.rag_prompt_template
-            | self.llm
-            | StrOutputParser()
-        )
+        # Create the RAG chain only if LLM is provided
+        if self.llm is not None:
+            self.rag_chain = (
+                {"context": self.retriever.get_relevant_documents, "question": RunnablePassthrough()}
+                | self.rag_prompt_template
+                | self.llm
+                | StrOutputParser()
+            )
+        else:
+            # Create a chain that just returns the context without generation
+            self.rag_chain = None
     
     def generate_response(self, query: str) -> str:
         """
         Generate a response using the RAG chain.
-        
+
         Args:
             query: User query
-            
+
         Returns:
             Generated response based on retrieved documents
         """
         if not self.enabled:
             return "RAG functionality is currently disabled."
-        
+
+        if self.rag_chain is None:
+            return "RAG chain is not initialized due to missing LLM."
+
         return self.rag_chain.invoke(query)
     
     def get_context_and_response(self, query: str) -> Dict[str, Any]:

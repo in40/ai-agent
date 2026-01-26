@@ -16,8 +16,8 @@ import time
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your-secret-key-change-in-production')
 app.config['BACKEND_API_URL'] = os.environ.get('BACKEND_API_URL', 'http://localhost:5000')
-# Set maximum content length to 50MB
-app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50MB
+# Set maximum content length to 500MB to allow for multiple file uploads
+app.config['MAX_CONTENT_LENGTH'] = 500 * 1024 * 1024  # 500MB
 
 # Enable CORS
 CORS(app)
@@ -391,6 +391,38 @@ def proxy_react(subpath):
     except Exception as e:
         logger.error(f"React proxy error: {str(e)}")
         return jsonify({'error': f'React proxy failed: {str(e)}'}), 500
+
+@app.route('/api/rag/ingest_from_session', methods=['POST'])
+@token_required
+def rag_ingest_from_session():
+    """Ingest documents from a session - forwards to backend service"""
+    try:
+        data = request.get_json()
+
+        session_id = data.get('session_id')
+        filenames = data.get('filenames', [])
+
+        if not session_id:
+            return jsonify({'error': 'session_id is required'}), 400
+
+        # Prepare the request to the backend API
+        backend_payload = {
+            'session_id': session_id,
+            'filenames': filenames
+        }
+
+        # Make request to backend API
+        backend_response = requests.post(
+            f"{app.config['BACKEND_API_URL']}/api/rag/ingest_from_session",
+            json=backend_payload,
+            headers={'Authorization': request.headers.get('Authorization')}
+        )
+
+        # Return the response from the backend API with its original status code
+        return jsonify(backend_response.json()), backend_response.status_code
+    except Exception as e:
+        logger.error(f"RAG ingestion from session error: {str(e)}")
+        return jsonify({'error': f'RAG ingestion from session failed: {str(e)}'}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5005, debug=False)

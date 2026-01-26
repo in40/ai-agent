@@ -1,0 +1,136 @@
+from flask import Flask, request, jsonify, Response
+import requests
+import logging
+from functools import wraps
+
+app = Flask(__name__)
+RAG_SERVICE_URL = "http://your-rag-service:port"  # Update with your actual RAG service URL
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# ============ SIMPLE AUTH DECORATOR (Replace with your actual auth) ============
+class Permission:
+    READ_RAG = "read_rag"
+    WRITE_RAG = "write_rag"
+    # Add other permissions as needed
+
+def require_permission(permission):
+    """Simple permission decorator - replace with your actual auth system"""
+    def decorator(f):
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            # Extract token from header
+            auth_header = request.headers.get('Authorization')
+            if not auth_header or not auth_header.startswith('Bearer '):
+                return jsonify({'error': 'Missing or invalid Authorization header'}), 401
+            
+            token = auth_header.split(' ')[1]
+            
+            # TODO: Replace with your actual token validation logic
+            # For now, we'll just extract a dummy user ID from the token
+            try:
+                # Simple dummy validation - replace with JWT decoding or your auth service
+                current_user_id = 1  # Default user ID
+                
+                # If token looks like a JWT, try to extract
+                if '.' in token:
+                    # This is a placeholder - replace with actual JWT decoding
+                    current_user_id = hash(token) % 1000  # Simple hash for demo
+                
+                # Call the original function with user_id
+                return f(current_user_id, *args, **kwargs)
+            except Exception as e:
+                logger.error(f"Auth error: {str(e)}")
+                return jsonify({'error': 'Authentication failed'}), 401
+        
+        return decorated_function
+    return decorator
+
+# ============ RAG LIMITS ENDPOINT ============
+@app.route('/api/rag/limits', methods=['GET'])
+@require_permission(Permission.READ_RAG)
+def rag_limits(current_user_id):
+    """Return upload limits for the RAG system"""
+    try:
+        # Return fixed limits - you can make these configurable
+        limits = {
+            'max_files_per_upload': 100,
+            'max_file_size_bytes': 104857600,  # 100MB
+            'max_file_size_mb': 100,
+            'max_total_size_bytes': 524288000,  # 500MB
+            'max_total_size_mb': 500
+        }
+        
+        logger.info(f"Returning RAG limits for user {current_user_id}")
+        return jsonify(limits), 200
+        
+    except Exception as e:
+        logger.error(f"Error getting RAG limits: {str(e)}")
+        # Return default limits even on error
+        return jsonify({
+            'max_files_per_upload': 100,
+            'max_file_size_bytes': 104857600,
+            'max_file_size_mb': 100,
+            'max_total_size_bytes': 524288000,
+            'max_total_size_mb': 500
+        }), 200
+
+# ============ YOUR EXISTING RAG UPLOAD ENDPOINT ============
+@app.route('/api/rag/upload', methods=['POST'])
+@require_permission(Permission.WRITE_RAG)
+def rag_upload(current_user_id):
+    """Convenience route for RAG upload"""
+    try:
+        # Your existing upload code here
+        # ... keep your existing upload implementation ...
+        
+        # For now, return a simple response
+        return jsonify({'message': 'Upload endpoint is active'}), 200
+        
+    except Exception as e:
+        logger.error(f"RAG upload convenience route error: {str(e)}")
+        import traceback
+        logger.error(traceback.format_exc())
+        return jsonify({'error': 'RAG service unavailable'}), 503
+
+# ============ OTHER ESSENTIAL ENDPOINTS ============
+@app.route('/api/rag/ingest', methods=['POST'])
+@require_permission(Permission.WRITE_RAG)
+def rag_ingest(current_user_id):
+    """Legacy path-based ingestion endpoint"""
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({'error': 'No JSON data provided'}), 400
+            
+        file_paths = data.get('file_paths', [])
+        
+        logger.info(f"RAG ingest requested for {len(file_paths)} paths by user {current_user_id}")
+        
+        # TODO: Implement actual ingestion logic or forward to RAG service
+        return jsonify({
+            'message': f'Ingestion requested for {len(file_paths)} file(s)',
+            'file_paths': file_paths
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"RAG ingest error: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+# ============ HEALTH CHECK ENDPOINT ============
+@app.route('/health', methods=['GET'])
+def health_check():
+    """Simple health check endpoint"""
+    return jsonify({'status': 'healthy', 'service': 'ai-agent-gateway'}), 200
+
+# ============ MAIN ENTRY POINT ============
+if __name__ == '__main__':
+    # Serve index.html at root
+    @app.route('/')
+    def serve_index():
+        return app.send_static_file(WEB_CLIENT_DIR, 'index.html')
+    
+    # Run the app
+    app.run(host='0.0.0.0', port=5000, debug=True)

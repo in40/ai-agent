@@ -32,5 +32,11 @@ RAG_COLLECTION_NAME = os.getenv("RAG_COLLECTION_NAME", "documents")
 # Document processing configuration
 RAG_SUPPORTED_FILE_TYPES = os.getenv("RAG_SUPPORTED_FILE_TYPES", ".txt,.pdf,.docx,.html,.md").split(',')
 
+# PDF to Markdown conversion configuration
+RAG_PDF_TO_MARKDOWN_CONVERSION_ENABLED = str_to_bool(os.getenv("RAG_PDF_TO_MARKDOWN_CONVERSION_ENABLED", "false"))
+RAG_PDF_CONVERSION_QUALITY = os.getenv("RAG_PDF_CONVERSION_QUALITY", "standard")  # Options: "fast", "standard", "high"
+RAG_USE_FALLBACK_ON_CONVERSION_ERROR = str_to_bool(os.getenv("RAG_USE_FALLBACK_ON_CONVERSION_ERROR", "true"))
+
 # File storage configuration
 RAG_FILE_STORAGE_DIR = os.getenv("RAG_FILE_STORAGE_DIR", "./data/rag_uploaded_files")
+RAG_MARKDOWN_STORAGE_DIR = os.getenv("RAG_MARKDOWN_STORAGE_DIR", "./data/rag_converted_markdown")

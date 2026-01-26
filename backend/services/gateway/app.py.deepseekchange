@@ -103,10 +103,10 @@ def serve_static(path):
 def proxy_auth(path=''):
     """Proxy requests to the authentication service"""
     url = f"{AUTH_SERVICE_URL}/{path}"
-    
+
     headers = {key: value for (key, value) in request.headers if key.lower() != 'host'}
     headers['Host'] = AUTH_SERVICE_URL.replace('http://', '').replace('https://', '')
-    
+
     try:
         resp = requests.request(
             method=request.method,
@@ -117,11 +117,11 @@ def proxy_auth(path=''):
             allow_redirects=False,
             timeout=600  # Increased timeout to 10 minutes for AI model responses
         )
-        
+
         excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
         headers = [(name, value) for (name, value) in resp.raw.headers.items()
                    if name.lower() not in excluded_headers]
-        
+
         response = Response(resp.content, resp.status_code, headers)
         return response
     except Exception as e:
@@ -136,10 +136,10 @@ def proxy_auth(path=''):
 def proxy_agent(path=''):
     """Proxy requests to the agent service"""
     url = f"{AGENT_SERVICE_URL}/{path}"
-    
+
     headers = {key: value for (key, value) in request.headers if key.lower() != 'host'}
     headers['Host'] = AGENT_SERVICE_URL.replace('http://', '').replace('https://', '')
-    
+
     try:
         resp = requests.request(
             method=request.method,
@@ -150,11 +150,11 @@ def proxy_agent(path=''):
             allow_redirects=False,
             timeout=600  # Increased timeout to 10 minutes for AI model responses
         )
-        
+
         excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
         headers = [(name, value) for (name, value) in resp.raw.headers.items()
                    if name.lower() not in excluded_headers]
-        
+
         response = Response(resp.content, resp.status_code, headers)
         return response
     except Exception as e:
@@ -169,10 +169,10 @@ def proxy_agent(path=''):
 def proxy_rag(path=''):
     """Proxy requests to the RAG service"""
     url = f"{RAG_SERVICE_URL}/{path}"
-    
+
     headers = {key: value for (key, value) in request.headers if key.lower() != 'host'}
     headers['Host'] = RAG_SERVICE_URL.replace('http://', '').replace('https://', '')
-    
+
     try:
         resp = requests.request(
             method=request.method,
@@ -183,11 +183,11 @@ def proxy_rag(path=''):
             allow_redirects=False,
             timeout=600  # Increased timeout to 10 minutes for AI model responses
         )
-        
+
         excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
         headers = [(name, value) for (name, value) in resp.raw.headers.items()
                    if name.lower() not in excluded_headers]
-        
+
         response = Response(resp.content, resp.status_code, headers)
         return response
     except Exception as e:
@@ -299,37 +299,122 @@ def rag_lookup(current_user_id):
 @app.route('/api/rag/upload', methods=['POST'])
 @require_permission(Permission.WRITE_RAG)
 def rag_upload(current_user_id):
-    """Convenience route for RAG upload"""
+    """Convenience route for RAG upload with robust error handling"""
     try:
         # Forward to RAG service
         url = f"{RAG_SERVICE_URL}/upload"
 
         # Handle multipart form data for file uploads
-
-        # Prepare files for forwarding - properly handle multiple files with same key
         files = []
-        for i, file_storage in enumerate(request.files.getlist('files')):
+        uploaded_filenames = []
+        
+        # Get all files from the request
+        file_list = request.files.getlist('files')
+        
+        if not file_list:
+            logger.warning("No files provided in upload request")
+            return jsonify({
+                'error': 'No files provided',
+                'message': 'Please select at least one file to upload'
+            }), 400
+        
+        # Process each file
+        for i, file_storage in enumerate(file_list):
             if file_storage and file_storage.filename != '':
-                # Read the file content to avoid stream issues
-                file_content = file_storage.read()
-                files.append(('files', (file_storage.filename, file_content, file_storage.content_type or 'application/octet-stream')))
-
+                try:
+                    # Read the file content
+                    file_content = file_storage.read()
+                    if not file_content:
+                        logger.warning(f"Empty file content for file: {file_storage.filename}")
+                        continue
+                    
+                    # Get content type, default to application/octet-stream if not provided
+                    content_type = file_storage.content_type or 'application/octet-stream'
+                    
+                    # Add to files list for forwarding
+                    files.append(('files', (file_storage.filename, file_content, content_type)))
+                    uploaded_filenames.append(file_storage.filename)
+                    
+                except Exception as e:
+                    logger.error(f"Error processing file {file_storage.filename}: {str(e)}")
+                    continue
+        
+        if not files:
+            logger.warning("No valid files to upload after processing")
+            return jsonify({
+                'error': 'No valid files to upload',
+                'message': 'All files were empty or could not be processed'
+            }), 400
+        
         # Prepare headers (excluding Content-Type which will be set by requests for multipart)
         forwarded_headers = {}
         for key, value in request.headers:
-            if key.lower() not in ['content-type', 'content-length']:
-                forwarded_headers[key] = value
-
-        # Add authorization header
-        forwarded_headers['Authorization'] = request.headers.get('Authorization', '')
-
-        resp = requests.post(url, files=files, headers=forwarded_headers, timeout=600)  # 10 minute timeout for large uploads and processing
-        return Response(resp.content, resp.status_code, resp.headers.items())
+            # Skip headers that should not be forwarded
+            if key.lower() in ['content-type', 'content-length', 'host', 'content-encoding']:
+                continue
+            forwarded_headers[key] = value
+        
+        # Add authorization header if present
+        if 'Authorization' in request.headers:
+            forwarded_headers['Authorization'] = request.headers['Authorization']
+        else:
+            logger.warning("No Authorization header found in request")
+        
+        try:
+            # Make the POST request to RAG service with timeout (10 minutes)
+            resp = requests.post(
+                url, 
+                files=files, 
+                headers=forwarded_headers, 
+                timeout=600
+            )
+            
+            # Log successful upload
+            logger.info(f"Successfully uploaded {len(files)} files to RAG service: {', '.join(uploaded_filenames)}")
+            
+            # Return the response from the RAG service with its original status code
+            # Exclude certain headers that should not be forwarded back
+            excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection', 'keep-alive']
+            headers = [
+                (name, value) for (name, value) in resp.raw.headers.items()
+                if name.lower() not in excluded_headers
+            ]
+            
+            return Response(resp.content, resp.status_code, headers)
+            
+        except requests.exceptions.RequestException as e:
+            # Handle specific request exceptions
+            error_msg = f"RAG service request failed: {str(e)}"
+            logger.error(error_msg)
+            if hasattr(e, 'response') and e.response is not None:
+                logger.error(f"RAG service response: {e.response.text}")
+            
+            return jsonify({
+                'error': 'RAG service unavailable',
+                'message': 'Failed to connect to RAG service',
+                'details': str(e)
+            }), 503
+            
+        except Exception as e:
+            # Handle other exceptions during the request
+            logger.error(f"Unexpected error during RAG upload request: {str(e)}")
+            import traceback
+            logger.error(traceback.format_exc())
+            return jsonify({
+                'error': 'Internal server error',
+                'message': 'An unexpected error occurred during file upload'
+            }), 500
+            
     except Exception as e:
+        # Handle exceptions in the main try block
         logger.error(f"RAG upload convenience route error: {str(e)}")
         import traceback
         logger.error(traceback.format_exc())
-        return jsonify({'error': 'RAG service unavailable'}), 503
+        return jsonify({
+            'error': 'RAG service unavailable',
+            'message': 'Failed to process file upload request',
+            'details': str(e)
+        }), 503
 
 
 @app.route('/api/rag/clear', methods=['POST'])
@@ -417,30 +502,6 @@ def rag_upload_with_progress(current_user_id):
         return jsonify({'error': 'RAG service unavailable'}), 503
 
 
-@app.route('/api/rag/ingest_from_session', methods=['POST'])
-@require_permission(Permission.WRITE_RAG)
-def rag_ingest_from_session(current_user_id):
-    """Convenience route for RAG ingestion from session"""
-    try:
-        # Forward to RAG service
-        url = f"{RAG_SERVICE_URL}/ingest_from_session"
-        headers = {
-            'Content-Type': 'application/json',
-            'Authorization': request.headers.get('Authorization', '')
-        }
-
-        resp = requests.post(url, json=request.get_json(), headers=headers, timeout=600)  # Increased timeout to 10 minutes for AI model responses
-        # Return the response from the RAG service with its original status code
-        excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
-        headers = [(name, value) for (name, value) in resp.raw.headers.items()
-                   if name.lower() not in excluded_headers]
-        response = Response(resp.content, resp.status_code, headers)
-        return response
-    except Exception as e:
-        logger.error(f"RAG ingestion from session convenience route error: {str(e)}")
-        return jsonify({'error': 'RAG service unavailable'}), 503
-
-
 @app.route('/api/rag/limits', methods=['GET'])
 @require_permission(Permission.READ_RAG)
 def rag_limits():
@@ -466,41 +527,49 @@ def rag_limits():
         logger.error(traceback.format_exc())
         return jsonify({'error': 'RAG service unavailable'}), 503
 
-
-@app.route('/download/<path:path>', methods=['GET'])
-def download_file(path):
-    """Route for downloading files from RAG service"""
+@app.route('/api/rag/limits', methods=['GET'])
+@require_permission(Permission.READ_RAG)  # Use appropriate permission
+def rag_limits(current_user_id):
+    """Return upload limits for the RAG system"""
     try:
-        # Forward to RAG service
-        url = f"{RAG_SERVICE_URL}/download/{path}"
-
-        # Forward all headers except Host, ensuring Authorization header is preserved
-        headers = {}
-        for key, value in request.headers:
-            if key.lower() != 'host':
-                headers[key] = value
-
-        # Explicitly ensure Authorization header is set if present in original request
-        auth_header = request.headers.get('Authorization')
-        if auth_header:
-            headers['Authorization'] = auth_header
-
-        headers['Host'] = RAG_SERVICE_URL.replace('http://', '').replace('https://', '')
-
-        # Forward query parameters
-        params = request.args.to_dict()
-
-        resp = requests.get(url, headers=headers, params=params, timeout=600)  # Increased timeout to 10 minutes for AI model responses
-        # Return the response from the RAG service with its original status code
-        excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
-        headers = [(name, value) for (name, value) in resp.raw.headers.items()
-                   if name.lower() not in excluded_headers]
-        response = Response(resp.content, resp.status_code, headers)
-        return response
+        # Check if the RAG service is available by making a test call
+        # or return default values
+        try:
+            # Option 1: If you have a RAG service with limits endpoint
+            url = f"{RAG_SERVICE_URL}/limits"
+            forwarded_headers = {}
+            for key, value in request.headers:
+                if key.lower() not in ['content-type', 'content-length']:
+                    forwarded_headers[key] = value
+            forwarded_headers['Authorization'] = request.headers.get('Authorization', '')
+            
+            resp = requests.get(url, headers=forwarded_headers, timeout=10)
+            
+            if resp.status_code == 200:
+                return Response(resp.content, resp.status_code, resp.headers.items())
+            else:
+                # If RAG service doesn't have limits, return defaults
+                return get_default_limits()
+                
+        except requests.exceptions.RequestException:
+            # RAG service unreachable, return default limits
+            return get_default_limits()
+            
     except Exception as e:
-        logger.error(f"Download file route error: {str(e)}")
-        return jsonify({'error': 'RAG service unavailable'}), 503
+        logger.error(f"Error getting RAG limits: {str(e)}")
+        import traceback
+        logger.error(traceback.format_exc())
+        return get_default_limits()
 
+def get_default_limits():
+    """Return default upload limits"""
+    return jsonify({
+        'max_files_per_upload': 100,
+        'max_file_size_bytes': 104857600,  # 100MB
+        'max_file_size_mb': 100,
+        'max_total_size_bytes': 524288000,  # 500MB
+        'max_total_size_mb': 500
+    }), 200
 
 @app.route('/api/auth/validate', methods=['POST'])
 def auth_validate():

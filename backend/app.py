@@ -650,7 +650,7 @@ if __name__ == '__main__':
                 'bind': f'0.0.0.0:{port}',
                 'workers': 4,
                 'worker_class': 'sync',
-                'timeout': 600,  # 10 minutes to match our timeout configuration
+                'timeout': 7200,  # 2 hours to accommodate long-running PDF processing
                 'keepalive': 10,
                 'max_requests': 1000,
                 'max_requests_jitter': 100,

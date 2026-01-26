@@ -417,30 +417,6 @@ def rag_upload_with_progress(current_user_id):
         return jsonify({'error': 'RAG service unavailable'}), 503
 
 
-@app.route('/api/rag/ingest_from_session', methods=['POST'])
-@require_permission(Permission.WRITE_RAG)
-def rag_ingest_from_session(current_user_id):
-    """Convenience route for RAG ingestion from session"""
-    try:
-        # Forward to RAG service
-        url = f"{RAG_SERVICE_URL}/ingest_from_session"
-        headers = {
-            'Content-Type': 'application/json',
-            'Authorization': request.headers.get('Authorization', '')
-        }
-
-        resp = requests.post(url, json=request.get_json(), headers=headers, timeout=600)  # Increased timeout to 10 minutes for AI model responses
-        # Return the response from the RAG service with its original status code
-        excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
-        headers = [(name, value) for (name, value) in resp.raw.headers.items()
-                   if name.lower() not in excluded_headers]
-        response = Response(resp.content, resp.status_code, headers)
-        return response
-    except Exception as e:
-        logger.error(f"RAG ingestion from session convenience route error: {str(e)}")
-        return jsonify({'error': 'RAG service unavailable'}), 503
-
-
 @app.route('/api/rag/limits', methods=['GET'])
 @require_permission(Permission.READ_RAG)
 def rag_limits():
@@ -464,41 +440,6 @@ def rag_limits():
         logger.error(f"RAG limits convenience route error: {str(e)}")
         import traceback
         logger.error(traceback.format_exc())
-        return jsonify({'error': 'RAG service unavailable'}), 503
-
-
-@app.route('/download/<path:path>', methods=['GET'])
-def download_file(path):
-    """Route for downloading files from RAG service"""
-    try:
-        # Forward to RAG service
-        url = f"{RAG_SERVICE_URL}/download/{path}"
-
-        # Forward all headers except Host, ensuring Authorization header is preserved
-        headers = {}
-        for key, value in request.headers:
-            if key.lower() != 'host':
-                headers[key] = value
-
-        # Explicitly ensure Authorization header is set if present in original request
-        auth_header = request.headers.get('Authorization')
-        if auth_header:
-            headers['Authorization'] = auth_header
-
-        headers['Host'] = RAG_SERVICE_URL.replace('http://', '').replace('https://', '')
-
-        # Forward query parameters
-        params = request.args.to_dict()
-
-        resp = requests.get(url, headers=headers, params=params, timeout=600)  # Increased timeout to 10 minutes for AI model responses
-        # Return the response from the RAG service with its original status code
-        excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
-        headers = [(name, value) for (name, value) in resp.raw.headers.items()
-                   if name.lower() not in excluded_headers]
-        response = Response(resp.content, resp.status_code, headers)
-        return response
-    except Exception as e:
-        logger.error(f"Download file route error: {str(e)}")
         return jsonify({'error': 'RAG service unavailable'}), 503
 
 

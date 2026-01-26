@@ -39,3 +39,4 @@ incomplete_tasks = tracker.get_incomplete_tasks()
 
 ## Qwen Added Memories
 - To run the AI agent, first activate the virtual environment with: source ai_agent_env/bin/activate
+- Avoid using Werkzeug for any functionality in the codebase going forward; implement custom solutions or use alternative libraries instead.

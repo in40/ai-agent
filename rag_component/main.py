@@ -79,6 +79,8 @@ class RAGOrchestrator:
             return True
         except Exception as e:
             print(f"Error ingesting documents: {str(e)}")
+            import traceback
+            traceback.print_exc()
             return False
 
     def ingest_documents_from_upload(self, file_paths: List[str], original_filenames: List[str], preprocess: bool = True) -> bool:
@@ -115,6 +117,7 @@ class RAGOrchestrator:
                 print(f"DEBUG: File path: {file_path}")
                 print(f"DEBUG: Stored file path: {stored_file_path}")
 
+                # Load the document, which will handle PDF processing with timeouts and fallbacks
                 docs = self.document_loader.load_document(file_path)
                 print(f"DEBUG: Loaded {len(docs)} documents from {original_filename}")
 

@@ -1,0 +1,2 @@
+# RAG Component Dependencies
+marker-pdf>=0.1.0

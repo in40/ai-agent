@@ -636,8 +636,8 @@ def rag_download_file(current_user_id, file_id, filename):
         base_storage_dir = RAG_FILE_STORAGE_DIR or "./data/rag_uploaded_files"
         if not os.path.isabs(base_storage_dir):
             # Convert relative path to absolute path relative to project root
-            # Navigate up 4 levels from backend/services/rag/app.py to reach project root
-            project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+            # Navigate up 5 levels from backend/web_client/rag_service_updated.py to reach project root
+            project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))  # 5 levels up
             base_storage_dir = os.path.join(project_root, base_storage_dir)
         file_storage_dir = os.path.join(base_storage_dir, file_id)
 
@@ -974,10 +974,6 @@ def rag_ingest_from_session(current_user_id):
         )
 
         rag_orchestrator = RAGOrchestrator(llm=llm)
-
-        # Get original filenames from the mapping in session data
-        filename_to_path_map = session_data.get('filename_to_path_map', {})
-        original_filenames = list(filename_to_path_map.keys())
 
         # Ingest the files from the session
         success = rag_orchestrator.ingest_documents_from_upload(file_paths, filenames if filenames else original_filenames)
