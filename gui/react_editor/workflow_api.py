@@ -184,6 +184,12 @@ def get_current_workflow():
             # Extract actual logic from the node function
             logic_description = extract_node_logic_description(node_id)
 
+            # Extract state updates from the node function
+            state_updates = extract_node_state_updates(node_id)
+
+            # Extract conditional edges info
+            conditional_edges_info = extract_conditional_edges_info(node_id, graph_structure)
+
             # Determine next nodes based on edges
             next_nodes = [edge[1] for edge in edges if edge[0] == node_id]
             next_nodes_str = ', '.join(next_nodes) if next_nodes else ''
@@ -202,7 +208,10 @@ def get_current_workflow():
                     'logic': logic_description,
                     'nodeFunction': f'{node_id}',  # Assuming function name pattern
                     'nextNode': next_nodes_str,
-                    'conditionalLogic': conditional_logic
+                    'conditionalLogic': conditional_logic,
+                    'stateUpdates': state_updates,
+                    'conditionalEdges': conditional_edges_info,
+                    'errorHandler': ''  # Default empty, can be filled by user
                 },
                 'type': 'default',
                 'style': styles.get(node_type, styles['default'])
@@ -275,6 +284,98 @@ def extract_node_logic_description(node_id):
             'generate_failure_response': 'Generate a failure response when iterations are exhausted',
         }
         return logic_descriptions.get(node_id, f"Logic for {node_id} node")
+
+
+# Helper function to extract state updates from node functions
+def extract_node_state_updates(node_id):
+    """Extract state updates information from the actual implementation."""
+    try:
+        # Import the langgraph agent to access node functions
+        from langgraph_agent.langgraph_agent import create_enhanced_agent_graph
+
+        # Get the graph to access node functions
+        graph = create_enhanced_agent_graph()
+
+        # Get the node function from the graph
+        if node_id in graph.nodes:
+            node_func = graph.nodes[node_id].func
+
+            # In a real implementation, this would analyze the function code to extract state updates
+            # For now, we'll return a basic template based on common patterns
+            state_updates_templates = {
+                'initialize_agent_state': {
+                    'user_request': 'state["user_request"]',
+                    'mcp_queries': '[]',
+                    'mcp_results': '[]',
+                    'synthesized_result': '""',
+                    'can_answer': 'False',
+                    'iteration_count': '0',
+                    'max_iterations': '3',
+                    'final_answer': '""',
+                    'error_message': 'None'
+                },
+                'analyze_request': {
+                    'mcp_queries': 'analysis_result.get("suggested_queries", [])',
+                    'mcp_tool_calls': 'filtered_tool_calls',
+                    'is_final_answer': 'analysis_result.get("is_final_answer", False)'
+                },
+                'execute_mcp_queries': {
+                    'mcp_results': 'results',
+                    'error_message': 'None'
+                },
+                'synthesize_results': {
+                    'synthesized_result': 'synthesized_result'
+                },
+                'can_answer': {
+                    'can_answer': 'can_answer'
+                },
+                'generate_final_answer': {
+                    'final_answer': 'final_answer'
+                },
+                'plan_refined_queries': {
+                    'refined_queries': 'refined_queries',
+                    'iteration_count': 'state["iteration_count"] + 1'
+                },
+                'generate_failure_response': {
+                    'final_answer': 'final_answer',
+                    'failure_reason': 'failure_reason'
+                }
+            }
+
+            return state_updates_templates.get(node_id, {})
+        else:
+            return {}
+    except Exception:
+        return {}
+
+
+# Helper function to extract conditional edges for a node
+def extract_conditional_edges_info(node_id, graph_structure):
+    """Extract conditional edge information for a node."""
+    try:
+        # Import the langgraph agent to access conditional edge functions
+        from langgraph_agent.langgraph_agent import create_enhanced_agent_graph
+
+        # Get the graph to access conditional edge functions
+        graph = create_enhanced_agent_graph()
+
+        # Define conditional edge templates based on the actual implementation
+        conditional_edge_templates = {
+            'can_answer': [
+                {'condition': 'state["can_answer"]', 'target': 'generate_final_answer'},
+                {'condition': 'state["iteration_count"] < state["max_iterations"]', 'target': 'plan_refined_queries'},
+                {'condition': 'otherwise', 'target': 'generate_failure_response'}
+            ],
+            'analyze_request': [
+                {'condition': 'no MCP tool calls generated and is_final_answer=True', 'target': 'generate_final_answer_from_analysis'},
+                {'condition': 'no MCP tool calls generated and is_final_answer=False', 'target': 'generate_failure_response_from_analysis'},
+                {'condition': 'MCP tool calls generated', 'target': 'check_mcp_applicability'}
+            ]
+        }
+
+        return conditional_edge_templates.get(node_id, [])
+    except Exception:
+        return []
 
 # Helper function to extract conditional logic
 def extract_conditional_logic(node_id, edges):

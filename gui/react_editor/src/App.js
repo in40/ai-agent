@@ -19,6 +19,7 @@ import '@xyflow/react/dist/style.css';
 // Import RAG Component
 import RAGComponent from './components/RAGComponent';
 import './components/RAGComponent.css';
+import AdvancedNodeConfig from './components/AdvancedNodeConfig';
 
 // Define initial empty elements - will be populated from backend
 const initialNodes = [];
@@ -28,6 +29,7 @@ const initialEdges = [];
 const CustomNode = ({ data }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [nodeData, setNodeData] = useState(data);
+  const [showAdvancedConfig, setShowAdvancedConfig] = useState(false);
 
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
@@ -45,6 +47,37 @@ const CustomNode = ({ data }) => {
     }));
   };
 
+  const handleAdvancedConfigUpdate = (updatedData) => {
+    setNodeData(updatedData);
+    setShowAdvancedConfig(false);
+  };
+
+  // Render state fields for this node
+  const renderStateFields = () => {
+    if (!nodeData.stateUpdates || Object.keys(nodeData.stateUpdates).length === 0) {
+      return <div>No state updates defined</div>;
+    }
+
+    return Object.entries(nodeData.stateUpdates).map(([key, value]) => (
+      <div key={key} style={{ marginBottom: "4px" }}>
+        <strong>{key}:</strong> {typeof value === 'object' ? JSON.stringify(value) : String(value)}
+      </div>
+    ));
+  };
+
+  // Render conditional edges for this node
+  const renderConditionalEdges = () => {
+    if (!nodeData.conditionalEdges || nodeData.conditionalEdges.length === 0) {
+      return <div>No conditional edges defined</div>;
+    }
+
+    return nodeData.conditionalEdges.map((edge, index) => (
+      <div key={index} style={{ marginBottom: "4px" }}>
+        <strong>Condition {index + 1}:</strong> {edge.condition} → {edge.target}
+      </div>
+    ));
+  };
+
   return (
     <div style={{
       border: "1px solid #555",
@@ -58,77 +91,136 @@ const CustomNode = ({ data }) => {
       <div style={{ fontWeight: "bold", marginBottom: "8px" }}>
         {data.label}
       </div>
-      
+
       <div style={{ fontSize: "12px", marginBottom: "8px", fontStyle: "italic" }}>
         Type: {data.type}
       </div>
-      
+
       <div style={{ fontSize: "12px", marginBottom: "8px" }}>
         Description: {data.description}
       </div>
-      
+
       {data.editable && (
         <>
-          <button onClick={handleEditToggle} style={{ fontSize: "10px", marginBottom: "4px" }}>
+          <button onClick={handleEditToggle} style={{ fontSize: "10px", marginRight: "5px", marginBottom: "4px" }}>
             {isEditing ? "Save" : "Edit"}
           </button>
-          
+
+          <button
+            onClick={() => setShowAdvancedConfig(true)}
+            style={{ fontSize: "10px", marginBottom: "4px" }}
+          >
+            Advanced Config
+          </button>
+
           {isEditing && (
             <div style={{ marginTop: "8px", fontSize: "12px" }}>
               <div style={{ marginBottom: "4px" }}>
                 <label>Logic:</label><br />
-                <textarea 
-                  value={nodeData.logic || ""} 
+                <textarea
+                  value={nodeData.logic || ""}
                   onChange={(e) => handleChange("logic", e.target.value)}
-                  rows="2" 
+                  rows="2"
                   cols="30"
                   style={{ fontSize: "10px", width: "100%" }}
                 />
               </div>
-              
+
               <div style={{ marginBottom: "4px" }}>
                 <label>Next Node:</label><br />
-                <input 
-                  type="text" 
-                  value={nodeData.nextNode || ""} 
+                <input
+                  type="text"
+                  value={nodeData.nextNode || ""}
                   onChange={(e) => handleChange("nextNode", e.target.value)}
                   style={{ fontSize: "10px", width: "100%" }}
                 />
               </div>
-              
+
               <div style={{ marginBottom: "4px" }}>
                 <label>Conditional Logic:</label><br />
-                <textarea 
-                  value={nodeData.conditionalLogic || ""} 
+                <textarea
+                  value={nodeData.conditionalLogic || ""}
                   onChange={(e) => handleChange("conditionalLogic", e.target.value)}
-                  rows="2" 
+                  rows="2"
                   cols="30"
+                  style={{ fontSize: "10px", width: "100%" }}
+                />
+              </div>
+
+              <div style={{ marginBottom: "4px" }}>
+                <label>Node Function Name:</label><br />
+                <input
+                  type="text"
+                  value={nodeData.nodeFunction || ""}
+                  onChange={(e) => handleChange("nodeFunction", e.target.value)}
+                  style={{ fontSize: "10px", width: "100%" }}
+                />
+              </div>
+
+              <div style={{ marginBottom: "4px" }}>
+                <label>Error Handler:</label><br />
+                <input
+                  type="text"
+                  value={nodeData.errorHandler || ""}
+                  onChange={(e) => handleChange("errorHandler", e.target.value)}
                   style={{ fontSize: "10px", width: "100%" }}
                 />
               </div>
             </div>
           )}
-          
+
           {!isEditing && (
             <div style={{ fontSize: "12px" }}>
               <div><strong>Logic:</strong> {nodeData.logic || "Not specified"}</div>
               <div><strong>Next Node:</strong> {nodeData.nextNode || "Not specified"}</div>
               <div><strong>Conditional Logic:</strong> {nodeData.conditionalLogic || "Not specified"}</div>
+              <div><strong>Node Function:</strong> {nodeData.nodeFunction || "Not specified"}</div>
+              <div><strong>Error Handler:</strong> {nodeData.errorHandler || "Not specified"}</div>
+
+              <div style={{ marginTop: "8px" }}>
+                <strong>State Updates:</strong>
+                {renderStateFields()}
+              </div>
+
+              <div style={{ marginTop: "8px" }}>
+                <strong>Conditional Edges:</strong>
+                {renderConditionalEdges()}
+              </div>
             </div>
           )}
         </>
       )}
-      
+
       {!data.editable && (
         <div style={{ fontSize: "12px" }}>
           <div><strong>Logic:</strong> {nodeData.logic || "Not specified"}</div>
           <div><strong>Next Node:</strong> {nodeData.nextNode || "Not specified"}</div>
           <div><strong>Conditional Logic:</strong> {nodeData.conditionalLogic || "Not specified"}</div>
+          <div><strong>Node Function:</strong> {nodeData.nodeFunction || "Not specified"}</div>
+          <div><strong>Error Handler:</strong> {nodeData.errorHandler || "Not specified"}</div>
+
+          <div style={{ marginTop: "8px" }}>
+            <strong>State Updates:</strong>
+            {renderStateFields()}
+          </div>
+
+          <div style={{ marginTop: "8px" }}>
+            <strong>Conditional Edges:</strong>
+            {renderConditionalEdges()}
+          </div>
         </div>
       )}
-      
+
       <Handle type="source" position={Position.Right} style={{ background: '#555' }} />
       <Handle type="target" position={Position.Left} style={{ background: '#555' }} />
+
+      {showAdvancedConfig && (
+        <AdvancedNodeConfig
+          nodeData={nodeData}
+          onUpdate={handleAdvancedConfigUpdate}
+          onClose={() => setShowAdvancedConfig(false)}
+        />
+      )}
     </div>
   );
 };
@@ -154,7 +246,10 @@ const exportWorkflow = (nodes, edges, workflowName) => {
         logic: node.data.logic,
         nodeFunction: node.data.nodeFunction,
         nextNode: node.data.nextNode,
-        conditionalLogic: node.data.conditionalLogic
+        conditionalLogic: node.data.conditionalLogic,
+        stateUpdates: node.data.stateUpdates,
+        conditionalEdges: node.data.conditionalEdges,
+        errorHandler: node.data.errorHandler
       },
       type: node.type,
       style: node.style
@@ -273,7 +368,7 @@ LangGraph implementation of ${workflowName} workflow.
 Auto-generated from the visual editor.
 """
 
-from typing import TypedDict, List, Dict, Any
+from typing import TypedDict, List, Dict, Any, Literal
 from langgraph.graph import StateGraph, END
 from langchain_core.messages import BaseMessage
 
@@ -285,9 +380,23 @@ class AgentState(TypedDict):
     user_request: str
     messages: List[BaseMessage]
     # Add other state fields as needed based on your workflow
-
-
 `;
+
+  // Add state fields from nodes
+  const allStateFields = new Set();
+  nodes.forEach(node => {
+    if (node.data.stateUpdates) {
+      Object.keys(node.data.stateUpdates).forEach(field => {
+        allStateFields.add(field);
+      });
+    }
+  });
+
+  allStateFields.forEach(field => {
+    pythonCode += `    ${field}: Any  # Added from node state updates\n`;
+  });
+
+  pythonCode += `\n`;
 
   // Generate node functions
   nodes.forEach(node => {
@@ -298,7 +407,41 @@ class AgentState(TypedDict):
     """
     # TODO: Implement the logic for ${node.data.label}
     # Logic: ${node.data.logic || 'Not specified'}
-    return state
+
+    # State updates from visual editor:
+`;
+      if (node.data.stateUpdates) {
+        Object.entries(node.data.stateUpdates).forEach(([key, value]) => {
+          pythonCode += `    # state['${key}'] = ${JSON.stringify(value)}  # From visual editor\n`;
+        });
+      }
+      pythonCode += `    return state
+
+
+`;
+    }
+  });
+
+  // Generate conditional edge functions
+  const conditionalEdges = new Map();
+  nodes.forEach(node => {
+    if (node.data.conditionalEdges && node.data.conditionalEdges.length > 0) {
+      const functionName = `${node.data.nodeFunction || node.id}_router`;
+      conditionalEdges.set(functionName, { node: node, edges: node.data.conditionalEdges });
+
+      pythonCode += `def ${functionName}(state: AgentState) -> Literal[${node.data.conditionalEdges.map(e => `"${e.target}"`).join(', ')}]:
+    """
+    Router function for ${node.data.label} node.
+    Determines which path to take based on state conditions.
+    """
+    # TODO: Implement conditional logic for ${node.data.label}
+    # Conditions from visual editor:
+`;
+      node.data.conditionalEdges.forEach((edge, index) => {
+        pythonCode += `    # Condition ${index + 1}: ${edge.condition} -> "${edge.target}"\n`;
+      });
+      pythonCode += `    # Default to first option if no conditions met
+    return "${node.data.conditionalEdges[0]?.target || 'END'}"
 
 
 `;
@@ -326,9 +469,23 @@ class AgentState(TypedDict):
     # Define edges
 `;
 
+  // Add regular edges
   edges.forEach(edge => {
     pythonCode += `    workflow.add_edge("${edge.source}", "${edge.target}")
 `;
+  });
+
+  // Add conditional edges
+  conditionalEdges.forEach((info, funcName) => {
+    pythonCode += `    workflow.add_conditional_edges(
+        "${info.node.id}",
+        ${funcName},
+        {
+`;
+    info.edges.forEach(edge => {
+      pythonCode += `            "${edge.target}": "${edge.target}",\n`;
+    });
+    pythonCode += `        }\n    )\n`;
   });
 
   // Find start and end nodes
@@ -336,9 +493,8 @@ class AgentState(TypedDict):
   const endNode = nodes.find(node => node.data.type === 'end')?.id || 'END';
 
   pythonCode += `
-    # Set entry point and finish point
+    # Set entry point
     workflow.set_entry_point("${startNode}")
-    workflow.add_edge("${nodes[nodes.length - 2]?.id || startNode}", "${endNode}")  # Connect to the actual end node
 
     return workflow.compile()
 
