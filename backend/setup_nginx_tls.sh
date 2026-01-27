@@ -93,9 +93,9 @@ server {
         proxy_set_header Connection "upgrade";
         
         # Timeout settings
-        proxy_connect_timeout 60s;
-        proxy_send_timeout 60s;
-        proxy_read_timeout 60s;
+        proxy_connect_timeout 3600s;
+        proxy_send_timeout 3600s;
+        proxy_read_timeout 3600s;
     }
 
     # Authentication routes
@@ -143,9 +143,9 @@ server {
         proxy_set_header Connection "upgrade";
         
         # Timeout settings
-        proxy_connect_timeout 60s;
-        proxy_send_timeout 60s;
-        proxy_read_timeout 60s;
+        proxy_connect_timeout 3600s;
+        proxy_send_timeout 3600s;
+        proxy_read_timeout 3600s;
     }
 
     # React GUI proxy
@@ -163,9 +163,9 @@ server {
         proxy_set_header Connection "upgrade";
         
         # Timeout settings
-        proxy_connect_timeout 60s;
-        proxy_send_timeout 60s;
-        proxy_read_timeout 60s;
+        proxy_connect_timeout 3600s;
+        proxy_send_timeout 3600s;
+        proxy_read_timeout 3600s;
     }
 
     # Health check

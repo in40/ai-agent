@@ -624,8 +624,7 @@ def rag_upload_with_progress(current_user_id):
 
 
 @app.route('/download/<file_id>/<filename>', methods=['GET'])
-@require_permission(Permission.READ_RAG)
-def rag_download_file(current_user_id, file_id, filename):
+def rag_download_file(file_id, filename):
     """Endpoint to download an original file by its ID and filename"""
     try:
         import os

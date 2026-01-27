@@ -74,9 +74,9 @@ http {{
             proxy_set_header Connection "upgrade";
 
             # Timeout settings - increased for AI model responses
-            proxy_connect_timeout 600s;
-            proxy_send_timeout 600s;
-            proxy_read_timeout 600s;
+            proxy_connect_timeout 3600s;
+            proxy_send_timeout 3600s;
+            proxy_read_timeout 3600s;
         }}
 
         # Direct service routes (for specific access if needed)
@@ -122,9 +122,9 @@ http {{
             proxy_set_header Connection "upgrade";
 
             # Timeout settings - increased for AI model responses
-            proxy_connect_timeout 600s;
-            proxy_send_timeout 600s;
-            proxy_read_timeout 600s;
+            proxy_connect_timeout 3600s;
+            proxy_send_timeout 3600s;
+            proxy_read_timeout 3600s;
         }}
 
         # React GUI proxy
@@ -142,9 +142,9 @@ http {{
             proxy_set_header Connection "upgrade";
 
             # Timeout settings - increased for AI model responses
-            proxy_connect_timeout 600s;
-            proxy_send_timeout 600s;
-            proxy_read_timeout 600s;
+            proxy_connect_timeout 3600s;
+            proxy_send_timeout 3600s;
+            proxy_read_timeout 3600s;
         }}
 
         # Health check
