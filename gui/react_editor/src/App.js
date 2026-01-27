@@ -530,6 +530,8 @@ function App() {
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [workflowName, setWorkflowName] = useState('MyWorkflow');
   const [activeTab, setActiveTab] = useState('editor'); // 'editor' or 'rag'
+  const [canUndo, setCanUndo] = useState(false);
+  const [canRedo, setCanRedo] = useState(false);
 
   // Load workflow from backend when component mounts
   useEffect(() => {
@@ -539,16 +541,41 @@ function App() {
       await new Promise(resolve => setTimeout(resolve, 500));
       if (activeTab === 'editor') {
         refreshWorkflow(setNodes, setEdges);
+        // Update history status after loading workflow
+        updateHistoryStatus();
       }
     };
 
     loadWorkflow();
   }, [activeTab]);
 
+  // Update history status when nodes or edges change
+  useEffect(() => {
+    // Save the current state to history when the workflow changes
+    const saveCurrentState = async () => {
+      // Only save if we have valid nodes
+      if (nodes && nodes.length > 0) {
+        await saveWorkflowState(nodes, edges, workflowName);
+        // Update history status after saving
+        updateHistoryStatus();
+      }
+    };
+
+    // Debounce the save operation to avoid too frequent saves
+    const timer = setTimeout(() => {
+      saveCurrentState();
+    }, 1000); // Wait 1 second after changes before saving
+
+    return () => clearTimeout(timer);
+  }, [nodes, edges, workflowName]);
+
   const onConnect = useCallback(
     (params) => setEdges((eds) => addEdge(params, eds)),
     [setEdges]
   );
+
+  // Use the new refresh function that also updates history status
+  const refreshWorkflow = refreshWorkflowWithHistory;
 
   return (
     <div style={{ width: '100vw', height: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -621,6 +648,32 @@ function App() {
                 </div>
                 <div style={{ marginTop: '10px' }}>
                   <button
+                    onClick={handleUndo}
+                    disabled={!canUndo}
+                    style={{
+                      marginRight: '5px',
+                      padding: '5px 10px',
+                      fontSize: '12px',
+                      backgroundColor: canUndo ? '#2196F3' : '#cccccc',
+                      color: 'white'
+                    }}
+                  >
+                    ← Undo
+                  </button>
+                  <button
+                    onClick={handleRedo}
+                    disabled={!canRedo}
+                    style={{
+                      marginRight: '5px',
+                      padding: '5px 10px',
+                      fontSize: '12px',
+                      backgroundColor: canRedo ? '#2196F3' : '#cccccc',
+                      color: 'white'
+                    }}
+                  >
+                    Redo →
+                  </button>
+                  <button
                     onClick={() => refreshWorkflow(setNodes, setEdges)}
                     style={{ marginRight: '5px', padding: '5px 10px', fontSize: '12px' }}
                   >
@@ -634,9 +687,15 @@ function App() {
                   </button>
                   <button
                     onClick={() => exportAsPythonCode(nodes, edges, workflowName)}
-                    style={{ padding: '5px 10px', fontSize: '12px' }}
+                    style={{ marginRight: '5px', padding: '5px 10px', fontSize: '12px' }}
                   >
                     Export Python
+                  </button>
+                  <button
+                    onClick={() => applyChangesToCode(nodes, edges, workflowName)}
+                    style={{ padding: '5px 10px', fontSize: '12px', backgroundColor: '#4CAF50', color: 'white' }}
+                  >
+                    Apply to Code
                   </button>
                 </div>
               </div>
@@ -651,5 +710,307 @@ function App() {
     </div>
   );
 }
+
+// Function to save the current workflow state to history
+const saveWorkflowState = async (nodes, edges, workflowName) => {
+  try {
+    // Construct the workflow configuration object
+    const workflowConfig = {
+      name: workflowName,
+      nodes: nodes,
+      edges: edges
+    };
+
+    // Use environment variable for API URL with fallback
+    let workflowApiUrl = process.env.REACT_APP_WORKFLOW_API_URL;
+
+    if (!workflowApiUrl) {
+      const currentHost = window.location.hostname;
+      if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
+        workflowApiUrl = 'http://192.168.51.138:5004';  // Workflow API service
+      } else {
+        workflowApiUrl = `http://${currentHost}:5004`;  // Workflow API service
+      }
+    }
+
+    const endpoint = `${workflowApiUrl}/api/workflow/history/save`;
+
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(workflowConfig)
+    });
+
+    const result = await response.json();
+
+    if (result.status !== 'success') {
+      console.error('Error saving workflow state:', result);
+    }
+  } catch (error) {
+    console.error('Error saving workflow state:', error);
+  }
+};
+
+// Function to apply changes directly to the LangGraph code
+const applyChangesToCode = async (nodes, edges, workflowName) => {
+  try {
+    // Construct the workflow configuration object
+    const workflowConfig = {
+      name: workflowName,
+      nodes: nodes,
+      edges: edges
+    };
+
+    // Use environment variable for API URL with fallback
+    let workflowApiUrl = process.env.REACT_APP_WORKFLOW_API_URL;
+
+    if (!workflowApiUrl) {
+      const currentHost = window.location.hostname;
+      if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
+        workflowApiUrl = 'http://192.168.51.138:5004';  // Workflow API service
+      } else {
+        workflowApiUrl = `http://${currentHost}:5004`;  // Workflow API service
+      }
+    }
+
+    const endpoint = `${workflowApiUrl}/api/workflow/apply_changes`;
+
+    console.log('Sending workflow config to apply changes:', workflowConfig);
+
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(workflowConfig)
+    });
+
+    const result = await response.json();
+
+    if (result.status === 'success') {
+      // After successfully applying changes, save the current state to history
+      await saveWorkflowState(nodes, edges, workflowName);
+      alert(`Success: ${result.message}`);
+      console.log('Changes applied successfully:', result);
+    } else {
+      alert(`Error: ${result.message}`);
+      console.error('Error applying changes:', result);
+    }
+  } catch (error) {
+    console.error('Error applying changes to code:', error);
+    alert(`Error applying changes to code: ${error.message}`);
+  }
+};
+
+// Function to handle undo operation
+const handleUndo = async () => {
+  try {
+    // Use environment variable for API URL with fallback
+    let workflowApiUrl = process.env.REACT_APP_WORKFLOW_API_URL;
+
+    if (!workflowApiUrl) {
+      const currentHost = window.location.hostname;
+      if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
+        workflowApiUrl = 'http://192.168.51.138:5004';  // Workflow API service
+      } else {
+        workflowApiUrl = `http://${currentHost}:5004`;  // Workflow API service
+      }
+    }
+
+    const endpoint = `${workflowApiUrl}/api/workflow/history/undo`;
+
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+
+    const result = await response.json();
+
+    if (result.status === 'success') {
+      // Update the UI with the retrieved workflow
+      setNodes(result.workflow.nodes || []);
+      setEdges(result.workflow.edges || []);
+      setCanUndo(result.can_undo);
+      setCanRedo(result.can_redo);
+      console.log('Undo successful:', result);
+    } else {
+      alert(`Error: ${result.message}`);
+      console.error('Error performing undo:', result);
+    }
+  } catch (error) {
+    console.error('Error performing undo:', error);
+    alert(`Error performing undo: ${error.message}`);
+  }
+};
+
+// Function to handle redo operation
+const handleRedo = async () => {
+  try {
+    // Use environment variable for API URL with fallback
+    let workflowApiUrl = process.env.REACT_APP_WORKFLOW_API_URL;
+
+    if (!workflowApiUrl) {
+      const currentHost = window.location.hostname;
+      if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
+        workflowApiUrl = 'http://192.168.51.138:5004';  // Workflow API service
+      } else {
+        workflowApiUrl = `http://${currentHost}:5004`;  // Workflow API service
+      }
+    }
+
+    const endpoint = `${workflowApiUrl}/api/workflow/history/redo`;
+
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+
+    const result = await response.json();
+
+    if (result.status === 'success') {
+      // Update the UI with the retrieved workflow
+      setNodes(result.workflow.nodes || []);
+      setEdges(result.workflow.edges || []);
+      setCanUndo(result.can_undo);
+      setCanRedo(result.can_redo);
+      console.log('Redo successful:', result);
+    } else {
+      alert(`Error: ${result.message}`);
+      console.error('Error performing redo:', result);
+    }
+  } catch (error) {
+    console.error('Error performing redo:', error);
+    alert(`Error performing redo: ${error.message}`);
+  }
+};
+
+// Function to refresh workflow from server and update history status
+const refreshWorkflowWithHistory = async (setNodes, setEdges) => {
+  try {
+    // Call the backend API to get the current workflow
+    console.log('Attempting to fetch workflow from API...');
+
+    // Use environment variable for API URL with fallback
+    // If not set, construct the API URL using the same host as the current page but different port
+    // If the current host is localhost, try to use the actual IP address as well
+    let workflowApiUrl = process.env.REACT_APP_WORKFLOW_API_URL;
+
+    if (!workflowApiUrl) {
+      const currentHost = window.location.hostname;
+      // If accessing from localhost, try to use a common pattern for the actual IP
+      if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
+        // Try to get the actual IP from the window.location, or default to a common IP pattern
+        // For now, we'll use the known IP address of this server
+        workflowApiUrl = 'http://192.168.51.138:5004';  // Workflow API service
+      } else {
+        workflowApiUrl = `http://${currentHost}:5004`;  // Workflow API service
+      }
+    }
+
+    const endpoint = `${workflowApiUrl}/api/workflow/current`;
+
+    console.log(`Fetching from: ${endpoint}`);
+
+    // Add timeout and more detailed error handling
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 600000); // 10 minute timeout
+
+    const response = await fetch(endpoint, {
+      signal: controller.signal,
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      // Adding credentials to handle potential authentication
+      credentials: 'omit'
+    });
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch workflow: ${response.status} ${response.statusText}`);
+    }
+
+    const workflowData = await response.json();
+    if (workflowData.status === 'error') {
+      throw new Error(workflowData.message || 'Unknown error occurred');
+    }
+
+    // Update the nodes and edges in the React Flow
+    setNodes(workflowData.nodes);
+    setEdges(workflowData.edges);
+
+    console.log(`Workflow refreshed successfully! Loaded ${workflowData.nodes.length} nodes and ${workflowData.edges.length} edges.`);
+    // Removed success alert to reduce notifications, keeping only error alerts
+  } catch (error) {
+    console.error('Error refreshing workflow:', error);
+
+    // More specific error messages based on error type
+    let errorMessage = 'Error refreshing workflow';
+    if (error.name === 'AbortError') {
+      errorMessage = 'Request timed out. Please check if the API server is running.';
+    } else if (error instanceof TypeError && error.message.includes('fetch')) {
+      // Recreate the apiUrl here since it's not in scope in this catch block
+      let apiUrl = process.env.REACT_APP_API_URL;
+
+      if (!apiUrl) {
+        const currentHost = window.location.hostname;
+        if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
+          apiUrl = 'http://192.168.51.138:5000';  // Changed from 5001 to 5000 (gateway service)
+        } else {
+          apiUrl = `http://${currentHost}:5000`;  // Changed from 5001 to 5000 (gateway service)
+        }
+      }
+
+      errorMessage = `Network error. Please check your connection and ensure the API server is running on ${apiUrl}`;
+    } else {
+      errorMessage = error.message;
+    }
+
+    alert(errorMessage);
+  }
+};
+
+// Function to update history status
+const updateHistoryStatus = async () => {
+  try {
+    // Use environment variable for API URL with fallback
+    let workflowApiUrl = process.env.REACT_APP_WORKFLOW_API_URL;
+
+    if (!workflowApiUrl) {
+      const currentHost = window.location.hostname;
+      if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
+        workflowApiUrl = 'http://192.168.51.138:5004';  // Workflow API service
+      } else {
+        workflowApiUrl = `http://${currentHost}:5004`;  // Workflow API service
+      }
+    }
+
+    const endpoint = `${workflowApiUrl}/api/workflow/history`;
+
+    const response = await fetch(endpoint, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+
+    const result = await response.json();
+
+    if (result.status === 'success') {
+      setCanUndo(result.can_undo);
+      setCanRedo(result.can_redo);
+    } else {
+      console.error('Error getting history status:', result);
+    }
+  } catch (error) {
+    console.error('Error getting history status:', error);
+  }
+};
 
 export default App;

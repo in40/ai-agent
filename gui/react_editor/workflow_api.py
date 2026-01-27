@@ -33,9 +33,10 @@ def get_current_workflow():
         col_width = 350   # Increased to account for larger nodes
 
         # Arrange nodes in a logical flow for the new MCP-focused workflow
-        main_flow = ['__start__', 'initialize_agent_state', 'analyze_request', 'plan_mcp_queries',
+        # Exclude special LangGraph nodes (__start__ and __end__) from manual positioning
+        main_flow = ['initialize_agent_state', 'analyze_request', 'plan_mcp_queries',
                      'execute_mcp_queries', 'synthesize_results', 'can_answer', 'generate_final_answer',
-                     'plan_refined_queries', 'generate_failure_response', '__end__']
+                     'plan_refined_queries', 'generate_failure_response']
 
         # Position main flow nodes horizontally
         for i, node in enumerate(main_flow):
@@ -59,6 +60,10 @@ def get_current_workflow():
         # Generate nodes in React Flow format
         react_nodes = []
         for node_id in nodes:
+            # Skip special LangGraph nodes that don't need to be visualized
+            if node_id in ['__start__', '__end__']:
+                continue
+
             if node_id in positions:
                 position = positions[node_id]
             else:
@@ -66,8 +71,6 @@ def get_current_workflow():
 
             # Map node types for the new MCP-focused workflow
             type_mapping = {
-                '__start__': 'start',
-                '__end__': 'end',
                 'initialize_agent_state': 'llm_calling',
                 'analyze_request': 'llm_calling',
                 'plan_mcp_queries': 'mcp',
@@ -76,15 +79,20 @@ def get_current_workflow():
                 'can_answer': 'llm_calling',
                 'generate_final_answer': 'llm_calling',
                 'plan_refined_queries': 'llm_calling',
-                'generate_failure_response': 'end'
+                'generate_failure_response': 'end',
+                'discover_services': 'mcp',
+                'check_mcp_applicability': 'default',
+                'retrieve_documents': 'rag',
+                'augment_context': 'llm_calling',
+                'generate_rag_response': 'llm_calling',
+                'generate_final_answer_from_analysis': 'llm_calling',
+                'generate_failure_response_from_analysis': 'end'
             }
 
             node_type = type_mapping.get(node_id, 'default')
 
             # Get node descriptions for the new MCP-focused workflow
             descriptions = {
-                '__start__': 'Starting point of the workflow. Initiates the process.',
-                '__end__': 'Terminal point of the workflow. Represents the completion of the process.',
                 'initialize_agent_state': 'Initializes the agent state with default values.',
                 'analyze_request': 'Analyzes the user request to determine how to proceed.',
                 'plan_mcp_queries': 'Plans MCP queries based on the analyzed request.',
@@ -93,7 +101,14 @@ def get_current_workflow():
                 'can_answer': 'Determines if the agent can answer the user\'s request.',
                 'generate_final_answer': 'Generates the final answer based on synthesized results.',
                 'plan_refined_queries': 'Plans refined queries for the next iteration.',
-                'generate_failure_response': 'Generates a failure response when iterations are exhausted.'
+                'generate_failure_response': 'Generates a failure response when iterations are exhausted.',
+                'discover_services': 'Discovers available MCP services from the registry.',
+                'check_mcp_applicability': 'Checks if MCP services are applicable for the request.',
+                'retrieve_documents': 'Retrieves relevant documents using RAG component.',
+                'augment_context': 'Augments user request with retrieved documents.',
+                'generate_rag_response': 'Generates response using RAG-augmented context.',
+                'generate_final_answer_from_analysis': 'Generates final answer when no MCP calls needed.',
+                'generate_failure_response_from_analysis': 'Generates failure response when analysis indicates impossibility.'
             }
 
             description = descriptions.get(node_id, f'Node: {node_id}')
@@ -392,6 +407,184 @@ def extract_conditional_logic(node_id, edges):
 def health_check():
     """Health check endpoint."""
     return jsonify({'status': 'healthy', 'message': 'Workflow API is running'})
+
+
+@app.route('/api/workflow/apply_changes', methods=['POST'])
+def apply_workflow_changes():
+    """Apply workflow changes directly to the LangGraph code."""
+    try:
+        from code_modifier import CodeModifier
+        import sys
+        from pathlib import Path
+
+        # Get the workflow configuration from the request
+        workflow_config = request.get_json()
+
+        if not workflow_config:
+            return jsonify({
+                'status': 'error',
+                'message': 'No workflow configuration provided'
+            }), 400
+
+        # Define the target file to modify
+        # Go up two directories from the current file to reach the project root
+        project_root = Path(__file__).parent.parent.parent
+        target_file = project_root / "langgraph_agent" / "langgraph_agent.py"
+
+        if not target_file.exists():
+            return jsonify({
+                'status': 'error',
+                'message': f'Target file does not exist: {target_file}'
+            }), 404
+
+        # Create the code modifier and apply changes
+        modifier = CodeModifier(str(target_file))
+        result = modifier.apply_changes(workflow_config)
+
+        return jsonify(result)
+
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': f'Error applying workflow changes: {str(e)}'
+        }), 500
+
+
+# Import the state history manager
+from state_history import history_manager
+
+
+@app.route('/api/workflow/history', methods=['GET'])
+def get_workflow_history():
+    """Get the workflow history for undo/redo functionality."""
+    try:
+        history_list = history_manager.get_history_list()
+        current_state = history_manager.get_current_state()
+
+        return jsonify({
+            'status': 'success',
+            'history': history_list,
+            'current_index': history_manager.current_index,
+            'can_undo': history_manager.can_undo(),
+            'can_redo': history_manager.can_redo(),
+            'current_state': current_state
+        })
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': f'Error retrieving workflow history: {str(e)}'
+        }), 500
+
+
+@app.route('/api/workflow/history/save', methods=['POST'])
+def save_workflow_state():
+    """Save the current workflow state to history."""
+    try:
+        workflow_config = request.get_json()
+
+        if not workflow_config:
+            return jsonify({
+                'status': 'error',
+                'message': 'No workflow configuration provided'
+            }), 400
+
+        # Save the state to history
+        state_id = history_manager.save_state(workflow_config)
+
+        return jsonify({
+            'status': 'success',
+            'message': 'Workflow state saved to history',
+            'state_id': state_id
+        })
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': f'Error saving workflow state: {str(e)}'
+        }), 500
+
+
+@app.route('/api/workflow/history/undo', methods=['POST'])
+def undo_workflow():
+    """Revert to the previous workflow state."""
+    try:
+        previous_state = history_manager.undo()
+
+        if previous_state is not None:
+            return jsonify({
+                'status': 'success',
+                'message': 'Successfully reverted to previous state',
+                'workflow': previous_state,
+                'can_undo': history_manager.can_undo(),
+                'can_redo': history_manager.can_redo()
+            })
+        else:
+            return jsonify({
+                'status': 'error',
+                'message': 'No previous state available to undo to'
+            }), 400
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': f'Error performing undo: {str(e)}'
+        }), 500
+
+
+@app.route('/api/workflow/history/redo', methods=['POST'])
+def redo_workflow():
+    """Reapply the next workflow state."""
+    try:
+        next_state = history_manager.redo()
+
+        if next_state is not None:
+            return jsonify({
+                'status': 'success',
+                'message': 'Successfully reapplied next state',
+                'workflow': next_state,
+                'can_undo': history_manager.can_undo(),
+                'can_redo': history_manager.can_redo()
+            })
+        else:
+            return jsonify({
+                'status': 'error',
+                'message': 'No next state available to redo to'
+            }), 400
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': f'Error performing redo: {str(e)}'
+        }), 500
+
+
+@app.route('/api/workflow/history/goto/<state_id>', methods=['POST'])
+def goto_workflow_state(state_id):
+    """Go to a specific workflow state by ID."""
+    try:
+        state = history_manager.get_state_by_id(state_id)
+
+        if state is not None:
+            # Find the index of this state
+            for i, s in enumerate(history_manager.states):
+                if s['id'] == state_id:
+                    history_manager.current_index = i
+                    break
+
+            return jsonify({
+                'status': 'success',
+                'message': f'Successfully navigated to state {state_id}',
+                'workflow': state,
+                'can_undo': history_manager.can_undo(),
+                'can_redo': history_manager.can_redo()
+            })
+        else:
+            return jsonify({
+                'status': 'error',
+                'message': f'State with ID {state_id} not found'
+            }), 404
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': f'Error navigating to state: {str(e)}'
+        }), 500
 
 if __name__ == '__main__':
     # Check if running in production mode
