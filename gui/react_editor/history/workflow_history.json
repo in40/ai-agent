@@ -1,8 +1,8 @@
 {
   "states": [
     {
-      "id": "d3f7e168-8f84-4c33-bf25-fb785daf4ec3",
-      "timestamp": 1769529129.8124504,
+      "id": "7b2787b2-e056-49a4-88ef-44460a74083b",
+      "timestamp": 1769583230.0274727,
       "workflow": {
         "name": "MyWorkflow",
         "nodes": [
@@ -179,8 +179,8 @@
             },
             "id": "retrieve_documents",
             "position": {
-              "x": 700,
-              "y": 600
+              "x": 1008,
+              "y": 815
             },
             "style": {
               "alignItems": "center",
@@ -198,7 +198,8 @@
               "width": 200,
               "height": 100
             },
-            "selected": true
+            "selected": true,
+            "dragging": false
           },
           {
             "data": {
@@ -216,8 +217,8 @@
             },
             "id": "augment_context",
             "position": {
-              "x": 1050,
-              "y": 600
+              "x": 1339,
+              "y": 813
             },
             "style": {
               "alignItems": "center",
@@ -234,7 +235,9 @@
             "measured": {
               "width": 200,
               "height": 100
-            }
+            },
+            "selected": false,
+            "dragging": false
           },
           {
             "data": {
@@ -723,11 +726,11 @@
           }
         ]
       },
-      "label": "State 3 - 2026-01-27 18:52:09"
+      "label": "State 4 - 2026-01-28 09:53:50"
     },
     {
-      "id": "c1ab4f06-e04b-40b8-adfe-12c8cf2b2291",
-      "timestamp": 1769529152.1618826,
+      "id": "0e3b5d7b-1512-46c3-b3e5-d2c4fadf87ef",
+      "timestamp": 1769604508.4460857,
       "workflow": {
         "name": "MyWorkflow",
         "nodes": [
@@ -922,8 +925,7 @@
             "measured": {
               "width": 200,
               "height": 100
-            },
-            "selected": true
+            }
           },
           {
             "data": {
@@ -1448,11 +1450,11 @@
           }
         ]
       },
-      "label": "State 4 - 2026-01-27 18:52:32"
+      "label": "State 4 - 2026-01-28 15:48:28"
     },
     {
-      "id": "714c508e-ddda-4deb-95c0-b078eec194c8",
-      "timestamp": 1769529161.6533456,
+      "id": "96de47f3-cd65-4d3a-9af1-9c71b7d35f99",
+      "timestamp": 1769604516.5187178,
       "workflow": {
         "name": "MyWorkflow",
         "nodes": [
@@ -1647,8 +1649,7 @@
             "measured": {
               "width": 200,
               "height": 100
-            },
-            "selected": true
+            }
           },
           {
             "data": {
@@ -2173,9 +2174,9 @@
           }
         ]
       },
-      "label": "State 4 - 2026-01-27 18:52:41"
+      "label": "State 4 - 2026-01-28 15:48:36"
     }
   ],
   "max_states": 3,
-  "timestamp": 1769529161.6534119
+  "timestamp": 1769604516.5187805
 }

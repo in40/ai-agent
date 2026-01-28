@@ -586,6 +586,152 @@ def goto_workflow_state(state_id):
             'message': f'Error navigating to state: {str(e)}'
         }), 500
 
+@app.route('/api/simulation/start', methods=['POST'])
+def start_simulation():
+    """Start a new simulation with initial inputs."""
+    try:
+        from simulation_engine import simulation_engine
+        import json
+
+        # Get the initial inputs from the request
+        request_data = request.get_json()
+        initial_inputs = request_data.get('initial_inputs', {})
+        workflow_config = request_data.get('workflow_config', {})
+
+        # Load the workflow configuration
+        simulation_engine.load_workflow_from_config(workflow_config)
+
+        # Start the simulation
+        future = simulation_engine.start_simulation(initial_inputs)
+
+        return jsonify({
+            'status': 'success',
+            'message': 'Simulation started successfully',
+            'future_id': id(future)  # This is just an identifier, not ideal for production
+        })
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': f'Error starting simulation: {str(e)}'
+        }), 500
+
+
+@app.route('/api/simulation/step', methods=['POST'])
+def step_simulation():
+    """Execute the next step in the simulation."""
+    try:
+        from simulation_engine import simulation_engine
+
+        # Execute one step of the workflow
+        simulation_engine.execute_one_step()
+
+        return jsonify({
+            'status': 'success',
+            'message': 'Stepped forward in simulation'
+        })
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': f'Error stepping simulation: {str(e)}'
+        }), 500
+
+
+@app.route('/api/simulation/pause', methods=['POST'])
+def pause_simulation():
+    """Pause the simulation."""
+    try:
+        from simulation_engine import simulation_engine
+
+        success = simulation_engine.pause_simulation()
+
+        if success:
+            return jsonify({
+                'status': 'success',
+                'message': 'Simulation paused'
+            })
+        else:
+            return jsonify({
+                'status': 'error',
+                'message': 'Could not pause simulation, check status'
+            })
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': f'Error pausing simulation: {str(e)}'
+        }), 500
+
+
+@app.route('/api/simulation/status', methods=['GET'])
+def get_simulation_status():
+    """Get the current simulation status."""
+    try:
+        from simulation_engine import simulation_engine
+
+        status = simulation_engine.get_status()
+
+        return jsonify({
+            'status': 'success',
+            'data': status
+        })
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': f'Error getting simulation status: {str(e)}'
+        }), 500
+
+
+@app.route('/api/simulation/reset', methods=['POST'])
+def reset_simulation():
+    """Reset the simulation."""
+    try:
+        from simulation_engine import simulation_engine
+
+        success = simulation_engine.reset_simulation()
+
+        if success:
+            return jsonify({
+                'status': 'success',
+                'message': 'Simulation reset'
+            })
+        else:
+            return jsonify({
+                'status': 'error',
+                'message': 'Could not reset simulation'
+            })
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': f'Error resetting simulation: {str(e)}'
+        }), 500
+
+
+@app.route('/api/simulation/input', methods=['POST'])
+def submit_simulation_input():
+    """Submit user input for the simulation."""
+    try:
+        from simulation_engine import simulation_engine
+
+        input_data = request.get_json()
+
+        success = simulation_engine.submit_user_input(input_data)
+
+        if success:
+            return jsonify({
+                'status': 'success',
+                'message': 'User input submitted'
+            })
+        else:
+            return jsonify({
+                'status': 'error',
+                'message': 'Could not submit input, simulation may not be waiting for input'
+            })
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': f'Error submitting input: {str(e)}'
+        }), 500
+
+
 if __name__ == '__main__':
     # Check if running in production mode
     if os.getenv('FLASK_ENV') == 'production':

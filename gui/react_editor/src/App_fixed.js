@@ -1,8 +1,7 @@
-import React, { useCallback, useState, useEffect } from 'react';
-import {
-  ReactFlow,
-  MiniMap,
+import React, { useState, useEffect, useCallback } from 'react';
+import ReactFlow, {
   Controls,
+  MiniMap,
   Background,
   useNodesState,
   useEdgesState,
@@ -12,11 +11,7 @@ import {
   Position,
   Handle
 } from '@xyflow/react';
-
-// Import default node types
 import '@xyflow/react/dist/style.css';
-
-// Import RAG Component
 import RAGComponent from './components/RAGComponent';
 import './components/RAGComponent.css';
 import AdvancedNodeConfig from './components/AdvancedNodeConfig';
@@ -58,7 +53,7 @@ const CustomNode = ({ data }) => {
     if (!nodeData.stateUpdates || Object.keys(nodeData.stateUpdates).length === 0) {
       return <div>No state updates defined</div>;
     }
-
+    
     return Object.entries(nodeData.stateUpdates).map(([key, value]) => (
       <div key={key} style={{ marginBottom: "4px" }}>
         <strong>{key}:</strong> {typeof value === 'object' ? JSON.stringify(value) : String(value)}
@@ -71,7 +66,7 @@ const CustomNode = ({ data }) => {
     if (!nodeData.conditionalEdges || nodeData.conditionalEdges.length === 0) {
       return <div>No conditional edges defined</div>;
     }
-
+    
     return nodeData.conditionalEdges.map((edge, index) => (
       <div key={index} style={{ marginBottom: "4px" }}>
         <strong>Condition {index + 1}:</strong> {edge.condition} → {edge.target}
@@ -106,9 +101,9 @@ const CustomNode = ({ data }) => {
           <button onClick={handleEditToggle} style={{ fontSize: "10px", marginRight: "5px", marginBottom: "4px" }}>
             {isEditing ? "Save" : "Edit"}
           </button>
-
-          <button
-            onClick={() => setShowAdvancedConfig(true)}
+          
+          <button 
+            onClick={() => setShowAdvancedConfig(true)} 
             style={{ fontSize: "10px", marginBottom: "4px" }}
           >
             Advanced Config
@@ -177,12 +172,12 @@ const CustomNode = ({ data }) => {
               <div><strong>Conditional Logic:</strong> {nodeData.conditionalLogic || "Not specified"}</div>
               <div><strong>Node Function:</strong> {nodeData.nodeFunction || "Not specified"}</div>
               <div><strong>Error Handler:</strong> {nodeData.errorHandler || "Not specified"}</div>
-
+              
               <div style={{ marginTop: "8px" }}>
                 <strong>State Updates:</strong>
                 {renderStateFields()}
               </div>
-
+              
               <div style={{ marginTop: "8px" }}>
                 <strong>Conditional Edges:</strong>
                 {renderConditionalEdges()}
@@ -199,12 +194,12 @@ const CustomNode = ({ data }) => {
           <div><strong>Conditional Logic:</strong> {nodeData.conditionalLogic || "Not specified"}</div>
           <div><strong>Node Function:</strong> {nodeData.nodeFunction || "Not specified"}</div>
           <div><strong>Error Handler:</strong> {nodeData.errorHandler || "Not specified"}</div>
-
+          
           <div style={{ marginTop: "8px" }}>
             <strong>State Updates:</strong>
             {renderStateFields()}
           </div>
-
+          
           <div style={{ marginTop: "8px" }}>
             <strong>Conditional Edges:</strong>
             {renderConditionalEdges()}
@@ -214,7 +209,7 @@ const CustomNode = ({ data }) => {
 
       <Handle type="source" position={Position.Right} style={{ background: '#555' }} />
       <Handle type="target" position={Position.Left} style={{ background: '#555' }} />
-
+      
       {showAdvancedConfig && (
         <AdvancedNodeConfig
           nodeData={nodeData}
@@ -226,359 +221,11 @@ const CustomNode = ({ data }) => {
   );
 };
 
-// Custom edge component for conditional edges
-const CustomEdge = ({
-  id,
-  sourceX,
-  sourceY,
-  targetX,
-  targetY,
-  sourcePosition,
-  targetPosition,
-  data,
-  markerEnd,
-}) => {
-  // Calculate the midpoint for the label
-  const midX = (sourceX + targetX) / 2;
-  const midY = (sourceY + targetY) / 2;
-
-  return (
-    <>
-      <path
-        id={id}
-        className="react-flow__edge-path"
-        d={`M${sourceX},${sourceY} C ${sourceX + 100},${sourceY} ${targetX - 100},${targetY} ${targetX},${targetY}`}
-        stroke="#555"
-        strokeWidth={2}
-        markerEnd={markerEnd}
-      />
-      {data && data.label && (
-        <foreignObject
-          width={data.labelWidth || 100}
-          height={data.labelHeight || 30}
-          x={midX - (data.labelWidth || 100) / 2}
-          y={midY - 15}
-        >
-          <div style={{
-            background: 'rgba(255, 255, 255, 0.8)',
-            padding: '2px 6px',
-            borderRadius: '4px',
-            fontSize: '12px',
-            textAlign: 'center',
-            border: '1px solid #ccc'
-          }}>
-            {data.label}
-          </div>
-        </foreignObject>
-      )}
-    </>
-  );
-};
-
 const nodeTypes = {
   default: CustomNode,
 };
 
-const edgeTypes = {
-  customEdge: CustomEdge,
-};
-
-// Function to export workflow to JSON
-const exportWorkflow = (nodes, edges, workflowName) => {
-  const workflowData = {
-    name: workflowName,
-    nodes: nodes.map(node => ({
-      id: node.id,
-      position: node.position,
-      data: {
-        ...node.data,
-        // Ensure all properties are preserved
-        label: node.data.label,
-        type: node.data.type,
-        description: node.data.description,
-        editable: node.data.editable,
-        logic: node.data.logic,
-        nodeFunction: node.data.nodeFunction,
-        nextNode: node.data.nextNode,
-        conditionalLogic: node.data.conditionalLogic,
-        stateUpdates: node.data.stateUpdates,
-        conditionalEdges: node.data.conditionalEdges,
-        errorHandler: node.data.errorHandler
-      },
-      type: node.type,
-      style: node.style
-    })),
-    edges: edges.map(edge => ({
-      id: edge.id,
-      source: edge.source,
-      target: edge.target,
-      animated: edge.animated
-    }))
-  };
-
-  const dataStr = JSON.stringify(workflowData, null, 2);
-  const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-
-  const exportFileDefaultName = `${workflowName.replace(/\s+/g, '_')}_workflow.json`;
-
-  const linkElement = document.createElement('a');
-  linkElement.setAttribute('href', dataUri);
-  linkElement.setAttribute('download', exportFileDefaultName);
-  linkElement.click();
-};
-
-// Function to refresh workflow from server
-const refreshWorkflowFromServer = async (setNodes, setEdges) => {
-  try {
-    // Call the backend API to get the current workflow
-    console.log('Attempting to fetch workflow from API...');
-
-    // Use environment variable for API URL with fallback
-    // If not set, construct the API URL using the same host as the current page but different port
-    // If the current host is localhost, try to use the actual IP address as well
-    let workflowApiUrl = process.env.REACT_APP_WORKFLOW_API_URL;
-
-    if (!workflowApiUrl) {
-      const currentHost = window.location.hostname;
-      // If accessing from localhost, try to use a common pattern for the actual IP
-      if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
-        // Try to get the actual IP from the window.location, or default to a common IP pattern
-        // For now, we'll use the known IP address of this server
-        workflowApiUrl = 'http://192.168.51.138:5004';  // Workflow API service
-      } else {
-        workflowApiUrl = `http://${currentHost}:5004`;  // Workflow API service
-      }
-    }
-
-    const endpoint = `${workflowApiUrl}/api/workflow/current`;
-
-    console.log(`Fetching from: ${endpoint}`);
-
-    // Add timeout and more detailed error handling
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 600000); // 10 minute timeout
-
-    const response = await fetch(endpoint, {
-      signal: controller.signal,
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      // Adding credentials to handle potential authentication
-      credentials: 'omit'
-    });
-    clearTimeout(timeoutId);
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch workflow: ${response.status} ${response.statusText}`);
-    }
-
-    const workflowData = await response.json();
-    if (workflowData.status === 'error') {
-      throw new Error(workflowData.message || 'Unknown error occurred');
-    }
-
-    // Update the nodes and edges in the React Flow
-    setNodes(workflowData.nodes);
-    setEdges(workflowData.edges);
-
-    console.log(`Workflow refreshed successfully! Loaded ${workflowData.nodes.length} nodes and ${workflowData.edges.length} edges.`);
-    // Removed success alert to reduce notifications, keeping only error alerts
-  } catch (error) {
-    console.error('Error refreshing workflow:', error);
-
-    // More specific error messages based on error type
-    let errorMessage = 'Error refreshing workflow';
-    if (error.name === 'AbortError') {
-      errorMessage = 'Request timed out. Please check if the API server is running.';
-    } else if (error instanceof TypeError && error.message.includes('fetch')) {
-      // Recreate the apiUrl here since it's not in scope in this catch block
-      let apiUrl = process.env.REACT_APP_API_URL;
-
-      if (!apiUrl) {
-        const currentHost = window.location.hostname;
-        if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
-          apiUrl = 'http://192.168.51.138:5000';  // Changed from 5001 to 5000 (gateway service)
-        } else {
-          apiUrl = `http://${currentHost}:5000`;  // Changed from 5001 to 5000 (gateway service)
-        }
-      }
-
-      errorMessage = `Network error. Please check your connection and ensure the API server is running on ${apiUrl}`;
-    } else {
-      errorMessage = error.message;
-    }
-
-    alert(errorMessage);
-  }
-};
-
-// Function to export workflow as Python LangGraph code
-const exportAsPythonCode = (nodes, edges, workflowName) => {
-  // Generate Python code for the workflow
-  let pythonCode = `"""
-LangGraph implementation of ${workflowName} workflow.
-
-Auto-generated from the visual editor.
-"""
-
-from typing import TypedDict, List, Dict, Any, Literal
-from langgraph.graph import StateGraph, END
-from langchain_core.messages import BaseMessage
-
-
-class AgentState(TypedDict):
-    """
-    State definition for the ${workflowName} agent.
-    """
-    user_request: str
-    messages: List[BaseMessage]
-    # Add other state fields as needed based on your workflow
-`;
-
-  // Add state fields from nodes
-  const allStateFields = new Set();
-  nodes.forEach(node => {
-    if (node.data.stateUpdates) {
-      Object.keys(node.data.stateUpdates).forEach(field => {
-        allStateFields.add(field);
-      });
-    }
-  });
-
-  allStateFields.forEach(field => {
-    pythonCode += `    ${field}: Any  # Added from node state updates\n`;
-  });
-
-  pythonCode += `\n`;
-
-  // Generate node functions
-  nodes.forEach(node => {
-    if (node.data.nodeFunction) {
-      pythonCode += `def ${node.data.nodeFunction}(state: AgentState):
-    """
-    ${node.data.description}
-    """
-    # TODO: Implement the logic for ${node.data.label}
-    # Logic: ${node.data.logic || 'Not specified'}
-
-    # State updates from visual editor:
-`;
-      if (node.data.stateUpdates) {
-        Object.entries(node.data.stateUpdates).forEach(([key, value]) => {
-          pythonCode += `    # state['${key}'] = ${JSON.stringify(value)}  # From visual editor\n`;
-        });
-      }
-      pythonCode += `    return state
-
-
-`;
-    }
-  });
-
-  // Generate conditional edge functions
-  const conditionalEdges = new Map();
-  nodes.forEach(node => {
-    if (node.data.conditionalEdges && node.data.conditionalEdges.length > 0) {
-      const functionName = `${node.data.nodeFunction || node.id}_router`;
-      conditionalEdges.set(functionName, { node: node, edges: node.data.conditionalEdges });
-
-      pythonCode += `def ${functionName}(state: AgentState) -> Literal[${node.data.conditionalEdges.map(e => `"${e.target}"`).join(', ')}]:
-    """
-    Router function for ${node.data.label} node.
-    Determines which path to take based on state conditions.
-    """
-    # TODO: Implement conditional logic for ${node.data.label}
-    # Conditions from visual editor:
-`;
-      node.data.conditionalEdges.forEach((edge, index) => {
-        pythonCode += `    # Condition ${index + 1}: ${edge.condition} -> "${edge.target}"\n`;
-      });
-      pythonCode += `    # Default to first option if no conditions met
-    return "${node.data.conditionalEdges[0]?.target || 'END'}"
-
-
-`;
-    }
-  });
-
-  // Generate the workflow graph
-  pythonCode += `def create_${workflowName.toLowerCase().replace(/\s+/g, '_')}_graph():
-    """
-    Create the ${workflowName} workflow using LangGraph
-    """
-    workflow = StateGraph(AgentState)
-
-    # Add nodes
-`;
-
-  nodes.forEach(node => {
-    if (node.data.nodeFunction) {
-      pythonCode += `    workflow.add_node("${node.id}", ${node.data.nodeFunction})
-`;
-    }
-  });
-
-  pythonCode += `
-    # Define edges
-`;
-
-  // Add regular edges
-  edges.forEach(edge => {
-    pythonCode += `    workflow.add_edge("${edge.source}", "${edge.target}")
-`;
-  });
-
-  // Add conditional edges
-  conditionalEdges.forEach((info, funcName) => {
-    pythonCode += `    workflow.add_conditional_edges(
-        "${info.node.id}",
-        ${funcName},
-        {
-`;
-    info.edges.forEach(edge => {
-      pythonCode += `            "${edge.target}": "${edge.target}",\n`;
-    });
-    pythonCode += `        }\n    )\n`;
-  });
-
-  // Find start and end nodes
-  const startNode = nodes.find(node => node.data.type === 'start')?.id || nodes[0]?.id;
-  const endNode = nodes.find(node => node.data.type === 'end')?.id || 'END';
-
-  pythonCode += `
-    # Set entry point
-    workflow.set_entry_point("${startNode}")
-
-    return workflow.compile()
-
-
-# Example usage:
-if __name__ == "__main__":
-    graph = create_${workflowName.toLowerCase().replace(/\s+/g, '_')}_graph()
-
-    # Example input
-    initial_state = {
-        "user_request": "Sample request",
-        "messages": []
-    }
-
-    # Run the workflow
-    result = graph.invoke(initial_state)
-    print("Final state:", result)
-`;
-
-  const dataStr = pythonCode;
-  const dataUri = 'data:application/text;charset=utf-8,'+ encodeURIComponent(dataStr);
-
-  const exportFileDefaultName = `${workflowName.replace(/\s+/g, '_')}_workflow.py`;
-
-  const linkElement = document.createElement('a');
-  linkElement.setAttribute('href', dataUri);
-  linkElement.setAttribute('download', exportFileDefaultName);
-  linkElement.click();
-};
-
+// Main App Component
 function App() {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
@@ -591,9 +238,6 @@ function App() {
   const [simulationStatus, setSimulationStatus] = useState(null);
   const [simulationLog, setSimulationLog] = useState([]);
 
-  // Connection handlers for conditional edge creation
-  const [connectionStart, setConnectionStart] = useState(null);
-
   // Load workflow from backend when component mounts
   useEffect(() => {
     // Add a small delay to ensure the UI is rendered before the API call
@@ -601,7 +245,7 @@ function App() {
       // Small delay to ensure UI is ready
       await new Promise(resolve => setTimeout(resolve, 500));
       if (activeTab === 'editor') {
-        refreshWorkflowFromServer(setNodes, setEdges);
+        refreshWorkflow(setNodes, setEdges);
         // Update history status after loading workflow
         updateHistoryStatus();
       }
@@ -636,6 +280,8 @@ function App() {
   );
 
   // Connection handlers for conditional edge creation
+  const [connectionStart, setConnectionStart] = useState(null);
+
   const onConnectStart = (_, { nodeId, handleType }) => {
     setConnectionStart({ nodeId, handleType });
   };
@@ -667,6 +313,478 @@ function App() {
     setConnectionStart(null);
   };
 
+  // Function to poll simulation status periodically
+  const pollSimulationStatus = () => {
+    const interval = setInterval(async () => {
+      if (isSimulating && !isPaused) {
+        await updateSimulationStatus();
+      } else if (!isSimulating) {
+        // Stop polling if simulation is stopped
+        clearInterval(interval);
+      }
+    }, 2000); // Poll every 2 seconds
+
+    // Return function to clear interval when component unmounts or simulation stops
+    return () => clearInterval(interval);
+  };
+
+  // Function to update history status
+  const updateHistoryStatus = async () => {
+    try {
+      // Use environment variable for API URL with fallback
+      let workflowApiUrl = process.env.REACT_APP_WORKFLOW_API_URL;
+
+      if (!workflowApiUrl) {
+        const currentHost = window.location.hostname;
+        if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
+          workflowApiUrl = 'http://192.168.51.138:5004';  // Workflow API service
+        } else {
+          workflowApiUrl = `http://${currentHost}:5004`;  // Workflow API service
+        }
+      }
+
+      const endpoint = `${workflowApiUrl}/api/workflow/history`;
+
+      const response = await fetch(endpoint, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+
+      const result = await response.json();
+
+      if (result.status === 'success') {
+        setCanUndo(result.can_undo);
+        setCanRedo(result.can_redo);
+      } else {
+        console.error('Error getting history status:', result);
+      }
+    } catch (error) {
+      console.error('Error getting history status:', error);
+    }
+  };
+
+  // Function to save the current workflow state to history
+  const saveWorkflowState = async (nodes, edges, workflowName) => {
+    try {
+      // Construct the workflow configuration object
+      const workflowConfig = {
+        name: workflowName,
+        nodes: nodes,
+        edges: edges
+      };
+
+      // Use environment variable for API URL with fallback
+      let workflowApiUrl = process.env.REACT_APP_WORKFLOW_API_URL;
+
+      if (!workflowApiUrl) {
+        const currentHost = window.location.hostname;
+        if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
+          workflowApiUrl = 'http://192.168.51.138:5004';  // Workflow API service
+        } else {
+          workflowApiUrl = `http://${currentHost}:5004`;  // Workflow API service
+        }
+      }
+
+      const endpoint = `${workflowApiUrl}/api/workflow/history/save`;
+
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(workflowConfig)
+      });
+
+      const result = await response.json();
+
+      if (result.status !== 'success') {
+        console.error('Error saving workflow state:', result);
+      }
+    } catch (error) {
+      console.error('Error saving workflow state:', error);
+    }
+  };
+
+  // Function to refresh workflow from server and update history status
+  const refreshWorkflow = async (setNodes, setEdges) => {
+    try {
+      // Call the backend API to get the current workflow
+      console.log('Attempting to fetch workflow from API...');
+
+      // Use environment variable for API URL with fallback
+      // If not set, construct the API URL using the same host as the current page but different port
+      // If the current host is localhost, try to use the actual IP address as well
+      let workflowApiUrl = process.env.REACT_APP_WORKFLOW_API_URL;
+
+      if (!workflowApiUrl) {
+        const currentHost = window.location.hostname;
+        // If accessing from localhost, try to use a common pattern for the actual IP
+        if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
+          // Try to get the actual IP from the window.location, or default to a common IP pattern
+          // For now, we'll use the known IP address of this server
+          workflowApiUrl = 'http://192.168.51.138:5004';  // Workflow API service
+        } else {
+          workflowApiUrl = `http://${currentHost}:5004`;  // Workflow API service
+        }
+      }
+
+      const endpoint = `${workflowApiUrl}/api/workflow/current`;
+
+      console.log(`Fetching from: ${endpoint}`);
+
+      // Add timeout and more detailed error handling
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 600000); // 10 minute timeout
+
+      const response = await fetch(endpoint, {
+        signal: controller.signal,
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        // Adding credentials to handle potential authentication
+        credentials: 'omit'
+      });
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch workflow: ${response.status} ${response.statusText}`);
+      }
+
+      const workflowData = await response.json();
+      if (workflowData.status === 'error') {
+        throw new Error(workflowData.message || 'Unknown error occurred');
+      }
+
+      // Update the nodes and edges in the React Flow
+      setNodes(workflowData.nodes);
+      setEdges(workflowData.edges);
+
+      console.log(`Workflow refreshed successfully! Loaded ${workflowData.nodes.length} nodes and ${workflowData.edges.length} edges.`);
+      // Removed success alert to reduce notifications, keeping only error alerts
+    } catch (error) {
+      console.error('Error refreshing workflow:', error);
+
+      // More specific error messages based on error type
+      let errorMessage = 'Error refreshing workflow';
+      if (error.name === 'AbortError') {
+        errorMessage = 'Request timed out. Please check if the API server is running.';
+      } else if (error instanceof TypeError && error.message.includes('fetch')) {
+        // Recreate the apiUrl here since it's not in scope in this catch block
+        let apiUrl = process.env.REACT_APP_API_URL;
+
+        if (!apiUrl) {
+          const currentHost = window.location.hostname;
+          if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
+            apiUrl = 'http://192.168.51.138:5000';  // Changed from 5001 to 5000 (gateway service)
+          } else {
+            apiUrl = `http://${currentHost}:5000`;  // Changed from 5001 to 5000 (gateway service)
+          }
+        }
+
+        errorMessage = `Network error. Please check your connection and ensure the API server is running on ${apiUrl}`;
+      } else {
+        errorMessage = error.message;
+      }
+
+      alert(errorMessage);
+    }
+  };
+
+  // Function to handle undo operation
+  const handleUndo = async () => {
+    try {
+      // Use environment variable for API URL with fallback
+      let workflowApiUrl = process.env.REACT_APP_WORKFLOW_API_URL;
+
+      if (!workflowApiUrl) {
+        const currentHost = window.location.hostname;
+        if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
+          workflowApiUrl = 'http://192.168.51.138:5004';  // Workflow API service
+        } else {
+          workflowApiUrl = `http://${currentHost}:5004`;  // Workflow API service
+        }
+      }
+
+      const endpoint = `${workflowApiUrl}/api/workflow/history/undo`;
+
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+
+      const result = await response.json();
+
+      if (result.status === 'success') {
+        // Update the UI with the retrieved workflow
+        setNodes(result.workflow.nodes || []);
+        setEdges(result.workflow.edges || []);
+        setCanUndo(result.can_undo);
+        setCanRedo(result.can_redo);
+        console.log('Undo successful:', result);
+      } else {
+        alert(`Error: ${result.message}`);
+        console.error('Error performing undo:', result);
+      }
+    } catch (error) {
+      console.error('Error performing undo:', error);
+      alert(`Error performing undo: ${error.message}`);
+    }
+  };
+
+  // Function to handle redo operation
+  const handleRedo = async () => {
+    try {
+      // Use environment variable for API URL with fallback
+      let workflowApiUrl = process.env.REACT_APP_WORKFLOW_API_URL;
+
+      if (!workflowApiUrl) {
+        const currentHost = window.location.hostname;
+        if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
+          workflowApiUrl = 'http://192.168.51.138:5004';  // Workflow API service
+        } else {
+          workflowApiUrl = `http://${currentHost}:5004`;  // Workflow API service
+        }
+      }
+
+      const endpoint = `${workflowApiUrl}/api/workflow/history/redo`;
+
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+
+      const result = await response.json();
+
+      if (result.status === 'success') {
+        // Update the UI with the retrieved workflow
+        setNodes(result.workflow.nodes || []);
+        setEdges(result.workflow.edges || []);
+        setCanUndo(result.can_undo);
+        setCanRedo(result.can_redo);
+        console.log('Redo successful:', result);
+      } else {
+        alert(`Error: ${result.message}`);
+        console.error('Error performing redo:', result);
+      }
+    } catch (error) {
+      console.error('Error performing redo:', error);
+      alert(`Error performing redo: ${error.message}`);
+    }
+  };
+
+  // Function to export workflow to JSON
+  const exportWorkflow = (nodes, edges, workflowName) => {
+    const workflowData = {
+      name: workflowName,
+      nodes: nodes.map(node => ({
+        id: node.id,
+        position: node.position,
+        data: {
+          ...node.data,
+          // Ensure all properties are preserved
+          label: node.data.label,
+          type: node.data.type,
+          description: node.data.description,
+          editable: node.data.editable,
+          logic: node.data.logic,
+          nodeFunction: node.data.nodeFunction,
+          nextNode: node.data.nextNode,
+          conditionalLogic: node.data.conditionalLogic,
+          stateUpdates: node.data.stateUpdates,
+          conditionalEdges: node.data.conditionalEdges,
+          errorHandler: node.data.errorHandler
+        },
+        type: node.type,
+        style: node.style
+      })),
+      edges: edges.map(edge => ({
+        id: edge.id,
+        source: edge.source,
+        target: edge.target,
+        animated: edge.animated
+      }))
+    };
+
+    const dataStr = JSON.stringify(workflowData, null, 2);
+    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+
+    const exportFileDefaultName = `${workflowName.replace(/\s+/g, '_')}_workflow.json`;
+
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', exportFileDefaultName);
+    linkElement.click();
+  };
+
+  // Function to export workflow as Python LangGraph code
+  const exportAsPythonCode = (nodes, edges, workflowName) => {
+    // Generate Python code for the workflow
+    let pythonCode = `"""
+LangGraph implementation of ${workflowName} workflow.
+
+Auto-generated from the visual editor.
+"""
+
+from typing import TypedDict, List, Dict, Any
+from langgraph.graph import StateGraph, END
+from langchain_core.messages import BaseMessage
+
+
+class AgentState(TypedDict):
+    """
+    State definition for the ${workflowName} agent.
+    """
+    user_request: str
+    messages: List[BaseMessage]
+    # Add other state fields as needed based on your workflow
+`;
+
+    // Generate node functions
+    nodes.forEach(node => {
+      if (node.data.nodeFunction) {
+        pythonCode += `\n\ndef ${node.data.nodeFunction}(state: AgentState):
+    """
+    ${node.data.description}
+    """
+    # TODO: Implement the logic for ${node.data.label}
+    # Logic: ${node.data.logic || 'Not specified'}
+    
+    # State updates from visual editor:
+`;
+        if (node.data.stateUpdates) {
+          Object.entries(node.data.stateUpdates).forEach(([key, value]) => {
+            pythonCode += `    # state['${key}'] = ${JSON.stringify(value)}  # From visual editor\n`;
+          });
+        }
+        pythonCode += `    return state
+
+
+`;
+      }
+    });
+
+    // Generate the workflow graph
+    pythonCode += `def create_${workflowName.toLowerCase().replace(/\s+/g, '_')}_graph():
+    """
+    Create the ${workflowName} workflow using LangGraph
+    """
+    workflow = StateGraph(AgentState)
+
+    # Add nodes
+`;
+
+    nodes.forEach(node => {
+      if (node.data.nodeFunction) {
+        pythonCode += `    workflow.add_node("${node.id}", ${node.data.nodeFunction})
+`;
+      }
+    });
+
+    pythonCode += `
+    # Define edges
+`;
+
+    edges.forEach(edge => {
+      pythonCode += `    workflow.add_edge("${edge.source}", "${edge.target}")
+`;
+    });
+
+    // Find start and end nodes
+    const startNode = nodes.find(node => node.data.type === 'start')?.id || nodes[0]?.id;
+    const endNode = nodes.find(node => node.data.type === 'end')?.id || 'END';
+
+    pythonCode += `
+    # Set entry point and finish point
+    workflow.set_entry_point("${startNode}")
+    workflow.add_edge("${nodes[nodes.length - 2]?.id || startNode}", "${endNode}")  # Connect to the actual end node
+
+    return workflow.compile()
+
+
+# Example usage:
+if __name__ == "__main__":
+    graph = create_${workflowName.toLowerCase().replace(/\s+/g, '_')}_graph()
+
+    # Example input
+    initial_state = {
+        "user_request": "Sample request",
+        "messages": []
+    }
+
+    # Run the workflow
+    result = graph.invoke(initial_state)
+    print("Final state:", result)
+`;
+
+    const dataStr = pythonCode;
+    const dataUri = 'data:application/text;charset=utf-8,'+ encodeURIComponent(dataStr);
+
+    const exportFileDefaultName = `${workflowName.replace(/\s+/g, '_')}_workflow.py`;
+
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', exportFileDefaultName);
+    linkElement.click();
+  };
+
+  // Function to apply changes directly to the LangGraph code
+  const applyChangesToCode = async (nodes, edges, workflowName) => {
+    try {
+      // Construct the workflow configuration object
+      const workflowConfig = {
+        name: workflowName,
+        nodes: nodes,
+        edges: edges
+      };
+
+      // Use environment variable for API URL with fallback
+      let workflowApiUrl = process.env.REACT_APP_WORKFLOW_API_URL;
+
+      if (!workflowApiUrl) {
+        const currentHost = window.location.hostname;
+        if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
+          workflowApiUrl = 'http://192.168.51.138:5004';  // Workflow API service
+        } else {
+          workflowApiUrl = `http://${currentHost}:5004`;  // Workflow API service
+        }
+      }
+
+      const endpoint = `${workflowApiUrl}/api/workflow/apply_changes`;
+
+      console.log('Sending workflow config to apply changes:', workflowConfig);
+
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(workflowConfig)
+      });
+
+      const result = await response.json();
+
+      if (result.status === 'success') {
+        // After successfully applying changes, save the current state to history
+        await saveWorkflowState(nodes, edges, workflowName);
+        alert(`Success: ${result.message}`);
+        console.log('Changes applied successfully:', result);
+      } else {
+        alert(`Error: ${result.message}`);
+        console.error('Error applying changes:', result);
+      }
+    } catch (error) {
+      console.error('Error applying changes to code:', error);
+      alert(`Error applying changes to code: ${error.message}`);
+    }
+  };
+
   // Function to handle drag start from component library
   const handleDragStart = (event, nodeType) => {
     event.dataTransfer.setData('application/reactflow', JSON.stringify(nodeType));
@@ -685,7 +803,7 @@ function App() {
     }
 
     const parsedComponent = JSON.parse(componentType);
-
+    
     // Get the position of the drop
     const reactFlowBounds = event.currentTarget.getBoundingClientRect();
     const position = {
@@ -805,233 +923,23 @@ function App() {
     return styles[nodeType] || styles.default;
   };
 
-  // Function to handle undo operation
-  const handleUndo = async () => {
-    try {
-      // Use environment variable for API URL with fallback
-      let workflowApiUrl = process.env.REACT_APP_WORKFLOW_API_URL;
-
-      if (!workflowApiUrl) {
-        const currentHost = window.location.hostname;
-        if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
-          workflowApiUrl = 'http://192.168.51.138:5004';  // Workflow API service
-        } else {
-          workflowApiUrl = `http://${currentHost}:5004`;  // Workflow API service
-        }
-      }
-
-      const endpoint = `${workflowApiUrl}/api/workflow/history/undo`;
-
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      });
-
-      const result = await response.json();
-
-      if (result.status === 'success') {
-        // Update the UI with the retrieved workflow
-        setNodes(result.workflow.nodes || []);
-        setEdges(result.workflow.edges || []);
-        setCanUndo(result.can_undo);
-        setCanRedo(result.can_redo);
-        console.log('Undo successful:', result);
-      } else {
-        alert(`Error: ${result.message}`);
-        console.error('Error performing undo:', result);
-      }
-    } catch (error) {
-      console.error('Error performing undo:', error);
-      alert(`Error performing undo: ${error.message}`);
-    }
-  };
-
-  // Function to handle redo operation
-  const handleRedo = async () => {
-    try {
-      // Use environment variable for API URL with fallback
-      let workflowApiUrl = process.env.REACT_APP_WORKFLOW_API_URL;
-
-      if (!workflowApiUrl) {
-        const currentHost = window.location.hostname;
-        if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
-          workflowApiUrl = 'http://192.168.51.138:5004';  // Workflow API service
-        } else {
-          workflowApiUrl = `http://${currentHost}:5004`;  // Workflow API service
-        }
-      }
-
-      const endpoint = `${workflowApiUrl}/api/workflow/history/redo`;
-
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      });
-
-      const result = await response.json();
-
-      if (result.status === 'success') {
-        // Update the UI with the retrieved workflow
-        setNodes(result.workflow.nodes || []);
-        setEdges(result.workflow.edges || []);
-        setCanUndo(result.can_undo);
-        setCanRedo(result.can_redo);
-        console.log('Redo successful:', result);
-      } else {
-        alert(`Error: ${result.message}`);
-        console.error('Error performing redo:', result);
-      }
-    } catch (error) {
-      console.error('Error performing redo:', error);
-      alert(`Error performing redo: ${error.message}`);
-    }
-  };
-
-  // Function to refresh workflow from server and update history status
-  const refreshWorkflow = async (setNodes, setEdges) => {
-    try {
-      // Call the backend API to get the current workflow
-      console.log('Attempting to fetch workflow from API...');
-
-      // Use environment variable for API URL with fallback
-      // If not set, construct the API URL using the same host as the current page but different port
-      // If the current host is localhost, try to use the actual IP address as well
-      let workflowApiUrl = process.env.REACT_APP_WORKFLOW_API_URL;
-
-      if (!workflowApiUrl) {
-        const currentHost = window.location.hostname;
-        // If accessing from localhost, try to use a common pattern for the actual IP
-        if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
-          // Try to get the actual IP from the window.location, or default to a common IP pattern
-          // For now, we'll use the known IP address of this server
-          workflowApiUrl = 'http://192.168.51.138:5004';  // Workflow API service
-        } else {
-          workflowApiUrl = `http://${currentHost}:5004`;  // Workflow API service
-        }
-      }
-
-      const endpoint = `${workflowApiUrl}/api/workflow/current`;
-
-      console.log(`Fetching from: ${endpoint}`);
-
-      // Add timeout and more detailed error handling
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 600000); // 10 minute timeout
-
-      const response = await fetch(endpoint, {
-        signal: controller.signal,
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-        // Adding credentials to handle potential authentication
-        credentials: 'omit'
-      });
-      clearTimeout(timeoutId);
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch workflow: ${response.status} ${response.statusText}`);
-      }
-
-      const workflowData = await response.json();
-      if (workflowData.status === 'error') {
-        throw new Error(workflowData.message || 'Unknown error occurred');
-      }
-
-      // Update the nodes and edges in the React Flow
-      setNodes(workflowData.nodes);
-      setEdges(workflowData.edges);
-
-      console.log(`Workflow refreshed successfully! Loaded ${workflowData.nodes.length} nodes and ${workflowData.edges.length} edges.`);
-      // Removed success alert to reduce notifications, keeping only error alerts
-    } catch (error) {
-      console.error('Error refreshing workflow:', error);
-
-      // More specific error messages based on error type
-      let errorMessage = 'Error refreshing workflow';
-      if (error.name === 'AbortError') {
-        errorMessage = 'Request timed out. Please check if the API server is running.';
-      } else if (error instanceof TypeError && error.message.includes('fetch')) {
-        // Recreate the apiUrl here since it's not in scope in this catch block
-        let apiUrl = process.env.REACT_APP_API_URL;
-
-        if (!apiUrl) {
-          const currentHost = window.location.hostname;
-          if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
-            apiUrl = 'http://192.168.51.138:5000';  // Changed from 5001 to 5000 (gateway service)
-          } else {
-            apiUrl = `http://${currentHost}:5000`;  // Changed from 5001 to 5000 (gateway service)
-          }
-        }
-
-        errorMessage = `Network error. Please check your connection and ensure the API server is running on ${apiUrl}`;
-      } else {
-        errorMessage = error.message;
-      }
-
-      alert(errorMessage);
-    }
-  };
-
-  // Function to update history status
-  const updateHistoryStatus = async () => {
-    try {
-      // Use environment variable for API URL with fallback
-      let workflowApiUrl = process.env.REACT_APP_WORKFLOW_API_URL;
-
-      if (!workflowApiUrl) {
-        const currentHost = window.location.hostname;
-        if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
-          workflowApiUrl = 'http://192.168.51.138:5004';  // Workflow API service
-        } else {
-          workflowApiUrl = `http://${currentHost}:5004`;  // Workflow API service
-        }
-      }
-
-      const endpoint = `${workflowApiUrl}/api/workflow/history`;
-
-      const response = await fetch(endpoint, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      });
-
-      const result = await response.json();
-
-      if (result.status === 'success') {
-        setCanUndo(result.can_undo);
-        setCanRedo(result.can_redo);
-      } else {
-        console.error('Error getting history status:', result);
-      }
-    } catch (error) {
-      console.error('Error getting history status:', error);
-    }
-  };
-
-  // Function to start/stop the simulation
+  // Function to toggle simulation
   const toggleSimulation = async () => {
     if (isSimulating) {
-      // Stop the simulation
+      // Stop simulation
       try {
-        // Use environment variable for API URL with fallback
         let workflowApiUrl = process.env.REACT_APP_WORKFLOW_API_URL;
 
         if (!workflowApiUrl) {
           const currentHost = window.location.hostname;
           if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
-            workflowApiUrl = 'http://192.168.51.138:5004';  // Workflow API service
+            workflowApiUrl = 'http://192.168.51.138:5004';
           } else {
-            workflowApiUrl = `http://${currentHost}:5004`;  // Workflow API service
+            workflowApiUrl = `http://${currentHost}:5004`;
           }
         }
 
-        const endpoint = `${workflowApiUrl}/api/simulation/reset`;
+        const endpoint = `${workflowApiUrl}/api/simulation/stop`;
 
         const response = await fetch(endpoint, {
           method: 'POST',
@@ -1057,84 +965,77 @@ function App() {
         alert(`Error stopping simulation: ${error.message}`);
       }
     } else {
-      // Start the simulation
+      // Start simulation
       try {
-        // Use environment variable for API URL with fallback
         let workflowApiUrl = process.env.REACT_APP_WORKFLOW_API_URL;
 
         if (!workflowApiUrl) {
           const currentHost = window.location.hostname;
           if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
-            workflowApiUrl = 'http://192.168.51.138:5004';  // Workflow API service
+            workflowApiUrl = 'http://192.168.51.138:5004';
           } else {
-            workflowApiUrl = `http://${currentHost}:5004`;  // Workflow API service
+            workflowApiUrl = `http://${currentHost}:5004`;
           }
         }
 
         const endpoint = `${workflowApiUrl}/api/simulation/start`;
-
-        // Get initial inputs from user
-        const userInput = prompt("Enter initial input for the simulation:", "Initial request");
-        if (userInput === null) return; // User cancelled
-
-        const requestBody = {
-          initial_inputs: {
-            user_request: userInput,
-            mcp_queries: [],
-            mcp_results: [],
-            synthesized_result: "",
-            can_answer: false,
-            iteration_count: 0,
-            max_iterations: 3,
-            final_answer: "",
-            error_message: null,
-            mcp_servers: [],
-            refined_queries: [],
-            failure_reason: null,
-            schema_dump: {},
-            sql_query: "",
-            db_results: [],
-            all_db_results: {},
-            table_to_db_mapping: {},
-            table_to_real_db_mapping: {},
-            response_prompt: "",
-            messages: [],
-            validation_error: null,
-            retry_count: 0,
-            execution_error: null,
-            sql_generation_error: null,
-            disable_sql_blocking: false,
-            disable_databases: false,
-            query_type: "initial",
-            database_name: "",
-            previous_sql_queries: [],
-            registry_url: null,
-            discovered_services: [],
-            mcp_service_results: [],
-            use_mcp_results: false,
-            mcp_tool_calls: [],
-            mcp_capable_response: "",
-            return_mcp_results_to_llm: false,
-            is_final_answer: false,
-            rag_documents: [],
-            rag_context: "",
-            use_rag_flag: false,
-            rag_relevance_score: 0.0,
-            rag_query: "",
-            rag_response: ""
-          },
-          workflow_config: {
-            nodes: nodes,
-            edges: edges
-          }
-        };
 
         const response = await fetch(endpoint, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(requestBody)
+          body: JSON.stringify({
+            initial_inputs: {
+              user_request: "Sample request for simulation",
+              mcp_queries: [],
+              mcp_results: [],
+              synthesized_result: "",
+              can_answer: false,
+              iteration_count: 0,
+              max_iterations: 3,
+              final_answer: "",
+              error_message: null,
+              mcp_servers: [],
+              refined_queries: [],
+              failure_reason: null,
+              schema_dump: {},
+              sql_query: "",
+              db_results: [],
+              all_db_results: {},
+              table_to_db_mapping: {},
+              table_to_real_db_mapping: {},
+              response_prompt: "",
+              messages: [],
+              validation_error: null,
+              retry_count: 0,
+              execution_error: null,
+              sql_generation_error: null,
+              disable_sql_blocking: false,
+              disable_databases: false,
+              query_type: "initial",
+              database_name: "",
+              previous_sql_queries: [],
+              registry_url: null,
+              discovered_services: [],
+              mcp_service_results: [],
+              use_mcp_results: false,
+              mcp_tool_calls: [],
+              mcp_capable_response: "",
+              return_mcp_results_to_llm: false,
+              is_final_answer: false,
+              rag_documents: [],
+              rag_context: "",
+              use_rag_flag: false,
+              rag_relevance_score: 0.0,
+              rag_query: "",
+              rag_response: ""
+            },
+            workflow_config: {
+              nodes: nodes,
+              edges: edges
+            }
+          })
         });
 
         const result = await response.json();
@@ -1143,7 +1044,7 @@ function App() {
           setIsSimulating(true);
           setIsPaused(false);
           console.log('Simulation started:', result);
-
+          
           // Start polling for status updates
           pollSimulationStatus();
         } else {
@@ -1157,18 +1058,17 @@ function App() {
     }
   };
 
-  // Function to step through the simulation
+  // Function to step through simulation
   const stepSimulation = async () => {
     try {
-      // Use environment variable for API URL with fallback
       let workflowApiUrl = process.env.REACT_APP_WORKFLOW_API_URL;
 
       if (!workflowApiUrl) {
         const currentHost = window.location.hostname;
         if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
-          workflowApiUrl = 'http://192.168.51.138:5004';  // Workflow API service
+          workflowApiUrl = 'http://192.168.51.138:5004';
         } else {
-          workflowApiUrl = `http://${currentHost}:5004`;  // Workflow API service
+          workflowApiUrl = `http://${currentHost}:5004`;
         }
       }
 
@@ -1185,7 +1085,7 @@ function App() {
 
       if (result.status === 'success') {
         console.log('Stepped forward in simulation:', result);
-        // The step function now handles pausing, so we just need to update status
+        // Update status after step
         await updateSimulationStatus();
       } else {
         console.error('Error stepping simulation:', result);
@@ -1197,24 +1097,23 @@ function App() {
     }
   };
 
-  // Function to pause/resume the simulation
+  // Function to pause/resume simulation
   const pauseResumeSimulation = async () => {
     try {
-      // Use environment variable for API URL with fallback
       let workflowApiUrl = process.env.REACT_APP_WORKFLOW_API_URL;
 
       if (!workflowApiUrl) {
         const currentHost = window.location.hostname;
         if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
-          workflowApiUrl = 'http://192.168.51.138:5004';  // Workflow API service
+          workflowApiUrl = 'http://192.168.51.138:5004';
         } else {
-          workflowApiUrl = `http://${currentHost}:5004`;  // Workflow API service
+          workflowApiUrl = `http://${currentHost}:5004`;
         }
       }
 
-      const endpoint = isPaused
-        ? `${workflowApiUrl}/api/simulation/step`  // Resume is like stepping
-        : `${workflowApiUrl}/api/simulation/pause`;
+      const endpoint = isPaused 
+        ? `${workflowApiUrl}/api/simulation/resume`  // Resume endpoint
+        : `${workflowApiUrl}/api/simulation/pause`;  // Pause endpoint
 
       const response = await fetch(endpoint, {
         method: 'POST',
@@ -1241,15 +1140,14 @@ function App() {
   // Function to update simulation status
   const updateSimulationStatus = async () => {
     try {
-      // Use environment variable for API URL with fallback
       let workflowApiUrl = process.env.REACT_APP_WORKFLOW_API_URL;
 
       if (!workflowApiUrl) {
         const currentHost = window.location.hostname;
         if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
-          workflowApiUrl = 'http://192.168.51.138:5004';  // Workflow API service
+          workflowApiUrl = 'http://192.168.51.138:5004';
         } else {
-          workflowApiUrl = `http://${currentHost}:5004`;  // Workflow API service
+          workflowApiUrl = `http://${currentHost}:5004`;
         }
       }
 
@@ -1266,7 +1164,7 @@ function App() {
 
       if (result.status === 'success') {
         setSimulationStatus(result.data);
-
+        
         // Update log with new execution history
         if (result.data.execution_history) {
           setSimulationLog(prevLog => [
@@ -1277,128 +1175,20 @@ function App() {
             }))
           ]);
         }
-
+        
         // Update pause state based on simulation status
         if (result.data.status === 'paused') {
           setIsPaused(true);
         } else if (result.data.status === 'running') {
           setIsPaused(false);
         }
-
+        
         console.log('Simulation status updated:', result.data);
       } else {
         console.error('Error getting simulation status:', result);
       }
     } catch (error) {
       console.error('Error getting simulation status:', error);
-    }
-  };
-
-  // Function to poll simulation status periodically
-  const pollSimulationStatus = () => {
-    const interval = setInterval(async () => {
-      if (isSimulating && !isPaused) {
-        await updateSimulationStatus();
-      } else if (!isSimulating) {
-        // Stop polling if simulation is stopped
-        clearInterval(interval);
-      }
-    }, 2000); // Poll every 2 seconds
-
-    // Return function to clear interval when component unmounts or simulation stops
-    return () => clearInterval(interval);
-  };
-
-  // Function to save the current workflow state to history
-  const saveWorkflowState = async (nodes, edges, workflowName) => {
-    try {
-      // Construct the workflow configuration object
-      const workflowConfig = {
-        name: workflowName,
-        nodes: nodes,
-        edges: edges
-      };
-
-      // Use environment variable for API URL with fallback
-      let workflowApiUrl = process.env.REACT_APP_WORKFLOW_API_URL;
-
-      if (!workflowApiUrl) {
-        const currentHost = window.location.hostname;
-        if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
-          workflowApiUrl = 'http://192.168.51.138:5004';  // Workflow API service
-        } else {
-          workflowApiUrl = `http://${currentHost}:5004`;  // Workflow API service
-        }
-      }
-
-      const endpoint = `${workflowApiUrl}/api/workflow/history/save`;
-
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(workflowConfig)
-      });
-
-      const result = await response.json();
-
-      if (result.status !== 'success') {
-        console.error('Error saving workflow state:', result);
-      }
-    } catch (error) {
-      console.error('Error saving workflow state:', error);
-    }
-  };
-
-  // Function to apply changes directly to the LangGraph code
-  const applyChangesToCode = async (nodes, edges, workflowName) => {
-    try {
-      // Construct the workflow configuration object
-      const workflowConfig = {
-        name: workflowName,
-        nodes: nodes,
-        edges: edges
-      };
-
-      // Use environment variable for API URL with fallback
-      let workflowApiUrl = process.env.REACT_APP_WORKFLOW_API_URL;
-
-      if (!workflowApiUrl) {
-        const currentHost = window.location.hostname;
-        if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
-          workflowApiUrl = 'http://192.168.51.138:5004';  // Workflow API service
-        } else {
-          workflowApiUrl = `http://${currentHost}:5004`;  // Workflow API service
-        }
-      }
-
-      const endpoint = `${workflowApiUrl}/api/workflow/apply_changes`;
-
-      console.log('Sending workflow config to apply changes:', workflowConfig);
-
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(workflowConfig)
-      });
-
-      const result = await response.json();
-
-      if (result.status === 'success') {
-        // After successfully applying changes, save the current state to history
-        await saveWorkflowState(nodes, edges, workflowName);
-        alert(`Success: ${result.message}`);
-        console.log('Changes applied successfully:', result);
-      } else {
-        alert(`Error: ${result.message}`);
-        console.error('Error applying changes:', result);
-      }
-    } catch (error) {
-      console.error('Error applying changes to code:', error);
-      alert(`Error applying changes to code: ${error.message}`);
     }
   };
 
@@ -1449,7 +1239,7 @@ function App() {
             <div style={{ width: '300px', backgroundColor: '#f8f9fa', borderRight: '1px solid #ddd', overflow: 'hidden' }}>
               <ComponentLibrary onDragStart={handleDragStart} />
             </div>
-
+            
             {/* Main Canvas Area */}
             <div style={{ flex: 1 }}>
               <ReactFlow
@@ -1462,7 +1252,6 @@ function App() {
                 onDragOver={onDragOver}
                 connectionMode={ConnectionMode.Loose}
                 nodeTypes={nodeTypes}
-                edgeTypes={edgeTypes}
                 onConnectStart={onConnectStart}
                 onConnectEnd={onConnectEnd}
               >
@@ -1488,9 +1277,9 @@ function App() {
                       <button
                         onClick={handleUndo}
                         disabled={!canUndo}
-                        style={{
-                          marginRight: '5px',
-                          padding: '5px 10px',
+                        style={{ 
+                          marginRight: '5px', 
+                          padding: '5px 10px', 
                           fontSize: '12px',
                           backgroundColor: canUndo ? '#2196F3' : '#cccccc',
                           color: 'white'
@@ -1501,9 +1290,9 @@ function App() {
                       <button
                         onClick={handleRedo}
                         disabled={!canRedo}
-                        style={{
-                          marginRight: '5px',
-                          padding: '5px 10px',
+                        style={{ 
+                          marginRight: '5px', 
+                          padding: '5px 10px', 
                           fontSize: '12px',
                           backgroundColor: canRedo ? '#2196F3' : '#cccccc',
                           color: 'white'
@@ -1575,14 +1364,14 @@ function App() {
                       </button>
                     </div>
                   </div>
-
+                  
                   {/* Simulation Log Panel */}
                   {isSimulating && (
-                    <div style={{
-                      marginTop: '10px',
-                      padding: '10px',
-                      backgroundColor: '#f9f9f9',
-                      borderRadius: '4px',
+                    <div style={{ 
+                      marginTop: '10px', 
+                      padding: '10px', 
+                      backgroundColor: '#f9f9f9', 
+                      borderRadius: '4px', 
                       border: '1px solid #ccc',
                       maxHeight: '200px',
                       overflowY: 'auto'
@@ -1591,15 +1380,15 @@ function App() {
                       {simulationLog.length > 0 ? (
                         <div>
                           {simulationLog.slice(-5).map((logEntry, index) => (
-                            <div key={index} style={{
-                              padding: '5px',
-                              margin: '2px 0',
-                              backgroundColor: '#eef7ff',
+                            <div key={index} style={{ 
+                              padding: '5px', 
+                              margin: '2px 0', 
+                              backgroundColor: '#eef7ff', 
                               borderRadius: '3px',
                               fontSize: '12px'
                             }}>
-                              <strong>Step {logEntry.step}:</strong> {logEntry.node_output ?
-                                `Node executed, state updated` :
+                              <strong>Step {logEntry.step}:</strong> {logEntry.node_output ? 
+                                `Node executed, state updated` : 
                                 'Processing...'}
                               <br />
                               <small>Time: {logEntry.timestamp}</small>
@@ -1609,11 +1398,11 @@ function App() {
                       ) : (
                         <p style={{ fontSize: '12px', color: '#666' }}>No simulation logs yet...</p>
                       )}
-
+                      
                       {simulationStatus && (
                         <div style={{ marginTop: '10px', fontSize: '12px' }}>
-                          <strong>Status:</strong> {simulationStatus.status} |
-                          <strong> Step:</strong> {simulationStatus.current_step} |
+                          <strong>Status:</strong> {simulationStatus.status} | 
+                          <strong> Step:</strong> {simulationStatus.current_step} | 
                           <strong> Total Steps:</strong> {simulationStatus.total_steps}
                         </div>
                       )}
