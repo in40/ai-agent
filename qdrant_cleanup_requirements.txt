@@ -1,0 +1,2 @@
+# Requirements for Qdrant Cleanup Utility
+qdrant-client>=1.9.0
