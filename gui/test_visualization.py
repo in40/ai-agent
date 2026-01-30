@@ -1,6 +1,9 @@
 import sys
 import os
-sys.path.insert(0, '/root/qwen_test/ai_agent')
+from pathlib import Path
+current_dir = Path(__file__).parent
+project_root = current_dir.parent
+sys.path.insert(0, str(project_root))
 
 # Test if we can import and visualize the graph
 from langgraph_agent.langgraph_agent import create_enhanced_agent_graph

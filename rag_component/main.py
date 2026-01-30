@@ -9,7 +9,8 @@ from .embedding_manager import EmbeddingManager
 from .vector_store_manager import VectorStoreManager
 from .retriever import Retriever
 from .rag_chain import RAGChain
-from .config import RAG_CHUNK_SIZE, RAG_CHUNK_OVERLAP
+from .reranker import Reranker
+from .config import RAG_CHUNK_SIZE, RAG_CHUNK_OVERLAP, RERANKER_ENABLED
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 
@@ -28,6 +29,7 @@ class RAGOrchestrator:
         self.vector_store_manager = VectorStoreManager()
         self.retriever = Retriever(self.vector_store_manager)
         self.rag_chain = RAGChain(self.retriever, llm)
+        self.reranker = Reranker() if RERANKER_ENABLED else None
 
         # Initialize text splitter for document preprocessing
         self.text_splitter = RecursiveCharacterTextSplitter(
@@ -223,7 +225,44 @@ class RAGOrchestrator:
         Returns:
             List of relevant documents with metadata and scores
         """
-        return self.retriever.get_relevant_documents(query)
+        # Use retrieve_documents_with_scores to respect the top_k parameter
+        docs_with_scores = self.retriever.retrieve_documents_with_scores(query, top_k=top_k)
+
+        # Apply the same formatting as get_relevant_documents but with the specified top_k
+        formatted_docs = []
+        for doc, score in docs_with_scores:
+            if score >= self.retriever.similarity_threshold:
+                # Determine the source label based on upload method
+                upload_method = doc.metadata.get("upload_method", "")
+
+                # Update upload method labels to be more specific
+                if upload_method == "Web upload":
+                    source_label = "Client upload"
+                elif upload_method == "Local":
+                    source_label = "Local"
+                elif upload_method == "Processed JSON Import":
+                    source_label = "Processed JSON Upload"
+                else:
+                    # Default to Unknown if no upload method is specified
+                    source_label = "Unknown"
+
+                # Add ChromaDB collection name to the source label
+                collection_name = self.vector_store_manager.collection_name if hasattr(self.vector_store_manager, 'collection_name') else "default"
+                source_label = f"{source_label} [Collection: {collection_name}]"
+
+                formatted_docs.append({
+                    "content": doc.page_content,
+                    "title": doc.metadata.get("title", "Untitled Document"),
+                    "source": source_label,
+                    "metadata": doc.metadata,
+                    "score": score
+                })
+
+        # If reranker is enabled, re-rank the documents
+        if self.reranker and formatted_docs:
+            formatted_docs = self.reranker.rerank_documents(query, formatted_docs, top_k=top_k)
+
+        return formatted_docs
 
     def update_llm(self, llm):
         """

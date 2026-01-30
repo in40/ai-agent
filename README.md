@@ -258,6 +258,22 @@ The agent can be configured via environment variables in the `.env` file:
 - `DISABLE_DATABASES`: Flag to disable all database operations (default: false)
 - `DEFAULT_DATABASE_ENABLED`: Flag to specifically enable/disable the default database (default: true)
 
+### Authentication Service Database Initialization
+To initialize the PostgreSQL database for the authentication service:
+1. Ensure PostgreSQL is installed and running
+2. Create a database for the application (e.g., `ai_agent_db`)
+3. Set the database connection parameters in your `.env` file:
+   ```
+   DB_TYPE=postgresql
+   DB_USERNAME=your_db_username
+   DB_PASSWORD=your_db_password
+   DB_HOSTNAME=localhost
+   DB_PORT=5432
+   DB_NAME=ai_agent_db
+   DATABASE_URL=postgresql://your_db_username:your_db_password@localhost:5432/ai_agent_db
+   ```
+4. The authentication service will automatically create the required `users` table on startup
+
 ### RAG Configuration
 - `RAG_ENABLED`: Enable or disable RAG functionality (default: true)
 - `RAG_EMBEDDING_MODEL`: Model to use for embeddings (default: all-MiniLM-L6-v2)

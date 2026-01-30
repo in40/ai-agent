@@ -16,7 +16,7 @@ const RAGComponent = () => {
     if (!apiUrl) {
       const currentHost = window.location.hostname;
       if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
-        apiUrl = 'http://192.168.51.138:5000';  // Changed from 5001 to 5000 (gateway service)
+        apiUrl = 'http://192.168.51.216:5000';  // Changed from 5001 to 5000 (gateway service)
       } else {
         apiUrl = `http://${currentHost}:5000`;  // Changed from 5001 to 5000 (gateway service)
       }

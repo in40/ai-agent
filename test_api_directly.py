@@ -8,7 +8,7 @@ import json
 import os
 
 # Get the backend URL from environment or use default
-BACKEND_URL = os.getenv('BACKEND_URL', 'http://192.168.51.138:5000')
+BACKEND_URL = os.getenv('BACKEND_URL', 'http://192.168.51.216:5000')
 
 def register_user():
     """Register a new user to get access to the API."""

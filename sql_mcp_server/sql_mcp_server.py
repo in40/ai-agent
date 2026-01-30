@@ -272,9 +272,11 @@ class SQLMCPServer:
         try:
             from registry.registry_client import ServiceInfo, MCPServiceWrapper
 
+            # Use 127.0.0.1 instead of 0.0.0.0 for service registration since 0.0.0.0 is not a valid call address
+            registration_host = "127.0.0.1" if self.host == "0.0.0.0" else self.host
             service_info = ServiceInfo(
-                id=f"sql-server-{self.host.replace('.', '-')}-{self.port}",
-                host=self.host,
+                id=f"sql-server-{registration_host.replace('.', '-')}-{self.port}",
+                host=registration_host,
                 port=self.port,
                 type="mcp_sql",
                 metadata={

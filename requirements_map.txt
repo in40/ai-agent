@@ -1,0 +1,159 @@
+# Requirements Map for AI Agent System
+
+## Detailed Requirements Mapping for AI Agent System
+
+### 1. Web Framework Components
+- **flask>=2.0.0**
+  - Component: Backend, Authentication Service
+  - Usage: Core web framework for building the backend services
+
+- **flask-cors>=3.0.0**
+  - Component: Backend, Authentication Service
+  - Usage: Cross-origin resource sharing support for Flask applications
+
+- **flask-session**
+  - Component: Backend, Authentication Service
+  - Usage: Session management for Flask applications
+
+- **flask-limiter**
+  - Component: Backend, Authentication Service
+  - Usage: Rate limiting for Flask applications
+
+- **PyJWT>=2.0.0**
+  - Component: Authentication Service
+  - Usage: JSON Web Token implementation for authentication
+
+- **bcrypt>=3.2.0**
+  - Component: Authentication Service
+  - Usage: Password hashing for secure credential storage
+
+- **requests>=2.25.0**
+  - Component: Backend, Models, Utils
+  - Usage: HTTP library for making requests to external services
+
+### 2. LangChain Ecosystem
+- **langchain>=0.3.4**
+  - Component: LangGraph Agent, Models, RAG Component
+  - Usage: Core framework for creating language model chains and LCEL (LangChain Expression Language)
+
+- **langchain-community>=0.3.3**
+  - Component: RAG Component, Models
+  - Usage: Community extensions including document loaders, vector stores, and utility functions
+
+- **langchain-core>=0.3.47**
+  - Component: LangGraph Agent, Models, RAG Component, Utils
+  - Usage: Core abstractions, messages, callbacks, and base classes
+
+- **langchain-openai>=0.3.3**
+  - Component: Models, RAG Component
+  - Usage: OpenAI model integrations for various LLM tasks
+
+- **langchain-ollama>=0.3.0**
+  - Component: Models
+  - Usage: Ollama model integrations for local LLM hosting
+
+- **langchain-gigachat==0.3.12**
+  - Component: Models, Utils
+  - Usage: GigaChat model integrations for Russian language models
+
+- **langchain-text-splitters>=0.3.5**
+  - Component: RAG Component
+  - Usage: Text splitting functionality for document preprocessing
+
+- **langchain-huggingface==0.1.2**
+  - Component: RAG Component
+  - Usage: Hugging Face model integrations for embeddings
+
+- **langchain-qdrant>=0.3.0**
+  - Component: RAG Component
+  - Usage: Qdrant vector database integration
+
+### 3. Database Components
+- **psycopg2-binary>=2.9.9**
+  - Component: Database
+  - Usage: PostgreSQL database adapter for Python
+
+- **sqlalchemy>=2.0.45**
+  - Component: Database
+  - Usage: ORM and database abstraction layer
+
+### 4. Data Modeling and Validation
+- **pydantic==2.12.5**
+  - Component: LangGraph Agent, Models
+  - Usage: Data validation and settings management
+
+- **python-dotenv==1.0.1**
+  - Component: Config
+  - Usage: Environment variable loading from .env files
+
+### 5. LLM Providers
+- **openai>=1.65.2**
+  - Component: Models
+  - Usage: OpenAI API client library
+
+- **tiktoken==0.8.0**
+  - Component: Models, RAG Component
+  - Usage: Token counting for OpenAI models
+
+- **gigachat>=0.1.41.post1,<0.2.0**
+  - Component: Utils
+  - Usage: GigaChat API client library
+
+### 6. Graph Workflow Engine
+- **langgraph**
+  - Component: LangGraph Agent
+  - Usage: Stateful workflow management and graph-based execution
+
+### 7. Utilities and Helpers
+- **tenacity==8.5.0**
+  - Component: Models, Utils
+  - Usage: Retry mechanisms for API calls and operations
+
+- **chromadb==0.6.3**
+  - Component: RAG Component
+  - Usage: Vector database for similarity search
+
+- **sentence-transformers==3.2.1**
+  - Component: RAG Component
+  - Usage: Sentence embedding models
+
+- **unstructured==0.16.25**
+  - Component: RAG Component
+  - Usage: Document parsing and preprocessing
+
+- **pypdf==5.1.0**
+  - Component: RAG Component
+  - Usage: PDF processing capabilities
+
+- **qdrant-client>=1.12.0**
+  - Component: RAG Component
+  - Usage: Qdrant vector database client
+
+### 8. Production Deployment
+- **gunicorn>=22.0.0**
+  - Component: Backend
+  - Usage: Production WSGI HTTP Server for Linux
+
+- **redis>=5.2.0**
+  - Component: Backend, Authentication Service
+  - Usage: In-memory data structure store for session management and caching
+
+### 9. GUI Components
+- **streamlit>=1.28.0**
+  - Component: GUI
+  - Usage: Framework for creating web applications for visualization and debugging
+
+- **graphviz**
+  - Component: GUI
+  - Usage: Graph visualization for workflow diagrams
+
+- **grandalf**
+  - Component: GUI
+  - Usage: Graph drawing algorithm for layout computation
+
+### 10. RAG Component
+- **marker-pdf>=0.1.0**
+  - Component: RAG Component
+  - Usage: PDF processing and extraction for document ingestion
+
+This mapping provides a clear understanding of which components depend on each package in the requirements.txt file, helping to identify potential impacts when updating or removing dependencies.

@@ -1058,6 +1058,26 @@ def retrieve_documents_node(state: AgentState) -> AgentState:
         from models.response_generator import ResponseGenerator
         from models.dedicated_mcp_model import DedicatedMCPModel
 
+        # Extract the RAG query from the tool call parameters if available
+        # Look for RAG tool calls in mcp_tool_calls and extract the query parameter
+        rag_query = state.get("rag_query", "")
+
+        # If rag_query is empty, try to extract it from the mcp_tool_calls
+        if not rag_query:
+            mcp_tool_calls = state.get("mcp_tool_calls", [])
+            for tool_call in mcp_tool_calls:
+                service_id = tool_call.get('service_id', '').lower()
+                if 'rag' in service_id:
+                    # Extract the query from the parameters
+                    params = tool_call.get('params', {})
+                    rag_query = params.get('query', '')
+                    if rag_query:
+                        break  # Use the first RAG query found
+
+        # If still no query found, use the original user request
+        if not rag_query:
+            rag_query = user_request
+
         # Check the RAG mode to determine how to retrieve documents
         if RAG_MODE == "mcp":
             # Use MCP RAG service to retrieve documents
@@ -1083,8 +1103,8 @@ def retrieve_documents_node(state: AgentState) -> AgentState:
 
             # Prepare parameters for the RAG query
             rag_parameters = {
-                "query": state["rag_query"],
-                "top_k": 5  # Use default top_k, could be configurable
+                "query": rag_query,
+                "top_k": 10  # Retrieve more documents to allow for reranking later, could be configurable
             }
 
             # Call the RAG MCP service
@@ -1110,7 +1130,7 @@ def retrieve_documents_node(state: AgentState) -> AgentState:
             rag_orchestrator = RAGOrchestrator(llm=llm)
 
             # Retrieve documents based on the user request
-            retrieved_docs = rag_orchestrator.retrieve_documents(state["rag_query"])
+            retrieved_docs = rag_orchestrator.retrieve_documents(rag_query)
 
         # Calculate average relevance score
         if retrieved_docs:
@@ -1124,7 +1144,8 @@ def retrieve_documents_node(state: AgentState) -> AgentState:
         return {
             **state,
             "rag_documents": retrieved_docs,
-            "rag_relevance_score": avg_score
+            "rag_relevance_score": avg_score,
+            "rag_query": rag_query  # Update the state with the extracted query
         }
     except Exception as e:
         elapsed_time = time.time() - start_time
@@ -1134,7 +1155,8 @@ def retrieve_documents_node(state: AgentState) -> AgentState:
         return {
             **state,
             "rag_documents": [],
-            "rag_relevance_score": 0.0
+            "rag_relevance_score": 0.0,
+            "rag_query": rag_query  # Still update the state with the query even on error
         }
 
 
@@ -1176,6 +1198,92 @@ def augment_context_node(state: AgentState) -> AgentState:
             **state,
             "rag_context": state["user_request"]
         }
+
+
+def rerank_documents_node(state: AgentState) -> AgentState:
+    """
+    Node to rerank documents using the RAG MCP server's rerank endpoint if more than RERANK_TOP_K_RESULTS documents are returned.
+    Only returns the top RERANK_TOP_K_RESULTS documents after reranking.
+    """
+    start_time = time.time()
+    logger.info(f"[NODE START] rerank_documents_node - Checking if reranking is needed for {len(state['rag_documents'])} documents")
+
+    try:
+        # Check if reranking is needed: more than RERANK_TOP_K_RESULTS documents and reranker is enabled
+        from rag_component.config import RERANKER_ENABLED, RERANK_TOP_K_RESULTS
+        if not RERANKER_ENABLED or len(state["rag_documents"]) <= RERANK_TOP_K_RESULTS:
+            logger.info(f"[NODE INFO] rerank_documents_node - Reranking not needed (enabled: {RERANKER_ENABLED}, count: {len(state['rag_documents'])}, threshold: {RERANK_TOP_K_RESULTS})")
+            elapsed_time = time.time() - start_time
+            logger.info(f"[NODE SUCCESS] rerank_documents_node - Completed without reranking in {elapsed_time:.2f}s")
+            return state
+
+        # Import required components
+        from rag_component.config import RAG_MODE
+        from models.dedicated_mcp_model import DedicatedMCPModel
+
+        # Only proceed if using MCP RAG mode
+        if RAG_MODE != "mcp":
+            logger.info("[NODE INFO] rerank_documents_node - Not using MCP RAG mode, skipping reranking")
+            elapsed_time = time.time() - start_time
+            logger.info(f"[NODE SUCCESS] rerank_documents_node - Completed without reranking in {elapsed_time:.2f}s")
+            return state
+
+        # Get the RAG MCP service from discovered services
+        discovered_services = state.get("discovered_services", [])
+        rag_mcp_services = [s for s in discovered_services if s.get("type") == "rag"]
+
+        if not rag_mcp_services:
+            logger.warning("[NODE WARNING] rerank_documents_node - No RAG MCP services available for reranking")
+            elapsed_time = time.time() - start_time
+            logger.info(f"[NODE SUCCESS] rerank_documents_node - Completed without reranking in {elapsed_time:.2f}s")
+            return state
+
+        # Use the first available RAG MCP service
+        rag_service = rag_mcp_services[0]
+
+        # Create a dedicated MCP model instance to handle the RAG service call
+        mcp_model = DedicatedMCPModel()
+
+        # Prepare parameters for the rerank call
+        from rag_component.config import RERANK_TOP_K_RESULTS
+        rerank_parameters = {
+            "query": state["rag_query"],
+            "documents": state["rag_documents"],
+            "top_k": RERANK_TOP_K_RESULTS  # Use configured top_k value
+        }
+
+        # Call the rerank endpoint on the RAG MCP service
+        rerank_results = mcp_model._call_mcp_service(rag_service, "rerank_documents", rerank_parameters)
+
+        if rerank_results.get("status") == "success":
+            reranked_docs = rerank_results.get("result", {}).get("results", [])
+            logger.info(f"[NODE SUCCESS] Successfully reranked {len(state['rag_documents'])} documents to {len(reranked_docs)} documents using MCP RAG service")
+
+            # Calculate average relevance score for reranked documents
+            if reranked_docs:
+                avg_score = sum(doc.get("score", 0) for doc in reranked_docs) / len(reranked_docs)
+            else:
+                avg_score = 0.0
+
+            elapsed_time = time.time() - start_time
+            logger.info(f"[NODE SUCCESS] rerank_documents_node - Reranked documents in {elapsed_time:.2f}s with avg relevance score: {avg_score:.3f}")
+
+            return {
+                **state,
+                "rag_documents": reranked_docs,
+                "rag_relevance_score": avg_score
+            }
+        else:
+            logger.warning(f"[NODE WARNING] Reranking failed: {rerank_results.get('error', 'Unknown error')}, using original results")
+            elapsed_time = time.time() - start_time
+            logger.info(f"[NODE SUCCESS] rerank_documents_node - Completed with original documents in {elapsed_time:.2f}s")
+            return state
+
+    except Exception as e:
+        elapsed_time = time.time() - start_time
+        logger.error(f"[NODE ERROR] rerank_documents_node - Error during reranking after {elapsed_time:.2f}s: {str(e)}")
+        # Return original documents on error
+        return state
 
 
 def synthesize_results_node(state: AgentState) -> AgentState:
@@ -1300,10 +1408,18 @@ def generate_final_answer_node(state: AgentState) -> AgentState:
         from models.response_generator import ResponseGenerator
         response_generator = ResponseGenerator()
 
-        # Generate the final response based on the synthesized results
-        final_answer = response_generator.generate_natural_language_response(
-            state["synthesized_result"]
-        )
+        # Check if a final answer was already generated (e.g., by RAG response node)
+        existing_final_answer = state.get("final_answer", "")
+
+        # If there's already a final answer (like from RAG), use it directly
+        if existing_final_answer and existing_final_answer != "":
+            logger.info(f"[NODE INFO] generate_final_answer_node - Using existing final answer from previous node")
+            final_answer = existing_final_answer
+        else:
+            # Generate the final response based on the synthesized results
+            final_answer = response_generator.generate_natural_language_response(
+                state["synthesized_result"]
+            )
 
         elapsed_time = time.time() - start_time
         logger.info(f"[NODE SUCCESS] generate_final_answer_node - Generated final answer")
@@ -1490,6 +1606,7 @@ def create_enhanced_agent_graph():
     workflow.add_node("analyze_request", analyze_request_node)
     workflow.add_node("check_mcp_applicability", check_mcp_applicability_node)
     workflow.add_node("retrieve_documents", retrieve_documents_node)
+    workflow.add_node("rerank_documents", rerank_documents_node)  # New node for reranking documents
     workflow.add_node("augment_context", augment_context_node)
     workflow.add_node("generate_rag_response", generate_rag_response_node)
     workflow.add_node("plan_mcp_queries", plan_mcp_queries_node)
@@ -1507,16 +1624,30 @@ def create_enhanced_agent_graph():
         """
         Conditional edge to determine if we should use RAG or MCP approach
         """
-        # Since we removed the decision logic from check_mcp_applicability_node,
-        # we now default to the MCP approach
+        # Check if RAG is requested or if no other MCP services were identified
         disable_databases = state.get("disable_databases", False)
+        mcp_tool_calls = state.get("mcp_tool_calls", [])
 
-        # If databases are disabled, don't use RAG either (unless specifically configured)
+        # Check if any of the tool calls are for RAG
+        has_rag_call = any('rag' in call.get('service_id', '').lower() for call in mcp_tool_calls)
+
+        # If databases are disabled, don't use RAG
         if disable_databases:
-            logger.info("Databases are disabled, skipping RAG check and proceeding with MCP services")
+            logger.info("Databases are disabled, skipping RAG and proceeding with MCP services")
             return "use_mcp"
 
-        # Default to MCP approach since decision logic was removed
+        # If RAG was specifically requested in tool calls, use RAG
+        if has_rag_call:
+            logger.info("RAG service specifically requested, using RAG approach")
+            return "use_rag"
+
+        # If no other MCP services were identified, consider using RAG as fallback
+        non_rag_calls = [call for call in mcp_tool_calls if 'rag' not in call.get('service_id', '').lower()]
+        if not non_rag_calls:
+            logger.info("No non-RAG MCP services identified, using RAG as fallback")
+            return "use_rag"
+
+        # Otherwise, use MCP approach
         logger.info("Using MCP approach for the request")
         return "use_mcp"
 
@@ -1567,8 +1698,20 @@ def create_enhanced_agent_graph():
         }
     )
 
-    # Add edge to MCP approach directly since RAG decision logic was removed
-    workflow.add_edge("check_mcp_applicability", "plan_mcp_queries")   # Use MCP approach
+    # Add conditional edge based on whether to use RAG or MCP approach
+    workflow.add_conditional_edges(
+        "check_mcp_applicability",
+        should_use_rag,
+        {
+            "use_mcp": "plan_mcp_queries",  # Use MCP approach
+            "use_rag": "retrieve_documents"  # Use RAG approach
+        }
+    )
+
+    # Add RAG workflow edges
+    workflow.add_edge("retrieve_documents", "rerank_documents")  # Connect retrieve to rerank
+    workflow.add_edge("rerank_documents", "augment_context")  # Connect rerank to augment
+    workflow.add_edge("augment_context", "generate_rag_response")  # Connect augment to response generation
 
     # Add MCP workflow edges
     workflow.add_edge("plan_mcp_queries", "execute_mcp_queries")
@@ -1584,6 +1727,7 @@ def create_enhanced_agent_graph():
         }
     )
     workflow.add_edge("plan_refined_queries", "execute_mcp_queries")  # Loop back to execute refined queries
+    workflow.add_edge("generate_rag_response", "generate_final_answer")  # Connect RAG response to final answer
     workflow.add_edge("generate_final_answer", END)
     workflow.add_edge("generate_failure_response", END)
     workflow.add_edge("generate_final_answer_from_analysis", END)

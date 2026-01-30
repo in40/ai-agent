@@ -237,7 +237,7 @@ def rag_lookup(current_user_id):
     """Endpoint for looking up documents in RAG"""
     try:
         data = request.get_json()
-        
+
         # Validate input
         schema = {
             'query': {
@@ -246,27 +246,34 @@ def rag_lookup(current_user_id):
                 'min_length': 1,
                 'max_length': 1000,
                 'sanitize': True
+            },
+            'top_k': {
+                'type': int,
+                'required': False,
+                'min_value': 1,
+                'max_value': 100
             }
         }
-        
+
         validation_errors = validate_input(data, schema)
         if validation_errors:
             return jsonify({'error': f'Validation error: {validation_errors}'}), 400
-        
+
         query = data.get('query')
-        
+        top_k = data.get('top_k', 5)  # Default to 5 results
+
         # Initialize RAG orchestrator with appropriate LLM
         response_generator = ResponseGenerator()
         llm = response_generator._get_llm_instance(
             provider=RESPONSE_LLM_PROVIDER,
             model=RESPONSE_LLM_MODEL
         )
-        
+
         rag_orchestrator = RAGOrchestrator(llm=llm)
-        
+
         # Retrieve documents
-        documents = rag_orchestrator.retrieve_documents(query)
-        
+        documents = rag_orchestrator.retrieve_documents(query, top_k=top_k)
+
         return jsonify({'documents': documents}), 200
     except Exception as e:
         logger.error(f"RAG lookup error: {str(e)}")
@@ -1011,6 +1018,126 @@ def rag_ingest_from_session(current_user_id):
     except Exception as e:
         logger.error(f"RAG ingestion from session error: {str(e)}")
         return jsonify({'error': f'RAG ingestion from session failed: {str(e)}'}), 500
+
+
+@app.route('/import_processed', methods=['POST'])
+@require_permission(Permission.WRITE_RAG)
+def import_processed_documents(current_user_id):
+    """Endpoint for importing pre-processed JSON documents with chunks and metadata"""
+    try:
+        import json
+        import tempfile
+        import os
+        from langchain_core.documents import Document as LCDocument
+
+        # Check if the request contains files
+        if 'file' not in request.files:
+            return jsonify({'error': 'No file provided'}), 400
+
+        file = request.files['file']
+
+        if file.filename == '':
+            return jsonify({'error': 'No file selected'}), 400
+
+        # Validate file type
+        if not file.filename.lower().endswith('.json'):
+            return jsonify({'error': 'Only JSON files are allowed for processed document import'}), 400
+
+        # Read and parse the JSON file
+        try:
+            file_content = file.read().decode('utf-8')
+            processed_data = json.loads(file_content)
+        except json.JSONDecodeError as e:
+            return jsonify({'error': f'Invalid JSON format: {str(e)}'}), 400
+        except UnicodeDecodeError as e:
+            return jsonify({'error': f'Invalid UTF-8 encoding: {str(e)}'}), 400
+
+        # Validate the structure of the processed data
+        required_fields = ['document', 'chunks']
+        for field in required_fields:
+            if field not in processed_data:
+                return jsonify({'error': f'Missing required field: {field}'}), 400
+
+        if not isinstance(processed_data['chunks'], list):
+            return jsonify({'error': 'Chunks must be an array'}), 400
+
+        # Initialize RAG orchestrator with appropriate LLM
+        response_generator = ResponseGenerator()
+        llm = response_generator._get_llm_instance(
+            provider=RESPONSE_LLM_PROVIDER,
+            model=RESPONSE_LLM_MODEL
+        )
+
+        rag_orchestrator = RAGOrchestrator(llm=llm)
+
+        # Convert the processed chunks to LangChain documents
+        documents = []
+        for chunk in processed_data['chunks']:
+            # Validate required fields in each chunk
+            if 'content' not in chunk:
+                return jsonify({'error': 'Each chunk must have a content field'}), 400
+
+            # Create a LangChain document from the chunk
+            doc_content = chunk['content']
+
+            # Create metadata for the document
+            doc_metadata = {
+                'source': processed_data.get('document', 'processed_document'),
+                'chunk_id': chunk.get('chunk_id', ''),
+                'section': chunk.get('section', ''),
+                'title': chunk.get('title', ''),
+                'chunk_type': chunk.get('chunk_type', ''),
+                'token_count': chunk.get('token_count', 0),
+                'contains_formula': chunk.get('contains_formula', False),
+                'contains_table': chunk.get('contains_table', False),
+                'upload_method': 'Processed JSON Import',
+                'user_id': current_user_id
+            }
+
+            # Add trust level if present
+            if 'trust_level' in chunk:
+                doc_metadata['trust_level'] = chunk['trust_level']
+
+            # Add testing scenario if present
+            if 'testing_scenario' in chunk:
+                doc_metadata['testing_scenario'] = chunk['testing_scenario']
+
+            # Add formula ID if present
+            if 'formula_id' in chunk:
+                doc_metadata['formula_id'] = chunk['formula_id']
+
+            # Add overlap information if present
+            if 'overlap_source' in chunk:
+                doc_metadata['overlap_source'] = chunk['overlap_source']
+            if 'overlap_tokens' in chunk:
+                doc_metadata['overlap_tokens'] = chunk['overlap_tokens']
+
+            # Add any other custom metadata from the chunk
+            for key, value in chunk.items():
+                if key not in ['content', 'chunk_id', 'section', 'title', 'chunk_type',
+                               'token_count', 'contains_formula', 'contains_table',
+                               'trust_level', 'testing_scenario', 'formula_id',
+                               'overlap_source', 'overlap_tokens']:
+                    doc_metadata[key] = value
+
+            # Create the LangChain document
+            lc_doc = LCDocument(page_content=doc_content, metadata=doc_metadata)
+            documents.append(lc_doc)
+
+        # Add documents to the vector store using the RAG orchestrator
+        rag_orchestrator.vector_store_manager.add_documents(documents)
+
+        return jsonify({
+            'message': f'Successfully imported {len(documents)} chunks from processed document',
+            'document': processed_data.get('document', 'unknown'),
+            'total_chunks': len(documents)
+        }), 200
+
+    except Exception as e:
+        logger.error(f"Processed document import error: {str(e)}")
+        import traceback
+        logger.error(traceback.format_exc())
+        return jsonify({'error': f'Processed document import failed: {str(e)}'}), 500
 
 
 if __name__ == '__main__':

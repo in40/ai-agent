@@ -216,9 +216,12 @@ class MCPDownloadServer:
         try:
             # Register with the service registry
             service_id = f"download-server-{self.host}-{self.port}".replace('.', '-').replace(':', '-')
+            # Use 127.0.0.1 instead of 0.0.0.0 for service registration since 0.0.0.0 is not a valid call address
+            registration_host = "127.0.0.1" if self.host == "0.0.0.0" else self.host
+            service_id = f"download-server-{registration_host}-{self.port}".replace('.', '-').replace(':', '-')
             service_info = ServiceInfo(
                 id=service_id,
-                host=self.host,
+                host=registration_host,
                 port=self.port,
                 type="mcp_download",
                 metadata={

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Agent Dashboard</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- Markdown-it CSS for styling rendered markdown -->
@@ -480,6 +481,11 @@
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="import-tab" data-bs-toggle="tab" data-bs-target="#import-panel" type="button">
+                                <i class="fas fa-file-import"></i> Import Processed
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
                             <button class="nav-link" id="lookup-tab" data-bs-toggle="tab" data-bs-target="#lookup-panel" type="button">
                                 <i class="fas fa-search"></i> Lookup Documents
                             </button>
@@ -541,6 +547,44 @@
                             </div>
                             <div id="ingest-result" class="alert alert-success mt-2" style="display: none;" role="alert">
                                 Documents processed successfully!
+                            </div>
+                        </div>
+
+                        <!-- Import Processed Panel -->
+                        <div class="tab-pane fade" id="import-panel" role="tabpanel">
+                            <h5><i class="fas fa-file-import"></i> Import Pre-Processed Documents</h5>
+                            <p class="text-muted">Upload JSON files containing pre-processed document chunks with metadata for direct ingestion into the vector database.</p>
+
+                            <div class="mb-4">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h6><i class="fas fa-cloud-upload-alt"></i> Upload Processed Document JSON</h6>
+                                </div>
+                                <div id="processed-drop-zone" class="border-2 border-dashed border-success rounded p-4 text-center mb-3" style="cursor: pointer; background-color: #f8fff9;">
+                                    <i class="fas fa-file-code fa-3x mb-3 text-success"></i>
+                                    <p class="mb-0">Drag & drop processed JSON files here or click to browse</p>
+                                    <p class="text-muted small mb-0">Supported format: .json (pre-processed document chunks)</p>
+                                    <input type="file" id="processed-file-upload" class="d-none" multiple accept=".json">
+                                </div>
+                                <div id="processed-selected-files" class="mt-2" style="display: none;">
+                                    <h6>Selected processed files:</h6>
+                                    <ul id="processed-file-list" class="list-group"></ul>
+                                </div>
+                                <div class="d-flex justify-content-between mt-2">
+                                    <button id="import-processed-btn" class="btn btn-success btn-animated" disabled>
+                                        <span id="import-spinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
+                                        <i class="fas fa-file-import"></i> Import Processed Documents
+                                    </button>
+                                    <div id="import-progress" class="progress flex-grow-1 ms-3" style="height: 20px; display: none;">
+                                        <div id="import-progress-bar" class="progress-bar bg-success" role="progressbar" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="import-status" class="alert alert-info mt-2" style="display: none;" role="alert">
+                                Importing processed documents...
+                            </div>
+                            <div id="import-result" class="alert alert-success mt-2" style="display: none;" role="alert">
+                                Processed documents imported successfully!
                             </div>
                         </div>
 
@@ -1300,6 +1344,197 @@
                 uploadBtn.disabled = true;
             }
         }
+
+        // Processed file upload functionality
+        const processedFileUploadInput = document.getElementById('processed-file-upload');
+        const processedDropZone = document.getElementById('processed-drop-zone');
+        const importBtn = document.getElementById('import-processed-btn');
+        const processedFileList = document.getElementById('processed-file-list');
+        const processedSelectedFilesDiv = document.getElementById('processed-selected-files');
+        const importSpinner = document.getElementById('import-spinner');
+        const importProgress = document.getElementById('import-progress');
+        const importProgressBar = document.getElementById('import-progress-bar');
+        const importStatusDiv = document.getElementById('import-status');
+        const importResultDiv = document.getElementById('import-result');
+
+        // Handle processed file selection via input
+        processedFileUploadInput.addEventListener('change', function(e) {
+            handleProcessedFiles(this.files);
+        });
+
+        // Handle click on processed drop zone
+        processedDropZone.addEventListener('click', function() {
+            processedFileUploadInput.click();
+        });
+
+        // Drag and drop functionality for processed files
+        processedDropZone.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.classList.add('bg-light');
+        });
+
+        processedDropZone.addEventListener('dragleave', function() {
+            this.classList.remove('bg-light');
+        });
+
+        processedDropZone.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.classList.remove('bg-light');
+            handleProcessedFiles(e.dataTransfer.files);
+        });
+
+        // Global array to hold selected processed files
+        let processedSelectedFilesArray = [];
+
+        function handleProcessedFiles(files) {
+            if (files.length === 0) return;
+
+            // Convert FileList to Array and filter for JSON files
+            const jsonFiles = Array.from(files).filter(file => {
+                const fileExt = '.' + file.name.split('.').pop().toLowerCase();
+                return fileExt === '.json';
+            });
+
+            if (jsonFiles.length === 0) {
+                alert('No JSON files selected. Please select processed document files with .json extension.');
+                return;
+            }
+
+            // Add new files to the existing array (avoid duplicates)
+            jsonFiles.forEach(file => {
+                if (!processedSelectedFilesArray.some(existingFile => existingFile.name === file.name && existingFile.size === file.size)) {
+                    processedSelectedFilesArray.push(file);
+                }
+            });
+
+            // Update the processed file list display
+            updateProcessedFileListDisplay();
+
+            // Enable the import button
+            importBtn.disabled = false;
+        }
+
+        function updateProcessedFileListDisplay() {
+            processedFileList.innerHTML = '';
+
+            processedSelectedFilesArray.forEach((file, index) => {
+                const listItem = document.createElement('li');
+                listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+                listItem.innerHTML = `
+                    <span>${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)</span>
+                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeProcessedFile(${index})">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                processedFileList.appendChild(listItem);
+            });
+
+            // Show the selected files section if there are files
+            processedSelectedFilesDiv.style.display = processedSelectedFilesArray.length > 0 ? 'block' : 'none';
+        }
+
+        // Function to remove a processed file from the selected files array
+        function removeProcessedFile(index) {
+            processedSelectedFilesArray.splice(index, 1);
+            updateProcessedFileListDisplay();
+
+            // If no files remain, hide the selected files section and disable import button
+            if (processedSelectedFilesArray.length === 0) {
+                processedSelectedFilesDiv.style.display = 'none';
+                importBtn.disabled = true;
+            }
+        }
+
+        // Expose removeProcessedFile globally so it can be called from the onclick handler
+        window.removeProcessedFile = removeProcessedFile;
+
+        // Import processed button functionality
+        importBtn.addEventListener('click', async function() {
+            if (processedSelectedFilesArray.length === 0) {
+                alert('Please select at least one processed JSON file to import');
+                return;
+            }
+
+            // Show import progress with animation
+            importSpinner.classList.remove('d-none');
+            importProgress.style.display = 'flex';
+            importBtn.classList.add('loading');
+            importBtn.disabled = true;
+            importStatusDiv.style.display = 'block';
+            importStatusDiv.textContent = 'Initializing import...';
+            importResultDiv.style.display = 'none';
+
+            try {
+                // Process each file sequentially
+                for (let i = 0; i < processedSelectedFilesArray.length; i++) {
+                    const file = processedSelectedFilesArray[i];
+
+                    // Update progress
+                    const progressPercentage = ((i + 1) / processedSelectedFilesArray.length) * 100;
+                    importProgressBar.style.width = `${progressPercentage}%`;
+                    importStatusDiv.textContent = `Importing file ${i+1} of ${processedSelectedFilesArray.length}: ${file.name}`;
+
+                    // Create FormData object to send the file
+                    const formData = new FormData();
+                    formData.append('file', file);
+
+                    // Send the file to the backend
+                    const response = await fetch(`${API_BASE_URL}/api/rag/import_processed`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${AUTH_TOKEN}`
+                        },
+                        body: formData
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json().catch(() => ({ error: 'Unknown error occurred' }));
+                        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+                    }
+
+                    const result = await response.json();
+                    console.log(`Successfully imported processed file: ${file.name}`, result);
+                }
+
+                // All files processed successfully
+                importStatusDiv.style.display = 'none';
+                importResultDiv.style.display = 'block';
+                importResultDiv.className = 'alert alert-success mt-2';
+                importResultDiv.innerHTML = `
+                    <h6>Import Results:</h6>
+                    <p>All ${processedSelectedFilesArray.length} processed file(s) have been imported successfully!</p>
+                `;
+
+                // Reset file input and UI
+                processedFileUploadInput.value = '';
+                processedSelectedFilesArray = []; // Reset the selected files array
+                processedFileList.innerHTML = '';
+                processedSelectedFilesDiv.style.display = 'none';
+                importBtn.disabled = true;
+            } catch (error) {
+                console.error('Error importing processed files:', error);
+                importStatusDiv.style.display = 'none';
+                importResultDiv.style.display = 'block';
+                importResultDiv.className = 'alert alert-danger mt-2';
+
+                // Initialize markdown-it for error messages
+                const md = window.markdownit({
+                    html: true,
+                    linkify: true,
+                    typographer: true
+                });
+
+                // Render error message with markdown
+                const renderedError = md.render(error.message || 'Failed to import processed files');
+
+                importResultDiv.innerHTML = `<strong>Error:</strong> <div class="markdown-body">${renderedError}</div>`;
+            } finally {
+                // Hide spinner and ensure progress bar is updated
+                importSpinner.classList.add('d-none');
+                importBtn.classList.remove('loading');
+                importBtn.disabled = false;
+            }
+        });
 
         // Upload button functionality - Sequential upload and ingestion
         uploadBtn.addEventListener('click', async function() {

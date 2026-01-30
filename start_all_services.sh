@@ -68,8 +68,29 @@ kill_port() {
     local pid=$(lsof -t -i:$port 2>/dev/null)
     if [ ! -z "$pid" ]; then
         echo -e "${YELLOW}Killing process on port $port (PID: $pid)...${NC}"
-        kill $pid 2>/dev/null || true
-        sleep 2
+        kill -TERM $pid 2>/dev/null || true
+
+        # Wait for graceful shutdown
+        sleep 3
+
+        # Check if process is still running and force kill if necessary
+        for i in {1..5}; do
+            if lsof -t -i:$port >/dev/null 2>&1; then
+                echo -e "${YELLOW}Process on port $port still running, waiting... ($i/5)${NC}"
+                sleep 2
+            else
+                echo -e "${GREEN}Process on port $port has been terminated.${NC}"
+                return 0
+            fi
+        done
+
+        # Force kill if still running after waiting
+        pid=$(lsof -t -i:$port 2>/dev/null)
+        if [ ! -z "$pid" ]; then
+            echo -e "${YELLOW}Force killing process on port $port (PID: $pid)...${NC}"
+            kill -9 $pid 2>/dev/null || true
+            sleep 2
+        fi
     fi
 }
 
@@ -120,7 +141,7 @@ kill_port 8093
 
 # Start the workflow API in the background
 echo -e "${YELLOW}Starting workflow API on port 5004...${NC}"
-cd "$PROJECT_ROOT/gui/react_editor" && nohup python workflow_api.py > workflow_api.log 2>&1 &
+cd "$PROJECT_ROOT/gui/react_editor" && nohup bash -c "source '$PROJECT_ROOT/ai_agent_env/bin/activate' && python workflow_api.py" > workflow_api.log 2>&1 &
 WORKFLOW_PID=$!
 echo -e "${GREEN}Workflow API started with PID $WORKFLOW_PID${NC}"
 
@@ -129,7 +150,7 @@ sleep 3
 
 # Start the auth service in the background
 echo -e "${YELLOW}Starting authentication service on port 5001...${NC}"
-nohup python -m backend.services.auth.app > auth_service.log 2>&1 &
+nohup bash -c "source '$PROJECT_ROOT/ai_agent_env/bin/activate' && python -m backend.services.auth.app" > auth_service.log 2>&1 &
 AUTH_PID=$!
 echo -e "${GREEN}Authentication service started with PID $AUTH_PID${NC}"
 
@@ -138,7 +159,7 @@ sleep 3
 
 # Start the agent service in the background
 echo -e "${YELLOW}Starting agent service on port 5002...${NC}"
-nohup python -m backend.services.agent.app > agent_service.log 2>&1 &
+nohup bash -c "source '$PROJECT_ROOT/ai_agent_env/bin/activate' && python -m backend.services.agent.app" > agent_service.log 2>&1 &
 AGENT_PID=$!
 echo -e "${GREEN}Agent service started with PID $AGENT_PID${NC}"
 
@@ -147,7 +168,7 @@ sleep 3
 
 # Start the RAG service in the background
 echo -e "${YELLOW}Starting RAG service on port 5003...${NC}"
-nohup python -m backend.services.rag.app > rag_service.log 2>&1 &
+nohup bash -c "source '$PROJECT_ROOT/ai_agent_env/bin/activate' && python -m backend.services.rag.app" > rag_service.log 2>&1 &
 RAG_PID=$!
 echo -e "${GREEN}RAG service started with PID $RAG_PID${NC}"
 
@@ -156,7 +177,7 @@ sleep 3
 
 # Start the gateway in the background
 echo -e "${YELLOW}Starting API gateway on port 5000...${NC}"
-nohup python -m backend.services.gateway.app > gateway.log 2>&1 &
+nohup bash -c "source '$PROJECT_ROOT/ai_agent_env/bin/activate' && python -m backend.services.gateway.app" > gateway.log 2>&1 &
 GATEWAY_PID=$!
 echo -e "${GREEN}Gateway started with PID $GATEWAY_PID${NC}"
 
@@ -165,14 +186,7 @@ sleep 5
 
 # Start LangGraph Studio (port 8000)
 echo -e "${YELLOW}Starting LangGraph Studio on port 8000...${NC}"
-nohup python -c "
-import sys
-sys.path.insert(0, '$PROJECT_ROOT')
-from langgraph_cli.cli import main
-if __name__ == '__main__':
-    sys.argv = ['langgraph', 'serve', '--host', '0.0.0.0', '--port', '8000']
-    main()
-" > langgraph_studio.log 2>&1 &
+cd "$PROJECT_ROOT" && nohup bash -c "source '$PROJECT_ROOT/ai_agent_env/bin/activate' && python -m langgraph_cli.cli serve --host 192.168.51.216 --port 8000" > langgraph_studio.log 2>&1 &
 LANGGRAPH_PID=$!
 echo -e "${GREEN}LangGraph Studio started with PID $LANGGRAPH_PID${NC}"
 
@@ -181,7 +195,7 @@ sleep 3
 
 # Start Streamlit App (port 8501)
 echo -e "${YELLOW}Starting Streamlit App on port 8501...${NC}"
-nohup streamlit run "$PROJECT_ROOT/gui/enhanced_streamlit_app.py" --server.address="0.0.0.0" --server.port=8501 --server.headless=true > streamlit_app.log 2>&1 &
+nohup bash -c "source '$PROJECT_ROOT/ai_agent_env/bin/activate' && streamlit run '$PROJECT_ROOT/gui/enhanced_streamlit_app.py' --server.address='192.168.51.216' --server.port=8501 --server.headless=true" > streamlit_app.log 2>&1 &
 STREAMLIT_PID=$!
 echo -e "${GREEN}Streamlit App started with PID $STREAMLIT_PID${NC}"
 
@@ -199,7 +213,7 @@ sleep 5
 
 # Start MCP Service Registry (port 8080)
 echo -e "${YELLOW}Starting MCP Service Registry on port 8080...${NC}"
-nohup python -m registry.start_registry_server --host 127.0.0.1 --port 8080 > mcp_registry.log 2>&1 &
+nohup bash -c "source '$PROJECT_ROOT/ai_agent_env/bin/activate' && python -m registry.start_registry_server --host 0.0.0.0 --port 8080" > mcp_registry.log 2>&1 &
 REGISTRY_PID=$!
 
 # Wait a moment for the registry to start
@@ -210,14 +224,14 @@ if ps -p $REGISTRY_PID > /dev/null; then
     echo -e "${GREEN}MCP Service Registry started with PID $REGISTRY_PID${NC}"
 
     # Test the registry briefly to ensure it's responding
-    if curl -s -f -m 10 "http://127.0.0.1:8080/health" > /dev/null 2>&1; then
+    if curl -s -f -m 10 "http://192.168.51.216:8080/health" > /dev/null 2>&1; then
         echo -e "${GREEN}✓ Registry server is responding to health checks${NC}"
     else
         echo -e "${YELLOW}⚠ Registry server may still be starting up${NC}"
 
         # Retry after a few seconds
         sleep 5
-        if curl -s -f -m 10 "http://127.0.0.1:8080/health" > /dev/null 2>&1; then
+        if curl -s -f -m 10 "http://192.168.51.216:8080/health" > /dev/null 2>&1; then
             echo -e "${GREEN}✓ Registry server is now responding to health checks${NC}"
         else
             echo -e "${RED}✗ Registry server is not responding to health checks${NC}"
@@ -238,7 +252,7 @@ sleep 3
 
 # Start DNS MCP Server (port 8089)
 echo -e "${YELLOW}Starting DNS MCP Server on port 8089...${NC}"
-nohup python -m search_server.mcp_dns_server --host 127.0.0.1 --port 8089 --registry-url http://127.0.0.1:8080 > dns_mcp_server.log 2>&1 &
+nohup bash -c "source '$PROJECT_ROOT/ai_agent_env/bin/activate' && python -m search_server.mcp_dns_server --host 0.0.0.0 --port 8089 --registry-url http://192.168.51.216:8080" > dns_mcp_server.log 2>&1 &
 DNS_PID=$!
 echo -e "${GREEN}DNS MCP Server started with PID $DNS_PID${NC}"
 
@@ -247,7 +261,7 @@ sleep 2
 
 # Start Search MCP Server (port 8090)
 echo -e "${YELLOW}Starting Search MCP Server on port 8090...${NC}"
-nohup python -m search_server.mcp_search_server --host 127.0.0.1 --port 8090 --registry-url http://127.0.0.1:8080 > search_mcp_server.log 2>&1 &
+nohup bash -c "source '$PROJECT_ROOT/ai_agent_env/bin/activate' && python -m search_server.mcp_search_server --host 0.0.0.0 --port 8090 --registry-url http://192.168.51.216:8080" > search_mcp_server.log 2>&1 &
 SEARCH_PID=$!
 echo -e "${GREEN}Search MCP Server started with PID $SEARCH_PID${NC}"
 
@@ -256,7 +270,7 @@ sleep 2
 
 # Start RAG MCP Server (port 8091)
 echo -e "${YELLOW}Starting RAG MCP Server on port 8091...${NC}"
-nohup python -m rag_component.rag_mcp_server --host 127.0.0.1 --port 8091 --registry-url http://127.0.0.1:8080 > rag_mcp_server.log 2>&1 &
+nohup bash -c "source '$PROJECT_ROOT/ai_agent_env/bin/activate' && python -m rag_component.rag_mcp_server --host 0.0.0.0 --port 8091 --registry-url http://192.168.51.216:8080" > rag_mcp_server.log 2>&1 &
 RAG_MCP_PID=$!
 echo -e "${GREEN}RAG MCP Server started with PID $RAG_MCP_PID${NC}"
 
@@ -265,7 +279,7 @@ sleep 2
 
 # Start SQL MCP Server (port 8092)
 echo -e "${YELLOW}Starting SQL MCP Server on port 8092...${NC}"
-nohup python -m sql_mcp_server.sql_mcp_server --host 127.0.0.1 --port 8092 --registry-url http://127.0.0.1:8080 > sql_mcp_server.log 2>&1 &
+nohup bash -c "source '$PROJECT_ROOT/ai_agent_env/bin/activate' && python -m sql_mcp_server.sql_mcp_server --host 0.0.0.0 --port 8092 --registry-url http://192.168.51.216:8080" > sql_mcp_server.log 2>&1 &
 SQL_PID=$!
 echo -e "${GREEN}SQL MCP Server started with PID $SQL_PID${NC}"
 
@@ -274,7 +288,7 @@ sleep 3
 
 # Start Download MCP Server (port 8093)
 echo -e "${YELLOW}Starting Download MCP Server on port 8093...${NC}"
-nohup python -m download_server.download_mcp_server --host 127.0.0.1 --port 8093 --registry-url http://127.0.0.1:8080 > download_mcp_server.log 2>&1 &
+nohup bash -c "source '$PROJECT_ROOT/ai_agent_env/bin/activate' && python -m download_server.download_mcp_server --host 0.0.0.0 --port 8093 --registry-url http://192.168.51.216:8080" > download_mcp_server.log 2>&1 &
 DOWNLOAD_PID=$!
 echo -e "${GREEN}Download MCP Server started with PID $DOWNLOAD_PID${NC}"
 
@@ -285,21 +299,21 @@ echo -e "${GREEN}"
 echo "=========================================================="
 echo "ALL AI AGENT SERVICES ARE NOW RUNNING"
 echo "=========================================================="
-echo "Web Client:          https://192.168.51.138 (via gateway)"
-echo "API Gateway:         http://192.168.51.138:5000"
-echo "Workflow API:        http://192.168.51.138:5004"
-echo "Authentication:      http://192.168.51.138:5001"
-echo "Agent Service:       http://192.168.51.138:5002"
-echo "RAG Service:         http://192.168.51.138:5003"
-echo "LangGraph Studio:    http://192.168.51.138:8000"
-echo "Streamlit App:       http://192.168.51.138:8501"
-echo "React Editor:        http://192.168.51.138:3000"
-echo "MCP Service Registry: http://192.168.51.138:8080"
-echo "DNS MCP Server:      http://192.168.51.138:8089"
-echo "Search MCP Server:   http://192.168.51.138:8090"
-echo "RAG MCP Server:      http://192.168.51.138:8091"
-echo "SQL MCP Server:      http://192.168.51.138:8092"
-echo "Download MCP Server: http://192.168.51.138:8093"
+echo "Web Client:          https://192.168.51.216 (via gateway)"
+echo "API Gateway:         http://192.168.51.216:5000"
+echo "Workflow API:        http://192.168.51.216:5004"
+echo "Authentication:      http://192.168.51.216:5001"
+echo "Agent Service:       http://192.168.51.216:5002"
+echo "RAG Service:         http://192.168.51.216:5003"
+echo "LangGraph Studio:    http://192.168.51.216:8000"
+echo "Streamlit App:       http://192.168.51.216:8501"
+echo "React Editor:        http://192.168.51.216:3000"
+echo "MCP Service Registry: http://192.168.51.216:8080"
+echo "DNS MCP Server:      http://192.168.51.216:8089"
+echo "Search MCP Server:   http://192.168.51.216:8090"
+echo "RAG MCP Server:      http://192.168.51.216:8091"
+echo "SQL MCP Server:      http://192.168.51.216:8092"
+echo "Download MCP Server: http://192.168.51.216:8093"
 echo "=========================================================="
 echo -e "${NC}"
 

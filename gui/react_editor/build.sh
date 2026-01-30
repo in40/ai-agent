@@ -1,7 +1,7 @@
 #!/bin/bash
 # Build script for the React editor
 
-cd /root/qwen_test/ai_agent/gui/react_editor
+cd /root/qwen/ai_agent/gui/react_editor
 
 # Install dependencies if not already installed
 npm install

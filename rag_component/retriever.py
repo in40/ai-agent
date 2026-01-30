@@ -94,6 +94,8 @@ class Retriever:
                     source_label = "Client upload"
                 elif upload_method == "Local":
                     source_label = "Local"
+                elif upload_method == "Processed JSON Import":
+                    source_label = "Processed JSON Upload"
                 else:
                     # Default to Unknown if no upload method is specified
                     source_label = "Unknown"

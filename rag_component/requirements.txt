@@ -1,2 +1,4 @@
 # RAG Component Dependencies
 marker-pdf>=0.1.0
+transformers>=4.21.0
+torch>=1.9.0

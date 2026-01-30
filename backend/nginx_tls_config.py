@@ -176,10 +176,13 @@ server {{
         add_header Content-Type text/plain;
     }}
 
-    # Favicon
+    # Favicon - serve from gateway
     location = /favicon.ico {{
-        log_not_found off;
-        access_log off;
+        proxy_pass http://gateway/favicon.ico;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
     }}
 }}
 

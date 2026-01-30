@@ -8,10 +8,19 @@ import time
 
 # Add the project root to the Python path
 import sys
-sys.path.insert(0, '/root/qwen_test/ai_agent')
+from pathlib import Path
+current_dir = Path(__file__).parent
+project_root = current_dir.parent
+sys.path.insert(0, str(project_root))
 
 from langgraph_agent.langgraph_agent import create_enhanced_agent_graph, AgentState, run_enhanced_agent
 from langgraph.graph import StateGraph
+
+# Add the gui directory to the Python path to import local modules
+import sys
+from pathlib import Path
+current_dir = Path(__file__).parent
+sys.path.insert(0, str(current_dir))
 
 # Import the state visualizer
 from state_visualizer import StateVisualizer, visualize_state, visualize_state_transitions

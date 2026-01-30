@@ -39,9 +39,9 @@ The AI Agent system consists of the following services:
 
 ## Important URLs
 
-- Web Client: https://192.168.51.138
-- API Gateway: http://192.168.51.138:5000
-- Authentication: http://192.168.51.138:5001/auth/login
+- Web Client: https://192.168.51.216
+- API Gateway: http://192.168.51.216:5000
+- Authentication: http://192.168.51.216:5001/auth/login
 
 ## Authentication
 
@@ -49,14 +49,14 @@ To use the web client, you need to register and login first:
 
 1. Register a user:
    ```bash
-   curl -X POST http://192.168.51.138:5000/auth/register \
+   curl -X POST http://192.168.51.216:5000/auth/register \
      -H "Content-Type: application/json" \
      -d '{"username":"myusername","password":"mypassword"}'
    ```
 
 2. Login to get a token:
    ```bash
-   curl -X POST http://192.168.51.138:5000/auth/login \
+   curl -X POST http://192.168.51.216:5000/auth/login \
      -H "Content-Type: application/json" \
      -d '{"username":"myusername","password":"mypassword"}'
    ```

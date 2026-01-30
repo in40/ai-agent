@@ -21,13 +21,15 @@ RAG_EMBEDDING_PROVIDER = rag_embedding_provider_env if rag_embedding_provider_en
 RAG_EMBEDDING_MODEL = rag_embedding_model_env if rag_embedding_model_env is not None else EMBEDDING_MODEL
 RAG_VECTOR_STORE_TYPE = os.getenv("RAG_VECTOR_STORE_TYPE", "chroma")
 RAG_TOP_K_RESULTS = int(os.getenv("RAG_TOP_K_RESULTS", "5"))
-RAG_SIMILARITY_THRESHOLD = float(os.getenv("RAG_SIMILARITY_THRESHOLD", "0.7"))
+RAG_SIMILARITY_THRESHOLD = float(os.getenv("RAG_SIMILARITY_THRESHOLD", "0.3"))
 RAG_CHUNK_SIZE = int(os.getenv("RAG_CHUNK_SIZE", "1000"))
 RAG_CHUNK_OVERLAP = int(os.getenv("RAG_CHUNK_OVERLAP", "100"))
 
 # Vector store configuration
 RAG_CHROMA_PERSIST_DIR = os.getenv("RAG_CHROMA_PERSIST_DIR", "./data/chroma_db")
 RAG_COLLECTION_NAME = os.getenv("RAG_COLLECTION_NAME", "documents")
+RAG_QDRANT_URL = os.getenv("RAG_QDRANT_URL", "http://localhost:6333")
+RAG_QDRANT_API_KEY = os.getenv("RAG_QDRANT_API_KEY", "")
 
 # Document processing configuration
 RAG_SUPPORTED_FILE_TYPES = os.getenv("RAG_SUPPORTED_FILE_TYPES", ".txt,.pdf,.docx,.html,.md").split(',')
@@ -40,3 +42,11 @@ RAG_USE_FALLBACK_ON_CONVERSION_ERROR = str_to_bool(os.getenv("RAG_USE_FALLBACK_O
 # File storage configuration
 RAG_FILE_STORAGE_DIR = os.getenv("RAG_FILE_STORAGE_DIR", "./data/rag_uploaded_files")
 RAG_MARKDOWN_STORAGE_DIR = os.getenv("RAG_MARKDOWN_STORAGE_DIR", "./data/rag_converted_markdown")
+
+# Reranker configuration
+RERANKER_ENABLED = str_to_bool(os.getenv("RERANKER_ENABLED", "false"))
+RERANKER_MODEL = os.getenv("RERANKER_MODEL", "text-embedding-bge-reranker-v2-m3")
+RERANKER_HOSTNAME = os.getenv("RERANKER_HOSTNAME", "localhost")
+RERANKER_PORT = os.getenv("RERANKER_PORT", "1234")
+RERANKER_API_PATH = os.getenv("RERANKER_API_PATH", "/v1")
+RERANK_TOP_K_RESULTS = int(os.getenv("RERANK_TOP_K_RESULTS", "5"))

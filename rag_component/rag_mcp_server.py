@@ -4,6 +4,31 @@ RAG MCP Server - An MCP server that provides RAG (Retrieval-Augmented Generation
 and registers itself with the service registry.
 """
 
+# Load environment variables from .env file FIRST, before any other imports
+from dotenv import dotenv_values
+import os
+import sys
+from pathlib import Path
+
+# Load environment variables using dotenv_values and update os.environ
+env_vars = dotenv_values()
+os.environ.update(env_vars)
+
+# Explicitly set the Qdrant API key from the environment if available
+if os.environ.get("RAG_QDRANT_API_KEY"):
+    os.environ["QDRANT_API_KEY"] = os.environ["RAG_QDRANT_API_KEY"]
+
+# Add the project root to the path so we can import from rag_component
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
+
+# Force reload the config module to pick up the new environment variables
+import importlib
+
+# Import and reload the config module to ensure it picks up environment variables
+import rag_component.config
+importlib.reload(rag_component.config)
+
 import asyncio
 import json
 import logging
@@ -33,22 +58,24 @@ class RAGRequestHandler:
         """Handle incoming RAG requests."""
         try:
             logger.info(f"Received RAG request: {request}")
-            
+
             action = request.get("action")
             parameters = request.get("parameters", {})
-            
+
             if action == "query" or action == "query_documents":
                 return await self.query_documents(parameters)
             elif action == "ingest" or action == "ingest_documents":
                 return await self.ingest_documents(parameters)
             elif action == "list_documents":
                 return await self.list_documents(parameters)
+            elif action == "rerank_documents":
+                return await self.rerank_documents(parameters)
             else:
                 return {
                     "error": f"Unknown action: {action}",
                     "status": "error"
                 }
-                
+
         except Exception as e:
             logger.error(f"Error handling RAG request: {str(e)}", exc_info=True)
             return {
@@ -60,16 +87,18 @@ class RAGRequestHandler:
         """Query documents using the RAG system."""
         try:
             query_text = parameters.get("query", "")
-            top_k = parameters.get("top_k", 5)
-            
+            # Use RAG_TOP_K_RESULTS from config as default if not provided in parameters
+            from rag_component.config import RAG_TOP_K_RESULTS
+            top_k = parameters.get("top_k", RAG_TOP_K_RESULTS)
+
             if not query_text:
                 return {
                     "error": "Query text is required",
                     "status": "error"
                 }
-            
+
             # Perform document retrieval
-            retrieved_docs = self.rag_orchestrator.retrieve_documents(query_text)
+            retrieved_docs = self.rag_orchestrator.retrieve_documents(query_text, top_k=top_k)
 
             # Format results
             results = []
@@ -89,13 +118,13 @@ class RAGRequestHandler:
                         "metadata": doc.metadata,
                         "score": getattr(doc, 'score', None)  # Some retrievers include scores
                     })
-            
+
             return {
                 "results": results,
                 "count": len(results),
                 "status": "success"
             }
-            
+
         except Exception as e:
             logger.error(f"Error querying documents: {str(e)}", exc_info=True)
             return {
@@ -166,6 +195,84 @@ class RAGRequestHandler:
                 "status": "error"
             }
 
+    async def rerank_documents(self, parameters: Dict[str, Any]) -> Dict[str, Any]:
+        """Rerank documents using the reranker model."""
+        try:
+            query = parameters.get("query", "")
+            documents = parameters.get("documents", [])
+            top_k = parameters.get("top_k", len(documents))
+
+            if not query:
+                return {
+                    "error": "Query is required for reranking",
+                    "status": "error"
+                }
+
+            if not documents:
+                return {
+                    "error": "Documents are required for reranking",
+                    "status": "error"
+                }
+
+            # Use the configured default top_k if not provided in parameters
+            from rag_component.config import RERANK_TOP_K_RESULTS
+            if top_k == len(documents):  # If top_k wasn't explicitly provided in parameters
+                top_k = RERANK_TOP_K_RESULTS
+
+            # Initialize the reranker with configuration from environment
+            from rag_component.reranker import Reranker
+            reranker = Reranker()
+
+            # The reranker expects documents in a specific format, so we need to ensure they have the right structure
+            # Convert documents to the expected format if needed
+            formatted_docs = []
+            for doc in documents:
+                if isinstance(doc, dict):
+                    # Ensure the document has all required fields for the reranker
+                    formatted_doc = {
+                        "content": doc.get("content", ""),
+                        "title": doc.get("title", ""),
+                        "source": doc.get("source", ""),
+                        "metadata": doc.get("metadata", {}),
+                        "score": doc.get("score", 0.0)
+                    }
+                    formatted_docs.append(formatted_doc)
+                else:
+                    # If it's not a dict, try to convert it
+                    formatted_docs.append({
+                        "content": str(doc),
+                        "title": "",
+                        "source": "",
+                        "metadata": {},
+                        "score": 0.0
+                    })
+
+            # Perform reranking
+            reranked_docs = reranker.rerank_documents(query, formatted_docs, top_k=top_k)
+
+            # Format results back to the expected output format
+            results = []
+            for doc in reranked_docs:
+                results.append({
+                    "content": doc.get("content", ""),
+                    "metadata": doc.get("metadata", {}),
+                    "score": doc.get("score", 0.0),
+                    "reranked": doc.get("reranked", False)
+                })
+
+            return {
+                "results": results,
+                "count": len(results),
+                "status": "success"
+            }
+
+        except Exception as e:
+            logger.error(f"Error reranking documents: {str(e)}", exc_info=True)
+            return {
+                "error": str(e),
+                "status": "error"
+            }
+
 
 class RAGMCPServer:
     """MCP Server for RAG services."""
@@ -200,9 +307,11 @@ class RAGMCPServer:
             self.request_handler = RAGRequestHandler(self.rag_orchestrator)
 
             # Create service info for the registry
+            # Use 127.0.0.1 instead of 0.0.0.0 for service registration since 0.0.0.0 is not a valid call address
+            registration_host = "127.0.0.1" if self.host == "0.0.0.0" else self.host
             service_info = ServiceInfo(
-                id=f"rag-server-{self.host.replace('.', '-')}-{self.port}",
-                host=self.host,
+                id=f"rag-server-{registration_host.replace('.', '-')}-{self.port}",
+                host=registration_host,
                 port=self.port,
                 type="rag",
                 metadata={
@@ -230,6 +339,15 @@ class RAGMCPServer:
                             "name": "list_documents",
                             "description": "List available documents in the RAG system",
                             "parameters": {}
+                        },
+                        {
+                            "name": "rerank_documents",
+                            "description": "Rerank documents based on relevance to query",
+                            "parameters": {
+                                "query": {"type": "string", "required": True},
+                                "documents": {"type": "array", "items": {"type": "object"}, "required": True},
+                                "top_k": {"type": "integer", "required": False}
+                            }
                         }
                     ]
                 }
@@ -294,6 +412,7 @@ class RAGMCPServer:
         app.router.add_post('/ingest', handle_request)
         app.router.add_post('/list_documents', handle_request)
         app.router.add_post('/list', handle_request)
+        app.router.add_post('/rerank_documents', handle_request)
 
         runner = web.AppRunner(app)
         await runner.setup()

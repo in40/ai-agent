@@ -1,0 +1,451 @@
+# Complete Requirements Map for AI Agent System
+
+## Direct Dependencies (from requirements.txt)
+
+### 1. Web Framework Components
+- **flask>=2.0.0**
+  - Component: Backend, Authentication Service
+  - Usage: Core web framework for building the backend services
+  - Dependencies: werkzeug, jinja2, click, itsdangerous, etc.
+
+- **flask-cors>=3.0.0**
+  - Component: Backend, Authentication Service
+  - Usage: Cross-origin resource sharing support for Flask applications
+  - Dependencies: flask, six
+
+- **flask-session**
+  - Component: Backend, Authentication Service
+  - Usage: Session management for Flask applications
+  - Dependencies: flask, itsdangerous, python-dateutil
+
+- **flask-limiter**
+  - Component: Backend, Authentication Service
+  - Usage: Rate limiting for Flask applications
+  - Dependencies: flask, limits, pytz, six
+
+- **PyJWT>=2.0.0**
+  - Component: Authentication Service
+  - Usage: JSON Web Token implementation for authentication
+  - Dependencies: cryptography (optional), ecdsa (optional)
+
+- **bcrypt>=3.2.0**
+  - Component: Authentication Service
+  - Usage: Password hashing for secure credential storage
+  - Dependencies: cffi, six
+
+- **requests>=2.25.0**
+  - Component: Backend, Models, Utils
+  - Usage: HTTP library for making requests to external services
+  - Dependencies: certifi, charset-normalizer, idna, urllib3
+
+### 2. LangChain Ecosystem
+- **langchain>=0.3.4**
+  - Component: LangGraph Agent, Models, RAG Component
+  - Usage: Core framework for creating language model chains and LCEL (LangChain Expression Language)
+  - Dependencies: langchain-core, langchain-community, langsmith, etc.
+
+- **langchain-community>=0.3.3**
+  - Component: RAG Component, Models
+  - Usage: Community extensions including document loaders, vector stores, and utility functions
+  - Dependencies: langchain-core, aiohttp, etc.
+
+- **langchain-core>=0.3.47**
+  - Component: LangGraph Agent, Models, RAG Component, Utils
+  - Usage: Core abstractions, messages, callbacks, and base classes
+  - Dependencies: pydantic, langsmith, etc.
+
+- **langchain-openai>=0.3.3**
+  - Component: Models, RAG Component
+  - Usage: OpenAI model integrations for various LLM tasks
+  - Dependencies: openai, langchain-core, etc.
+
+- **langchain-ollama>=0.3.0**
+  - Component: Models
+  - Usage: Ollama model integrations for local LLM hosting
+  - Dependencies: ollama, langchain-core, etc.
+
+- **langchain-gigachat==0.3.12**
+  - Component: Models, Utils
+  - Usage: GigaChat model integrations for Russian language models
+  - Dependencies: gigachat, langchain-core, etc.
+
+- **langchain-text-splitters>=0.3.5**
+  - Component: RAG Component
+  - Usage: Text splitting functionality for document preprocessing
+  - Dependencies: langchain-core, etc.
+
+- **langchain-huggingface==0.1.2**
+  - Component: RAG Component
+  - Usage: Hugging Face model integrations for embeddings
+  - Dependencies: transformers, torch, etc.
+
+- **langchain-qdrant>=0.3.0**
+  - Component: RAG Component
+  - Usage: Qdrant vector database integration
+  - Dependencies: qdrant-client, etc.
+
+### 3. Database Components
+- **psycopg2-binary>=2.9.9**
+  - Component: Database
+  - Usage: PostgreSQL database adapter for Python
+
+- **sqlalchemy>=2.0.45**
+  - Component: Database
+  - Usage: ORM and database abstraction layer
+  - Dependencies: greenlet, etc.
+
+### 4. Data Modeling and Validation
+- **pydantic==2.12.5**
+  - Component: LangGraph Agent, Models
+  - Usage: Data validation and settings management
+  - Dependencies: pydantic-core, typing-extensions, etc.
+
+- **python-dotenv==1.0.1**
+  - Component: Config
+  - Usage: Environment variable loading from .env files
+
+### 5. LLM Providers
+- **openai>=1.65.2**
+  - Component: Models
+  - Usage: OpenAI API client library
+  - Dependencies: distro, jiter, sniffio, etc.
+
+- **tiktoken==0.8.0**
+  - Component: Models, RAG Component
+  - Usage: Token counting for OpenAI models
+  - Dependencies: regex, requests, etc.
+
+- **gigachat>=0.1.41.post1,<0.2.0**
+  - Component: Utils
+  - Usage: GigaChat API client library
+
+### 6. Graph Workflow Engine
+- **langgraph**
+  - Component: LangGraph Agent
+  - Usage: Stateful workflow management and graph-based execution
+  - Dependencies: langgraph-checkpoint, langgraph-prebuilt, langgraph-sdk, etc.
+
+### 7. Utilities and Helpers
+- **tenacity==8.5.0**
+  - Component: Models, Utils
+  - Usage: Retry mechanisms for API calls and operations
+
+- **chromadb==0.6.3**
+  - Component: RAG Component
+  - Usage: Vector database for similarity search
+  - Dependencies: fastapi, uvicorn, numpy, posthog, onnxruntime, opentelemetry, tokenizers, pypika, tqdm, overrides, importlib-resources, grpcio, bcrypt, typer, kubernetes, PyYAML, mmh3, orjson, httpx, rich, etc.
+
+- **sentence-transformers==3.2.1**
+  - Component: RAG Component
+  - Usage: Sentence embedding models
+  - Dependencies: transformers, torch, scikit-learn, scipy, huggingface-hub, Pillow, etc.
+
+- **unstructured==0.16.25**
+  - Component: RAG Component
+  - Usage: Document parsing and preprocessing
+  - Dependencies: chardet, filetype, python-magic, lxml, nltk, beautifulsoup4, emoji, dataclasses-json, python-iso639, langdetect, rapidfuzz, backoff, unstructured-client, wrapt, psutil, python-oxmsg, html5lib, etc.
+
+- **pypdf==5.1.0**
+  - Component: RAG Component
+  - Usage: PDF processing capabilities
+
+- **qdrant-client>=1.12.0**
+  - Component: RAG Component
+  - Usage: Qdrant vector database client
+
+### 8. Production Deployment
+- **gunicorn>=22.0.0**
+  - Component: Backend
+  - Usage: Production WSGI HTTP Server for Linux
+
+- **redis>=5.2.0**
+  - Component: Backend, Authentication Service
+  - Usage: In-memory data structure store for session management and caching
+  - Dependencies: deprecated, packaging, urllib3
+
+### 9. GUI Components
+- **streamlit>=1.28.0**
+  - Component: GUI
+  - Usage: Framework for creating web applications for visualization and debugging
+  - Dependencies: altair, blinker, cachetools, click, numpy, packaging, pandas, pillow, protobuf, pyarrow, pympler, python-dateutil, requests, rich, tenacity, toml, typing-extensions, tzlocal, validators, watchdog
+
+- **graphviz**
+  - Component: GUI
+  - Usage: Graph visualization for workflow diagrams
+
+- **grandalf**
+  - Component: GUI
+  - Usage: Graph drawing algorithm for layout computation
+
+### 10. RAG Component
+- **marker-pdf>=0.1.0**
+  - Component: RAG Component
+  - Usage: PDF processing and extraction for document ingestion
+
+
+## Full Dependency Chain (Based on Installation Log)
+
+### Core Infrastructure Dependencies
+- **annotated-types>=0.6.0** (from pydantic)
+- **pydantic-core==2.41.5** (from pydantic)
+- **typing-extensions>=4.14.1** (from pydantic)
+- **typing-inspection>=0.4.2** (from pydantic)
+- **regex>=2022.1.18** (from tiktoken)
+- **requests>=2.26.0** (from tiktoken)
+- **charset-normalizer<4,>=2** (from requests)
+- **idna<4,>=2.5** (from requests)
+- **urllib3>=2** (from requests)
+- **certifi>=2017.4.17** (from requests)
+
+### Async/HTTP Libraries
+- **anyio** (from httpx)
+- **httpcore==1.*** (from httpx)
+- **h11>=0.16** (from httpcore)
+- **sniffio** (from openai)
+
+### JSON Processing
+- **jsonpatch<2.0.0,>=1.33.0** (from langchain-core)
+- **jsonpointer>=1.9** (from jsonpatch)
+- **orjson>=3.9.12** (from chromadb)
+
+### Serialization
+- **uuid-utils<1.0,>=0.12.0** (from langchain-core)
+- **zstandard>=0.23.0** (from langsmith)
+- **ormsgpack>=1.12.0** (from langgraph-checkpoint)
+
+### File Processing
+- **filelock** (from transformers)
+- **fsspec>=2023.5.0** (from huggingface-hub)
+- **hf-xet<2.0.0,>=1.1.3** (from huggingface-hub)
+- **safetensors>=0.4.3** (from transformers)
+
+### Machine Learning Frameworks
+- **transformers<5.0.0,>=4.41.0** (from sentence-transformers)
+- **torch>=1.11.0** (from sentence-transformers)
+- **scikit-learn** (from sentence-transformers)
+- **scipy** (from sentence-transformers)
+- **huggingface-hub>=0.20.0** (from sentence-transformers)
+- **Pillow** (from sentence-transformers)
+
+### Deep Learning Dependencies (from torch)
+- **setuptools** (from torch)
+- **networkx>=2.5.1** (from torch)
+- **cuda-bindings==12.9.4** (from torch)
+- **nvidia-cuda-nvrtc-cu12==12.8.93** (from torch)
+- **nvidia-cuda-runtime-cu12==12.8.90** (from torch)
+- **nvidia-cuda-cupti-cu12==12.8.90** (from torch)
+- **nvidia-cudnn-cu12==9.10.2.21** (from torch)
+- **nvidia-cublas-cu12==12.8.4.1** (from torch)
+- **nvidia-cufft-cu12==11.3.3.83** (from torch)
+- **nvidia-curand-cu12==10.3.9.90** (from torch)
+- **nvidia-cusolver-cu12==11.7.3.90** (from torch)
+- **nvidia-cusparse-cu12==12.5.8.93** (from torch)
+- **nvidia-cusparselt-cu12==0.7.1** (from torch)
+- **nvidia-nccl-cu12==2.27.5** (from torch)
+- **nvidia-nvshmem-cu12==3.4.5** (from torch)
+- **nvidia-nvtx-cu12==12.8.90** (from torch)
+- **nvidia-nvjitlink-cu12==12.8.93** (from torch)
+- **nvidia-cufile-cu12==1.13.1.3** (from torch)
+- **triton==3.6.0** (from torch)
+- **cuda-pathfinder~=1.1** (from cuda-bindings)
+
+### Web Framework Dependencies (from chromadb)
+- **fastapi>=0.95.2**
+- **uvicorn>=0.18.3**
+- **starlette<0.51.0,>=0.40.0**
+- **annotated-doc>=0.0.2**
+- **httpx>=0.27.0**
+
+### Database Dependencies (from chromadb)
+- **numpy>=1.22.5**
+- **pypika>=0.48.9**
+- **tqdm>=4.65.0**
+
+### Analytics & Telemetry (from chromadb)
+- **posthog>=2.4.0**
+- **onnxruntime>=1.14.1**
+- **opentelemetry-api>=1.2.0**
+- **opentelemetry-exporter-otlp-proto-grpc>=1.2.0**
+- **opentelemetry-instrumentation-fastapi>=0.41b0**
+- **opentelemetry-sdk>=1.2.0**
+- **opentelemetry-semantic-conventions==0.60b1**
+- **opentelemetry-instrumentation-asgi==0.60b1**
+- **opentelemetry-instrumentation==0.60b1**
+- **opentelemetry-util-http==0.60b1**
+- **coloredlogs**
+- **humanfriendly>=9.1**
+- **flatbuffers**
+- **sympy**
+- **mpmath<1.4,>=1.1.0**
+
+### Configuration & CLI (from chromadb)
+- **typer>=0.9.0**
+- **click>=8.0.0**
+- **shellingham>=1.3.0**
+- **importlib-metadata<8.8.0,>=6.0**
+- **zipp>=3.20**
+
+### Kubernetes Client (from chromadb)
+- **kubernetes>=28.1.0**
+- **six>=1.9.0**
+- **python-dateutil>=2.5.3**
+- **websocket-client!=0.40.0,!=0.41.*,!=0.42.*,>=0.32.0**
+- **requests-oauthlib**
+- **oauthlib>=3.0.0**
+- **durationpy>=0.7**
+
+### Protobuf & gRPC (from chromadb)
+- **protobuf**
+- **grpcio>=1.58.0**
+- **googleapis-common-protos~=1.57**
+- **opentelemetry-exporter-otlp-proto-common==1.39.1**
+- **opentelemetry-proto==1.39.1**
+
+### Rich Terminal Output (from chromadb)
+- **rich>=10.11.0**
+- **markdown-it-py>=2.2.0**
+- **pygments<3.0.0,>=2.13.0**
+- **mdurl~=0.1**
+
+### Text Processing (from unstructured)
+- **chardet**
+- **filetype**
+- **python-magic**
+- **lxml**
+- **nltk**
+- **beautifulsoup4**
+- **emoji**
+- **dataclasses-json**
+- **python-iso639**
+- **langdetect**
+- **rapidfuzz**
+- **backoff**
+- **unstructured-client**
+- **wrapt**
+- **psutil**
+- **python-oxmsg**
+- **html5lib**
+- **webencodings**
+- **soupsieve>=1.6.1**
+- **joblib**
+- **olefile**
+- **aiofiles>=24.1.0**
+- **cryptography>=3.1**
+- **cffi>=2.0.0**
+- **pycparser**
+
+### LangGraph Dependencies
+- **langgraph-checkpoint<5.0.0,>=2.1.0**
+- **langgraph-prebuilt<1.1.0,>=1.0.7**
+- **langgraph-sdk<0.4.0,>=0.3.0**
+- **xxhash>=3.5.0**
+
+### LangSmith (from langchain-core)
+- **langsmith<1.0.0,>=0.3.45**
+- **requests-toolbelt>=1.0.0**
+
+### LangChain Community Dependencies
+- **aiohttp<4.0.0,>=3.8.3**
+- **pydantic-settings<3.0.0,>=2.10.1**
+- **httpx-sse<1.0.0,>=0.4.0**
+- **aiohappyeyebells>=2.5.0**
+- **aiosignal>=1.4.0**
+- **attrs>=17.3.0**
+- **frozenlist>=1.1.1**
+- **multidict<7.0,>=4.5**
+- **propcache>=0.2.0**
+- **yarl<2.0,>=1.17.0**
+
+### Unstructured Client Dependencies
+- **marshmallow<4.0.0,>=3.18.0**
+- **typing-inspect<1,>=0.4.0**
+- **mypy-extensions>=0.3.0**
+
+### Production Server Dependencies (from chromadb)
+- **uvicorn[standard]>=0.18.3**
+- **httptools>=0.6.3**
+- **uvloop>=0.15.1**
+- **watchfiles>=0.13**
+- **websockets>=10.4**
+
+### Template Engine (from torch)
+- **jinja2**
+- **MarkupSafe>=2.0**
+
+### Build Tools (from chromadb)
+- **build>=1.0.3**
+- **pyproject_hooks**
+
+### ASGI Middleware (from opentelemetry-instrumentation-asgi)
+- **asgiref~=3.0**
+
+### Additional Dependencies
+- **types-requests<3.0,>=2.32** (from langchain-gigachat)
+- **overrides>=7.3.1** (from chromadb)
+- **importlib-resources** (from chromadb)
+- **mmh3>=4.0.1** (from chromadb)
+- **greenlet>=1** (from sqlalchemy)
+- **distro<2,>=1.7.0** (from openai)
+- **jiter<1,>=0.10.0** (from openai)
+- **tokenizers>=0.13.2** (from chromadb)
+- **packaging<26.0.0,>=23.2.0** (from langchain-core)
+- **threadpoolctl>=3.2.0** (from scikit-learn)
+
+### Flask Dependencies
+- **Werkzeug>=2.2.0** (from flask)
+- **Jinja2>=3.0** (from flask)
+- **click>=8.0** (from flask)
+- **itsdangerous>=2.0** (from flask)
+
+### Flask-CORS Dependencies
+- **six>=1.9.0** (from flask-cors)
+
+### Flask-Session Dependencies
+- **python-dateutil>=2.8.0** (from flask-session)
+
+### Flask-Limiter Dependencies
+- **limits>=1.5** (from flask-limiter)
+- **pytz** (from flask-limiter)
+
+### PyJWT Dependencies
+- **cryptography** (optional from PyJWT)
+- **ecdsa** (optional from PyJWT)
+
+### Bcrypt Dependencies
+- **cffi>=1.0.0** (from bcrypt)
+- **six>=1.9.0** (from bcrypt)
+
+### Redis Dependencies
+- **deprecated>=1.2.3** (from redis)
+- **packaging>=22.0** (from redis)
+
+### Streamlit Dependencies
+- **altair<6,>=4.0** (from streamlit)
+- **blinker>=1.0.0** (from streamlit)
+- **cachetools>=4.0.0** (from streamlit)
+- **click>=7.0** (from streamlit)
+- **numpy>=1.19.3** (from streamlit)
+- **packaging>=20.9** (from streamlit)
+- **pandas>=1.3.0** (from streamlit)
+- **pillow>=7.1.0** (from streamlit)
+- **protobuf<5,>=3.20** (from streamlit)
+- **pyarrow>=7.0** (from streamlit)
+- **pympler>=0.9** (from streamlit)
+- **python-dateutil>=2.7.0** (from streamlit)
+- **requests>=2.27.0** (from streamlit)
+- **rich>=10.11.0** (from streamlit)
+- **tenacity>=8.0.0** (from streamlit)
+- **toml>=0.10.2** (from streamlit)
+- **typing-extensions>=3.10.0** (from streamlit)
+- **tzlocal>=2.2** (from streamlit)
+- **validators>=0.2** (from streamlit)
+- **watchdog>=2.1.5** (from streamlit)
+
+This comprehensive map shows that installing the packages from requirements.txt results in a total of over 100+ dependencies being installed, with the largest dependency chains coming from:
+1. sentence-transformers (ML/AI stack with torch and CUDA libraries)
+2. chromadb (web framework, analytics, and Kubernetes dependencies)
+3. langchain ecosystem (async libraries, web clients, etc.)
+4. langgraph (workflow management dependencies)
+5. flask ecosystem (web framework and related utilities)
+
+The system requires substantial infrastructure for ML/AI operations, web serving, and distributed systems.

@@ -9,7 +9,7 @@ project_root = Path(__file__).parent.parent.parent  # Go up two levels to reach 
 sys.path.insert(0, str(project_root))
 
 app = Flask(__name__)
-CORS(app, origins=["http://localhost:3000", "http://127.0.0.1:3000", "http://192.168.51.138:3000", "http://*:3000"])  # Enable CORS for React dev server
+CORS(app, origins=["http://localhost:3000", "http://127.0.0.1:3000", "http://192.168.51.216:3000", "http://*:3000"])  # Enable CORS for React dev server
 
 @app.route('/api/workflow/current', methods=['GET'])
 def get_current_workflow():

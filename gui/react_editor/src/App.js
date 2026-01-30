@@ -344,7 +344,7 @@ const refreshWorkflowFromServer = async (setNodes, setEdges) => {
       if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
         // Try to get the actual IP from the window.location, or default to a common IP pattern
         // For now, we'll use the known IP address of this server
-        workflowApiUrl = 'http://192.168.51.138:5004';  // Workflow API service
+        workflowApiUrl = 'http://192.168.51.216:5004';  // Workflow API service
       } else {
         workflowApiUrl = `http://${currentHost}:5004`;  // Workflow API service
       }
@@ -398,7 +398,7 @@ const refreshWorkflowFromServer = async (setNodes, setEdges) => {
       if (!apiUrl) {
         const currentHost = window.location.hostname;
         if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
-          apiUrl = 'http://192.168.51.138:5000';  // Changed from 5001 to 5000 (gateway service)
+          apiUrl = 'http://192.168.51.216:5000';  // Changed from 5001 to 5000 (gateway service)
         } else {
           apiUrl = `http://${currentHost}:5000`;  // Changed from 5001 to 5000 (gateway service)
         }
@@ -814,7 +814,7 @@ function App() {
       if (!workflowApiUrl) {
         const currentHost = window.location.hostname;
         if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
-          workflowApiUrl = 'http://192.168.51.138:5004';  // Workflow API service
+          workflowApiUrl = 'http://192.168.51.216:5004';  // Workflow API service
         } else {
           workflowApiUrl = `http://${currentHost}:5004`;  // Workflow API service
         }
@@ -857,7 +857,7 @@ function App() {
       if (!workflowApiUrl) {
         const currentHost = window.location.hostname;
         if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
-          workflowApiUrl = 'http://192.168.51.138:5004';  // Workflow API service
+          workflowApiUrl = 'http://192.168.51.216:5004';  // Workflow API service
         } else {
           workflowApiUrl = `http://${currentHost}:5004`;  // Workflow API service
         }
@@ -908,7 +908,7 @@ function App() {
         if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
           // Try to get the actual IP from the window.location, or default to a common IP pattern
           // For now, we'll use the known IP address of this server
-          workflowApiUrl = 'http://192.168.51.138:5004';  // Workflow API service
+          workflowApiUrl = 'http://192.168.51.216:5004';  // Workflow API service
         } else {
           workflowApiUrl = `http://${currentHost}:5004`;  // Workflow API service
         }
@@ -962,7 +962,7 @@ function App() {
         if (!apiUrl) {
           const currentHost = window.location.hostname;
           if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
-            apiUrl = 'http://192.168.51.138:5000';  // Changed from 5001 to 5000 (gateway service)
+            apiUrl = 'http://192.168.51.216:5000';  // Changed from 5001 to 5000 (gateway service)
           } else {
             apiUrl = `http://${currentHost}:5000`;  // Changed from 5001 to 5000 (gateway service)
           }
@@ -986,7 +986,7 @@ function App() {
       if (!workflowApiUrl) {
         const currentHost = window.location.hostname;
         if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
-          workflowApiUrl = 'http://192.168.51.138:5004';  // Workflow API service
+          workflowApiUrl = 'http://192.168.51.216:5004';  // Workflow API service
         } else {
           workflowApiUrl = `http://${currentHost}:5004`;  // Workflow API service
         }
@@ -1025,7 +1025,7 @@ function App() {
         if (!workflowApiUrl) {
           const currentHost = window.location.hostname;
           if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
-            workflowApiUrl = 'http://192.168.51.138:5004';  // Workflow API service
+            workflowApiUrl = 'http://192.168.51.216:5004';  // Workflow API service
           } else {
             workflowApiUrl = `http://${currentHost}:5004`;  // Workflow API service
           }
@@ -1065,7 +1065,7 @@ function App() {
         if (!workflowApiUrl) {
           const currentHost = window.location.hostname;
           if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
-            workflowApiUrl = 'http://192.168.51.138:5004';  // Workflow API service
+            workflowApiUrl = 'http://192.168.51.216:5004';  // Workflow API service
           } else {
             workflowApiUrl = `http://${currentHost}:5004`;  // Workflow API service
           }
@@ -1166,7 +1166,7 @@ function App() {
       if (!workflowApiUrl) {
         const currentHost = window.location.hostname;
         if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
-          workflowApiUrl = 'http://192.168.51.138:5004';  // Workflow API service
+          workflowApiUrl = 'http://192.168.51.216:5004';  // Workflow API service
         } else {
           workflowApiUrl = `http://${currentHost}:5004`;  // Workflow API service
         }
@@ -1206,7 +1206,7 @@ function App() {
       if (!workflowApiUrl) {
         const currentHost = window.location.hostname;
         if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
-          workflowApiUrl = 'http://192.168.51.138:5004';  // Workflow API service
+          workflowApiUrl = 'http://192.168.51.216:5004';  // Workflow API service
         } else {
           workflowApiUrl = `http://${currentHost}:5004`;  // Workflow API service
         }
@@ -1247,7 +1247,7 @@ function App() {
       if (!workflowApiUrl) {
         const currentHost = window.location.hostname;
         if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
-          workflowApiUrl = 'http://192.168.51.138:5004';  // Workflow API service
+          workflowApiUrl = 'http://192.168.51.216:5004';  // Workflow API service
         } else {
           workflowApiUrl = `http://${currentHost}:5004`;  // Workflow API service
         }
@@ -1325,7 +1325,7 @@ function App() {
       if (!workflowApiUrl) {
         const currentHost = window.location.hostname;
         if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
-          workflowApiUrl = 'http://192.168.51.138:5004';  // Workflow API service
+          workflowApiUrl = 'http://192.168.51.216:5004';  // Workflow API service
         } else {
           workflowApiUrl = `http://${currentHost}:5004`;  // Workflow API service
         }
@@ -1367,7 +1367,7 @@ function App() {
       if (!workflowApiUrl) {
         const currentHost = window.location.hostname;
         if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
-          workflowApiUrl = 'http://192.168.51.138:5004';  // Workflow API service
+          workflowApiUrl = 'http://192.168.51.216:5004';  // Workflow API service
         } else {
           workflowApiUrl = `http://${currentHost}:5004`;  // Workflow API service
         }

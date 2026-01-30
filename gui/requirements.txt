@@ -3,5 +3,9 @@ langchain==0.3.4
 langchain-community==0.3.3
 langchain-core==0.3.33
 langgraph
+# Note: The graphviz Python module requires the system-level Graphviz software to be installed
+# On Debian/Ubuntu systems: sudo apt-get install graphviz
+# On macOS: brew install graphviz
+# On Windows: Install from https://graphviz.org/download/
 graphviz
 grandalf

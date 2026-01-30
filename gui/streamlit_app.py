@@ -7,7 +7,10 @@ import graphviz
 
 # Add the project root to the Python path
 import sys
-sys.path.insert(0, '/root/qwen_test/ai_agent')
+from pathlib import Path
+current_dir = Path(__file__).parent
+project_root = current_dir.parent
+sys.path.insert(0, str(project_root))
 
 from langgraph_agent.langgraph_agent import create_enhanced_agent_graph, AgentState, run_enhanced_agent
 from langgraph.graph import StateGraph

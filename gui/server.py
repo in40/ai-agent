@@ -46,7 +46,7 @@ class LangGraphEditorServer(SimpleHTTPRequestHandler):
                     <h2>To run the React Editor:</h2>
                     <ol>
                         <li>Navigate to the React editor directory:<br>
-                            <code>cd /root/qwen_test/ai_agent/gui/react_editor</code></li>
+                            <code>cd /root/qwen/ai_agent/gui/react_editor</code></li>
                         <li>Install dependencies:<br>
                             <code>npm install</code></li>
                         <li>Start the development server:<br>

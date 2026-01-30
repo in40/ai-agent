@@ -502,6 +502,48 @@ def download_file(path):
         return jsonify({'error': 'RAG service unavailable'}), 503
 
 
+@app.route('/api/rag/import_processed', methods=['POST'])
+@require_permission(Permission.WRITE_RAG)
+def rag_import_processed(current_user_id):
+    """Convenience route for importing processed documents"""
+    try:
+        # Forward to RAG service
+        url = f"{RAG_SERVICE_URL}/import_processed"
+
+        # Prepare headers
+        headers = {
+            'Authorization': request.headers.get('Authorization', '')
+        }
+
+        # Handle multipart form data (file upload)
+        files = []
+        if 'file' in request.files:
+            for file_storage in request.files.getlist('file'):
+                if file_storage and file_storage.filename != '':
+                    file_content = file_storage.read()
+                    content_type = file_storage.content_type or 'application/octet-stream'
+                    files.append(('file', (file_storage.filename, file_content, content_type)))
+
+        # Make request to RAG service
+        if files:
+            # Use requests with files
+            resp = requests.post(url, files=files, headers=headers, timeout=3600)  # Increased timeout to 1 hour
+        else:
+            # Forward without files if no files were provided
+            resp = requests.post(url, headers=headers, data=request.get_data(), timeout=3600)
+
+        # Return the response from the RAG service with its original status code
+        excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
+        headers = [(name, value) for (name, value) in resp.raw.headers.items()
+                   if name.lower() not in excluded_headers]
+
+        response = Response(resp.content, resp.status_code, headers)
+        return response
+    except Exception as e:
+        logger.error(f"RAG import processed convenience route error: {str(e)}")
+        return jsonify({'error': 'RAG service unavailable'}), 503
+
+
 @app.route('/api/auth/validate', methods=['POST'])
 def auth_validate():
     """Convenience route for token validation"""

@@ -1,0 +1,3 @@
+[service]
+# Disable authentication for development purposes
+api_key = ""
