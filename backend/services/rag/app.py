@@ -1029,37 +1029,21 @@ def import_processed_documents(current_user_id):
         import tempfile
         import os
         from langchain_core.documents import Document as LCDocument
+        from rag_component.file_storage_manager import FileStorageManager
 
         # Check if the request contains files
         if 'file' not in request.files:
             return jsonify({'error': 'No file provided'}), 400
 
-        file = request.files['file']
+        uploaded_files = request.files.getlist('file')
 
-        if file.filename == '':
+        if not uploaded_files or all(f.filename == '' for f in uploaded_files):
             return jsonify({'error': 'No file selected'}), 400
 
-        # Validate file type
-        if not file.filename.lower().endswith('.json'):
-            return jsonify({'error': 'Only JSON files are allowed for processed document import'}), 400
-
-        # Read and parse the JSON file
-        try:
-            file_content = file.read().decode('utf-8')
-            processed_data = json.loads(file_content)
-        except json.JSONDecodeError as e:
-            return jsonify({'error': f'Invalid JSON format: {str(e)}'}), 400
-        except UnicodeDecodeError as e:
-            return jsonify({'error': f'Invalid UTF-8 encoding: {str(e)}'}), 400
-
-        # Validate the structure of the processed data
-        required_fields = ['document', 'chunks']
-        for field in required_fields:
-            if field not in processed_data:
-                return jsonify({'error': f'Missing required field: {field}'}), 400
-
-        if not isinstance(processed_data['chunks'], list):
-            return jsonify({'error': 'Chunks must be an array'}), 400
+        # Validate file types
+        for file in uploaded_files:
+            if file and file.filename != '' and not file.filename.lower().endswith('.json'):
+                return jsonify({'error': f'File {file.filename} is not a JSON file. Only JSON files are allowed for processed document import'}), 400
 
         # Initialize RAG orchestrator with appropriate LLM
         response_generator = ResponseGenerator()
@@ -1069,69 +1053,172 @@ def import_processed_documents(current_user_id):
         )
 
         rag_orchestrator = RAGOrchestrator(llm=llm)
+        file_storage_manager = FileStorageManager()
 
-        # Convert the processed chunks to LangChain documents
-        documents = []
-        for chunk in processed_data['chunks']:
-            # Validate required fields in each chunk
-            if 'content' not in chunk:
-                return jsonify({'error': 'Each chunk must have a content field'}), 400
+        total_chunks_imported = 0
+        successful_imports = []
+        failed_imports = []
 
-            # Create a LangChain document from the chunk
-            doc_content = chunk['content']
+        # Process each file individually
+        for file in uploaded_files:
+            if not file or file.filename == '':
+                continue
 
-            # Create metadata for the document
-            doc_metadata = {
-                'source': processed_data.get('document', 'processed_document'),
-                'chunk_id': chunk.get('chunk_id', ''),
-                'section': chunk.get('section', ''),
-                'title': chunk.get('title', ''),
-                'chunk_type': chunk.get('chunk_type', ''),
-                'token_count': chunk.get('token_count', 0),
-                'contains_formula': chunk.get('contains_formula', False),
-                'contains_table': chunk.get('contains_table', False),
-                'upload_method': 'Processed JSON Import',
-                'user_id': current_user_id
-            }
+            temp_file_path = None
+            try:
+                # Save the uploaded file temporarily to store it
+                with tempfile.NamedTemporaryFile(delete=False, suffix='.json') as temp_file:
+                    file.save(temp_file.name)
+                    temp_file_path = temp_file.name
 
-            # Add trust level if present
-            if 'trust_level' in chunk:
-                doc_metadata['trust_level'] = chunk['trust_level']
+                # Read and parse the JSON file
+                try:
+                    with open(temp_file_path, 'r', encoding='utf-8') as f:
+                        processed_data = json.load(f)
+                except json.JSONDecodeError as e:
+                    failed_imports.append({
+                        'filename': file.filename,
+                        'error': f'Invalid JSON format: {str(e)}'
+                    })
+                    continue  # Skip to the next file
+                except UnicodeDecodeError as e:
+                    failed_imports.append({
+                        'filename': file.filename,
+                        'error': f'Invalid UTF-8 encoding: {str(e)}'
+                    })
+                    continue  # Skip to the next file
 
-            # Add testing scenario if present
-            if 'testing_scenario' in chunk:
-                doc_metadata['testing_scenario'] = chunk['testing_scenario']
+                # Validate the structure of the processed data
+                required_fields = ['document', 'chunks']
+                for field in required_fields:
+                    if field not in processed_data:
+                        failed_imports.append({
+                            'filename': file.filename,
+                            'error': f'Missing required field: {field}'
+                        })
+                        continue  # Skip to the next file
 
-            # Add formula ID if present
-            if 'formula_id' in chunk:
-                doc_metadata['formula_id'] = chunk['formula_id']
+                if not isinstance(processed_data['chunks'], list):
+                    failed_imports.append({
+                        'filename': file.filename,
+                        'error': 'Chunks must be an array'
+                    })
+                    continue  # Skip to the next file
 
-            # Add overlap information if present
-            if 'overlap_source' in chunk:
-                doc_metadata['overlap_source'] = chunk['overlap_source']
-            if 'overlap_tokens' in chunk:
-                doc_metadata['overlap_tokens'] = chunk['overlap_tokens']
+                # Store the original JSON file using the file storage manager
+                stored_file_path = file_storage_manager.store_file(temp_file_path, file.filename)
 
-            # Add any other custom metadata from the chunk
-            for key, value in chunk.items():
-                if key not in ['content', 'chunk_id', 'section', 'title', 'chunk_type',
-                               'token_count', 'contains_formula', 'contains_table',
-                               'trust_level', 'testing_scenario', 'formula_id',
-                               'overlap_source', 'overlap_tokens']:
-                    doc_metadata[key] = value
+                # Extract the file ID from the stored file path
+                stored_dir = os.path.dirname(stored_file_path)
+                file_id = os.path.basename(stored_dir)
 
-            # Create the LangChain document
-            lc_doc = LCDocument(page_content=doc_content, metadata=doc_metadata)
-            documents.append(lc_doc)
+                # Convert the processed chunks to LangChain documents
+                documents = []
+                for chunk in processed_data['chunks']:
+                    # Validate required fields in each chunk
+                    if 'content' not in chunk:
+                        failed_imports.append({
+                            'filename': file.filename,
+                            'error': 'Each chunk must have a content field'
+                        })
+                        continue  # Skip to the next file
 
-        # Add documents to the vector store using the RAG orchestrator
-        rag_orchestrator.vector_store_manager.add_documents(documents)
+                    # Create a LangChain document from the chunk
+                    doc_content = chunk['content']
 
-        return jsonify({
-            'message': f'Successfully imported {len(documents)} chunks from processed document',
-            'document': processed_data.get('document', 'unknown'),
-            'total_chunks': len(documents)
-        }), 200
+                    # Create metadata for the document
+                    doc_metadata = {
+                        'source': processed_data.get('document', 'processed_document'),
+                        'chunk_id': chunk.get('chunk_id', ''),
+                        'section': chunk.get('section', ''),
+                        'title': chunk.get('title', ''),
+                        'chunk_type': chunk.get('chunk_type', ''),
+                        'token_count': chunk.get('token_count', 0),
+                        'contains_formula': chunk.get('contains_formula', False),
+                        'contains_table': chunk.get('contains_table', False),
+                        'upload_method': 'Processed JSON Import',
+                        'user_id': current_user_id,
+                        # Add stored file path and file ID for download capability
+                        'stored_file_path': stored_file_path,
+                        'file_id': file_id
+                    }
+
+                    # Add trust level if present
+                    if 'trust_level' in chunk:
+                        doc_metadata['trust_level'] = chunk['trust_level']
+
+                    # Add testing scenario if present
+                    if 'testing_scenario' in chunk:
+                        doc_metadata['testing_scenario'] = chunk['testing_scenario']
+
+                    # Add formula ID if present
+                    if 'formula_id' in chunk:
+                        doc_metadata['formula_id'] = chunk['formula_id']
+
+                    # Add overlap information if present
+                    if 'overlap_source' in chunk:
+                        doc_metadata['overlap_source'] = chunk['overlap_source']
+                    if 'overlap_tokens' in chunk:
+                        doc_metadata['overlap_tokens'] = chunk['overlap_tokens']
+
+                    # Add any other custom metadata from the chunk
+                    for key, value in chunk.items():
+                        if key not in ['content', 'chunk_id', 'section', 'title', 'chunk_type',
+                                       'token_count', 'contains_formula', 'contains_table',
+                                       'trust_level', 'testing_scenario', 'formula_id',
+                                       'overlap_source', 'overlap_tokens']:
+                            doc_metadata[key] = value
+
+                    # Create the LangChain document
+                    lc_doc = LCDocument(page_content=doc_content, metadata=doc_metadata)
+                    documents.append(lc_doc)
+
+                # Add documents to the vector store using the RAG orchestrator
+                rag_orchestrator.vector_store_manager.add_documents(documents)
+
+                total_chunks_imported += len(documents)
+
+                successful_imports.append({
+                    'filename': file.filename,
+                    'chunks_imported': len(documents),
+                    'document': processed_data.get('document', 'unknown')
+                })
+
+            except Exception as e:
+                logger.error(f"Error processing file {file.filename}: {str(e)}")
+                import traceback
+                logger.error(traceback.format_exc())
+
+                failed_imports.append({
+                    'filename': file.filename,
+                    'error': str(e)
+                })
+
+            finally:
+                # Clean up the temporary file
+                if temp_file_path and os.path.exists(temp_file_path):
+                    try:
+                        os.unlink(temp_file_path)
+                    except OSError:
+                        pass  # Ignore errors during temp file cleanup
+
+        # Prepare response
+        response_data = {
+            'message': f'Import completed. Successfully imported {len(successful_imports)} files with {total_chunks_imported} total chunks.',
+            'successful_imports': successful_imports,
+            'failed_imports': failed_imports,
+            'total_files_attempted': len(uploaded_files),
+            'total_successful': len(successful_imports),
+            'total_failed': len(failed_imports)
+        }
+
+        # Return success if at least one file was imported successfully
+        if successful_imports:
+            status_code = 200
+        else:
+            status_code = 400  # Return 400 if no files were successfully imported
+
+        return jsonify(response_data), status_code
 
     except Exception as e:
         logger.error(f"Processed document import error: {str(e)}")

@@ -87,6 +87,9 @@ ai_agent_env/
 
 # Sensitive files
 .env
+.env.*
+.env.backup*
+.env-*
 
 # Process IDs
 service_pids.txt

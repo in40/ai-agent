@@ -78,7 +78,29 @@
             margin-bottom: 10px;
             border-left: 3px solid var(--warning-color);
         }
-        
+
+        .content-preview {
+            max-height: 200px;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .content-preview::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 20px;
+            background: linear-gradient(transparent, #fffbeb);
+            pointer-events: none;
+        }
+
+        .content-full {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
         .btn-primary {
             background-color: var(--primary-color);
             border-color: var(--primary-color);
@@ -921,19 +943,6 @@
                 const result = await response.json();
                 const documents = result.documents || [];
 
-                // Helper function to safely truncate content
-                function truncateContent(content) {
-                    if (typeof content === 'string') {
-                        return content.substring(0, 200) + (content.length > 200 ? '...' : '');
-                    } else if (content && typeof content === 'object') {
-                        // If content is an object, convert to string
-                        const contentStr = JSON.stringify(content);
-                        return contentStr.substring(0, 200) + (contentStr.length > 200 ? '...' : '');
-                    } else {
-                        return 'No content preview';
-                    }
-                }
-
                 // Initialize markdown-it for document content
                 const md = window.markdownit({
                     html: true,
@@ -943,18 +952,41 @@
 
                 // Display results
                 if (documents.length > 0) {
-                    lookupResultsDiv.innerHTML = documents.map(doc => {
-                        // Render document content with markdown
-                        const renderedContent = md.render(truncateContent(doc.content));
+                    lookupResultsDiv.innerHTML = documents.map((doc, index) => {
+                        // Render document content with markdown (full content)
+                        const fullContent = doc.content || doc.page_content || 'No content available';
+                        const renderedFullContent = md.render(fullContent);
+
+                        // Create a preview of the content (first 200 chars)
+                        const previewContent = fullContent.substring(0, 200) + (fullContent.length > 200 ? '...' : '');
+                        const renderedPreviewContent = md.render(previewContent);
 
                         // Add download link if available
                         let downloadLink = '';
-                        if (doc.download_url) {
+                        if (doc.download_info && doc.download_info.download_available) {
+                            downloadLink = `<a href="/download/${doc.download_info.file_id}/${doc.download_info.filename}"
+                                              target="_blank"
+                                              class="btn btn-sm btn-outline-primary ms-2"
+                                              title="Download original file">
+                                <i class="fas fa-download"></i> Download
+                            </a>`;
+                        } else if (doc.download_url) {
+                            // Fallback to the old download_url if available
                             const filename = doc.source || 'document';
                             downloadLink = `<a href="${doc.download_url}" target="_blank" class="btn btn-sm btn-outline-primary ms-2" title="Download original file">
                                 <i class="fas fa-download"></i> Download
                             </a>`;
                         }
+
+                        // Create expand/collapse button
+                        const expandButton = `
+                            <button type="button"
+                                    class="btn btn-sm btn-outline-secondary ms-2 toggle-content-btn"
+                                    data-index="${index}"
+                                    title="Expand/Collapse content">
+                                <i class="fas fa-expand"></i> <span class="btn-text">Expand</span>
+                            </button>
+                        `;
 
                         return `
                             <div class="rag-document">
@@ -962,13 +994,40 @@
                                     <h6 class="mb-0">${doc.title || 'Untitled Document'}</h6>
                                     <div>
                                         ${downloadLink}
+                                        ${expandButton}
                                     </div>
                                 </div>
-                                <div class="markdown-body">${renderedContent}</div>
+                                <div class="markdown-body content-preview" data-index="${index}">${renderedPreviewContent}</div>
+                                <div class="markdown-body content-full d-none" data-index="${index}">${renderedFullContent}</div>
                                 <small class="text-muted">Score: ${doc.score || 'N/A'} | Source: ${doc.source || 'Unknown'}</small>
                             </div>
                         `;
                     }).join('');
+
+                    // Add event listeners for expand/collapse buttons
+                    document.querySelectorAll('.toggle-content-btn').forEach(button => {
+                        button.addEventListener('click', function() {
+                            const index = this.getAttribute('data-index');
+                            const previewDiv = document.querySelector(`.content-preview[data-index="${index}"]`);
+                            const fullDiv = document.querySelector(`.content-full[data-index="${index}"]`);
+                            const icon = this.querySelector('i');
+                            const textSpan = this.querySelector('.btn-text');
+
+                            if (fullDiv.classList.contains('d-none')) {
+                                // Show full content
+                                previewDiv.classList.add('d-none');
+                                fullDiv.classList.remove('d-none');
+                                icon.className = 'fas fa-compress';
+                                textSpan.textContent = 'Collapse';
+                            } else {
+                                // Show preview
+                                fullDiv.classList.add('d-none');
+                                previewDiv.classList.remove('d-none');
+                                icon.className = 'fas fa-expand';
+                                textSpan.textContent = 'Expand';
+                            }
+                        });
+                    });
                 } else {
                     lookupResultsDiv.innerHTML = '<p class="text-muted">No documents found for your query.</p>';
                 }
@@ -1077,8 +1136,139 @@
                 // Display the response
                 let responseHTML = `<h5>RAG Response:</h5><div class="markdown-body">${renderedResponse}</div>`;
 
-                if (result.context) {
-                    responseHTML += `<h6>Context:</h6><p class="small">${truncateContext(result.context)}</p>`;
+                if (result.context && Array.isArray(result.context)) {
+                    responseHTML += `<h6>Context:</h6>`;
+
+                    result.context.forEach((contextItem, index) => {
+                        // Render document content with markdown (full content)
+                        const fullContent = contextItem.content || 'No content available';
+                        const renderedFullContent = md.render(fullContent);
+
+                        // Create a preview of the content (first 300 chars)
+                        const previewContent = fullContent.substring(0, 300) + (fullContent.length > 300 ? '...' : '');
+                        const renderedPreviewContent = md.render(previewContent);
+
+                        // Add download link if available
+                        const downloadLink = contextItem.download_info && contextItem.download_info.download_available ?
+                            `<a href="/download/${contextItem.download_info.file_id}/${contextItem.download_info.filename}"
+                               class="btn btn-sm btn-outline-primary ms-2"
+                               title="Download original file"
+                               target="_blank">
+                                <i class="fas fa-download"></i>
+                            </a>` : '';
+
+                        // Create expand/collapse button
+                        const expandButton = `
+                            <button type="button"
+                                    class="btn btn-sm btn-outline-secondary ms-2 toggle-context-btn"
+                                    data-index="${index}"
+                                    title="Expand/Collapse content">
+                                <i class="fas fa-expand"></i> <span class="btn-text">Expand</span>
+                            </button>
+                        `;
+
+                        responseHTML += `
+                            <div class="rag-document">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6>${contextItem.title || 'Untitled Document'}</h6>
+                                        <p class="mb-1"><small class="text-muted">${contextItem.source || 'Source unknown'}</small></p>
+                                        <div class="markdown-body content-preview" data-index="${index}">${renderedPreviewContent}</div>
+                                        <div class="markdown-body content-full d-none" data-index="${index}">${renderedFullContent}</div>
+                                    </div>
+                                    <div>
+                                        ${downloadLink}
+                                        ${expandButton}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    // Add event listeners for expand/collapse buttons in context
+                    setTimeout(() => {
+                        document.querySelectorAll('.toggle-context-btn').forEach(button => {
+                            button.addEventListener('click', function() {
+                                const index = this.getAttribute('data-index');
+                                const previewDiv = document.querySelector(`.content-preview[data-index="${index}"]`);
+                                const fullDiv = document.querySelector(`.content-full[data-index="${index}"]`);
+                                const icon = this.querySelector('i');
+                                const textSpan = this.querySelector('.btn-text');
+
+                                if (fullDiv.classList.contains('d-none')) {
+                                    // Show full content
+                                    previewDiv.classList.add('d-none');
+                                    fullDiv.classList.remove('d-none');
+                                    icon.className = 'fas fa-compress';
+                                    textSpan.textContent = 'Collapse';
+                                } else {
+                                    // Show preview
+                                    fullDiv.classList.add('d-none');
+                                    previewDiv.classList.remove('d-none');
+                                    icon.className = 'fas fa-expand';
+                                    textSpan.textContent = 'Expand';
+                                }
+                            });
+                        });
+                    }, 100); // Small delay to ensure DOM is updated
+                } else if (result.context) {
+                    // Render the context if it's a string or object
+                    let contextContent = '';
+                    if (typeof result.context === 'string') {
+                        contextContent = result.context;
+                    } else {
+                        contextContent = JSON.stringify(result.context, null, 2);
+                    }
+
+                    const fullContextContent = md.render(contextContent);
+                    const previewContextContent = md.render(contextContent.substring(0, 500) + (contextContent.length > 500 ? '...' : ''));
+
+                    responseHTML += `
+                        <div class="rag-document">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6>Full Context</h6>
+                                    <div class="markdown-body content-preview" data-index="full-context">${previewContextContent}</div>
+                                    <div class="markdown-body content-full d-none" data-index="full-context">${fullContextContent}</div>
+                                </div>
+                                <div>
+                                    <button type="button"
+                                            class="btn btn-sm btn-outline-secondary ms-2 toggle-context-btn"
+                                            data-index="full-context"
+                                            title="Expand/Collapse content">
+                                        <i class="fas fa-expand"></i> <span class="btn-text">Expand</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    // Add event listener for the full context expand/collapse button
+                    setTimeout(() => {
+                        const fullContextButton = document.querySelector('.toggle-context-btn[data-index="full-context"]');
+                        if (fullContextButton) {
+                            fullContextButton.addEventListener('click', function() {
+                                const previewDiv = document.querySelector('.content-preview[data-index="full-context"]');
+                                const fullDiv = document.querySelector('.content-full[data-index="full-context"]');
+                                const icon = this.querySelector('i');
+                                const textSpan = this.querySelector('.btn-text');
+
+                                if (fullDiv.classList.contains('d-none')) {
+                                    // Show full content
+                                    previewDiv.classList.add('d-none');
+                                    fullDiv.classList.remove('d-none');
+                                    icon.className = 'fas fa-compress';
+                                    textSpan.textContent = 'Collapse';
+                                } else {
+                                    // Show preview
+                                    fullDiv.classList.add('d-none');
+                                    previewDiv.classList.remove('d-none');
+                                    icon.className = 'fas fa-expand';
+                                    textSpan.textContent = 'Expand';
+                                }
+                            });
+                        }
+                    }, 100); // Small delay to ensure DOM is updated
                 }
 
                 if (result.sources && result.sources.length > 0) {
@@ -1465,45 +1655,76 @@
             importResultDiv.style.display = 'none';
 
             try {
-                // Process each file sequentially
+                // Send all files in a single request
+                const formData = new FormData();
                 for (let i = 0; i < processedSelectedFilesArray.length; i++) {
-                    const file = processedSelectedFilesArray[i];
-
-                    // Update progress
-                    const progressPercentage = ((i + 1) / processedSelectedFilesArray.length) * 100;
-                    importProgressBar.style.width = `${progressPercentage}%`;
-                    importStatusDiv.textContent = `Importing file ${i+1} of ${processedSelectedFilesArray.length}: ${file.name}`;
-
-                    // Create FormData object to send the file
-                    const formData = new FormData();
-                    formData.append('file', file);
-
-                    // Send the file to the backend
-                    const response = await fetch(`${API_BASE_URL}/api/rag/import_processed`, {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${AUTH_TOKEN}`
-                        },
-                        body: formData
-                    });
-
-                    if (!response.ok) {
-                        const errorData = await response.json().catch(() => ({ error: 'Unknown error occurred' }));
-                        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
-                    }
-
-                    const result = await response.json();
-                    console.log(`Successfully imported processed file: ${file.name}`, result);
+                    formData.append('file', processedSelectedFilesArray[i]);
                 }
 
-                // All files processed successfully
+                // Update progress
+                importStatusDiv.textContent = `Importing ${processedSelectedFilesArray.length} file(s)...`;
+
+                // Send the files to the backend
+                const response = await fetch(`${API_BASE_URL}/api/rag/import_processed`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${AUTH_TOKEN}`
+                    },
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                // Update progress bar based on results
+                const progressPercentage = 100;
+                importProgressBar.style.width = `${progressPercentage}%`;
+
+                // All files processed (some may have succeeded, some may have failed)
                 importStatusDiv.style.display = 'none';
                 importResultDiv.style.display = 'block';
-                importResultDiv.className = 'alert alert-success mt-2';
-                importResultDiv.innerHTML = `
-                    <h6>Import Results:</h6>
-                    <p>All ${processedSelectedFilesArray.length} processed file(s) have been imported successfully!</p>
-                `;
+
+                if (response.ok) {
+                    importResultDiv.className = 'alert alert-success mt-2';
+                    let successMessage = `<h6>Import Results:</h6>`;
+                    if (result.successful_imports && result.successful_imports.length > 0) {
+                        successMessage += `<p><strong>Successfully imported ${result.successful_imports.length} file(s):</strong></p><ul>`;
+                        result.successful_imports.forEach(importInfo => {
+                            successMessage += `<li>${importInfo.filename} (${importInfo.chunks_imported} chunks)</li>`;
+                        });
+                        successMessage += `</ul>`;
+                    }
+
+                    if (result.failed_imports && result.failed_imports.length > 0) {
+                        successMessage += `<p><strong>Failed to import ${result.failed_imports.length} file(s):</strong></p><ul>`;
+                        result.failed_imports.forEach(failInfo => {
+                            successMessage += `<li><strong>${failInfo.filename}:</strong> ${failInfo.error}</li>`;
+                        });
+                        successMessage += `</ul>`;
+                    }
+
+                    successMessage += `<p>Total chunks imported: ${result.total_chunks_imported || 0}</p>`;
+                    importResultDiv.innerHTML = successMessage;
+                } else {
+                    importResultDiv.className = 'alert alert-danger mt-2';
+                    let errorMessage = `<h6>Import Results:</h6>`;
+                    if (result.successful_imports && result.successful_imports.length > 0) {
+                        errorMessage += `<p><strong>Successfully imported ${result.successful_imports.length} file(s):</strong></p><ul>`;
+                        result.successful_imports.forEach(importInfo => {
+                            errorMessage += `<li>${importInfo.filename} (${importInfo.chunks_imported} chunks)</li>`;
+                        });
+                        errorMessage += `</ul>`;
+                    }
+
+                    if (result.failed_imports && result.failed_imports.length > 0) {
+                        errorMessage += `<p><strong>Failed to import ${result.failed_imports.length} file(s):</strong></p><ul>`;
+                        result.failed_imports.forEach(failInfo => {
+                            errorMessage += `<li><strong>${failInfo.filename}:</strong> ${failInfo.error}</li>`;
+                        });
+                        errorMessage += `</ul>`;
+                    }
+
+                    importResultDiv.innerHTML = errorMessage;
+                }
 
                 // Reset file input and UI
                 processedFileUploadInput.value = '';

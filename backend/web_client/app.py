@@ -424,5 +424,38 @@ def rag_ingest_from_session():
         logger.error(f"RAG ingestion from session error: {str(e)}")
         return jsonify({'error': f'RAG ingestion from session failed: {str(e)}'}), 500
 
+@app.route('/api/rag/import_processed', methods=['POST'])
+@token_required
+def rag_import_processed():
+    """Import processed documents - forwards to backend service"""
+    try:
+        # Prepare multipart form data
+        files = []
+        for file_storage in request.files.getlist('file'):
+            if file_storage and file_storage.filename != '':
+                # Read the file content to avoid stream issues
+                file_content = file_storage.read()
+                # Ensure content_type is not None, use a default if needed
+                content_type = file_storage.content_type or 'application/octet-stream'
+                files.append(('file', (file_storage.filename, file_content, content_type)))
+
+        # Forward headers
+        headers = {'Authorization': request.headers.get('Authorization')}
+
+        # Make request to the backend API (which should route through the gateway)
+        backend_response = requests.post(
+            f"{app.config['BACKEND_API_URL']}/api/rag/import_processed",
+            files=files,
+            headers=headers
+        )
+
+        # Return the response from the backend API with its original status code
+        return jsonify(backend_response.json()), backend_response.status_code
+    except Exception as e:
+        logger.error(f"RAG import processed error: {str(e)}")
+        import traceback
+        logger.error(traceback.format_exc())
+        return jsonify({'error': f'RAG import processed failed: {str(e)}'}), 500
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5005, debug=False)

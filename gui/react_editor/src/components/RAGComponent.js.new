@@ -72,7 +72,7 @@ const RAGComponent = () => {
 
     try {
       const pathsArray = filePaths.split(',').map(path => path.trim()).filter(path => path);
-      
+
       const response = await fetch(`${getApiUrl()}/api/rag/ingest`, {
         method: 'POST',
         headers: {
@@ -166,14 +166,14 @@ const RAGComponent = () => {
                   <li key={index} style={{ marginBottom: '20px', border: '1px solid #ddd', borderRadius: '5px', padding: '10px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <p><strong>Document {index + 1}:</strong></p>
-                      <button
+                      <button 
                         onClick={() => toggleExpand(index)}
-                        style={{
-                          padding: '5px 10px',
-                          fontSize: '12px',
-                          backgroundColor: '#007bff',
-                          color: 'white',
-                          border: 'none',
+                        style={{ 
+                          padding: '5px 10px', 
+                          fontSize: '12px', 
+                          backgroundColor: '#007bff', 
+                          color: 'white', 
+                          border: 'none', 
                           borderRadius: '3px',
                           cursor: 'pointer'
                         }}
@@ -181,21 +181,21 @@ const RAGComponent = () => {
                         {expandedDocIndex === index ? 'Collapse' : 'Expand'}
                       </button>
                     </div>
-
+                    
                     <div>
                       <p><strong>Source:</strong> {doc.metadata?.source || 'Unknown'}</p>
                       <p><strong>Score:</strong> {doc.score ? doc.score.toFixed(4) : 'N/A'}</p>
-
+                      
                       {/* Show metadata if available */}
                       {doc.metadata && Object.keys(doc.metadata).length > 0 && (
                         <details style={{ marginTop: '10px' }}>
                           <summary style={{ cursor: 'pointer', fontWeight: 'bold' }}>
                             Metadata
                           </summary>
-                          <pre style={{
-                            backgroundColor: '#f5f5f5',
-                            padding: '10px',
-                            borderRadius: '3px',
+                          <pre style={{ 
+                            backgroundColor: '#f5f5f5', 
+                            padding: '10px', 
+                            borderRadius: '3px', 
                             overflowX: 'auto',
                             whiteSpace: 'pre-wrap',
                             wordWrap: 'break-word'
@@ -204,24 +204,24 @@ const RAGComponent = () => {
                           </pre>
                         </details>
                       )}
-
+                      
                       {/* Show content based on expansion state */}
-                      <div style={{
+                      <div style={{ 
                         marginTop: '10px',
                         maxHeight: expandedDocIndex === index ? 'none' : '200px',
                         overflowY: expandedDocIndex === index ? 'visible' : 'auto',
                         position: 'relative'
                       }}>
-                        <p style={{
+                        <p style={{ 
                           whiteSpace: 'pre-wrap',
                           wordWrap: 'break-word',
                           lineHeight: '1.5'
                         }}>
                           {doc.page_content}
                         </p>
-
+                        
                         {/* Show fade effect when collapsed */}
-                        {expandedDocIndex !== index && doc.page_content.length > 500 && (
+                        {!expandedDocIndex === index && doc.page_content.length > 500 && (
                           <div style={{
                             position: 'absolute',
                             bottom: 0,
@@ -259,22 +259,22 @@ const RAGComponent = () => {
   return (
     <div className="rag-component">
       <h2>RAG Functions</h2>
-      
+
       {/* Tab Navigation */}
       <div className="tab-navigation">
-        <button 
+        <button
           className={`tab-button ${activeTab === 'query' ? 'active' : ''}`}
           onClick={() => setActiveTab('query')}
         >
           Query
         </button>
-        <button 
+        <button
           className={`tab-button ${activeTab === 'ingest' ? 'active' : ''}`}
           onClick={() => setActiveTab('ingest')}
         >
           Ingest Documents
         </button>
-        <button 
+        <button
           className={`tab-button ${activeTab === 'retrieve' ? 'active' : ''}`}
           onClick={() => setActiveTab('retrieve')}
         >

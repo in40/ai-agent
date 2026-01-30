@@ -2,6 +2,7 @@
 Main RAG orchestrator module.
 Coordinates all RAG components and provides a unified interface.
 """
+import os
 from typing import List, Dict, Any, Optional
 from langchain_core.documents import Document as LCDocument
 from .document_loader import DocumentLoader
@@ -250,12 +251,22 @@ class RAGOrchestrator:
                 collection_name = self.vector_store_manager.collection_name if hasattr(self.vector_store_manager, 'collection_name') else "default"
                 source_label = f"{source_label} [Collection: {collection_name}]"
 
+                # Prepare document info for download if available
+                download_info = None
+                if doc.metadata.get("file_id") and doc.metadata.get("stored_file_path"):
+                    download_info = {
+                        "file_id": doc.metadata.get("file_id"),
+                        "filename": os.path.basename(doc.metadata.get("stored_file_path", "")),
+                        "download_available": True
+                    }
+
                 formatted_docs.append({
                     "content": doc.page_content,
                     "title": doc.metadata.get("title", "Untitled Document"),
                     "source": source_label,
                     "metadata": doc.metadata,
-                    "score": score
+                    "score": score,
+                    "download_info": download_info
                 })
 
         # If reranker is enabled, re-rank the documents

@@ -1,1454 +1,6 @@
 {
   "states": [
     {
-      "id": "0e3b5d7b-1512-46c3-b3e5-d2c4fadf87ef",
-      "timestamp": 1769604508.4460857,
-      "workflow": {
-        "name": "MyWorkflow",
-        "nodes": [
-          {
-            "data": {
-              "conditionalEdges": [],
-              "conditionalLogic": "",
-              "description": "Initializes the agent state with default values.",
-              "editable": true,
-              "errorHandler": "",
-              "label": "Initialize Agent State",
-              "logic": "Initialize the agent state with default values",
-              "nextNode": "discover_services",
-              "nodeFunction": "initialize_agent_state",
-              "stateUpdates": {},
-              "type": "llm_calling"
-            },
-            "id": "initialize_agent_state",
-            "position": {
-              "x": 0,
-              "y": 0
-            },
-            "style": {
-              "alignItems": "center",
-              "background": "#fadbd8",
-              "border": "1px solid #555",
-              "borderRadius": "8px",
-              "display": "flex",
-              "height": "100px",
-              "justifyContent": "center",
-              "padding": "15px",
-              "width": "200px"
-            },
-            "type": "default",
-            "measured": {
-              "width": 200,
-              "height": 100
-            }
-          },
-          {
-            "data": {
-              "conditionalEdges": [],
-              "conditionalLogic": "",
-              "description": "Discovers available MCP services from the registry.",
-              "editable": true,
-              "errorHandler": "",
-              "label": "Discover Services",
-              "logic": "Logic for discover_services node",
-              "nextNode": "analyze_request",
-              "nodeFunction": "discover_services",
-              "stateUpdates": {},
-              "type": "mcp"
-            },
-            "id": "discover_services",
-            "position": {
-              "x": 0,
-              "y": 600
-            },
-            "style": {
-              "alignItems": "center",
-              "background": "#d2b4de",
-              "border": "1px solid #555",
-              "borderRadius": "8px",
-              "display": "flex",
-              "height": "100px",
-              "justifyContent": "center",
-              "padding": "15px",
-              "width": "200px"
-            },
-            "type": "default",
-            "measured": {
-              "width": 200,
-              "height": 100
-            }
-          },
-          {
-            "data": {
-              "conditionalEdges": [
-                {
-                  "condition": "no MCP tool calls generated and is_final_answer=True",
-                  "target": "generate_final_answer_from_analysis"
-                },
-                {
-                  "condition": "no MCP tool calls generated and is_final_answer=False",
-                  "target": "generate_failure_response_from_analysis"
-                },
-                {
-                  "condition": "MCP tool calls generated",
-                  "target": "check_mcp_applicability"
-                }
-              ],
-              "conditionalLogic": "",
-              "description": "Analyzes the user request to determine how to proceed.",
-              "editable": true,
-              "errorHandler": "",
-              "label": "Analyze Request",
-              "logic": "Analyze the user request to determine how to proceed",
-              "nextNode": "check_mcp_applicability, generate_failure_response_from_analysis, generate_final_answer_from_analysis",
-              "nodeFunction": "analyze_request",
-              "stateUpdates": {},
-              "type": "llm_calling"
-            },
-            "id": "analyze_request",
-            "position": {
-              "x": 350,
-              "y": 0
-            },
-            "style": {
-              "alignItems": "center",
-              "background": "#fadbd8",
-              "border": "1px solid #555",
-              "borderRadius": "8px",
-              "display": "flex",
-              "height": "100px",
-              "justifyContent": "center",
-              "padding": "15px",
-              "width": "200px"
-            },
-            "type": "default",
-            "measured": {
-              "width": 200,
-              "height": 100
-            }
-          },
-          {
-            "data": {
-              "conditionalEdges": [],
-              "conditionalLogic": "",
-              "description": "Checks if MCP services are applicable for the request.",
-              "editable": true,
-              "errorHandler": "",
-              "label": "Check Mcp Applicability",
-              "logic": "Logic for check_mcp_applicability node",
-              "nextNode": "plan_mcp_queries",
-              "nodeFunction": "check_mcp_applicability",
-              "stateUpdates": {},
-              "type": "default"
-            },
-            "id": "check_mcp_applicability",
-            "position": {
-              "x": 350,
-              "y": 600
-            },
-            "style": {
-              "alignItems": "center",
-              "background": "#ffffff",
-              "border": "1px solid #555",
-              "borderRadius": "8px",
-              "display": "flex",
-              "height": "100px",
-              "justifyContent": "center",
-              "padding": "15px",
-              "width": "200px"
-            },
-            "type": "default",
-            "measured": {
-              "width": 200,
-              "height": 100
-            }
-          },
-          {
-            "data": {
-              "conditionalEdges": [],
-              "conditionalLogic": "",
-              "description": "Retrieves relevant documents using RAG component.",
-              "editable": true,
-              "errorHandler": "",
-              "label": "Retrieve Documents",
-              "logic": "Logic for retrieve_documents node",
-              "nextNode": "",
-              "nodeFunction": "retrieve_documents",
-              "stateUpdates": {},
-              "type": "rag"
-            },
-            "id": "retrieve_documents",
-            "position": {
-              "x": 700,
-              "y": 600
-            },
-            "style": {
-              "alignItems": "center",
-              "background": "#85c1e9",
-              "border": "1px solid #555",
-              "borderRadius": "8px",
-              "display": "flex",
-              "height": "100px",
-              "justifyContent": "center",
-              "padding": "15px",
-              "width": "200px"
-            },
-            "type": "default",
-            "measured": {
-              "width": 200,
-              "height": 100
-            }
-          },
-          {
-            "data": {
-              "conditionalEdges": [],
-              "conditionalLogic": "",
-              "description": "Augments user request with retrieved documents.",
-              "editable": true,
-              "errorHandler": "",
-              "label": "Augment Context",
-              "logic": "Logic for augment_context node",
-              "nextNode": "",
-              "nodeFunction": "augment_context",
-              "stateUpdates": {},
-              "type": "llm_calling"
-            },
-            "id": "augment_context",
-            "position": {
-              "x": 1050,
-              "y": 600
-            },
-            "style": {
-              "alignItems": "center",
-              "background": "#fadbd8",
-              "border": "1px solid #555",
-              "borderRadius": "8px",
-              "display": "flex",
-              "height": "100px",
-              "justifyContent": "center",
-              "padding": "15px",
-              "width": "200px"
-            },
-            "type": "default",
-            "measured": {
-              "width": 200,
-              "height": 100
-            }
-          },
-          {
-            "data": {
-              "conditionalEdges": [],
-              "conditionalLogic": "",
-              "description": "Generates response using RAG-augmented context.",
-              "editable": true,
-              "errorHandler": "",
-              "label": "Generate Rag Response",
-              "logic": "Logic for generate_rag_response node",
-              "nextNode": "",
-              "nodeFunction": "generate_rag_response",
-              "stateUpdates": {},
-              "type": "llm_calling"
-            },
-            "id": "generate_rag_response",
-            "position": {
-              "x": 0,
-              "y": 900
-            },
-            "style": {
-              "alignItems": "center",
-              "background": "#fadbd8",
-              "border": "1px solid #555",
-              "borderRadius": "8px",
-              "display": "flex",
-              "height": "100px",
-              "justifyContent": "center",
-              "padding": "15px",
-              "width": "200px"
-            },
-            "type": "default",
-            "measured": {
-              "width": 200,
-              "height": 100
-            }
-          },
-          {
-            "data": {
-              "conditionalEdges": [],
-              "conditionalLogic": "",
-              "description": "Plans MCP queries based on the analyzed request.",
-              "editable": true,
-              "errorHandler": "",
-              "label": "Plan Mcp Queries",
-              "logic": "Plan MCP queries based on the analyzed request",
-              "nextNode": "execute_mcp_queries",
-              "nodeFunction": "plan_mcp_queries",
-              "stateUpdates": {},
-              "type": "mcp"
-            },
-            "id": "plan_mcp_queries",
-            "position": {
-              "x": 700,
-              "y": 0
-            },
-            "style": {
-              "alignItems": "center",
-              "background": "#d2b4de",
-              "border": "1px solid #555",
-              "borderRadius": "8px",
-              "display": "flex",
-              "height": "100px",
-              "justifyContent": "center",
-              "padding": "15px",
-              "width": "200px"
-            },
-            "type": "default",
-            "measured": {
-              "width": 200,
-              "height": 100
-            }
-          },
-          {
-            "data": {
-              "conditionalEdges": [],
-              "conditionalLogic": "",
-              "description": "Executes MCP queries in parallel or sequentially.",
-              "editable": true,
-              "errorHandler": "",
-              "label": "Execute Mcp Queries",
-              "logic": "Execute MCP queries in parallel or sequentially",
-              "nextNode": "synthesize_results",
-              "nodeFunction": "execute_mcp_queries",
-              "stateUpdates": {},
-              "type": "mcp"
-            },
-            "id": "execute_mcp_queries",
-            "position": {
-              "x": 1050,
-              "y": 0
-            },
-            "style": {
-              "alignItems": "center",
-              "background": "#d2b4de",
-              "border": "1px solid #555",
-              "borderRadius": "8px",
-              "display": "flex",
-              "height": "100px",
-              "justifyContent": "center",
-              "padding": "15px",
-              "width": "200px"
-            },
-            "type": "default",
-            "measured": {
-              "width": 200,
-              "height": 100
-            }
-          },
-          {
-            "data": {
-              "conditionalEdges": [],
-              "conditionalLogic": "",
-              "description": "Synthesizes results from multiple MCP queries.",
-              "editable": true,
-              "errorHandler": "",
-              "label": "Synthesize Results",
-              "logic": "Synthesize results from multiple MCP queries",
-              "nextNode": "can_answer",
-              "nodeFunction": "synthesize_results",
-              "stateUpdates": {},
-              "type": "llm_calling"
-            },
-            "id": "synthesize_results",
-            "position": {
-              "x": 1400,
-              "y": 0
-            },
-            "style": {
-              "alignItems": "center",
-              "background": "#fadbd8",
-              "border": "1px solid #555",
-              "borderRadius": "8px",
-              "display": "flex",
-              "height": "100px",
-              "justifyContent": "center",
-              "padding": "15px",
-              "width": "200px"
-            },
-            "type": "default",
-            "measured": {
-              "width": 200,
-              "height": 100
-            }
-          },
-          {
-            "data": {
-              "conditionalEdges": [
-                {
-                  "condition": "state[\"can_answer\"]",
-                  "target": "generate_final_answer"
-                },
-                {
-                  "condition": "state[\"iteration_count\"] < state[\"max_iterations\"]",
-                  "target": "plan_refined_queries"
-                },
-                {
-                  "condition": "otherwise",
-                  "target": "generate_failure_response"
-                }
-              ],
-              "conditionalLogic": "Condition: Check if the agent can answer the user's request",
-              "description": "Determines if the agent can answer the user's request.",
-              "editable": true,
-              "errorHandler": "",
-              "label": "Can Answer",
-              "logic": "Determine if the agent can answer the user's request",
-              "nextNode": "generate_failure_response, generate_final_answer, plan_refined_queries",
-              "nodeFunction": "can_answer",
-              "stateUpdates": {},
-              "type": "llm_calling"
-            },
-            "id": "can_answer",
-            "position": {
-              "x": 1750,
-              "y": 0
-            },
-            "style": {
-              "alignItems": "center",
-              "background": "#fadbd8",
-              "border": "1px solid #555",
-              "borderRadius": "8px",
-              "display": "flex",
-              "height": "100px",
-              "justifyContent": "center",
-              "padding": "15px",
-              "width": "200px"
-            },
-            "type": "default",
-            "measured": {
-              "width": 200,
-              "height": 100
-            }
-          },
-          {
-            "data": {
-              "conditionalEdges": [],
-              "conditionalLogic": "",
-              "description": "Generates the final answer based on synthesized results.",
-              "editable": true,
-              "errorHandler": "",
-              "label": "Generate Final Answer",
-              "logic": "Generate the final answer based on synthesized results",
-              "nextNode": "__end__",
-              "nodeFunction": "generate_final_answer",
-              "stateUpdates": {},
-              "type": "llm_calling"
-            },
-            "id": "generate_final_answer",
-            "position": {
-              "x": 2100,
-              "y": 0
-            },
-            "style": {
-              "alignItems": "center",
-              "background": "#fadbd8",
-              "border": "1px solid #555",
-              "borderRadius": "8px",
-              "display": "flex",
-              "height": "100px",
-              "justifyContent": "center",
-              "padding": "15px",
-              "width": "200px"
-            },
-            "type": "default",
-            "measured": {
-              "width": 200,
-              "height": 100
-            }
-          },
-          {
-            "data": {
-              "conditionalEdges": [],
-              "conditionalLogic": "",
-              "description": "Plans refined queries for the next iteration.",
-              "editable": true,
-              "errorHandler": "",
-              "label": "Plan Refined Queries",
-              "logic": "Plan refined queries for the next iteration",
-              "nextNode": "execute_mcp_queries",
-              "nodeFunction": "plan_refined_queries",
-              "stateUpdates": {},
-              "type": "llm_calling"
-            },
-            "id": "plan_refined_queries",
-            "position": {
-              "x": 2450,
-              "y": 0
-            },
-            "style": {
-              "alignItems": "center",
-              "background": "#fadbd8",
-              "border": "1px solid #555",
-              "borderRadius": "8px",
-              "display": "flex",
-              "height": "100px",
-              "justifyContent": "center",
-              "padding": "15px",
-              "width": "200px"
-            },
-            "type": "default",
-            "measured": {
-              "width": 200,
-              "height": 100
-            }
-          },
-          {
-            "data": {
-              "conditionalEdges": [],
-              "conditionalLogic": "",
-              "description": "Generates a failure response when iterations are exhausted.",
-              "editable": true,
-              "errorHandler": "",
-              "label": "Generate Failure Response",
-              "logic": "Generate a failure response when iterations are exhausted",
-              "nextNode": "__end__",
-              "nodeFunction": "generate_failure_response",
-              "stateUpdates": {},
-              "type": "end"
-            },
-            "id": "generate_failure_response",
-            "position": {
-              "x": 2800,
-              "y": 0
-            },
-            "style": {
-              "alignItems": "center",
-              "background": "#f1948a",
-              "border": "1px solid #555",
-              "borderRadius": "50%",
-              "display": "flex",
-              "fontWeight": "bold",
-              "height": "120px",
-              "justifyContent": "center",
-              "padding": "15px",
-              "width": "120px"
-            },
-            "type": "default",
-            "measured": {
-              "width": 120,
-              "height": 120
-            }
-          },
-          {
-            "data": {
-              "conditionalEdges": [],
-              "conditionalLogic": "",
-              "description": "Generates final answer when no MCP calls needed.",
-              "editable": true,
-              "errorHandler": "",
-              "label": "Generate Final Answer From Analysis",
-              "logic": "Logic for generate_final_answer_from_analysis node",
-              "nextNode": "__end__",
-              "nodeFunction": "generate_final_answer_from_analysis",
-              "stateUpdates": {},
-              "type": "llm_calling"
-            },
-            "id": "generate_final_answer_from_analysis",
-            "position": {
-              "x": 350,
-              "y": 900
-            },
-            "style": {
-              "alignItems": "center",
-              "background": "#fadbd8",
-              "border": "1px solid #555",
-              "borderRadius": "8px",
-              "display": "flex",
-              "height": "100px",
-              "justifyContent": "center",
-              "padding": "15px",
-              "width": "200px"
-            },
-            "type": "default",
-            "measured": {
-              "width": 200,
-              "height": 100
-            }
-          },
-          {
-            "data": {
-              "conditionalEdges": [],
-              "conditionalLogic": "",
-              "description": "Generates failure response when analysis indicates impossibility.",
-              "editable": true,
-              "errorHandler": "",
-              "label": "Generate Failure Response From Analysis",
-              "logic": "Logic for generate_failure_response_from_analysis node",
-              "nextNode": "__end__",
-              "nodeFunction": "generate_failure_response_from_analysis",
-              "stateUpdates": {},
-              "type": "end"
-            },
-            "id": "generate_failure_response_from_analysis",
-            "position": {
-              "x": 700,
-              "y": 900
-            },
-            "style": {
-              "alignItems": "center",
-              "background": "#f1948a",
-              "border": "1px solid #555",
-              "borderRadius": "50%",
-              "display": "flex",
-              "fontWeight": "bold",
-              "height": "120px",
-              "justifyContent": "center",
-              "padding": "15px",
-              "width": "120px"
-            },
-            "type": "default",
-            "measured": {
-              "width": 120,
-              "height": 120
-            }
-          }
-        ],
-        "edges": [
-          {
-            "animated": true,
-            "id": "e___start___initialize_agent_state",
-            "source": "__start__",
-            "target": "initialize_agent_state"
-          },
-          {
-            "animated": true,
-            "id": "e_analyze_request_check_mcp_applicability",
-            "source": "analyze_request",
-            "target": "check_mcp_applicability"
-          },
-          {
-            "animated": true,
-            "id": "e_analyze_request_generate_failure_response_from_analysis",
-            "source": "analyze_request",
-            "target": "generate_failure_response_from_analysis"
-          },
-          {
-            "animated": true,
-            "id": "e_analyze_request_generate_final_answer_from_analysis",
-            "source": "analyze_request",
-            "target": "generate_final_answer_from_analysis"
-          },
-          {
-            "animated": true,
-            "id": "e_can_answer_generate_failure_response",
-            "source": "can_answer",
-            "target": "generate_failure_response"
-          },
-          {
-            "animated": true,
-            "id": "e_can_answer_generate_final_answer",
-            "source": "can_answer",
-            "target": "generate_final_answer"
-          },
-          {
-            "animated": true,
-            "id": "e_can_answer_plan_refined_queries",
-            "source": "can_answer",
-            "target": "plan_refined_queries"
-          },
-          {
-            "animated": true,
-            "id": "e_check_mcp_applicability_plan_mcp_queries",
-            "source": "check_mcp_applicability",
-            "target": "plan_mcp_queries"
-          },
-          {
-            "animated": true,
-            "id": "e_discover_services_analyze_request",
-            "source": "discover_services",
-            "target": "analyze_request"
-          },
-          {
-            "animated": true,
-            "id": "e_execute_mcp_queries_synthesize_results",
-            "source": "execute_mcp_queries",
-            "target": "synthesize_results"
-          },
-          {
-            "animated": true,
-            "id": "e_initialize_agent_state_discover_services",
-            "source": "initialize_agent_state",
-            "target": "discover_services"
-          },
-          {
-            "animated": true,
-            "id": "e_plan_mcp_queries_execute_mcp_queries",
-            "source": "plan_mcp_queries",
-            "target": "execute_mcp_queries"
-          },
-          {
-            "animated": true,
-            "id": "e_plan_refined_queries_execute_mcp_queries",
-            "source": "plan_refined_queries",
-            "target": "execute_mcp_queries"
-          },
-          {
-            "animated": true,
-            "id": "e_synthesize_results_can_answer",
-            "source": "synthesize_results",
-            "target": "can_answer"
-          },
-          {
-            "animated": true,
-            "id": "e_generate_failure_response___end__",
-            "source": "generate_failure_response",
-            "target": "__end__"
-          },
-          {
-            "animated": true,
-            "id": "e_generate_failure_response_from_analysis___end__",
-            "source": "generate_failure_response_from_analysis",
-            "target": "__end__"
-          },
-          {
-            "animated": true,
-            "id": "e_generate_final_answer___end__",
-            "source": "generate_final_answer",
-            "target": "__end__"
-          },
-          {
-            "animated": true,
-            "id": "e_generate_final_answer_from_analysis___end__",
-            "source": "generate_final_answer_from_analysis",
-            "target": "__end__"
-          }
-        ]
-      },
-      "label": "State 4 - 2026-01-28 15:48:28"
-    },
-    {
-      "id": "96de47f3-cd65-4d3a-9af1-9c71b7d35f99",
-      "timestamp": 1769604516.5187178,
-      "workflow": {
-        "name": "MyWorkflow",
-        "nodes": [
-          {
-            "data": {
-              "conditionalEdges": [],
-              "conditionalLogic": "",
-              "description": "Initializes the agent state with default values.",
-              "editable": true,
-              "errorHandler": "",
-              "label": "Initialize Agent State",
-              "logic": "Initialize the agent state with default values",
-              "nextNode": "discover_services",
-              "nodeFunction": "initialize_agent_state",
-              "stateUpdates": {},
-              "type": "llm_calling"
-            },
-            "id": "initialize_agent_state",
-            "position": {
-              "x": 0,
-              "y": 0
-            },
-            "style": {
-              "alignItems": "center",
-              "background": "#fadbd8",
-              "border": "1px solid #555",
-              "borderRadius": "8px",
-              "display": "flex",
-              "height": "100px",
-              "justifyContent": "center",
-              "padding": "15px",
-              "width": "200px"
-            },
-            "type": "default",
-            "measured": {
-              "width": 200,
-              "height": 100
-            }
-          },
-          {
-            "data": {
-              "conditionalEdges": [],
-              "conditionalLogic": "",
-              "description": "Discovers available MCP services from the registry.",
-              "editable": true,
-              "errorHandler": "",
-              "label": "Discover Services",
-              "logic": "Logic for discover_services node",
-              "nextNode": "analyze_request",
-              "nodeFunction": "discover_services",
-              "stateUpdates": {},
-              "type": "mcp"
-            },
-            "id": "discover_services",
-            "position": {
-              "x": 0,
-              "y": 600
-            },
-            "style": {
-              "alignItems": "center",
-              "background": "#d2b4de",
-              "border": "1px solid #555",
-              "borderRadius": "8px",
-              "display": "flex",
-              "height": "100px",
-              "justifyContent": "center",
-              "padding": "15px",
-              "width": "200px"
-            },
-            "type": "default",
-            "measured": {
-              "width": 200,
-              "height": 100
-            }
-          },
-          {
-            "data": {
-              "conditionalEdges": [
-                {
-                  "condition": "no MCP tool calls generated and is_final_answer=True",
-                  "target": "generate_final_answer_from_analysis"
-                },
-                {
-                  "condition": "no MCP tool calls generated and is_final_answer=False",
-                  "target": "generate_failure_response_from_analysis"
-                },
-                {
-                  "condition": "MCP tool calls generated",
-                  "target": "check_mcp_applicability"
-                }
-              ],
-              "conditionalLogic": "",
-              "description": "Analyzes the user request to determine how to proceed.",
-              "editable": true,
-              "errorHandler": "",
-              "label": "Analyze Request",
-              "logic": "Analyze the user request to determine how to proceed",
-              "nextNode": "check_mcp_applicability, generate_failure_response_from_analysis, generate_final_answer_from_analysis",
-              "nodeFunction": "analyze_request",
-              "stateUpdates": {},
-              "type": "llm_calling"
-            },
-            "id": "analyze_request",
-            "position": {
-              "x": 350,
-              "y": 0
-            },
-            "style": {
-              "alignItems": "center",
-              "background": "#fadbd8",
-              "border": "1px solid #555",
-              "borderRadius": "8px",
-              "display": "flex",
-              "height": "100px",
-              "justifyContent": "center",
-              "padding": "15px",
-              "width": "200px"
-            },
-            "type": "default",
-            "measured": {
-              "width": 200,
-              "height": 100
-            }
-          },
-          {
-            "data": {
-              "conditionalEdges": [],
-              "conditionalLogic": "",
-              "description": "Checks if MCP services are applicable for the request.",
-              "editable": true,
-              "errorHandler": "",
-              "label": "Check Mcp Applicability",
-              "logic": "Logic for check_mcp_applicability node",
-              "nextNode": "plan_mcp_queries",
-              "nodeFunction": "check_mcp_applicability",
-              "stateUpdates": {},
-              "type": "default"
-            },
-            "id": "check_mcp_applicability",
-            "position": {
-              "x": 350,
-              "y": 600
-            },
-            "style": {
-              "alignItems": "center",
-              "background": "#ffffff",
-              "border": "1px solid #555",
-              "borderRadius": "8px",
-              "display": "flex",
-              "height": "100px",
-              "justifyContent": "center",
-              "padding": "15px",
-              "width": "200px"
-            },
-            "type": "default",
-            "measured": {
-              "width": 200,
-              "height": 100
-            }
-          },
-          {
-            "data": {
-              "conditionalEdges": [],
-              "conditionalLogic": "",
-              "description": "Retrieves relevant documents using RAG component.",
-              "editable": true,
-              "errorHandler": "",
-              "label": "Retrieve Documents",
-              "logic": "Logic for retrieve_documents node",
-              "nextNode": "",
-              "nodeFunction": "retrieve_documents",
-              "stateUpdates": {},
-              "type": "rag"
-            },
-            "id": "retrieve_documents",
-            "position": {
-              "x": 700,
-              "y": 600
-            },
-            "style": {
-              "alignItems": "center",
-              "background": "#85c1e9",
-              "border": "1px solid #555",
-              "borderRadius": "8px",
-              "display": "flex",
-              "height": "100px",
-              "justifyContent": "center",
-              "padding": "15px",
-              "width": "200px"
-            },
-            "type": "default",
-            "measured": {
-              "width": 200,
-              "height": 100
-            }
-          },
-          {
-            "data": {
-              "conditionalEdges": [],
-              "conditionalLogic": "",
-              "description": "Augments user request with retrieved documents.",
-              "editable": true,
-              "errorHandler": "",
-              "label": "Augment Context",
-              "logic": "Logic for augment_context node",
-              "nextNode": "",
-              "nodeFunction": "augment_context",
-              "stateUpdates": {},
-              "type": "llm_calling"
-            },
-            "id": "augment_context",
-            "position": {
-              "x": 1050,
-              "y": 600
-            },
-            "style": {
-              "alignItems": "center",
-              "background": "#fadbd8",
-              "border": "1px solid #555",
-              "borderRadius": "8px",
-              "display": "flex",
-              "height": "100px",
-              "justifyContent": "center",
-              "padding": "15px",
-              "width": "200px"
-            },
-            "type": "default",
-            "measured": {
-              "width": 200,
-              "height": 100
-            }
-          },
-          {
-            "data": {
-              "conditionalEdges": [],
-              "conditionalLogic": "",
-              "description": "Generates response using RAG-augmented context.",
-              "editable": true,
-              "errorHandler": "",
-              "label": "Generate Rag Response",
-              "logic": "Logic for generate_rag_response node",
-              "nextNode": "",
-              "nodeFunction": "generate_rag_response",
-              "stateUpdates": {},
-              "type": "llm_calling"
-            },
-            "id": "generate_rag_response",
-            "position": {
-              "x": 0,
-              "y": 900
-            },
-            "style": {
-              "alignItems": "center",
-              "background": "#fadbd8",
-              "border": "1px solid #555",
-              "borderRadius": "8px",
-              "display": "flex",
-              "height": "100px",
-              "justifyContent": "center",
-              "padding": "15px",
-              "width": "200px"
-            },
-            "type": "default",
-            "measured": {
-              "width": 200,
-              "height": 100
-            }
-          },
-          {
-            "data": {
-              "conditionalEdges": [],
-              "conditionalLogic": "",
-              "description": "Plans MCP queries based on the analyzed request.",
-              "editable": true,
-              "errorHandler": "",
-              "label": "Plan Mcp Queries",
-              "logic": "Plan MCP queries based on the analyzed request",
-              "nextNode": "execute_mcp_queries",
-              "nodeFunction": "plan_mcp_queries",
-              "stateUpdates": {},
-              "type": "mcp"
-            },
-            "id": "plan_mcp_queries",
-            "position": {
-              "x": 700,
-              "y": 0
-            },
-            "style": {
-              "alignItems": "center",
-              "background": "#d2b4de",
-              "border": "1px solid #555",
-              "borderRadius": "8px",
-              "display": "flex",
-              "height": "100px",
-              "justifyContent": "center",
-              "padding": "15px",
-              "width": "200px"
-            },
-            "type": "default",
-            "measured": {
-              "width": 200,
-              "height": 100
-            }
-          },
-          {
-            "data": {
-              "conditionalEdges": [],
-              "conditionalLogic": "",
-              "description": "Executes MCP queries in parallel or sequentially.",
-              "editable": true,
-              "errorHandler": "",
-              "label": "Execute Mcp Queries",
-              "logic": "Execute MCP queries in parallel or sequentially",
-              "nextNode": "synthesize_results",
-              "nodeFunction": "execute_mcp_queries",
-              "stateUpdates": {},
-              "type": "mcp"
-            },
-            "id": "execute_mcp_queries",
-            "position": {
-              "x": 1050,
-              "y": 0
-            },
-            "style": {
-              "alignItems": "center",
-              "background": "#d2b4de",
-              "border": "1px solid #555",
-              "borderRadius": "8px",
-              "display": "flex",
-              "height": "100px",
-              "justifyContent": "center",
-              "padding": "15px",
-              "width": "200px"
-            },
-            "type": "default",
-            "measured": {
-              "width": 200,
-              "height": 100
-            }
-          },
-          {
-            "data": {
-              "conditionalEdges": [],
-              "conditionalLogic": "",
-              "description": "Synthesizes results from multiple MCP queries.",
-              "editable": true,
-              "errorHandler": "",
-              "label": "Synthesize Results",
-              "logic": "Synthesize results from multiple MCP queries",
-              "nextNode": "can_answer",
-              "nodeFunction": "synthesize_results",
-              "stateUpdates": {},
-              "type": "llm_calling"
-            },
-            "id": "synthesize_results",
-            "position": {
-              "x": 1400,
-              "y": 0
-            },
-            "style": {
-              "alignItems": "center",
-              "background": "#fadbd8",
-              "border": "1px solid #555",
-              "borderRadius": "8px",
-              "display": "flex",
-              "height": "100px",
-              "justifyContent": "center",
-              "padding": "15px",
-              "width": "200px"
-            },
-            "type": "default",
-            "measured": {
-              "width": 200,
-              "height": 100
-            }
-          },
-          {
-            "data": {
-              "conditionalEdges": [
-                {
-                  "condition": "state[\"can_answer\"]",
-                  "target": "generate_final_answer"
-                },
-                {
-                  "condition": "state[\"iteration_count\"] < state[\"max_iterations\"]",
-                  "target": "plan_refined_queries"
-                },
-                {
-                  "condition": "otherwise",
-                  "target": "generate_failure_response"
-                }
-              ],
-              "conditionalLogic": "Condition: Check if the agent can answer the user's request",
-              "description": "Determines if the agent can answer the user's request.",
-              "editable": true,
-              "errorHandler": "",
-              "label": "Can Answer",
-              "logic": "Determine if the agent can answer the user's request",
-              "nextNode": "generate_failure_response, generate_final_answer, plan_refined_queries",
-              "nodeFunction": "can_answer",
-              "stateUpdates": {},
-              "type": "llm_calling"
-            },
-            "id": "can_answer",
-            "position": {
-              "x": 1750,
-              "y": 0
-            },
-            "style": {
-              "alignItems": "center",
-              "background": "#fadbd8",
-              "border": "1px solid #555",
-              "borderRadius": "8px",
-              "display": "flex",
-              "height": "100px",
-              "justifyContent": "center",
-              "padding": "15px",
-              "width": "200px"
-            },
-            "type": "default",
-            "measured": {
-              "width": 200,
-              "height": 100
-            }
-          },
-          {
-            "data": {
-              "conditionalEdges": [],
-              "conditionalLogic": "",
-              "description": "Generates the final answer based on synthesized results.",
-              "editable": true,
-              "errorHandler": "",
-              "label": "Generate Final Answer",
-              "logic": "Generate the final answer based on synthesized results",
-              "nextNode": "__end__",
-              "nodeFunction": "generate_final_answer",
-              "stateUpdates": {},
-              "type": "llm_calling"
-            },
-            "id": "generate_final_answer",
-            "position": {
-              "x": 2100,
-              "y": 0
-            },
-            "style": {
-              "alignItems": "center",
-              "background": "#fadbd8",
-              "border": "1px solid #555",
-              "borderRadius": "8px",
-              "display": "flex",
-              "height": "100px",
-              "justifyContent": "center",
-              "padding": "15px",
-              "width": "200px"
-            },
-            "type": "default",
-            "measured": {
-              "width": 200,
-              "height": 100
-            }
-          },
-          {
-            "data": {
-              "conditionalEdges": [],
-              "conditionalLogic": "",
-              "description": "Plans refined queries for the next iteration.",
-              "editable": true,
-              "errorHandler": "",
-              "label": "Plan Refined Queries",
-              "logic": "Plan refined queries for the next iteration",
-              "nextNode": "execute_mcp_queries",
-              "nodeFunction": "plan_refined_queries",
-              "stateUpdates": {},
-              "type": "llm_calling"
-            },
-            "id": "plan_refined_queries",
-            "position": {
-              "x": 2450,
-              "y": 0
-            },
-            "style": {
-              "alignItems": "center",
-              "background": "#fadbd8",
-              "border": "1px solid #555",
-              "borderRadius": "8px",
-              "display": "flex",
-              "height": "100px",
-              "justifyContent": "center",
-              "padding": "15px",
-              "width": "200px"
-            },
-            "type": "default",
-            "measured": {
-              "width": 200,
-              "height": 100
-            }
-          },
-          {
-            "data": {
-              "conditionalEdges": [],
-              "conditionalLogic": "",
-              "description": "Generates a failure response when iterations are exhausted.",
-              "editable": true,
-              "errorHandler": "",
-              "label": "Generate Failure Response",
-              "logic": "Generate a failure response when iterations are exhausted",
-              "nextNode": "__end__",
-              "nodeFunction": "generate_failure_response",
-              "stateUpdates": {},
-              "type": "end"
-            },
-            "id": "generate_failure_response",
-            "position": {
-              "x": 2800,
-              "y": 0
-            },
-            "style": {
-              "alignItems": "center",
-              "background": "#f1948a",
-              "border": "1px solid #555",
-              "borderRadius": "50%",
-              "display": "flex",
-              "fontWeight": "bold",
-              "height": "120px",
-              "justifyContent": "center",
-              "padding": "15px",
-              "width": "120px"
-            },
-            "type": "default",
-            "measured": {
-              "width": 120,
-              "height": 120
-            }
-          },
-          {
-            "data": {
-              "conditionalEdges": [],
-              "conditionalLogic": "",
-              "description": "Generates final answer when no MCP calls needed.",
-              "editable": true,
-              "errorHandler": "",
-              "label": "Generate Final Answer From Analysis",
-              "logic": "Logic for generate_final_answer_from_analysis node",
-              "nextNode": "__end__",
-              "nodeFunction": "generate_final_answer_from_analysis",
-              "stateUpdates": {},
-              "type": "llm_calling"
-            },
-            "id": "generate_final_answer_from_analysis",
-            "position": {
-              "x": 350,
-              "y": 900
-            },
-            "style": {
-              "alignItems": "center",
-              "background": "#fadbd8",
-              "border": "1px solid #555",
-              "borderRadius": "8px",
-              "display": "flex",
-              "height": "100px",
-              "justifyContent": "center",
-              "padding": "15px",
-              "width": "200px"
-            },
-            "type": "default",
-            "measured": {
-              "width": 200,
-              "height": 100
-            }
-          },
-          {
-            "data": {
-              "conditionalEdges": [],
-              "conditionalLogic": "",
-              "description": "Generates failure response when analysis indicates impossibility.",
-              "editable": true,
-              "errorHandler": "",
-              "label": "Generate Failure Response From Analysis",
-              "logic": "Logic for generate_failure_response_from_analysis node",
-              "nextNode": "__end__",
-              "nodeFunction": "generate_failure_response_from_analysis",
-              "stateUpdates": {},
-              "type": "end"
-            },
-            "id": "generate_failure_response_from_analysis",
-            "position": {
-              "x": 700,
-              "y": 900
-            },
-            "style": {
-              "alignItems": "center",
-              "background": "#f1948a",
-              "border": "1px solid #555",
-              "borderRadius": "50%",
-              "display": "flex",
-              "fontWeight": "bold",
-              "height": "120px",
-              "justifyContent": "center",
-              "padding": "15px",
-              "width": "120px"
-            },
-            "type": "default",
-            "measured": {
-              "width": 120,
-              "height": 120
-            }
-          }
-        ],
-        "edges": [
-          {
-            "animated": true,
-            "id": "e___start___initialize_agent_state",
-            "source": "__start__",
-            "target": "initialize_agent_state"
-          },
-          {
-            "animated": true,
-            "id": "e_analyze_request_check_mcp_applicability",
-            "source": "analyze_request",
-            "target": "check_mcp_applicability"
-          },
-          {
-            "animated": true,
-            "id": "e_analyze_request_generate_failure_response_from_analysis",
-            "source": "analyze_request",
-            "target": "generate_failure_response_from_analysis"
-          },
-          {
-            "animated": true,
-            "id": "e_analyze_request_generate_final_answer_from_analysis",
-            "source": "analyze_request",
-            "target": "generate_final_answer_from_analysis"
-          },
-          {
-            "animated": true,
-            "id": "e_can_answer_generate_failure_response",
-            "source": "can_answer",
-            "target": "generate_failure_response"
-          },
-          {
-            "animated": true,
-            "id": "e_can_answer_generate_final_answer",
-            "source": "can_answer",
-            "target": "generate_final_answer"
-          },
-          {
-            "animated": true,
-            "id": "e_can_answer_plan_refined_queries",
-            "source": "can_answer",
-            "target": "plan_refined_queries"
-          },
-          {
-            "animated": true,
-            "id": "e_check_mcp_applicability_plan_mcp_queries",
-            "source": "check_mcp_applicability",
-            "target": "plan_mcp_queries"
-          },
-          {
-            "animated": true,
-            "id": "e_discover_services_analyze_request",
-            "source": "discover_services",
-            "target": "analyze_request"
-          },
-          {
-            "animated": true,
-            "id": "e_execute_mcp_queries_synthesize_results",
-            "source": "execute_mcp_queries",
-            "target": "synthesize_results"
-          },
-          {
-            "animated": true,
-            "id": "e_initialize_agent_state_discover_services",
-            "source": "initialize_agent_state",
-            "target": "discover_services"
-          },
-          {
-            "animated": true,
-            "id": "e_plan_mcp_queries_execute_mcp_queries",
-            "source": "plan_mcp_queries",
-            "target": "execute_mcp_queries"
-          },
-          {
-            "animated": true,
-            "id": "e_plan_refined_queries_execute_mcp_queries",
-            "source": "plan_refined_queries",
-            "target": "execute_mcp_queries"
-          },
-          {
-            "animated": true,
-            "id": "e_synthesize_results_can_answer",
-            "source": "synthesize_results",
-            "target": "can_answer"
-          },
-          {
-            "animated": true,
-            "id": "e_generate_failure_response___end__",
-            "source": "generate_failure_response",
-            "target": "__end__"
-          },
-          {
-            "animated": true,
-            "id": "e_generate_failure_response_from_analysis___end__",
-            "source": "generate_failure_response_from_analysis",
-            "target": "__end__"
-          },
-          {
-            "animated": true,
-            "id": "e_generate_final_answer___end__",
-            "source": "generate_final_answer",
-            "target": "__end__"
-          },
-          {
-            "animated": true,
-            "id": "e_generate_final_answer_from_analysis___end__",
-            "source": "generate_final_answer_from_analysis",
-            "target": "__end__"
-          }
-        ]
-      },
-      "label": "State 4 - 2026-01-28 15:48:36"
-    },
-    {
       "id": "43667e8e-f93f-4a79-a2bb-18f63778f00f",
       "timestamp": 1769717568.9764183,
       "workflow": {
@@ -2177,8 +729,1452 @@
         ]
       },
       "label": "State 4 - 2026-01-29 20:12:48"
+    },
+    {
+      "id": "01681678-7541-4713-ad54-7991bcc9b20d",
+      "timestamp": 1769783938.9198112,
+      "workflow": {
+        "name": "MyWorkflow",
+        "nodes": [
+          {
+            "data": {
+              "conditionalEdges": [],
+              "conditionalLogic": "",
+              "description": "Initializes the agent state with default values.",
+              "editable": true,
+              "errorHandler": "",
+              "label": "Initialize Agent State",
+              "logic": "Initialize the agent state with default values",
+              "nextNode": "discover_services",
+              "nodeFunction": "initialize_agent_state",
+              "stateUpdates": {},
+              "type": "llm_calling"
+            },
+            "id": "initialize_agent_state",
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "style": {
+              "alignItems": "center",
+              "background": "#fadbd8",
+              "border": "1px solid #555",
+              "borderRadius": "8px",
+              "display": "flex",
+              "height": "100px",
+              "justifyContent": "center",
+              "padding": "15px",
+              "width": "200px"
+            },
+            "type": "default"
+          },
+          {
+            "data": {
+              "conditionalEdges": [],
+              "conditionalLogic": "",
+              "description": "Discovers available MCP services from the registry.",
+              "editable": true,
+              "errorHandler": "",
+              "label": "Discover Services",
+              "logic": "Logic for discover_services node",
+              "nextNode": "analyze_request",
+              "nodeFunction": "discover_services",
+              "stateUpdates": {},
+              "type": "mcp"
+            },
+            "id": "discover_services",
+            "position": {
+              "x": 0,
+              "y": 600
+            },
+            "style": {
+              "alignItems": "center",
+              "background": "#d2b4de",
+              "border": "1px solid #555",
+              "borderRadius": "8px",
+              "display": "flex",
+              "height": "100px",
+              "justifyContent": "center",
+              "padding": "15px",
+              "width": "200px"
+            },
+            "type": "default"
+          },
+          {
+            "data": {
+              "conditionalEdges": [
+                {
+                  "condition": "no MCP tool calls generated and is_final_answer=True",
+                  "target": "generate_final_answer_from_analysis"
+                },
+                {
+                  "condition": "no MCP tool calls generated and is_final_answer=False",
+                  "target": "generate_failure_response_from_analysis"
+                },
+                {
+                  "condition": "MCP tool calls generated",
+                  "target": "check_mcp_applicability"
+                }
+              ],
+              "conditionalLogic": "",
+              "description": "Analyzes the user request to determine how to proceed.",
+              "editable": true,
+              "errorHandler": "",
+              "label": "Analyze Request",
+              "logic": "Analyze the user request to determine how to proceed",
+              "nextNode": "check_mcp_applicability, generate_failure_response_from_analysis, generate_final_answer_from_analysis",
+              "nodeFunction": "analyze_request",
+              "stateUpdates": {},
+              "type": "llm_calling"
+            },
+            "id": "analyze_request",
+            "position": {
+              "x": 350,
+              "y": 0
+            },
+            "style": {
+              "alignItems": "center",
+              "background": "#fadbd8",
+              "border": "1px solid #555",
+              "borderRadius": "8px",
+              "display": "flex",
+              "height": "100px",
+              "justifyContent": "center",
+              "padding": "15px",
+              "width": "200px"
+            },
+            "type": "default"
+          },
+          {
+            "data": {
+              "conditionalEdges": [],
+              "conditionalLogic": "",
+              "description": "Checks if MCP services are applicable for the request.",
+              "editable": true,
+              "errorHandler": "",
+              "label": "Check Mcp Applicability",
+              "logic": "Logic for check_mcp_applicability node",
+              "nextNode": "plan_mcp_queries, retrieve_documents",
+              "nodeFunction": "check_mcp_applicability",
+              "stateUpdates": {},
+              "type": "default"
+            },
+            "id": "check_mcp_applicability",
+            "position": {
+              "x": 350,
+              "y": 600
+            },
+            "style": {
+              "alignItems": "center",
+              "background": "#ffffff",
+              "border": "1px solid #555",
+              "borderRadius": "8px",
+              "display": "flex",
+              "height": "100px",
+              "justifyContent": "center",
+              "padding": "15px",
+              "width": "200px"
+            },
+            "type": "default"
+          },
+          {
+            "data": {
+              "conditionalEdges": [],
+              "conditionalLogic": "",
+              "description": "Retrieves relevant documents using RAG component.",
+              "editable": true,
+              "errorHandler": "",
+              "label": "Retrieve Documents",
+              "logic": "Logic for retrieve_documents node",
+              "nextNode": "rerank_documents",
+              "nodeFunction": "retrieve_documents",
+              "stateUpdates": {},
+              "type": "rag"
+            },
+            "id": "retrieve_documents",
+            "position": {
+              "x": 700,
+              "y": 600
+            },
+            "style": {
+              "alignItems": "center",
+              "background": "#85c1e9",
+              "border": "1px solid #555",
+              "borderRadius": "8px",
+              "display": "flex",
+              "height": "100px",
+              "justifyContent": "center",
+              "padding": "15px",
+              "width": "200px"
+            },
+            "type": "default"
+          },
+          {
+            "data": {
+              "conditionalEdges": [],
+              "conditionalLogic": "",
+              "description": "Node: rerank_documents",
+              "editable": true,
+              "errorHandler": "",
+              "label": "Rerank Documents",
+              "logic": "Logic for rerank_documents node",
+              "nextNode": "augment_context",
+              "nodeFunction": "rerank_documents",
+              "stateUpdates": {},
+              "type": "default"
+            },
+            "id": "rerank_documents",
+            "position": {
+              "x": 1050,
+              "y": 600
+            },
+            "style": {
+              "alignItems": "center",
+              "background": "#ffffff",
+              "border": "1px solid #555",
+              "borderRadius": "8px",
+              "display": "flex",
+              "height": "100px",
+              "justifyContent": "center",
+              "padding": "15px",
+              "width": "200px"
+            },
+            "type": "default"
+          },
+          {
+            "data": {
+              "conditionalEdges": [],
+              "conditionalLogic": "",
+              "description": "Augments user request with retrieved documents.",
+              "editable": true,
+              "errorHandler": "",
+              "label": "Augment Context",
+              "logic": "Logic for augment_context node",
+              "nextNode": "generate_rag_response",
+              "nodeFunction": "augment_context",
+              "stateUpdates": {},
+              "type": "llm_calling"
+            },
+            "id": "augment_context",
+            "position": {
+              "x": 0,
+              "y": 900
+            },
+            "style": {
+              "alignItems": "center",
+              "background": "#fadbd8",
+              "border": "1px solid #555",
+              "borderRadius": "8px",
+              "display": "flex",
+              "height": "100px",
+              "justifyContent": "center",
+              "padding": "15px",
+              "width": "200px"
+            },
+            "type": "default"
+          },
+          {
+            "data": {
+              "conditionalEdges": [],
+              "conditionalLogic": "",
+              "description": "Generates response using RAG-augmented context.",
+              "editable": true,
+              "errorHandler": "",
+              "label": "Generate Rag Response",
+              "logic": "Logic for generate_rag_response node",
+              "nextNode": "generate_final_answer",
+              "nodeFunction": "generate_rag_response",
+              "stateUpdates": {},
+              "type": "llm_calling"
+            },
+            "id": "generate_rag_response",
+            "position": {
+              "x": 350,
+              "y": 900
+            },
+            "style": {
+              "alignItems": "center",
+              "background": "#fadbd8",
+              "border": "1px solid #555",
+              "borderRadius": "8px",
+              "display": "flex",
+              "height": "100px",
+              "justifyContent": "center",
+              "padding": "15px",
+              "width": "200px"
+            },
+            "type": "default"
+          },
+          {
+            "data": {
+              "conditionalEdges": [],
+              "conditionalLogic": "",
+              "description": "Plans MCP queries based on the analyzed request.",
+              "editable": true,
+              "errorHandler": "",
+              "label": "Plan Mcp Queries",
+              "logic": "Plan MCP queries based on the analyzed request",
+              "nextNode": "execute_mcp_queries",
+              "nodeFunction": "plan_mcp_queries",
+              "stateUpdates": {},
+              "type": "mcp"
+            },
+            "id": "plan_mcp_queries",
+            "position": {
+              "x": 700,
+              "y": 0
+            },
+            "style": {
+              "alignItems": "center",
+              "background": "#d2b4de",
+              "border": "1px solid #555",
+              "borderRadius": "8px",
+              "display": "flex",
+              "height": "100px",
+              "justifyContent": "center",
+              "padding": "15px",
+              "width": "200px"
+            },
+            "type": "default"
+          },
+          {
+            "data": {
+              "conditionalEdges": [],
+              "conditionalLogic": "",
+              "description": "Executes MCP queries in parallel or sequentially.",
+              "editable": true,
+              "errorHandler": "",
+              "label": "Execute Mcp Queries",
+              "logic": "Execute MCP queries in parallel or sequentially",
+              "nextNode": "synthesize_results",
+              "nodeFunction": "execute_mcp_queries",
+              "stateUpdates": {},
+              "type": "mcp"
+            },
+            "id": "execute_mcp_queries",
+            "position": {
+              "x": 1050,
+              "y": 0
+            },
+            "style": {
+              "alignItems": "center",
+              "background": "#d2b4de",
+              "border": "1px solid #555",
+              "borderRadius": "8px",
+              "display": "flex",
+              "height": "100px",
+              "justifyContent": "center",
+              "padding": "15px",
+              "width": "200px"
+            },
+            "type": "default"
+          },
+          {
+            "data": {
+              "conditionalEdges": [],
+              "conditionalLogic": "",
+              "description": "Synthesizes results from multiple MCP queries.",
+              "editable": true,
+              "errorHandler": "",
+              "label": "Synthesize Results",
+              "logic": "Synthesize results from multiple MCP queries",
+              "nextNode": "can_answer",
+              "nodeFunction": "synthesize_results",
+              "stateUpdates": {},
+              "type": "llm_calling"
+            },
+            "id": "synthesize_results",
+            "position": {
+              "x": 1400,
+              "y": 0
+            },
+            "style": {
+              "alignItems": "center",
+              "background": "#fadbd8",
+              "border": "1px solid #555",
+              "borderRadius": "8px",
+              "display": "flex",
+              "height": "100px",
+              "justifyContent": "center",
+              "padding": "15px",
+              "width": "200px"
+            },
+            "type": "default"
+          },
+          {
+            "data": {
+              "conditionalEdges": [
+                {
+                  "condition": "state[\"can_answer\"]",
+                  "target": "generate_final_answer"
+                },
+                {
+                  "condition": "state[\"iteration_count\"] < state[\"max_iterations\"]",
+                  "target": "plan_refined_queries"
+                },
+                {
+                  "condition": "otherwise",
+                  "target": "generate_failure_response"
+                }
+              ],
+              "conditionalLogic": "Condition: Check if the agent can answer the user's request",
+              "description": "Determines if the agent can answer the user's request.",
+              "editable": true,
+              "errorHandler": "",
+              "label": "Can Answer",
+              "logic": "Determine if the agent can answer the user's request",
+              "nextNode": "generate_failure_response, generate_final_answer, plan_refined_queries",
+              "nodeFunction": "can_answer",
+              "stateUpdates": {},
+              "type": "llm_calling"
+            },
+            "id": "can_answer",
+            "position": {
+              "x": 1750,
+              "y": 0
+            },
+            "style": {
+              "alignItems": "center",
+              "background": "#fadbd8",
+              "border": "1px solid #555",
+              "borderRadius": "8px",
+              "display": "flex",
+              "height": "100px",
+              "justifyContent": "center",
+              "padding": "15px",
+              "width": "200px"
+            },
+            "type": "default"
+          },
+          {
+            "data": {
+              "conditionalEdges": [],
+              "conditionalLogic": "",
+              "description": "Generates the final answer based on synthesized results.",
+              "editable": true,
+              "errorHandler": "",
+              "label": "Generate Final Answer",
+              "logic": "Generate the final answer based on synthesized results",
+              "nextNode": "__end__",
+              "nodeFunction": "generate_final_answer",
+              "stateUpdates": {},
+              "type": "llm_calling"
+            },
+            "id": "generate_final_answer",
+            "position": {
+              "x": 2100,
+              "y": 0
+            },
+            "style": {
+              "alignItems": "center",
+              "background": "#fadbd8",
+              "border": "1px solid #555",
+              "borderRadius": "8px",
+              "display": "flex",
+              "height": "100px",
+              "justifyContent": "center",
+              "padding": "15px",
+              "width": "200px"
+            },
+            "type": "default"
+          },
+          {
+            "data": {
+              "conditionalEdges": [],
+              "conditionalLogic": "",
+              "description": "Plans refined queries for the next iteration.",
+              "editable": true,
+              "errorHandler": "",
+              "label": "Plan Refined Queries",
+              "logic": "Plan refined queries for the next iteration",
+              "nextNode": "execute_mcp_queries",
+              "nodeFunction": "plan_refined_queries",
+              "stateUpdates": {},
+              "type": "llm_calling"
+            },
+            "id": "plan_refined_queries",
+            "position": {
+              "x": 2450,
+              "y": 0
+            },
+            "style": {
+              "alignItems": "center",
+              "background": "#fadbd8",
+              "border": "1px solid #555",
+              "borderRadius": "8px",
+              "display": "flex",
+              "height": "100px",
+              "justifyContent": "center",
+              "padding": "15px",
+              "width": "200px"
+            },
+            "type": "default"
+          },
+          {
+            "data": {
+              "conditionalEdges": [],
+              "conditionalLogic": "",
+              "description": "Generates a failure response when iterations are exhausted.",
+              "editable": true,
+              "errorHandler": "",
+              "label": "Generate Failure Response",
+              "logic": "Generate a failure response when iterations are exhausted",
+              "nextNode": "__end__",
+              "nodeFunction": "generate_failure_response",
+              "stateUpdates": {},
+              "type": "end"
+            },
+            "id": "generate_failure_response",
+            "position": {
+              "x": 2800,
+              "y": 0
+            },
+            "style": {
+              "alignItems": "center",
+              "background": "#f1948a",
+              "border": "1px solid #555",
+              "borderRadius": "50%",
+              "display": "flex",
+              "fontWeight": "bold",
+              "height": "120px",
+              "justifyContent": "center",
+              "padding": "15px",
+              "width": "120px"
+            },
+            "type": "default"
+          },
+          {
+            "data": {
+              "conditionalEdges": [],
+              "conditionalLogic": "",
+              "description": "Generates final answer when no MCP calls needed.",
+              "editable": true,
+              "errorHandler": "",
+              "label": "Generate Final Answer From Analysis",
+              "logic": "Logic for generate_final_answer_from_analysis node",
+              "nextNode": "__end__",
+              "nodeFunction": "generate_final_answer_from_analysis",
+              "stateUpdates": {},
+              "type": "llm_calling"
+            },
+            "id": "generate_final_answer_from_analysis",
+            "position": {
+              "x": 700,
+              "y": 900
+            },
+            "style": {
+              "alignItems": "center",
+              "background": "#fadbd8",
+              "border": "1px solid #555",
+              "borderRadius": "8px",
+              "display": "flex",
+              "height": "100px",
+              "justifyContent": "center",
+              "padding": "15px",
+              "width": "200px"
+            },
+            "type": "default"
+          },
+          {
+            "data": {
+              "conditionalEdges": [],
+              "conditionalLogic": "",
+              "description": "Generates failure response when analysis indicates impossibility.",
+              "editable": true,
+              "errorHandler": "",
+              "label": "Generate Failure Response From Analysis",
+              "logic": "Logic for generate_failure_response_from_analysis node",
+              "nextNode": "__end__",
+              "nodeFunction": "generate_failure_response_from_analysis",
+              "stateUpdates": {},
+              "type": "end"
+            },
+            "id": "generate_failure_response_from_analysis",
+            "position": {
+              "x": 1050,
+              "y": 900
+            },
+            "style": {
+              "alignItems": "center",
+              "background": "#f1948a",
+              "border": "1px solid #555",
+              "borderRadius": "50%",
+              "display": "flex",
+              "fontWeight": "bold",
+              "height": "120px",
+              "justifyContent": "center",
+              "padding": "15px",
+              "width": "120px"
+            },
+            "type": "default"
+          }
+        ],
+        "edges": [
+          {
+            "animated": true,
+            "id": "e___start___initialize_agent_state",
+            "source": "__start__",
+            "target": "initialize_agent_state"
+          },
+          {
+            "animated": true,
+            "id": "e_analyze_request_check_mcp_applicability",
+            "source": "analyze_request",
+            "target": "check_mcp_applicability"
+          },
+          {
+            "animated": true,
+            "id": "e_analyze_request_generate_failure_response_from_analysis",
+            "source": "analyze_request",
+            "target": "generate_failure_response_from_analysis"
+          },
+          {
+            "animated": true,
+            "id": "e_analyze_request_generate_final_answer_from_analysis",
+            "source": "analyze_request",
+            "target": "generate_final_answer_from_analysis"
+          },
+          {
+            "animated": true,
+            "id": "e_augment_context_generate_rag_response",
+            "source": "augment_context",
+            "target": "generate_rag_response"
+          },
+          {
+            "animated": true,
+            "id": "e_can_answer_generate_failure_response",
+            "source": "can_answer",
+            "target": "generate_failure_response"
+          },
+          {
+            "animated": true,
+            "id": "e_can_answer_generate_final_answer",
+            "source": "can_answer",
+            "target": "generate_final_answer"
+          },
+          {
+            "animated": true,
+            "id": "e_can_answer_plan_refined_queries",
+            "source": "can_answer",
+            "target": "plan_refined_queries"
+          },
+          {
+            "animated": true,
+            "id": "e_check_mcp_applicability_plan_mcp_queries",
+            "source": "check_mcp_applicability",
+            "target": "plan_mcp_queries"
+          },
+          {
+            "animated": true,
+            "id": "e_check_mcp_applicability_retrieve_documents",
+            "source": "check_mcp_applicability",
+            "target": "retrieve_documents"
+          },
+          {
+            "animated": true,
+            "id": "e_discover_services_analyze_request",
+            "source": "discover_services",
+            "target": "analyze_request"
+          },
+          {
+            "animated": true,
+            "id": "e_execute_mcp_queries_synthesize_results",
+            "source": "execute_mcp_queries",
+            "target": "synthesize_results"
+          },
+          {
+            "animated": true,
+            "id": "e_generate_rag_response_generate_final_answer",
+            "source": "generate_rag_response",
+            "target": "generate_final_answer"
+          },
+          {
+            "animated": true,
+            "id": "e_initialize_agent_state_discover_services",
+            "source": "initialize_agent_state",
+            "target": "discover_services"
+          },
+          {
+            "animated": true,
+            "id": "e_plan_mcp_queries_execute_mcp_queries",
+            "source": "plan_mcp_queries",
+            "target": "execute_mcp_queries"
+          },
+          {
+            "animated": true,
+            "id": "e_plan_refined_queries_execute_mcp_queries",
+            "source": "plan_refined_queries",
+            "target": "execute_mcp_queries"
+          },
+          {
+            "animated": true,
+            "id": "e_rerank_documents_augment_context",
+            "source": "rerank_documents",
+            "target": "augment_context"
+          },
+          {
+            "animated": true,
+            "id": "e_retrieve_documents_rerank_documents",
+            "source": "retrieve_documents",
+            "target": "rerank_documents"
+          },
+          {
+            "animated": true,
+            "id": "e_synthesize_results_can_answer",
+            "source": "synthesize_results",
+            "target": "can_answer"
+          },
+          {
+            "animated": true,
+            "id": "e_generate_failure_response___end__",
+            "source": "generate_failure_response",
+            "target": "__end__"
+          },
+          {
+            "animated": true,
+            "id": "e_generate_failure_response_from_analysis___end__",
+            "source": "generate_failure_response_from_analysis",
+            "target": "__end__"
+          },
+          {
+            "animated": true,
+            "id": "e_generate_final_answer___end__",
+            "source": "generate_final_answer",
+            "target": "__end__"
+          },
+          {
+            "animated": true,
+            "id": "e_generate_final_answer_from_analysis___end__",
+            "source": "generate_final_answer_from_analysis",
+            "target": "__end__"
+          }
+        ]
+      },
+      "label": "State 4 - 2026-01-30 14:38:58"
+    },
+    {
+      "id": "dd9bd9ff-8f14-4008-9431-397f6e835287",
+      "timestamp": 1769783948.9301488,
+      "workflow": {
+        "name": "MyWorkflow",
+        "nodes": [
+          {
+            "data": {
+              "conditionalEdges": [],
+              "conditionalLogic": "",
+              "description": "Initializes the agent state with default values.",
+              "editable": true,
+              "errorHandler": "",
+              "label": "Initialize Agent State",
+              "logic": "Initialize the agent state with default values",
+              "nextNode": "discover_services",
+              "nodeFunction": "initialize_agent_state",
+              "stateUpdates": {},
+              "type": "llm_calling"
+            },
+            "id": "initialize_agent_state",
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "style": {
+              "alignItems": "center",
+              "background": "#fadbd8",
+              "border": "1px solid #555",
+              "borderRadius": "8px",
+              "display": "flex",
+              "height": "100px",
+              "justifyContent": "center",
+              "padding": "15px",
+              "width": "200px"
+            },
+            "type": "default"
+          },
+          {
+            "data": {
+              "conditionalEdges": [],
+              "conditionalLogic": "",
+              "description": "Discovers available MCP services from the registry.",
+              "editable": true,
+              "errorHandler": "",
+              "label": "Discover Services",
+              "logic": "Logic for discover_services node",
+              "nextNode": "analyze_request",
+              "nodeFunction": "discover_services",
+              "stateUpdates": {},
+              "type": "mcp"
+            },
+            "id": "discover_services",
+            "position": {
+              "x": 0,
+              "y": 600
+            },
+            "style": {
+              "alignItems": "center",
+              "background": "#d2b4de",
+              "border": "1px solid #555",
+              "borderRadius": "8px",
+              "display": "flex",
+              "height": "100px",
+              "justifyContent": "center",
+              "padding": "15px",
+              "width": "200px"
+            },
+            "type": "default"
+          },
+          {
+            "data": {
+              "conditionalEdges": [
+                {
+                  "condition": "no MCP tool calls generated and is_final_answer=True",
+                  "target": "generate_final_answer_from_analysis"
+                },
+                {
+                  "condition": "no MCP tool calls generated and is_final_answer=False",
+                  "target": "generate_failure_response_from_analysis"
+                },
+                {
+                  "condition": "MCP tool calls generated",
+                  "target": "check_mcp_applicability"
+                }
+              ],
+              "conditionalLogic": "",
+              "description": "Analyzes the user request to determine how to proceed.",
+              "editable": true,
+              "errorHandler": "",
+              "label": "Analyze Request",
+              "logic": "Analyze the user request to determine how to proceed",
+              "nextNode": "check_mcp_applicability, generate_failure_response_from_analysis, generate_final_answer_from_analysis",
+              "nodeFunction": "analyze_request",
+              "stateUpdates": {},
+              "type": "llm_calling"
+            },
+            "id": "analyze_request",
+            "position": {
+              "x": 350,
+              "y": 0
+            },
+            "style": {
+              "alignItems": "center",
+              "background": "#fadbd8",
+              "border": "1px solid #555",
+              "borderRadius": "8px",
+              "display": "flex",
+              "height": "100px",
+              "justifyContent": "center",
+              "padding": "15px",
+              "width": "200px"
+            },
+            "type": "default"
+          },
+          {
+            "data": {
+              "conditionalEdges": [],
+              "conditionalLogic": "",
+              "description": "Checks if MCP services are applicable for the request.",
+              "editable": true,
+              "errorHandler": "",
+              "label": "Check Mcp Applicability",
+              "logic": "Logic for check_mcp_applicability node",
+              "nextNode": "plan_mcp_queries, retrieve_documents",
+              "nodeFunction": "check_mcp_applicability",
+              "stateUpdates": {},
+              "type": "default"
+            },
+            "id": "check_mcp_applicability",
+            "position": {
+              "x": 350,
+              "y": 600
+            },
+            "style": {
+              "alignItems": "center",
+              "background": "#ffffff",
+              "border": "1px solid #555",
+              "borderRadius": "8px",
+              "display": "flex",
+              "height": "100px",
+              "justifyContent": "center",
+              "padding": "15px",
+              "width": "200px"
+            },
+            "type": "default"
+          },
+          {
+            "data": {
+              "conditionalEdges": [],
+              "conditionalLogic": "",
+              "description": "Retrieves relevant documents using RAG component.",
+              "editable": true,
+              "errorHandler": "",
+              "label": "Retrieve Documents",
+              "logic": "Logic for retrieve_documents node",
+              "nextNode": "rerank_documents",
+              "nodeFunction": "retrieve_documents",
+              "stateUpdates": {},
+              "type": "rag"
+            },
+            "id": "retrieve_documents",
+            "position": {
+              "x": 700,
+              "y": 600
+            },
+            "style": {
+              "alignItems": "center",
+              "background": "#85c1e9",
+              "border": "1px solid #555",
+              "borderRadius": "8px",
+              "display": "flex",
+              "height": "100px",
+              "justifyContent": "center",
+              "padding": "15px",
+              "width": "200px"
+            },
+            "type": "default"
+          },
+          {
+            "data": {
+              "conditionalEdges": [],
+              "conditionalLogic": "",
+              "description": "Node: rerank_documents",
+              "editable": true,
+              "errorHandler": "",
+              "label": "Rerank Documents",
+              "logic": "Logic for rerank_documents node",
+              "nextNode": "augment_context",
+              "nodeFunction": "rerank_documents",
+              "stateUpdates": {},
+              "type": "default"
+            },
+            "id": "rerank_documents",
+            "position": {
+              "x": 1050,
+              "y": 600
+            },
+            "style": {
+              "alignItems": "center",
+              "background": "#ffffff",
+              "border": "1px solid #555",
+              "borderRadius": "8px",
+              "display": "flex",
+              "height": "100px",
+              "justifyContent": "center",
+              "padding": "15px",
+              "width": "200px"
+            },
+            "type": "default"
+          },
+          {
+            "data": {
+              "conditionalEdges": [],
+              "conditionalLogic": "",
+              "description": "Augments user request with retrieved documents.",
+              "editable": true,
+              "errorHandler": "",
+              "label": "Augment Context",
+              "logic": "Logic for augment_context node",
+              "nextNode": "generate_rag_response",
+              "nodeFunction": "augment_context",
+              "stateUpdates": {},
+              "type": "llm_calling"
+            },
+            "id": "augment_context",
+            "position": {
+              "x": 0,
+              "y": 900
+            },
+            "style": {
+              "alignItems": "center",
+              "background": "#fadbd8",
+              "border": "1px solid #555",
+              "borderRadius": "8px",
+              "display": "flex",
+              "height": "100px",
+              "justifyContent": "center",
+              "padding": "15px",
+              "width": "200px"
+            },
+            "type": "default"
+          },
+          {
+            "data": {
+              "conditionalEdges": [],
+              "conditionalLogic": "",
+              "description": "Generates response using RAG-augmented context.",
+              "editable": true,
+              "errorHandler": "",
+              "label": "Generate Rag Response",
+              "logic": "Logic for generate_rag_response node",
+              "nextNode": "generate_final_answer",
+              "nodeFunction": "generate_rag_response",
+              "stateUpdates": {},
+              "type": "llm_calling"
+            },
+            "id": "generate_rag_response",
+            "position": {
+              "x": 350,
+              "y": 900
+            },
+            "style": {
+              "alignItems": "center",
+              "background": "#fadbd8",
+              "border": "1px solid #555",
+              "borderRadius": "8px",
+              "display": "flex",
+              "height": "100px",
+              "justifyContent": "center",
+              "padding": "15px",
+              "width": "200px"
+            },
+            "type": "default"
+          },
+          {
+            "data": {
+              "conditionalEdges": [],
+              "conditionalLogic": "",
+              "description": "Plans MCP queries based on the analyzed request.",
+              "editable": true,
+              "errorHandler": "",
+              "label": "Plan Mcp Queries",
+              "logic": "Plan MCP queries based on the analyzed request",
+              "nextNode": "execute_mcp_queries",
+              "nodeFunction": "plan_mcp_queries",
+              "stateUpdates": {},
+              "type": "mcp"
+            },
+            "id": "plan_mcp_queries",
+            "position": {
+              "x": 700,
+              "y": 0
+            },
+            "style": {
+              "alignItems": "center",
+              "background": "#d2b4de",
+              "border": "1px solid #555",
+              "borderRadius": "8px",
+              "display": "flex",
+              "height": "100px",
+              "justifyContent": "center",
+              "padding": "15px",
+              "width": "200px"
+            },
+            "type": "default"
+          },
+          {
+            "data": {
+              "conditionalEdges": [],
+              "conditionalLogic": "",
+              "description": "Executes MCP queries in parallel or sequentially.",
+              "editable": true,
+              "errorHandler": "",
+              "label": "Execute Mcp Queries",
+              "logic": "Execute MCP queries in parallel or sequentially",
+              "nextNode": "synthesize_results",
+              "nodeFunction": "execute_mcp_queries",
+              "stateUpdates": {},
+              "type": "mcp"
+            },
+            "id": "execute_mcp_queries",
+            "position": {
+              "x": 1050,
+              "y": 0
+            },
+            "style": {
+              "alignItems": "center",
+              "background": "#d2b4de",
+              "border": "1px solid #555",
+              "borderRadius": "8px",
+              "display": "flex",
+              "height": "100px",
+              "justifyContent": "center",
+              "padding": "15px",
+              "width": "200px"
+            },
+            "type": "default"
+          },
+          {
+            "data": {
+              "conditionalEdges": [],
+              "conditionalLogic": "",
+              "description": "Synthesizes results from multiple MCP queries.",
+              "editable": true,
+              "errorHandler": "",
+              "label": "Synthesize Results",
+              "logic": "Synthesize results from multiple MCP queries",
+              "nextNode": "can_answer",
+              "nodeFunction": "synthesize_results",
+              "stateUpdates": {},
+              "type": "llm_calling"
+            },
+            "id": "synthesize_results",
+            "position": {
+              "x": 1400,
+              "y": 0
+            },
+            "style": {
+              "alignItems": "center",
+              "background": "#fadbd8",
+              "border": "1px solid #555",
+              "borderRadius": "8px",
+              "display": "flex",
+              "height": "100px",
+              "justifyContent": "center",
+              "padding": "15px",
+              "width": "200px"
+            },
+            "type": "default"
+          },
+          {
+            "data": {
+              "conditionalEdges": [
+                {
+                  "condition": "state[\"can_answer\"]",
+                  "target": "generate_final_answer"
+                },
+                {
+                  "condition": "state[\"iteration_count\"] < state[\"max_iterations\"]",
+                  "target": "plan_refined_queries"
+                },
+                {
+                  "condition": "otherwise",
+                  "target": "generate_failure_response"
+                }
+              ],
+              "conditionalLogic": "Condition: Check if the agent can answer the user's request",
+              "description": "Determines if the agent can answer the user's request.",
+              "editable": true,
+              "errorHandler": "",
+              "label": "Can Answer",
+              "logic": "Determine if the agent can answer the user's request",
+              "nextNode": "generate_failure_response, generate_final_answer, plan_refined_queries",
+              "nodeFunction": "can_answer",
+              "stateUpdates": {},
+              "type": "llm_calling"
+            },
+            "id": "can_answer",
+            "position": {
+              "x": 1750,
+              "y": 0
+            },
+            "style": {
+              "alignItems": "center",
+              "background": "#fadbd8",
+              "border": "1px solid #555",
+              "borderRadius": "8px",
+              "display": "flex",
+              "height": "100px",
+              "justifyContent": "center",
+              "padding": "15px",
+              "width": "200px"
+            },
+            "type": "default"
+          },
+          {
+            "data": {
+              "conditionalEdges": [],
+              "conditionalLogic": "",
+              "description": "Generates the final answer based on synthesized results.",
+              "editable": true,
+              "errorHandler": "",
+              "label": "Generate Final Answer",
+              "logic": "Generate the final answer based on synthesized results",
+              "nextNode": "__end__",
+              "nodeFunction": "generate_final_answer",
+              "stateUpdates": {},
+              "type": "llm_calling"
+            },
+            "id": "generate_final_answer",
+            "position": {
+              "x": 2100,
+              "y": 0
+            },
+            "style": {
+              "alignItems": "center",
+              "background": "#fadbd8",
+              "border": "1px solid #555",
+              "borderRadius": "8px",
+              "display": "flex",
+              "height": "100px",
+              "justifyContent": "center",
+              "padding": "15px",
+              "width": "200px"
+            },
+            "type": "default"
+          },
+          {
+            "data": {
+              "conditionalEdges": [],
+              "conditionalLogic": "",
+              "description": "Plans refined queries for the next iteration.",
+              "editable": true,
+              "errorHandler": "",
+              "label": "Plan Refined Queries",
+              "logic": "Plan refined queries for the next iteration",
+              "nextNode": "execute_mcp_queries",
+              "nodeFunction": "plan_refined_queries",
+              "stateUpdates": {},
+              "type": "llm_calling"
+            },
+            "id": "plan_refined_queries",
+            "position": {
+              "x": 2450,
+              "y": 0
+            },
+            "style": {
+              "alignItems": "center",
+              "background": "#fadbd8",
+              "border": "1px solid #555",
+              "borderRadius": "8px",
+              "display": "flex",
+              "height": "100px",
+              "justifyContent": "center",
+              "padding": "15px",
+              "width": "200px"
+            },
+            "type": "default"
+          },
+          {
+            "data": {
+              "conditionalEdges": [],
+              "conditionalLogic": "",
+              "description": "Generates a failure response when iterations are exhausted.",
+              "editable": true,
+              "errorHandler": "",
+              "label": "Generate Failure Response",
+              "logic": "Generate a failure response when iterations are exhausted",
+              "nextNode": "__end__",
+              "nodeFunction": "generate_failure_response",
+              "stateUpdates": {},
+              "type": "end"
+            },
+            "id": "generate_failure_response",
+            "position": {
+              "x": 2800,
+              "y": 0
+            },
+            "style": {
+              "alignItems": "center",
+              "background": "#f1948a",
+              "border": "1px solid #555",
+              "borderRadius": "50%",
+              "display": "flex",
+              "fontWeight": "bold",
+              "height": "120px",
+              "justifyContent": "center",
+              "padding": "15px",
+              "width": "120px"
+            },
+            "type": "default"
+          },
+          {
+            "data": {
+              "conditionalEdges": [],
+              "conditionalLogic": "",
+              "description": "Generates final answer when no MCP calls needed.",
+              "editable": true,
+              "errorHandler": "",
+              "label": "Generate Final Answer From Analysis",
+              "logic": "Logic for generate_final_answer_from_analysis node",
+              "nextNode": "__end__",
+              "nodeFunction": "generate_final_answer_from_analysis",
+              "stateUpdates": {},
+              "type": "llm_calling"
+            },
+            "id": "generate_final_answer_from_analysis",
+            "position": {
+              "x": 700,
+              "y": 900
+            },
+            "style": {
+              "alignItems": "center",
+              "background": "#fadbd8",
+              "border": "1px solid #555",
+              "borderRadius": "8px",
+              "display": "flex",
+              "height": "100px",
+              "justifyContent": "center",
+              "padding": "15px",
+              "width": "200px"
+            },
+            "type": "default"
+          },
+          {
+            "data": {
+              "conditionalEdges": [],
+              "conditionalLogic": "",
+              "description": "Generates failure response when analysis indicates impossibility.",
+              "editable": true,
+              "errorHandler": "",
+              "label": "Generate Failure Response From Analysis",
+              "logic": "Logic for generate_failure_response_from_analysis node",
+              "nextNode": "__end__",
+              "nodeFunction": "generate_failure_response_from_analysis",
+              "stateUpdates": {},
+              "type": "end"
+            },
+            "id": "generate_failure_response_from_analysis",
+            "position": {
+              "x": 1050,
+              "y": 900
+            },
+            "style": {
+              "alignItems": "center",
+              "background": "#f1948a",
+              "border": "1px solid #555",
+              "borderRadius": "50%",
+              "display": "flex",
+              "fontWeight": "bold",
+              "height": "120px",
+              "justifyContent": "center",
+              "padding": "15px",
+              "width": "120px"
+            },
+            "type": "default"
+          }
+        ],
+        "edges": [
+          {
+            "animated": true,
+            "id": "e___start___initialize_agent_state",
+            "source": "__start__",
+            "target": "initialize_agent_state"
+          },
+          {
+            "animated": true,
+            "id": "e_analyze_request_check_mcp_applicability",
+            "source": "analyze_request",
+            "target": "check_mcp_applicability"
+          },
+          {
+            "animated": true,
+            "id": "e_analyze_request_generate_failure_response_from_analysis",
+            "source": "analyze_request",
+            "target": "generate_failure_response_from_analysis"
+          },
+          {
+            "animated": true,
+            "id": "e_analyze_request_generate_final_answer_from_analysis",
+            "source": "analyze_request",
+            "target": "generate_final_answer_from_analysis"
+          },
+          {
+            "animated": true,
+            "id": "e_augment_context_generate_rag_response",
+            "source": "augment_context",
+            "target": "generate_rag_response"
+          },
+          {
+            "animated": true,
+            "id": "e_can_answer_generate_failure_response",
+            "source": "can_answer",
+            "target": "generate_failure_response"
+          },
+          {
+            "animated": true,
+            "id": "e_can_answer_generate_final_answer",
+            "source": "can_answer",
+            "target": "generate_final_answer"
+          },
+          {
+            "animated": true,
+            "id": "e_can_answer_plan_refined_queries",
+            "source": "can_answer",
+            "target": "plan_refined_queries"
+          },
+          {
+            "animated": true,
+            "id": "e_check_mcp_applicability_plan_mcp_queries",
+            "source": "check_mcp_applicability",
+            "target": "plan_mcp_queries"
+          },
+          {
+            "animated": true,
+            "id": "e_check_mcp_applicability_retrieve_documents",
+            "source": "check_mcp_applicability",
+            "target": "retrieve_documents"
+          },
+          {
+            "animated": true,
+            "id": "e_discover_services_analyze_request",
+            "source": "discover_services",
+            "target": "analyze_request"
+          },
+          {
+            "animated": true,
+            "id": "e_execute_mcp_queries_synthesize_results",
+            "source": "execute_mcp_queries",
+            "target": "synthesize_results"
+          },
+          {
+            "animated": true,
+            "id": "e_generate_rag_response_generate_final_answer",
+            "source": "generate_rag_response",
+            "target": "generate_final_answer"
+          },
+          {
+            "animated": true,
+            "id": "e_initialize_agent_state_discover_services",
+            "source": "initialize_agent_state",
+            "target": "discover_services"
+          },
+          {
+            "animated": true,
+            "id": "e_plan_mcp_queries_execute_mcp_queries",
+            "source": "plan_mcp_queries",
+            "target": "execute_mcp_queries"
+          },
+          {
+            "animated": true,
+            "id": "e_plan_refined_queries_execute_mcp_queries",
+            "source": "plan_refined_queries",
+            "target": "execute_mcp_queries"
+          },
+          {
+            "animated": true,
+            "id": "e_rerank_documents_augment_context",
+            "source": "rerank_documents",
+            "target": "augment_context"
+          },
+          {
+            "animated": true,
+            "id": "e_retrieve_documents_rerank_documents",
+            "source": "retrieve_documents",
+            "target": "rerank_documents"
+          },
+          {
+            "animated": true,
+            "id": "e_synthesize_results_can_answer",
+            "source": "synthesize_results",
+            "target": "can_answer"
+          },
+          {
+            "animated": true,
+            "id": "e_generate_failure_response___end__",
+            "source": "generate_failure_response",
+            "target": "__end__"
+          },
+          {
+            "animated": true,
+            "id": "e_generate_failure_response_from_analysis___end__",
+            "source": "generate_failure_response_from_analysis",
+            "target": "__end__"
+          },
+          {
+            "animated": true,
+            "id": "e_generate_final_answer___end__",
+            "source": "generate_final_answer",
+            "target": "__end__"
+          },
+          {
+            "animated": true,
+            "id": "e_generate_final_answer_from_analysis___end__",
+            "source": "generate_final_answer_from_analysis",
+            "target": "__end__"
+          }
+        ]
+      },
+      "label": "State 4 - 2026-01-30 14:39:08"
     }
   ],
   "max_states": 3,
-  "timestamp": 1769717568.9765568
+  "timestamp": 1769783948.9302356
 }
