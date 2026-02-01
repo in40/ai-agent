@@ -43,6 +43,7 @@ class Permission(Enum):
     WRITE_AGENT = "write:agent"
     READ_RAG = "read:rag"
     WRITE_RAG = "write:rag"
+    READ_MCP = "read:mcp"
     MANAGE_USERS = "manage:users"
     READ_SYSTEM = "read:system"
     WRITE_SYSTEM = "write:system"
@@ -69,19 +70,22 @@ class SecurityManager:
             UserRole.ADMIN: [
                 Permission.READ_AGENT, Permission.WRITE_AGENT,
                 Permission.READ_RAG, Permission.WRITE_RAG,
+                Permission.READ_MCP,
                 Permission.MANAGE_USERS,
                 Permission.READ_SYSTEM, Permission.WRITE_SYSTEM
             ],
             UserRole.USER: [
                 Permission.READ_AGENT, Permission.WRITE_AGENT,
-                Permission.READ_RAG, Permission.WRITE_RAG
+                Permission.READ_RAG, Permission.WRITE_RAG,
+                Permission.READ_MCP
             ],
             UserRole.GUEST: [
                 Permission.READ_AGENT
             ],
             UserRole.SERVICE_ACCOUNT: [
                 Permission.READ_AGENT, Permission.WRITE_AGENT,
-                Permission.READ_RAG, Permission.WRITE_RAG
+                Permission.READ_RAG, Permission.WRITE_RAG,
+                Permission.READ_MCP
             ]
         }
     

@@ -296,6 +296,236 @@ def rag_lookup(current_user_id):
         return jsonify({'error': 'RAG service unavailable'}), 503
 
 
+@app.route('/api/mcp/search', methods=['POST'])
+@require_permission(Permission.READ_MCP)
+def mcp_search(current_user_id):
+    """Convenience route for MCP search"""
+    try:
+        data = request.get_json()
+
+        # Validate input
+        from backend.security import validate_input
+        schema = {
+            'query': {
+                'type': str,
+                'required': True,
+                'min_length': 1,
+                'max_length': 1000,
+                'sanitize': True
+            },
+            'top_k': {
+                'type': int,
+                'required': False,
+                'min_value': 1,
+                'max_value': 100
+            },
+            'enhanced': {
+                'type': bool,
+                'required': False
+            }
+        }
+
+        validation_errors = validate_input(data, schema)
+        if validation_errors:
+            return jsonify({'error': f'Validation error: {validation_errors}'}), 400
+
+        query = data.get('query')
+        top_k = data.get('top_k', 5)  # Default to 5 results
+        enhanced = data.get('enhanced', False)  # Whether to use enhanced processing
+
+        # Import MCP-related modules
+        from registry.registry_client import ServiceRegistryClient
+        from models.dedicated_mcp_model import DedicatedMCPModel
+
+        # Get registry URL from environment
+        registry_url = os.getenv('MCP_REGISTRY_URL', 'http://127.0.0.1:8080')
+
+        # Connect to the registry
+        registry_client = ServiceRegistryClient(registry_url)
+
+        # Discover search services
+        search_services = registry_client.discover_services(service_type="mcp_search")
+
+        if not search_services:
+            return jsonify({'error': 'No MCP search services available'}), 404
+
+        # Use the first available search service
+        search_service = search_services[0]
+
+        # Create MCP model instance
+        mcp_model = DedicatedMCPModel()
+
+        # Prepare parameters for the search
+        search_params = {
+            "query": query,
+            "count": top_k
+        }
+
+        # Call the MCP search service
+        search_result = mcp_model._call_mcp_service(
+            {
+                'id': search_service.id,
+                'host': search_service.host,
+                'port': search_service.port,
+                'type': search_service.type,
+                'metadata': search_service.metadata
+            },
+            "search",
+            search_params
+        )
+
+        # Extract results from the search
+        if search_result.get('status') == 'success':
+            # The structure might vary depending on the MCP service implementation
+            result_data = search_result.get('result', {})
+
+            # Try different possible structures for the results
+            results = []
+            if isinstance(result_data, dict):
+                # Check if results are nested in a 'result' key
+                if 'result' in result_data and 'results' in result_data['result']:
+                    results = result_data['result']['results']
+                # Or directly in a 'results' key
+                elif 'results' in result_data:
+                    results = result_data['results']
+                # Or in a 'data' key
+                elif 'data' in result_data:
+                    results = result_data['data']
+                # Or directly as the result_data if it's a list
+                elif isinstance(result_data, list):
+                    results = result_data
+            elif isinstance(result_data, list):
+                results = result_data
+
+            # If enhanced processing is requested, use the RAG orchestrator's enhanced functionality
+            if enhanced:
+                try:
+                    # Import the RAG orchestrator to use the enhanced search functionality
+                    from rag_component.main import RAGOrchestrator
+                    from models.response_generator import ResponseGenerator
+
+                    # Initialize RAG orchestrator with an LLM
+                    response_gen = ResponseGenerator()
+                    llm = response_gen.llm
+                    rag_orchestrator = RAGOrchestrator(llm=llm)
+
+                    # Process the search results with download and summarization
+                    processed_results = rag_orchestrator.process_search_results_with_download(
+                        search_results=results,
+                        user_query=query
+                    )
+
+                    # Format the processed results
+                    formatted_results = []
+                    for result in processed_results:
+                        formatted_results.append({
+                            'title': result.get('title', ''),
+                            'content': result.get('summary', ''),
+                            'url': result.get('url', ''),
+                            'source': 'Enhanced MCP Search',
+                            'score': result.get('relevance_score', 0.0)
+                        })
+
+                    return jsonify({'results': formatted_results}), 200
+                except Exception as e:
+                    logger.warning(f"Enhanced processing failed, falling back to basic search: {str(e)}")
+                    # Fall back to basic processing if enhanced processing fails
+
+            # Format results to match the expected structure (basic processing)
+            formatted_results = []
+            for idx, result in enumerate(results[:top_k]):  # Limit to top_k results
+                if isinstance(result, dict):
+                    # Get the basic result info
+                    title = result.get('title', result.get('name', 'Untitled'))
+                    url = result.get('url', result.get('link', ''))
+                    source = result.get('source', result.get('url', result.get('link', 'Unknown source')))
+                    score = result.get('score', result.get('relevance', 0.0))
+
+                    # Get the initial content (description/snippet)
+                    content = result.get('content', result.get('description', result.get('snippet', 'No content available')))
+
+                    # For the first result, try to fetch full content using the MCP download service
+                    if idx == 0 and url:  # Only for the first result
+                        try:
+                            # Attempt to fetch full content from the URL using the existing download service
+                            # First, check if we have a download service available in the registry
+                            from registry.registry_client import ServiceRegistryClient
+
+                            registry_url = os.getenv('MCP_REGISTRY_URL', 'http://127.0.0.1:8080')
+                            registry_client = ServiceRegistryClient(registry_url)
+
+                            # Look for a download service
+                            download_services = registry_client.discover_services(service_type="download")
+
+                            if download_services:
+                                # Use the first available download service
+                                download_service = download_services[0]
+
+                                # Prepare parameters for downloading the URL
+                                download_params = {
+                                    "url": url
+                                }
+
+                                # Create MCP model instance to call the service
+                                from models.dedicated_mcp_model import DedicatedMCPModel
+                                mcp_model = DedicatedMCPModel()
+
+                                # Call the download service to get the full content
+                                download_result = mcp_model._call_mcp_service(
+                                    {
+                                        'id': download_service.id,
+                                        'host': download_service.host,
+                                        'port': download_service.port,
+                                        'type': download_service.type,
+                                        'metadata': download_service.metadata
+                                    },
+                                    "download",
+                                    download_params
+                                )
+
+                                # If successful, update the content with the full content
+                                if download_result.get('status') == 'success':
+                                    downloaded_content = download_result.get('result', {}).get('result', {}).get('content', '')
+                                    # If no content found in nested 'result.result.content', try alternative paths
+                                    if not downloaded_content:
+                                        downloaded_content = download_result.get('result', {}).get('content', '')
+                                    if not downloaded_content:
+                                        downloaded_content = download_result.get('result', {}).get('data', '')
+
+                                    if downloaded_content and len(downloaded_content) > len(content):
+                                        content = downloaded_content
+                        except Exception as e:
+                            # If fetching full content fails, log the error and use the original content
+                            logger.warning(f"Could not fetch full content for {url} using download service: {str(e)}")
+                            pass
+
+                    formatted_results.append({
+                        'title': title,
+                        'content': content,
+                        'url': url,
+                        'source': source,
+                        'score': score
+                    })
+                else:
+                    # If result is not a dict, create a basic entry
+                    formatted_results.append({
+                        'title': 'Search Result',
+                        'content': str(result)[:500] + ('...' if len(str(result)) > 500 else ''),
+                        'url': '',
+                        'source': 'MCP Service',
+                        'score': 0.0
+                    })
+
+            return jsonify({'results': formatted_results}), 200
+        else:
+            error_msg = search_result.get('error', 'Unknown error occurred during search')
+            return jsonify({'error': f'MCP search failed: {error_msg}'}), 500
+
+    except Exception as e:
+        logger.error(f"MCP search error: {str(e)}")
+        return jsonify({'error': f'MCP search failed: {str(e)}'}), 500
+
+
 @app.route('/api/rag/upload', methods=['POST'])
 @require_permission(Permission.WRITE_RAG)
 def rag_upload(current_user_id):
@@ -560,6 +790,27 @@ def auth_validate():
     except Exception as e:
         logger.error(f"Auth validation convenience route error: {str(e)}")
         return jsonify({'error': 'Auth service unavailable'}), 503
+
+
+@app.route('/api/services', methods=['GET'])
+@require_permission(Permission.READ_SYSTEM)
+def get_services(current_user_id):
+    """Get information about available services"""
+    return jsonify({
+        'services': [
+            {'name': 'AI Agent', 'endpoint': '/api/agent/query', 'method': 'POST', 'permission': 'write:agent'},
+            {'name': 'RAG Query', 'endpoint': '/api/rag/query', 'method': 'POST', 'permission': 'read:rag'},
+            {'name': 'RAG Ingest', 'endpoint': '/api/rag/ingest', 'method': 'POST', 'permission': 'write:rag'},
+            {'name': 'RAG Retrieve', 'endpoint': '/api/rag/retrieve', 'method': 'POST', 'permission': 'read:rag'},
+            {'name': 'RAG Lookup', 'endpoint': '/api/rag/lookup', 'method': 'POST', 'permission': 'read:rag'},
+            {'name': 'MCP Search', 'endpoint': '/api/mcp/search', 'method': 'POST', 'permission': 'read:mcp'},
+            {'name': 'Authentication', 'endpoint': '/auth/login', 'method': 'POST', 'permission': 'none'},
+            {'name': 'Health Check', 'endpoint': '/health', 'method': 'GET', 'permission': 'none'},
+            {'name': 'System Config', 'endpoint': '/api/config', 'method': 'GET', 'permission': 'read:system'}
+        ],
+        'timestamp': datetime.utcnow().isoformat(),
+        'version': '0.5.0'
+    }), 200
 
 
 if __name__ == '__main__':

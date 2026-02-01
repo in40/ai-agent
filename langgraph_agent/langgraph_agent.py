@@ -7,6 +7,9 @@ from typing import TypedDict, List, Dict, Any, Literal, Optional
 from langchain_core.messages import BaseMessage
 from pydantic import BaseModel, Field
 from langgraph.graph import StateGraph, END
+from typing import Annotated
+from functools import reduce
+import operator
 from database.utils.multi_database_manager import multi_db_manager as DatabaseManager, reload_database_config
 from models.sql_generator import SQLGenerator
 from models.sql_executor import SQLExecutor
@@ -24,55 +27,58 @@ from datetime import datetime
 logger = logging.getLogger(__name__)
 
 
+# Define the state using the proper LangGraph approach with annotations and reducers
 class AgentState(TypedDict):
     """
     New state definition for the MCP-focused LangGraph agent.
     """
-    user_request: str                           # Original user request
-    mcp_queries: List[Dict[str, Any]]           # Planned MCP queries to execute
-    mcp_results: List[Dict[str, Any]]           # Results from executed MCP queries
-    synthesized_result: str                     # Synthesized result from all MCP queries
-    can_answer: bool                           # Flag indicating if we can answer the question
-    iteration_count: int                       # Number of iterations performed
-    max_iterations: int                        # Maximum allowed iterations
-    final_answer: str                          # Final answer to return to user
-    error_message: Optional[str]               # Any error messages encountered
-    mcp_servers: List[Dict[str, str]]          # Available MCP servers in the pool
-    refined_queries: List[Dict[str, Any]]      # Refined queries for next iteration
-    failure_reason: Optional[str]              # Reason for failure if iterations exhausted
+    user_request: Annotated[str, lambda x, y: y if not x else x]          # Original user request - use initial value if default is empty
+    mcp_queries: Annotated[List[Dict[str, Any]], operator.add]           # Planned MCP queries to execute - append
+    mcp_results: Annotated[List[Dict[str, Any]], operator.add]           # Results from executed MCP queries - append
+    synthesized_result: Annotated[str, lambda x, y: y]                     # Synthesized result - use new
+    can_answer: Annotated[bool, lambda x, y: y]                           # Flag indicating if we can answer - use new value
+    iteration_count: Annotated[int, operator.add]                       # Number of iterations performed - add
+    max_iterations: Annotated[int, lambda x, y: x]                        # Maximum allowed iterations - keep original
+    final_answer: Annotated[str, lambda x, y: y]                          # Final answer - use new
+    error_message: Annotated[Optional[str], lambda x, y: y]               # Any error messages - use new
+    mcp_servers: Annotated[List[Dict[str, str]], lambda x, y: y]          # Available MCP servers - use new
+    refined_queries: Annotated[List[Dict[str, Any]], operator.add]      # Refined queries - append
+    failure_reason: Annotated[Optional[str], lambda x, y: y]              # Reason for failure - use new
     # Fields retained for compatibility
-    schema_dump: Dict[str, Any]
-    sql_query: str
-    db_results: List[Dict[str, Any]]
-    all_db_results: Dict[str, List[Dict[str, Any]]]
-    table_to_db_mapping: Dict[str, str]
-    table_to_real_db_mapping: Dict[str, str]
-    response_prompt: str
-    messages: List[BaseMessage]
-    validation_error: str
-    retry_count: int
-    execution_error: str
-    sql_generation_error: str
-    disable_sql_blocking: bool
-    disable_databases: bool
-    query_type: str
-    database_name: str
-    previous_sql_queries: List[str]
-    registry_url: Optional[str]
-    discovered_services: List[Dict[str, Any]]
-    mcp_service_results: List[Dict[str, Any]]
-    use_mcp_results: bool
-    mcp_tool_calls: List[Dict[str, Any]]
-    mcp_capable_response: str
-    return_mcp_results_to_llm: bool
-    is_final_answer: bool  # Flag to indicate if the LLM response is a final answer
+    schema_dump: Annotated[Dict[str, Any], lambda x, y: y or x]    # Use new if available
+    sql_query: Annotated[str, lambda x, y: y]
+    db_results: Annotated[List[Dict[str, Any]], operator.add]
+    all_db_results: Annotated[Dict[str, List[Dict[str, Any]]], lambda x, y: y or x]  # Use new if available
+    table_to_db_mapping: Annotated[Dict[str, str], lambda x, y: y or x]  # Use new if available
+    table_to_real_db_mapping: Annotated[Dict[str, str], lambda x, y: y or x]  # Use new if available
+    response_prompt: Annotated[str, lambda x, y: y]
+    messages: Annotated[List[BaseMessage], operator.add]  # Append messages
+    validation_error: Annotated[str, lambda x, y: y]
+    retry_count: Annotated[int, operator.add]
+    execution_error: Annotated[str, lambda x, y: y]
+    sql_generation_error: Annotated[str, lambda x, y: y]
+    disable_sql_blocking: Annotated[bool, lambda x, y: y]
+    disable_databases: Annotated[bool, lambda x, y: y]
+    query_type: Annotated[str, lambda x, y: y]
+    database_name: Annotated[str, lambda x, y: y]
+    previous_sql_queries: Annotated[List[str], operator.add]
+    registry_url: Annotated[Optional[str], lambda x, y: y]
+    discovered_services: Annotated[List[Dict[str, Any]], operator.add]
+    mcp_service_results: Annotated[List[Dict[str, Any]], operator.add]
+    use_mcp_results: Annotated[bool, lambda x, y: y]
+    mcp_tool_calls: Annotated[List[Dict[str, Any]], operator.add]
+    mcp_capable_response: Annotated[str, lambda x, y: y]
+    return_mcp_results_to_llm: Annotated[bool, lambda x, y: y]
+    is_final_answer: Annotated[bool, lambda x, y: y]  # Use new value
     # RAG-specific fields
-    rag_documents: List[Dict[str, Any]]
-    rag_context: str
-    use_rag_flag: bool
-    rag_relevance_score: float
-    rag_query: str
-    rag_response: str
+    rag_documents: Annotated[List[Dict[str, Any]], operator.add]
+    rag_context: Annotated[str, lambda x, y: y]
+    use_rag_flag: Annotated[bool, lambda x, y: y]
+    rag_relevance_score: Annotated[float, lambda x, y: y]
+    rag_query: Annotated[str, lambda x, y: y]
+    rag_response: Annotated[str, lambda x, y: y]
+    # Raw results before normalization
+    raw_mcp_results: Annotated[List[Dict[str, Any]], operator.add]
 
 
 def initialize_agent_state_node(state: AgentState) -> AgentState:
@@ -81,6 +87,10 @@ def initialize_agent_state_node(state: AgentState) -> AgentState:
     """
     start_time = time.time()
     logger.info(f"[NODE START] initialize_agent_state_node - Initializing state for request: {state['user_request']}")
+
+    # Additional logging to trace user_request
+    user_req = state.get("user_request", "")
+    logger.info(f"[INITIALIZE_STATE_NODE] Received user_request: '{user_req}' (length: {len(user_req) if user_req else 0})")
 
     elapsed_time = time.time() - start_time
     logger.info(f"[NODE SUCCESS] initialize_agent_state_node - Initialized state in {elapsed_time:.2f}s")
@@ -129,7 +139,8 @@ def initialize_agent_state_node(state: AgentState) -> AgentState:
         "use_rag_flag": state.get("use_rag_flag", False),
         "rag_relevance_score": state.get("rag_relevance_score", 0.0),
         "rag_query": state.get("rag_query", ""),
-        "rag_response": state.get("rag_response", "")
+        "rag_response": state.get("rag_response", ""),
+        "raw_mcp_results": state.get("raw_mcp_results", [])
     }
 
 
@@ -210,6 +221,10 @@ def analyze_request_node(state: AgentState) -> AgentState:
     start_time = time.time()
     logger.info(f"[NODE START] analyze_request_node - Analyzing request: {state['user_request']}")
 
+    # Additional logging to trace user_request
+    user_req = state.get("user_request", "")
+    logger.info(f"[ANALYZE_REQUEST_NODE] Received user_request: '{user_req}' (length: {len(user_req) if user_req else 0})")
+
     try:
         # Import required components
         from models.dedicated_mcp_model import DedicatedMCPModel
@@ -224,6 +239,9 @@ def analyze_request_node(state: AgentState) -> AgentState:
         rag_enabled = str_to_bool(os.getenv("RAG_ENABLED", "true"))
 
         mcp_model = DedicatedMCPModel()
+
+        # Log the user_request being passed to the model
+        logger.info(f"[ANALYZE_REQUEST_NODE] Passing user_request to model: '{state['user_request']}' (length: {len(state['user_request']) if state['user_request'] else 0})")
 
         # Analyze the request to determine what MCP queries might be needed
         analysis_result = mcp_model.analyze_request_for_mcp_services(
@@ -409,23 +427,34 @@ def execute_mcp_queries_node(state: AgentState) -> AgentState:
             first_query = filtered_queries[0]
             if isinstance(first_query, dict) and ('service_id' in first_query or 'service' in first_query):
                 # These appear to be tool calls, so use the execute_mcp_tool_calls method
-                results = mcp_model.execute_mcp_tool_calls(filtered_queries, state["mcp_servers"])
+                raw_results = mcp_model.execute_mcp_tool_calls(filtered_queries, state["mcp_servers"])
             else:
                 # These appear to be regular queries, so execute them individually
-                results = []
+                raw_results = []
                 for query in filtered_queries:
                     result = mcp_model.execute_single_query(query, state["mcp_servers"])
-                    results.append(result)
+                    raw_results.append(result)
         else:
             # No queries to execute after filtering
-            results = []
+            raw_results = []
+
+        # Store raw results before normalization
+        # This preserves the original structure needed for processing search results
+        raw_mcp_results = raw_results
+
+        # Normalize the results to a unified format (for non-search results)
+        from utils.result_normalizer import normalize_mcp_results_list
+        normalized_results = normalize_mcp_results_list(raw_results)
 
         elapsed_time = time.time() - start_time
-        logger.info(f"[NODE SUCCESS] execute_mcp_queries_node - Executed {len(results)} queries successfully in {elapsed_time:.2f}s")
+        logger.info(f"[NODE SUCCESS] execute_mcp_queries_node - Executed {len(raw_results)} queries successfully in {elapsed_time:.2f}s")
+        logger.info(f"[NODE INFO] execute_mcp_queries_node - Normalized {len(raw_results)} results to unified format")
+        logger.info(f"[NODE INFO] execute_mcp_queries_node - Stored {len(raw_results)} raw results for potential search processing")
 
         return {
             **state,
-            "mcp_results": results,
+            "mcp_results": normalized_results,
+            "raw_mcp_results": raw_mcp_results,
             "error_message": None
         }
     except Exception as e:
@@ -436,6 +465,7 @@ def execute_mcp_queries_node(state: AgentState) -> AgentState:
         return {
             **state,
             "mcp_results": [],
+            "raw_mcp_results": [],
             "error_message": error_msg
         }
 
@@ -932,6 +962,26 @@ def generate_failure_response_node(state: AgentState) -> AgentState:
     logger.info(f"[NODE START] generate_failure_response_node - Generating failure response after {state['max_iterations']} iterations")
 
     try:
+        # Check if response generation is disabled
+        from config.settings import str_to_bool
+        disable_response_generation = str_to_bool(os.getenv("DISABLE_RESPONSE_GENERATION", "false"))
+
+        if disable_response_generation:
+            logger.info("[NODE INFO] generate_failure_response_node - Response generation is disabled, returning original request with failure notice")
+            # Return the original request with a failure notice without using the LLM
+            final_answer = f"Original request: {state['user_request']}\n\nUnable to find sufficient information to answer your request after multiple attempts."
+
+            failure_reason = f"Unable to adequately answer the request after {state['max_iterations']} iterations."
+
+            elapsed_time = time.time() - start_time
+            logger.info(f"[NODE SUCCESS] generate_failure_response_node - Returned failure notice directly (response generation disabled)")
+
+            return {
+                **state,
+                "final_answer": final_answer,
+                "failure_reason": failure_reason
+            }
+
         # Import required components
         from models.response_generator import ResponseGenerator
         response_generator = ResponseGenerator()
@@ -1050,6 +1100,10 @@ def retrieve_documents_node(state: AgentState) -> AgentState:
     user_request = state["user_request"]
     logger.info(f"[NODE START] retrieve_documents_node - Retrieving documents for request: {user_request[:100]}...")
 
+    # Check if we already have documents from the search processing node
+    # If we do, we can use them as a base and potentially add more from RAG
+    existing_documents = state.get("rag_documents", [])
+
     try:
         # Import RAG components
         from rag_component.config import RAG_MODE
@@ -1089,10 +1143,11 @@ def retrieve_documents_node(state: AgentState) -> AgentState:
 
             if not rag_mcp_services:
                 logger.warning("RAG MCP mode selected but no RAG MCP services available")
+                # Return existing documents if any, otherwise empty
                 return {
                     **state,
-                    "rag_documents": [],
-                    "rag_relevance_score": 0.0
+                    "rag_documents": existing_documents,
+                    "rag_relevance_score": sum(doc.get("relevance_score", 0) for doc in existing_documents) / len(existing_documents) if existing_documents else 0.0
                 }
 
             # Use the first available RAG MCP service
@@ -1132,18 +1187,25 @@ def retrieve_documents_node(state: AgentState) -> AgentState:
             # Retrieve documents based on the user request
             retrieved_docs = rag_orchestrator.retrieve_documents(rag_query)
 
+        # Combine existing documents (from search processing) with newly retrieved RAG documents
+        combined_documents = existing_documents + retrieved_docs
+
         # Calculate average relevance score
-        if retrieved_docs:
-            avg_score = sum(doc.get("score", 0) for doc in retrieved_docs) / len(retrieved_docs)
+        if combined_documents:
+            avg_score = sum(doc.get("score", doc.get("relevance_score", 0)) for doc in combined_documents) / len(combined_documents)
         else:
             avg_score = 0.0
 
+        # Normalize combined documents to unified format
+        from utils.result_normalizer import normalize_rag_documents
+        normalized_documents = normalize_rag_documents(combined_documents)
+
         elapsed_time = time.time() - start_time
-        logger.info(f"[NODE SUCCESS] retrieve_documents_node - Retrieved {len(retrieved_docs)} documents in {elapsed_time:.2f}s with avg relevance score: {avg_score:.3f}")
+        logger.info(f"[NODE SUCCESS] retrieve_documents_node - Retrieved {len(retrieved_docs)} new RAG documents, combined total: {len(combined_documents)} in {elapsed_time:.2f}s with avg relevance score: {avg_score:.3f}")
 
         return {
             **state,
-            "rag_documents": retrieved_docs,
+            "rag_documents": normalized_documents,  # Use normalized documents to ensure consistent format
             "rag_relevance_score": avg_score,
             "rag_query": rag_query  # Update the state with the extracted query
         }
@@ -1151,11 +1213,11 @@ def retrieve_documents_node(state: AgentState) -> AgentState:
         elapsed_time = time.time() - start_time
         logger.error(f"[NODE ERROR] retrieve_documents_node - Error retrieving documents after {elapsed_time:.2f}s: {str(e)}")
 
-        # Return empty documents list on error
+        # Return existing documents if any, otherwise empty
         return {
             **state,
-            "rag_documents": [],
-            "rag_relevance_score": 0.0,
+            "rag_documents": existing_documents,
+            "rag_relevance_score": sum(doc.get("relevance_score", 0) for doc in existing_documents) / len(existing_documents) if existing_documents else 0.0,
             "rag_query": rag_query  # Still update the state with the query even on error
         }
 
@@ -1172,11 +1234,55 @@ def augment_context_node(state: AgentState) -> AgentState:
         user_request = state["user_request"]
         documents = state["rag_documents"]
 
-        # Format the documents into a readable context
+        # Format the documents into a readable context using the unified format
         doc_context = "\n\nRetrieved Documents:\n"
         for i, doc in enumerate(documents):
             content = doc.get("content", doc.get("page_content", ""))
-            source = doc.get("source", "Unknown source")
+
+            # Extract source information with priority hierarchy
+            # Prioritize specific sources over generic ones like "RAG Document", "Search Result", etc.
+            source = "Unknown source"
+
+            # 1. First, try to get specific source from metadata fields (prioritize over generic top-level source)
+            if doc.get("metadata"):
+                metadata = doc["metadata"]
+                # Check various possible source fields in metadata that might have specific information
+                for field_name in ["source", "file_name", "filename", "title", "url", "path", "file_path", "stored_file_path"]:
+                    if metadata.get(field_name) and metadata[field_name].strip() != "":
+                        # Only use this if it's not a generic placeholder
+                        specific_source = metadata[field_name]
+                        if specific_source not in ["RAG Document", "Search Result", "Search", "Web Search", "Document", "Result", "Generic Document"]:
+                            source = specific_source
+                            break
+                # If still unknown and there's a source in metadata with specific naming convention
+                if source == "Unknown source" and metadata.get("source"):
+                    specific_source = metadata["source"]
+                    if specific_source not in ["RAG Document", "Search Result", "Search", "Web Search", "Document", "Result", "Generic Document"]:
+                        source = specific_source
+
+            # 2. If no specific source found in metadata, then try the main document field
+            if source == "Unknown source" or source in ["RAG Document", "Search Result", "Search", "Web Search", "Document", "Result", "Generic Document"]:
+                if doc.get("source") and doc["source"].strip() != "":
+                    top_level_source = doc["source"]
+                    # Only use top-level source if it's not generic
+                    if top_level_source not in ["RAG Document", "Search Result", "Search", "Web Search", "Document", "Result", "Generic Document"]:
+                        source = top_level_source
+
+            # 3. If it's a processed search result, try to extract source from URL or title
+            if source == "Unknown source" or source in ["RAG Document", "Search Result", "Search", "Web Search", "Document", "Result", "Generic Document"]:
+                if doc.get("url"):
+                    import urllib.parse
+                    parsed_url = urllib.parse.urlparse(doc["url"])
+                    if parsed_url.netloc:
+                        source = parsed_url.netloc
+                    else:
+                        source = doc["url"][:50] + "..."  # Use first 50 chars of URL as source
+                elif doc.get("title"):
+                    title_source = doc["title"]
+                    # Only use title if it's not generic
+                    if title_source not in ["RAG Document", "Search Result", "Search", "Web Search", "Document", "Result", "Generic Document"]:
+                        source = title_source
+
             doc_context += f"\nDocument {i+1} ({source}):\n{content}\n"
 
         # Create augmented context
@@ -1198,6 +1304,394 @@ def augment_context_node(state: AgentState) -> AgentState:
             **state,
             "rag_context": state["user_request"]
         }
+
+
+def process_search_results_with_download_node(state: AgentState) -> AgentState:
+    """
+    Node to process search results by downloading content from each result using MCP download tool,
+    summarizing the content taking into account the original user request, and then reranking
+    the summaries to return the top 5 results.
+    """
+    start_time = time.time()
+
+    # Get raw results to find search results with their original structure
+    raw_mcp_results = state.get("raw_mcp_results", [])
+    search_results = []
+
+    # Find search results in raw_mcp_results
+    for result in raw_mcp_results:
+        # Check if this result is from a search service
+        service_id = result.get("service_id", "").lower()
+        service_type = result.get("service_type", "").lower()
+        action = result.get("action", "").lower()
+
+        # Check if this result is from a search service using multiple identification methods
+        is_search_result = (
+            "search" in service_id or
+            "web" in service_id or
+            "mcp_search" in service_id or
+            "brave" in service_id or
+            "search" in service_type or
+            "web" in service_type or
+            "mcp_search" in service_type or
+            "brave" in service_type or
+            "search" in action or
+            "web_search" in action
+        )
+
+        if is_search_result:
+            # Handle the nested structure from the search service: result.result.results
+            search_data = None
+
+            if "result" in result and isinstance(result["result"], dict):
+                nested_result = result["result"]
+
+                if "result" in nested_result and isinstance(nested_result["result"], dict):
+                    # Structure: {"result": {"result": {"results": [...]}}} - This is the most likely for search
+                    search_data = nested_result["result"]
+                    if "results" in search_data and isinstance(search_data["results"], list):
+                        search_results = search_data["results"]
+                        logger.info(f"[NODE INFO] process_search_results_with_download_node - Found {len(search_results)} search results in nested raw result structure (result.result.results)")
+                        break
+                elif "results" in nested_result:
+                    # Structure: {"result": {"results": [...]}}
+                    search_data = nested_result
+                    search_results = search_data["results"]
+                    logger.info(f"[NODE INFO] process_search_results_with_download_node - Found {len(search_results)} search results in nested raw result structure (result.results)")
+                    break
+                elif "data" in nested_result:
+                    # Alternative structure: {"result": {"data": [...]}}
+                    search_data = nested_result
+                    search_results = search_data["data"]
+                    logger.info(f"[NODE INFO] process_search_results_with_download_node - Found {len(search_results)} search results in nested raw result data field")
+                    break
+                else:
+                    # Direct structure: {"result": [...]}
+                    search_data = nested_result
+                    if isinstance(search_data, list):
+                        search_results = search_data
+                        logger.info(f"[NODE INFO] process_search_results_with_download_node - Found {len(search_results)} search results in nested raw result list")
+                        break
+            elif "results" in result:
+                # Direct structure: {"results": [...]}
+                search_data = result
+                search_results = search_data["results"]
+                logger.info(f"[NODE INFO] process_search_results_with_download_node - Found {len(search_results)} search results in raw result structure")
+                break
+            elif "data" in result:
+                # Direct structure: {"data": [...]}
+                search_data = result
+                search_results = search_data["data"]
+                logger.info(f"[NODE INFO] process_search_results_with_download_node - Found {len(search_results)} search results in raw result data field")
+                break
+
+    logger.info(f"[NODE START] process_search_results_with_download_node - Processing {len(search_results)} search results with download and summarization")
+
+    if not search_results:
+        logger.info("[NODE INFO] process_search_results_with_download_node - No search results to process")
+        elapsed_time = time.time() - start_time
+        logger.info(f"[NODE SUCCESS] process_search_results_with_download_node - Completed without processing in {elapsed_time:.2f}s")
+        return state
+
+    try:
+        # Import required components
+        from models.dedicated_mcp_model import DedicatedMCPModel
+        from rag_component.config import RERANK_TOP_K_RESULTS
+        mcp_model = DedicatedMCPModel()
+
+        # Get available services
+        discovered_services = state.get("discovered_services", [])
+        download_services = [s for s in discovered_services if s.get("type") == "mcp_download"]
+
+        if not download_services:
+            logger.warning("[NODE WARNING] process_search_results_with_download_node - No download MCP services available")
+            elapsed_time = time.time() - start_time
+            logger.info(f"[NODE SUCCESS] process_search_results_with_download_node - Completed without download in {elapsed_time:.2f}s")
+            return state
+
+        download_service = download_services[0]
+
+        # Process each search result
+        processed_summaries = []
+        user_request = state.get("user_request", "")
+
+        for idx, result in enumerate(search_results):
+            url = result.get("url", "")
+            title = result.get("title", "")
+            description = result.get("description", "")
+
+            if not url:
+                logger.warning(f"[NODE WARNING] process_search_results_with_download_node - No URL found for result {idx}, skipping")
+                continue
+
+            logger.info(f"[NODE INFO] process_search_results_with_download_node - Processing result {idx+1}/{len(search_results)}: {title}")
+
+            # Download content using MCP download service
+            download_params = {"url": url}
+            download_result = mcp_model._call_mcp_service(download_service, "download", download_params)
+
+            if download_result.get("status") == "success":
+                # Get the downloaded content
+                downloaded_content = ""
+                file_path = download_result.get("result", {}).get("file_path", "")
+
+                if file_path and os.path.exists(file_path):
+                    try:
+                        with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+                            downloaded_content = f.read()
+                    except Exception as e:
+                        logger.warning(f"[NODE WARNING] process_search_results_with_download_node - Error reading downloaded file {file_path}: {str(e)}")
+
+                        # If we can't read the file, try to get content from the description
+                        downloaded_content = description
+
+                # Check if response generation is disabled
+                from config.settings import str_to_bool
+                disable_response_generation = str_to_bool(os.getenv("DISABLE_RESPONSE_GENERATION", "false"))
+
+                if disable_response_generation:
+                    # If response generation is disabled, use the downloaded content or description directly
+                    summary = downloaded_content[:4000] if downloaded_content else description
+
+                    # Add the summary with metadata to our processed results
+                    processed_summaries.append({
+                        "title": title,
+                        "url": url,
+                        "summary": summary,
+                        "original_description": description,
+                    })
+
+                    logger.info(f"[NODE INFO] process_search_results_with_download_node - Used raw content for {title} (response generation disabled)")
+                else:
+                    # Summarize the content in relation to the original user request
+                    from models.response_generator import ResponseGenerator
+                    response_generator = ResponseGenerator()
+
+                    # Create a prompt to summarize the content in the context of the user's request
+                    summary_prompt = f"""
+                    Original user request: {user_request}
+
+                    Content from webpage titled "{title}":
+                    {downloaded_content[:4000]}  # Limit content to avoid exceeding token limits
+
+                    Please provide a concise summary of this webpage content that is relevant to the user's original request.
+                    Focus on information that directly addresses the user's question or need.
+                    """
+
+                    try:
+                        summary = response_generator.generate_natural_language_response(summary_prompt)
+
+                        # Add the summary with metadata to our processed results
+                        processed_summaries.append({
+                            "title": title,
+                            "url": url,
+                            "summary": summary,
+                            "original_description": description,
+                            "relevance_score": 0.0  # Will be calculated during reranking
+                        })
+
+                        logger.info(f"[NODE INFO] process_search_results_with_download_node - Successfully summarized content for {title}")
+
+                    except Exception as e:
+                        logger.warning(f"[NODE WARNING] process_search_results_with_download_node - Error generating summary for {title}: {str(e)}")
+                        # Add the result with the original description as fallback
+                        processed_summaries.append({
+                            "title": title,
+                            "url": url,
+                            "summary": description,
+                            "original_description": description,
+                            "relevance_score": 0.0
+                        })
+            else:
+                logger.warning(f"[NODE WARNING] process_search_results_with_download_node - Failed to download content from {url}")
+                # Add the result with the original description as fallback
+                processed_summaries.append({
+                    "title": title,
+                    "url": url,
+                    "summary": description,
+                    "original_description": description,
+                    "relevance_score": 0.0
+                })
+
+        # At this point, we have processed summaries, now we need to rerank them
+        # Use the RAG component's reranker to properly rerank the results based on relevance to the user query
+
+        # Prepare documents in the format expected by the reranker
+        from rag_component.config import RERANKER_ENABLED
+        if RERANKER_ENABLED:
+            try:
+                # Import the RAG orchestrator to use its reranking functionality
+                from rag_component.main import RAGOrchestrator
+                from models.response_generator import ResponseGenerator
+
+                # Initialize RAG orchestrator with an LLM
+                response_gen = ResponseGenerator()
+                llm = response_gen.llm
+                rag_orchestrator = RAGOrchestrator(llm=llm)
+
+                # Prepare documents in the format expected by the reranker
+                rerank_documents = []
+                for summary_obj in processed_summaries:
+                    rerank_documents.append({
+                        "content": summary_obj['summary'],
+                        "title": summary_obj['title'],
+                        "url": summary_obj['url'],
+                        "metadata": {"original_description": summary_obj['original_description']},
+                        "score": 0.0  # Placeholder, will be replaced by reranker
+                    })
+
+                # Use the RAG component's reranker
+                from rag_component.reranker import Reranker
+                reranker = Reranker()
+
+                # Rerank the documents based on the user query
+                reranked_docs = reranker.rerank_documents(
+                    query=user_request,
+                    documents=rerank_documents,
+                    top_k=len(rerank_documents)  # Rerank all, then take top K
+                )
+
+                # Update the processed summaries with the reranked results
+                reranked_summaries = []
+                for doc in reranked_docs:
+                    # Find the corresponding summary object and update its score
+                    for summary_obj in processed_summaries:
+                        if summary_obj['summary'] == doc['content']:
+                            summary_obj['relevance_score'] = doc.get('score', 0.0)
+                            reranked_summaries.append(summary_obj)
+                            break
+                processed_summaries = reranked_summaries
+
+            except Exception as e:
+                logger.warning(f"[NODE WARNING] process_search_results_with_download_node - Error using reranker: {str(e)}, falling back to LLM-based scoring")
+                # Fall back to the original LLM-based scoring method
+                from models.response_generator import ResponseGenerator
+                response_generator = ResponseGenerator()
+
+                # Create relevance scores for each summary based on how well it addresses the user request
+                for summary_obj in processed_summaries:
+                    relevance_prompt = f"""
+                    Original user request: {user_request}
+
+                    Summary content: {summary_obj['summary']}
+
+                    On a scale of 0.0 to 1.0, how relevant is this summary to the user's original request?
+                    0.0 means completely irrelevant, 1.0 means highly relevant.
+                    Please respond with only the numerical score.
+                    """
+
+                    try:
+                        relevance_response = response_generator.generate_natural_language_response(relevance_prompt)
+                        # Extract the numerical score from the response
+                        import re
+                        score_match = re.search(r'(\d+\.?\d*)', relevance_response)
+                        if score_match:
+                            score = float(score_match.group(1))
+                            summary_obj['relevance_score'] = min(1.0, max(0.0, score))  # Clamp between 0 and 1
+                        else:
+                            summary_obj['relevance_score'] = 0.5  # Default score if parsing fails
+                    except Exception as e:
+                        logger.warning(f"[NODE WARNING] process_search_results_with_download_node - Error calculating relevance score: {str(e)}")
+                        summary_obj['relevance_score'] = 0.5  # Default score on error
+        else:
+            # If reranker is not enabled, use the original LLM-based scoring method
+            from models.response_generator import ResponseGenerator
+            response_generator = ResponseGenerator()
+
+            # Create relevance scores for each summary based on how well it addresses the user request
+            for summary_obj in processed_summaries:
+                relevance_prompt = f"""
+                Original user request: {user_request}
+
+                Summary content: {summary_obj['summary']}
+
+                On a scale of 0.0 to 1.0, how relevant is this summary to the user's original request?
+                0.0 means completely irrelevant, 1.0 means highly relevant.
+                Please respond with only the numerical score.
+                """
+
+                try:
+                    relevance_response = response_generator.generate_natural_language_response(relevance_prompt)
+                    # Extract the numerical score from the response
+                    import re
+                    score_match = re.search(r'(\d+\.?\d*)', relevance_response)
+                    if score_match:
+                        score = float(score_match.group(1))
+                        summary_obj['relevance_score'] = min(1.0, max(0.0, score))  # Clamp between 0 and 1
+                    else:
+                        summary_obj['relevance_score'] = 0.5  # Default score if parsing fails
+                except Exception as e:
+                    logger.warning(f"[NODE WARNING] process_search_results_with_download_node - Error calculating relevance score: {str(e)}")
+                    summary_obj['relevance_score'] = 0.5  # Default score on error
+
+        # Sort by relevance score in descending order and take top K
+        sorted_summaries = sorted(processed_summaries, key=lambda x: x['relevance_score'], reverse=True)
+        top_summaries = sorted_summaries[:RERANK_TOP_K_RESULTS]
+
+        logger.info(f"[NODE SUCCESS] process_search_results_with_download_node - Processed and reranked {len(processed_summaries)} results to top {len(top_summaries)}")
+
+        elapsed_time = time.time() - start_time
+        logger.info(f"[NODE SUCCESS] process_search_results_with_download_node - Completed processing in {elapsed_time:.2f}s")
+
+        # Normalize the processed search results to unified format
+        # This is where we normalize the enhanced results after download and summarization
+        from utils.result_normalizer import normalize_rag_documents  # Using the same function for processed search results
+        normalized_summaries = []
+        for summary_obj in top_summaries:
+            # Preserve source information from the original search result if available
+            # If no source is already set, try to extract meaningful source from available fields
+            if 'source' not in summary_obj or summary_obj.get('source') == 'Search':
+                # Try to get a more specific source from available fields
+                if summary_obj.get('url'):
+                    # Extract domain from URL as source
+                    import urllib.parse
+                    parsed_url = urllib.parse.urlparse(summary_obj['url'])
+                    if parsed_url.netloc:
+                        summary_obj['source'] = parsed_url.netloc
+                    else:
+                        # Use the URL itself if domain extraction fails
+                        summary_obj['source'] = summary_obj['url'][:50] + "..."  # First 50 chars of URL
+                elif summary_obj.get('title'):
+                    # Use the title as source if available
+                    summary_obj['source'] = summary_obj['title']
+                else:
+                    # Default to 'Search Result' if no specific source can be determined
+                    summary_obj['source'] = 'Search Result'
+            normalized_summaries.append(summary_obj)
+
+        # Normalize to unified format
+        from utils.result_normalizer import normalize_mcp_results_list
+        # Convert our processed summaries to the format expected by the normalizer
+        formatted_results = []
+        for summary_obj in normalized_summaries:
+            formatted_results.append({
+                "content": summary_obj['summary'],
+                "title": summary_obj['title'],
+                "url": summary_obj['url'],
+                "source": summary_obj.get('source', 'Search Result'),
+                "source_type": "enhanced_search_result",
+                "relevance_score": summary_obj.get('relevance_score', 0.0),
+                "metadata": {
+                    "original_description": summary_obj.get('original_description', ''),
+                    "processed_by": "download_and_summarization"
+                }
+            })
+
+        # Now normalize the enhanced results to the unified format
+        normalized_results = normalize_mcp_results_list(formatted_results)
+
+        # Update the state with the processed and reranked results
+        return {
+            **state,
+            "rag_documents": normalized_results,
+            "rag_relevance_score": sum(doc.get("relevance_score", 0) for doc in normalized_results) / len(normalized_results) if normalized_results else 0.0
+        }
+
+    except Exception as e:
+        elapsed_time = time.time() - start_time
+        logger.error(f"[NODE ERROR] process_search_results_with_download_node - Error processing search results after {elapsed_time:.2f}s: {str(e)}")
+        # Return original state on error
+        return state
 
 
 def rerank_documents_node(state: AgentState) -> AgentState:
@@ -1294,6 +1788,38 @@ def synthesize_results_node(state: AgentState) -> AgentState:
     logger.info(f"[NODE START] synthesize_results_node - Synthesizing {len(state['mcp_results'])} results")
 
     try:
+        # Check if response generation is disabled
+        from config.settings import str_to_bool
+        disable_response_generation = str_to_bool(os.getenv("DISABLE_RESPONSE_GENERATION", "false"))
+
+        if disable_response_generation:
+            logger.info("[NODE INFO] synthesize_results_node - Response generation is disabled, returning formatted results")
+            # Return formatted results without using the LLM for synthesis
+            if not state["mcp_results"]:
+                synthesized_result = "No results were obtained from the MCP services."
+            else:
+                # Format the results without LLM synthesis using the unified format
+                formatted_results = []
+                for idx, result in enumerate(state["mcp_results"]):
+                    # Use the unified format fields
+                    source = result.get("source", "Unknown source")
+                    content = result.get("content", str(result))  # Fallback to string representation
+                    title = result.get("title", f"Result {idx + 1}")
+
+                    # Format the result with proper source information
+                    formatted_result = f"Document {idx + 1} ({source}):\n{content}\n"
+                    formatted_results.append(formatted_result)
+
+                synthesized_result = "\n".join(formatted_results)
+
+            elapsed_time = time.time() - start_time
+            logger.info(f"[NODE SUCCESS] synthesize_results_node - Returned formatted results (response generation disabled)")
+
+            return {
+                **state,
+                "synthesized_result": synthesized_result
+            }
+
         # Import required components
         from models.response_generator import ResponseGenerator
         response_generator = ResponseGenerator()
@@ -1310,14 +1836,16 @@ def synthesize_results_node(state: AgentState) -> AgentState:
                 "synthesized_result": "No results were obtained from the MCP services."
             }
 
-        # Prepare the results for synthesis
+        # Prepare the results for synthesis using unified format
         formatted_results = []
         for idx, result in enumerate(state["mcp_results"]):
-            formatted_result = f"Result {idx + 1}: "
-            if result.get("status") == "success":
-                formatted_result += f"Success - {result.get('data', str(result))}"
-            else:
-                formatted_result += f"Error - {result.get('error', str(result))}"
+            # Use the unified format fields
+            source = result.get("source", "Unknown source")
+            content = result.get("content", str(result))  # Fallback to string representation
+            title = result.get("title", f"Result {idx + 1}")
+
+            # Format the result with proper source information
+            formatted_result = f"Document {idx + 1} ({source}):\n{content}\n"
             formatted_results.append(formatted_result)
 
         # Combine all results into a single string
@@ -1327,7 +1855,7 @@ def synthesize_results_node(state: AgentState) -> AgentState:
         synthesis_prompt = f"""
         Original request: {state["user_request"]}
 
-        Results from MCP services:
+        Retrieved Documents:
         {combined_results}
 
         Please synthesize these results into a coherent response that addresses the original request.
@@ -1367,6 +1895,23 @@ def can_answer_node(state: AgentState) -> AgentState:
     logger.info(f"[NODE START] can_answer_node - Evaluating if we can answer the request")
 
     try:
+        # Check if response generation is disabled
+        from config.settings import str_to_bool
+        disable_response_generation = str_to_bool(os.getenv("DISABLE_RESPONSE_GENERATION", "false"))
+
+        if disable_response_generation:
+            logger.info("[NODE INFO] can_answer_node - Response generation is disabled, assuming we can answer with available results")
+            # If response generation is disabled, we assume we can answer with whatever results we have
+            can_answer = bool(state.get("synthesized_result", "").strip())
+
+            elapsed_time = time.time() - start_time
+            logger.info(f"[NODE SUCCESS] can_answer_node - Can answer (response generation disabled): {can_answer} in {elapsed_time:.2f}s")
+
+            return {
+                **state,
+                "can_answer": can_answer
+            }
+
         # Import required components
         from models.dedicated_mcp_model import DedicatedMCPModel
         mcp_model = DedicatedMCPModel()
@@ -1404,17 +1949,81 @@ def generate_final_answer_node(state: AgentState) -> AgentState:
     logger.info(f"[NODE START] generate_final_answer_node - Generating final answer")
 
     try:
+        # Check if response generation is disabled
+        from config.settings import str_to_bool
+        disable_response_generation = str_to_bool(os.getenv("DISABLE_RESPONSE_GENERATION", "false"))
+
+        if disable_response_generation:
+            logger.info("[NODE INFO] generate_final_answer_node - Response generation is disabled, checking for existing responses")
+
+            # Check if there's already a specific response (like from RAG) that should be used
+            existing_final_answer = state.get("final_answer", "")
+            rag_response = state.get("rag_response", "")
+            synthesized_result = state.get("synthesized_result", "")
+
+            # If there's an existing final answer, use it
+            if existing_final_answer and existing_final_answer.strip() != "":
+                logger.info("[NODE INFO] generate_final_answer_node - Using existing final answer from previous node")
+                final_answer = existing_final_answer
+            # If there's a RAG response, use it
+            elif rag_response and rag_response.strip() != "":
+                logger.info("[NODE INFO] generate_final_answer_node - Using RAG response as final answer")
+                final_answer = rag_response
+            # If there's a synthesized result, use it
+            elif synthesized_result and synthesized_result.strip() != "":
+                logger.info("[NODE INFO] generate_final_answer_node - Using synthesized result as final answer")
+                final_answer = synthesized_result
+            # Otherwise, compose an answer from available information
+            else:
+                logger.info("[NODE INFO] generate_final_answer_node - Composing answer from available information")
+                user_request = state.get("user_request", "")
+                mcp_results = state.get("mcp_results", [])
+                rag_documents = state.get("rag_documents", [])
+
+                answer_parts = []
+                if user_request:
+                    answer_parts.append(f"Original request: {user_request}")
+
+                if mcp_results:
+                    mcp_info = f"MCP service results: {len(mcp_results)} services executed"
+                    answer_parts.append(mcp_info)
+
+                if rag_documents:
+                    rag_info = f"RAG documents retrieved: {len(rag_documents)} documents"
+                    answer_parts.append(rag_info)
+
+                if answer_parts:
+                    final_answer = "\n".join(answer_parts)
+                else:
+                    final_answer = "No results were obtained from the MCP services."
+
+            elapsed_time = time.time() - start_time
+            logger.info(f"[NODE SUCCESS] generate_final_answer_node - Returned answer directly (response generation disabled)")
+
+            return {
+                **state,
+                "final_answer": final_answer
+            }
+
         # Import required components
         from models.response_generator import ResponseGenerator
         response_generator = ResponseGenerator()
 
         # Check if a final answer was already generated (e.g., by RAG response node)
         existing_final_answer = state.get("final_answer", "")
+        rag_response = state.get("rag_response", "")
+        synthesized_result = state.get("synthesized_result", "")
 
-        # If there's already a final answer (like from RAG), use it directly
-        if existing_final_answer and existing_final_answer != "":
+        # If there's already a specific response (like from RAG), use it
+        if existing_final_answer and existing_final_answer.strip() != "":
             logger.info(f"[NODE INFO] generate_final_answer_node - Using existing final answer from previous node")
             final_answer = existing_final_answer
+        elif rag_response and rag_response.strip() != "":
+            logger.info(f"[NODE INFO] generate_final_answer_node - Using RAG response as final answer")
+            final_answer = rag_response
+        elif synthesized_result and synthesized_result.strip() != "":
+            logger.info(f"[NODE INFO] generate_final_answer_node - Using synthesized result as final answer")
+            final_answer = synthesized_result
         else:
             # Generate the final response based on the synthesized results
             final_answer = response_generator.generate_natural_language_response(
@@ -1449,6 +2058,24 @@ def generate_final_answer_from_analysis_node(state: AgentState) -> AgentState:
     logger.info(f"[NODE START] generate_final_answer_from_analysis_node - Generating final answer from analysis with no MCP calls")
 
     try:
+        # Check if response generation is disabled
+        from config.settings import str_to_bool
+        disable_response_generation = str_to_bool(os.getenv("DISABLE_RESPONSE_GENERATION", "false"))
+
+        if disable_response_generation:
+            logger.info("[NODE INFO] generate_final_answer_from_analysis_node - Response generation is disabled, returning original request directly")
+            # Return the original request as the final answer without using the LLM
+            final_answer = state.get("user_request", "No user request provided.")
+
+            elapsed_time = time.time() - start_time
+            logger.info(f"[NODE SUCCESS] generate_final_answer_from_analysis_node - Returned original request directly (response generation disabled)")
+
+            return {
+                **state,
+                "final_answer": final_answer,
+                "can_answer": True  # Mark as able to answer since LLM indicated final answer
+            }
+
         # Import required components
         from models.response_generator import ResponseGenerator
         response_generator = ResponseGenerator()
@@ -1499,6 +2126,27 @@ def generate_failure_response_from_analysis_node(state: AgentState) -> AgentStat
     logger.info(f"[NODE START] generate_failure_response_from_analysis_node - Generating failure response from analysis with no MCP calls and is_final_answer=False")
 
     try:
+        # Check if response generation is disabled
+        from config.settings import str_to_bool
+        disable_response_generation = str_to_bool(os.getenv("DISABLE_RESPONSE_GENERATION", "false"))
+
+        if disable_response_generation:
+            logger.info("[NODE INFO] generate_failure_response_from_analysis_node - Response generation is disabled, returning original request with failure notice")
+            # Return the original request with a failure notice without using the LLM
+            final_answer = f"Original request: {state['user_request']}\n\nUnable to identify appropriate MCP services to answer this request."
+
+            failure_reason = "Unable to identify appropriate MCP services to answer the request, and LLM indicated this is not a final answer."
+
+            elapsed_time = time.time() - start_time
+            logger.info(f"[NODE SUCCESS] generate_failure_response_from_analysis_node - Returned failure notice directly (response generation disabled)")
+
+            return {
+                **state,
+                "final_answer": final_answer,
+                "failure_reason": failure_reason,
+                "can_answer": False
+            }
+
         # Import required components
         from models.response_generator import ResponseGenerator
         response_generator = ResponseGenerator()
@@ -1556,6 +2204,32 @@ def generate_rag_response_node(state: AgentState) -> AgentState:
     logger.info(f"[NODE START] generate_rag_response_node - Generating RAG response")
 
     try:
+        # Check if response generation is disabled
+        from config.settings import str_to_bool
+        disable_response_generation = str_to_bool(os.getenv("DISABLE_RESPONSE_GENERATION", "false"))
+
+        if disable_response_generation:
+            logger.info("[NODE INFO] generate_rag_response_node - Response generation is disabled, returning RAG context directly")
+            # Return the RAG context as the response without using the LLM
+            rag_context = state.get("rag_context", state["user_request"])
+
+            # Also incorporate any synthesized results from MCP execution if available
+            synthesized_result = state.get("synthesized_result", "")
+            if synthesized_result and synthesized_result.strip():
+                # Combine RAG context with synthesized MCP results
+                rag_response = f"{rag_context}\n\nAdditional information from MCP services:\n{synthesized_result}"
+            else:
+                rag_response = rag_context
+
+            elapsed_time = time.time() - start_time
+            logger.info(f"[NODE SUCCESS] generate_rag_response_node - Returned RAG context directly (response generation disabled)")
+
+            return {
+                **state,
+                "rag_response": rag_response,
+                "final_answer": rag_response  # Set as final answer since we're using RAG
+            }
+
         # Import required components
         from config.settings import RESPONSE_LLM_PROVIDER, RESPONSE_LLM_MODEL
         from models.response_generator import ResponseGenerator
@@ -1565,8 +2239,18 @@ def generate_rag_response_node(state: AgentState) -> AgentState:
 
         # Use the augmented context to generate a response
         rag_context = state.get("rag_context", state["user_request"])
+
+        # Also incorporate any synthesized results from MCP execution if available
+        synthesized_result = state.get("synthesized_result", "")
+        if synthesized_result and synthesized_result.strip():
+            # Combine RAG context with synthesized MCP results in the prompt
+            full_context = f"{rag_context}\n\nAdditional information from MCP services:\n{synthesized_result}"
+        else:
+            full_context = rag_context
+
+        # Generate response using the combined context
         rag_response = response_generator.generate_natural_language_response(
-            generated_prompt=rag_context
+            generated_prompt=full_context
         )
 
         elapsed_time = time.time() - start_time
@@ -1606,6 +2290,7 @@ def create_enhanced_agent_graph():
     workflow.add_node("analyze_request", analyze_request_node)
     workflow.add_node("check_mcp_applicability", check_mcp_applicability_node)
     workflow.add_node("retrieve_documents", retrieve_documents_node)
+    workflow.add_node("process_search_results_with_download", process_search_results_with_download_node)  # New node for processing search results with download and summarization
     workflow.add_node("rerank_documents", rerank_documents_node)  # New node for reranking documents
     workflow.add_node("augment_context", augment_context_node)
     workflow.add_node("generate_rag_response", generate_rag_response_node)
@@ -1618,7 +2303,6 @@ def create_enhanced_agent_graph():
     workflow.add_node("generate_failure_response", generate_failure_response_node)
     workflow.add_node("generate_final_answer_from_analysis", generate_final_answer_from_analysis_node)
     workflow.add_node("generate_failure_response_from_analysis", generate_failure_response_from_analysis_node)
-
     # Define conditional function for RAG vs MCP decision
     def should_use_rag(state: AgentState) -> Literal["use_rag", "use_mcp"]:
         """
@@ -1631,25 +2315,116 @@ def create_enhanced_agent_graph():
         # Check if any of the tool calls are for RAG
         has_rag_call = any('rag' in call.get('service_id', '').lower() for call in mcp_tool_calls)
 
+        # Check if there are non-RAG tool calls
+        non_rag_calls = [call for call in mcp_tool_calls if 'rag' not in call.get('service_id', '').lower()]
+
         # If databases are disabled, don't use RAG
         if disable_databases:
             logger.info("Databases are disabled, skipping RAG and proceeding with MCP services")
             return "use_mcp"
 
-        # If RAG was specifically requested in tool calls, use RAG
-        if has_rag_call:
-            logger.info("RAG service specifically requested, using RAG approach")
+        # If there are both RAG and non-RAG calls, we should execute MCP calls first
+        # Then potentially use RAG on the combined results or separately
+        if non_rag_calls:
+            logger.info("Non-RAG MCP services identified, using MCP approach to execute them first")
+            return "use_mcp"
+
+        # If only RAG calls are present, use RAG approach
+        if has_rag_call and not non_rag_calls:
+            logger.info("Only RAG service requested, using RAG approach")
             return "use_rag"
 
-        # If no other MCP services were identified, consider using RAG as fallback
-        non_rag_calls = [call for call in mcp_tool_calls if 'rag' not in call.get('service_id', '').lower()]
-        if not non_rag_calls:
-            logger.info("No non-RAG MCP services identified, using RAG as fallback")
+        # If no MCP services were identified, consider using RAG as fallback
+        if not non_rag_calls and not has_rag_call:
+            logger.info("No MCP services identified, using RAG as fallback")
             return "use_rag"
 
         # Otherwise, use MCP approach
         logger.info("Using MCP approach for the request")
         return "use_mcp"
+
+    # Define conditional function to determine if search results need download and summarization
+    def should_process_search_results(state: AgentState) -> Literal["process_with_download", "skip_processing"]:
+        """
+        Conditional edge to determine if search results should be processed with download and summarization
+        """
+        # Check raw results for search results, as they preserve the original structure needed for processing
+        raw_mcp_results = state.get("raw_mcp_results", [])
+
+        # Check if we have search results that need processing
+        has_search_results = False
+        for result in raw_mcp_results:
+            # Check if this result is from a search service
+            service_id = result.get("service_id", "").lower()
+            service_type = result.get("service_type", "").lower()
+            action = result.get("action", "").lower()
+
+            # Check if this result is from a search service using multiple identification methods
+            is_search_result = (
+                "search" in service_id or
+                "web" in service_id or
+                "mcp_search" in service_id or
+                "brave" in service_id or
+                "search" in service_type or
+                "web" in service_type or
+                "mcp_search" in service_type or
+                "brave" in service_type or
+                "search" in action or
+                "web_search" in action
+            )
+
+            if is_search_result:
+                # Check if the result has actual content/data to process
+                # Look for nested structures that contain search results
+                search_data = None
+
+                # Handle the nested structure from the search service: result.result.results
+                if "result" in result and isinstance(result["result"], dict):
+                    nested_result = result["result"]
+
+                    if "result" in nested_result and isinstance(nested_result["result"], dict):
+                        # Structure: {"result": {"result": {"results": [...]}}} - This is the most likely for search
+                        search_data = nested_result["result"]
+                        if "results" in search_data and isinstance(search_data["results"], list) and len(search_data["results"]) > 0:
+                            has_search_results = True
+                            break
+                    elif "results" in nested_result:
+                        # Structure: {"result": {"results": [...]}}
+                        search_data = nested_result
+                        if "results" in search_data and isinstance(search_data["results"], list) and len(search_data["results"]) > 0:
+                            has_search_results = True
+                            break
+                    elif "data" in nested_result:
+                        # Alternative structure: {"result": {"data": [...]}}
+                        search_data = nested_result
+                        if "data" in search_data and isinstance(search_data["data"], list) and len(search_data["data"]) > 0:
+                            has_search_results = True
+                            break
+                    else:
+                        # Direct structure: {"result": [...]}
+                        search_data = nested_result
+                        if isinstance(search_data, list) and len(search_data) > 0:
+                            has_search_results = True
+                            break
+                elif "results" in result:
+                    # Direct structure: {"results": [...]}
+                    search_data = result
+                    if "results" in search_data and isinstance(search_data["results"], list) and len(search_data["results"]) > 0:
+                        has_search_results = True
+                        break
+                elif "data" in result:
+                    # Direct structure: {"data": [...]}
+                    search_data = result
+                    if "data" in search_data and isinstance(search_data["data"], list) and len(search_data["data"]) > 0:
+                        has_search_results = True
+                        break
+
+        if has_search_results:
+            logger.info("Search results found in raw data, routing to download and summarization processing")
+            return "process_with_download"
+        else:
+            logger.info("No search results found in raw data, skipping download and summarization processing")
+            return "skip_processing"
 
     # Define conditional function for iteration logic
     def should_iterate(state: AgentState) -> Literal["generate_final_answer", "plan_refined_queries", "generate_failure_response"]:
@@ -1716,14 +2491,73 @@ def create_enhanced_agent_graph():
     # Add MCP workflow edges
     workflow.add_edge("plan_mcp_queries", "execute_mcp_queries")
     workflow.add_edge("execute_mcp_queries", "synthesize_results")
-    workflow.add_edge("synthesize_results", "can_answer")
+
+    # Define conditional function to determine if RAG should be used after MCP execution
+    def should_use_rag_after_mcp(state: AgentState) -> Literal["use_rag", "can_answer"]:
+        """
+        Conditional edge to determine if RAG should be used after MCP execution
+        """
+        # Check if RAG was originally requested in the tool calls
+        original_mcp_tool_calls = state.get("mcp_tool_calls", [])
+        has_rag_call = any('rag' in call.get('service_id', '').lower() for call in original_mcp_tool_calls)
+
+        if has_rag_call:
+            logger.info("RAG service was originally requested, proceeding with RAG approach after MCP execution")
+            return "use_rag"
+        else:
+            logger.info("RAG service not requested, proceeding to answer evaluation")
+            return "can_answer"
+
+    # Define a new conditional function that integrates the RAG check with the iteration logic
+    def should_iterate_or_use_rag(state: AgentState) -> Literal["generate_final_answer", "plan_refined_queries", "generate_failure_response", "use_rag"]:
+        """
+        Conditional edge to determine next step after evaluating if we can answer.
+        This also checks if RAG should be used after MCP execution.
+        """
+        # First, check if RAG was originally requested in the tool calls
+        original_mcp_tool_calls = state.get("mcp_tool_calls", [])
+        has_rag_call = any('rag' in call.get('service_id', '').lower() for call in original_mcp_tool_calls)
+
+        if has_rag_call and not state["can_answer"]:
+            # If RAG was requested and we can't answer yet, use RAG
+            logger.info("RAG service was originally requested, proceeding with RAG approach after MCP execution")
+            return "use_rag"
+        elif state["can_answer"]:
+            return "generate_final_answer"
+        elif state["iteration_count"] < state["max_iterations"]:
+            return "plan_refined_queries"
+        else:
+            return "generate_failure_response"
+
+    # Add conditional edge to determine if search results need download and summarization processing
+    workflow.add_conditional_edges(
+        "synthesize_results",
+        should_process_search_results,
+        {
+            "process_with_download": "process_search_results_with_download",
+            "skip_processing": "can_answer"  # Go directly to can_answer if no processing needed
+        }
+    )
+
+    # After processing search results with download, always go to rerank, augment, and generate RAG response
+    # since we now have processed documents that should be treated as RAG documents
+    workflow.add_edge("process_search_results_with_download", "rerank_documents")
+    workflow.add_edge("rerank_documents", "augment_context")
+    workflow.add_edge("augment_context", "generate_rag_response")
+
+    # After generating RAG response from processed search results, go back to can_answer
+    # to evaluate if we can now answer the original request with the new information
+    workflow.add_edge("generate_rag_response", "can_answer")
+
+    # Use the combined conditional function
     workflow.add_conditional_edges(
         "can_answer",
-        should_iterate,
+        should_iterate_or_use_rag,
         {
             "generate_final_answer": "generate_final_answer",
             "plan_refined_queries": "plan_refined_queries",
-            "generate_failure_response": "generate_failure_response"
+            "generate_failure_response": "generate_failure_response",
+            "use_rag": "retrieve_documents"  # Go to RAG if requested
         }
     )
     workflow.add_edge("plan_refined_queries", "execute_mcp_queries")  # Loop back to execute refined queries
@@ -1794,6 +2628,13 @@ def run_enhanced_agent(user_request: str, mcp_servers: List[Dict[str, Any]] = No
     # Import the registry URL from config if not provided
     from config.settings import MCP_REGISTRY_URL
     effective_registry_url = registry_url or MCP_REGISTRY_URL
+
+    # Log the user_request at the start
+    import logging
+    logger = logging.getLogger(__name__)
+    logger.info(f"[RUN_ENHANCED_AGENT] Initial user_request: '{user_request}' (length: {len(user_request) if user_request else 0})")
+    logger.info(f"[RUN_ENHANCED_AGENT] Type of user_request: {type(user_request)}")
+    logger.info(f"[RUN_ENHANCED_AGENT] Repr of user_request: {repr(user_request)}")
 
     # Create the new graph
     graph = create_enhanced_agent_graph()

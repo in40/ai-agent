@@ -104,3 +104,16 @@ logs/
 # Data files (not to be tracked in Git)
 data/
 chroma/
+
+# Large files
+*.bin
+*.dat
+*.lm.bin
+*.wav
+*.mp3
+*.zip
+*.tar.gz
+*.tar
+*.rar
+*.7z
+downloads/

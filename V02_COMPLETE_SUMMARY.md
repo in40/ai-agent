@@ -74,6 +74,7 @@ This document provides a comprehensive summary of the v0.2 implementation of the
 - `POST /api/rag/query` - Query RAG system (requires authentication)
 - `POST /api/rag/ingest` - Ingest documents into RAG (requires authentication)
 - `POST /api/rag/retrieve` - Retrieve documents from RAG (requires authentication)
+- `POST /api/mcp/search` - Search using MCP services (requires authentication)
 - `GET /health` - Health check
 
 ### Direct Service Endpoints

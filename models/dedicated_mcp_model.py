@@ -260,8 +260,10 @@ class DedicatedMCPModel:
                 # Create a temporary prompt for logging that includes the mcp_services_json
                 # We need to format the system prompt with the actual mcp_services_json
                 temp_system_prompt = self.system_prompt_template
+                logger.info(f"[STEP_1_REPLACE_USER_REQUEST] About to replace {user_request} in system prompt")
                 temp_system_prompt = temp_system_prompt.replace('{mcp_services_json}', mcp_services_json)  # Actual JSON data
-                temp_system_prompt = temp_system_prompt.replace('{user_request}', '')  # Empty since we're not using the original user request here
+                temp_system_prompt = temp_system_prompt.replace('{user_request}', user_request or '')  # Use actual user request to populate [Initial User Request] section
+                logger.info(f"[STEP_1_AFTER_USER_REQUEST_REPLACE] User request was '{user_request}', replaced in prompt, current prompt snippet: {temp_system_prompt[:200]}...")
                 temp_system_prompt = temp_system_prompt.replace('{previous_tool_calls}', '[{{}}]')  # Empty array with escaped braces
                 temp_system_prompt = temp_system_prompt.replace('{previous_signals}', '[{{}}]')  # Empty array with escaped braces
                 temp_system_prompt = temp_system_prompt.replace('{informational_content}', '')  # Empty string
@@ -289,9 +291,11 @@ class DedicatedMCPModel:
                 logger.info("DedicatedMCPModel full LLM request:")
                 for i, message in enumerate(full_prompt):
                     if message.type == "system":
-                        logger.info(f"  System Message {i+1}: {message.content}")  # Full content without truncation
+                        logger.info(f"  System Message {i+1}:")
+                        logger.info(message.content)  # Log full content separately to avoid potential truncation in f-string
                     else:
-                        logger.info(f"  Message {i+1} ({message.type}): {message.content}")
+                        logger.info(f"  Message {i+1} ({message.type}):")
+                        logger.info(message.content)  # Log full content separately to avoid potential truncation in f-string
 
             # Use SSH keep-alive during the LLM call
             with SSHKeepAliveContext():
@@ -299,8 +303,10 @@ class DedicatedMCPModel:
                 # Escape any curly braces in the JSON that might be misinterpreted as template variables
                 escaped_mcp_services_json = mcp_services_json.replace('{', '{{').replace('}', '}}')
                 temp_system_prompt = self.system_prompt_template
+                logger.info(f"[STEP_2_REPLACE_USER_REQUEST] About to replace {user_request} in system prompt")
                 temp_system_prompt = temp_system_prompt.replace('{mcp_services_json}', escaped_mcp_services_json)  # Escaped JSON data
-                temp_system_prompt = temp_system_prompt.replace('{user_request}', '')  # Empty since we're not using the original user request here
+                temp_system_prompt = temp_system_prompt.replace('{user_request}', user_request or '')  # Use actual user request to populate [Initial User Request] section
+                logger.info(f"[STEP_2_AFTER_USER_REQUEST_REPLACE] User request was '{user_request}', replaced in prompt, current prompt snippet: {temp_system_prompt[:200]}...")
                 temp_system_prompt = temp_system_prompt.replace('{previous_tool_calls}', '[{{}}]')  # Empty array with escaped braces
                 temp_system_prompt = temp_system_prompt.replace('{previous_signals}', '[{{}}]')  # Empty array with escaped braces
                 temp_system_prompt = temp_system_prompt.replace('{informational_content}', '')  # Empty string
@@ -803,7 +809,7 @@ class DedicatedMCPModel:
         Returns:
             Boolean indicating whether the agent can adequately answer the request
         """
-        logger.info(f"Evaluating if DedicatedMCPModel can answer request: {user_request[:100]}...")
+        logger.info(f"Evaluating if DedicatedMCPModel can answer request: {user_request}")
 
         # Create a prompt to evaluate if the synthesized results adequately answer the question
         evaluation_prompt = f"""
@@ -820,7 +826,9 @@ class DedicatedMCPModel:
             # Create a temporary system prompt by replacing ALL template variables with appropriate default values
             # We need to be careful to avoid conflicts with JSON examples in the prompt
             temp_system_prompt = self.system_prompt_template
-            temp_system_prompt = temp_system_prompt.replace('{user_request}', '')  # Empty since we're not using the original user request here
+            logger.info(f"[STEP_3_REPLACE_USER_REQUEST] About to replace {user_request} in system prompt")
+            temp_system_prompt = temp_system_prompt.replace('{user_request}', user_request or '')  # Use actual user request to populate [Initial User Request] section
+            logger.info(f"[STEP_3_AFTER_USER_REQUEST_REPLACE] User request was '{user_request}', replaced in prompt, current prompt snippet: {temp_system_prompt[:200]}...")
             temp_system_prompt = temp_system_prompt.replace('{mcp_services_json}', '{{}}')  # Escaped to avoid template issues
             temp_system_prompt = temp_system_prompt.replace('{previous_tool_calls}', '[{{}}]')  # Empty array with escaped braces
             temp_system_prompt = temp_system_prompt.replace('{previous_signals}', '[{{}}]')  # Empty array with escaped braces
@@ -875,29 +883,28 @@ class DedicatedMCPModel:
         Returns:
             Dictionary containing suggested queries or actions to take
         """
-        logger.info(f"Analyzing request with DedicatedMCPModel: {user_request[:100]}...")
+        logger.info(f"[ANALYZE_REQUEST_FOR_MCP_SERVICES] Analyzing request with DedicatedMCPModel: '{user_request}' (length: {len(user_request) if user_request else 0})")
+        logger.info(f"[ANALYZE_REQUEST_FOR_MCP_SERVICES] Method received user_request: '{user_request}' (length: {len(user_request) if user_request else 0})")
 
         # Format MCP servers as JSON for the prompt
         mcp_servers_json = json.dumps(mcp_servers, indent=2)
 
-        # Create a prompt to analyze the request and suggest MCP services to use
-        analysis_prompt = f"""
-        User request: {user_request}
-
-        Available MCP services:
-        {mcp_servers_json}
-
-        Analyze the user request and suggest appropriate MCP queries or services that might be needed to fulfill the request.
-        """
-
         try:
+            # Log before replacements
+            logger.info(f"[REPLACEMENT_START] Template before replacements has user_request placeholder: {'{user_request}' in self.system_prompt_template}")
+            logger.info(f"[REPLACEMENT_START] About to replace user_request '{user_request}' in template")
+
             # Create a temporary system prompt by replacing ALL template variables with appropriate default values
             # We need to be careful to avoid conflicts with JSON examples in the prompt
             # First, replace the mcp_services_json with the actual JSON (with escaped braces to avoid template issues)
             escaped_mcp_servers_json = mcp_servers_json.replace('{', '{{').replace('}', '}}')
             temp_system_prompt = self.system_prompt_template.replace('{mcp_services_json}', escaped_mcp_servers_json)
             # Then replace other template variables with appropriate defaults
-            temp_system_prompt = temp_system_prompt.replace('{user_request}', '')  # Empty since we're not using the original user request here
+            logger.info(f"[BEFORE_USER_REQUEST_REPLACE] Current temp_system_prompt has {temp_system_prompt.count('{user_request}')} occurrences of {{user_request}}")
+            temp_system_prompt = temp_system_prompt.replace('{user_request}', user_request)  # Use the actual user request
+            logger.info(f"[AFTER_USER_REQUEST_REPLACE] Replaced {{user_request}} with '{user_request}', now checking result")
+            logger.info(f"[AFTER_USER_REQUEST_REPLACE] Result contains empty user request section: {'[Initial User Request]\\n\\n[Technical Information]' in temp_system_prompt or '[Initial User Request]\\n\\n[' in temp_system_prompt}")
+
             temp_system_prompt = temp_system_prompt.replace('{previous_tool_calls}', '[{{}}]')  # Empty array with escaped braces
             temp_system_prompt = temp_system_prompt.replace('{previous_signals}', '[{{}}]')  # Empty array with escaped braces
             temp_system_prompt = temp_system_prompt.replace('{informational_content}', '')  # Empty string
@@ -916,7 +923,7 @@ class DedicatedMCPModel:
 
             temp_prompt = ChatPromptTemplate.from_messages([
                 ("system", temp_system_prompt),
-                ("human", "{input_text}")
+                ("human", "Analyze the user request and suggest appropriate MCP queries or services that might be needed to fulfill the request.")
             ])
 
             temp_chain = temp_prompt | self.llm | self.output_parser
@@ -924,19 +931,31 @@ class DedicatedMCPModel:
             # Log the full request to LLM, including all roles and prompts
             if ENABLE_SCREEN_LOGGING:
                 # Get the full prompt with all messages (system and human) without invoking the LLM
-                full_prompt = temp_prompt.format_messages(input_text=analysis_prompt)
+                full_prompt = temp_prompt.format_messages(input_text="")
                 logger.info("DedicatedMCPModel full LLM request:")
                 for i, message in enumerate(full_prompt):
                     if message.type == "system":
-                        logger.info(f"  System Message {i+1}: {message.content[:200]}...")  # Truncate for logging
+                        logger.info(f"  System Message {i+1}:")
+                        # Log the full content in chunks to avoid any potential truncation
+                        content = message.content
+                        chunk_size = 2000  # Size of each chunk
+                        for j in range(0, len(content), chunk_size):
+                            chunk = content[j:j+chunk_size]
+                            logger.info(f"    Chunk {j//chunk_size + 1}: {chunk}")
                     else:
-                        logger.info(f"  Message {i+1} ({message.type}): {message.content}")
+                        logger.info(f"  Message {i+1} ({message.type}):")
+                        # Log the full content in chunks to avoid any potential truncation
+                        content = message.content
+                        chunk_size = 2000  # Size of each chunk
+                        for j in range(0, len(content), chunk_size):
+                            chunk = content[j:j+chunk_size]
+                            logger.info(f"    Chunk {j//chunk_size + 1}: {chunk}")
 
             # Use SSH keep-alive during the LLM call
             with SSHKeepAliveContext():
                 # Generate the response using the temporary chain
                 response = temp_chain.invoke({
-                    "input_text": analysis_prompt
+                    "input_text": ""
                 })
 
             # Helper function to safely parse JSON with sanitization
@@ -1109,7 +1128,7 @@ class DedicatedMCPModel:
         Returns:
             List of refined queries to execute
         """
-        logger.info(f"Planning refined queries for request: {user_request[:100]}...")
+        logger.info(f"Planning refined queries for request: {user_request}")
 
         # Create a prompt to plan refined queries based on current results
         planning_prompt = f"""
@@ -1128,7 +1147,9 @@ class DedicatedMCPModel:
             # Create a temporary system prompt by replacing ALL template variables with appropriate default values
             # We need to be careful to avoid conflicts with JSON examples in the prompt
             temp_system_prompt = self.system_prompt_template
-            temp_system_prompt = temp_system_prompt.replace('{user_request}', '')  # Empty since we're not using the original user request here
+            logger.info(f"[STEP_3_REPLACE_USER_REQUEST] About to replace {user_request} in system prompt")
+            temp_system_prompt = temp_system_prompt.replace('{user_request}', user_request or '')  # Use actual user request to populate [Initial User Request] section
+            logger.info(f"[STEP_3_AFTER_USER_REQUEST_REPLACE] User request was '{user_request}', replaced in prompt, current prompt snippet: {temp_system_prompt[:200]}...")
             temp_system_prompt = temp_system_prompt.replace('{mcp_services_json}', '{{}}')  # Escaped to avoid template issues
             temp_system_prompt = temp_system_prompt.replace('{previous_tool_calls}', '[{{}}]')  # Empty array with escaped braces
             temp_system_prompt = temp_system_prompt.replace('{previous_signals}', '[{{}}]')  # Empty array with escaped braces

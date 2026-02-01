@@ -1,0 +1,15 @@
+## Investigation Summary
+
+Here's the general technique we used to identify and fix the missing variable issue:
+
+1. **Traced the Full Flow**: We traced the variable from the frontend through the backend API endpoint, to the workflow system, and into the model processing.
+
+2. **Added Comprehensive Logging**: We implemented detailed logging at each step to track the state of the variable, allowing us to see exactly where it was getting lost or modified unexpectedly.
+
+3. **Identified Multiple Issues**: Through the logging, we discovered that the variable was being handled differently in various parts of the system - sometimes being replaced with empty values when it should have contained the original data.
+
+4. **Fixed the Root Causes**: We updated the code to ensure the variable was properly passed through each stage of processing instead of being replaced with empty values.
+
+5. **Modified State Management Logic**: We adjusted the state reduction logic to ensure the initial value was properly set and then preserved throughout the workflow.
+
+6. **Verified the Fix**: Confirmed that the variable now properly flows through the entire system from the user input to the final processing stage.

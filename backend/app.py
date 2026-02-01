@@ -463,6 +463,7 @@ def rag_lookup(current_user_id):
         logger.error(f"RAG lookup error: {str(e)}")
         return jsonify({'error': f'RAG lookup failed: {str(e)}'}), 500
 
+
 @app.route('/api/health', methods=['GET'])
 @rate_limit(max_requests=60, window_seconds=60)  # 60 requests per minute
 def health_check():

@@ -124,7 +124,13 @@ class ResponseGenerator:
                 full_prompt = self.prompt.format_messages(generated_prompt=generated_prompt)
                 logger.info(f"ResponseGenerator full LLM request using prompt file: {self.prompt_name}")
                 for i, message in enumerate(full_prompt):
-                    logger.info(f"  Message {i+1} ({message.type}): {message.content}")
+                    logger.info(f"  Message {i+1} ({message.type}):")
+                    # Log the full content in chunks to avoid any potential truncation
+                    content = message.content
+                    chunk_size = 2000  # Size of each chunk
+                    for j in range(0, len(content), chunk_size):
+                        chunk = content[j:j+chunk_size]
+                        logger.info(f"    Chunk {j//chunk_size + 1}: {chunk}")
 
                 # Log any attached files
                 if attached_files:

@@ -283,3 +283,182 @@ class RAGOrchestrator:
             llm: New language model instance
         """
         self.rag_chain = RAGChain(self.retriever, llm)
+
+    def process_search_results_with_download(self, search_results: List[Dict[str, Any]], user_query: str) -> List[Dict[str, Any]]:
+        """
+        Process search results by downloading content from each result using MCP download tool,
+        summarizing the content taking into account the original user query, and then reranking
+        the summaries to return the top results.
+
+        Args:
+            search_results: List of search results with title, url, and description
+            user_query: Original user query for context
+
+        Returns:
+            List of processed and ranked results with summaries
+        """
+        try:
+            # Import required components
+            from models.dedicated_mcp_model import DedicatedMCPModel
+            from rag_component.config import RERANK_TOP_K_RESULTS
+            mcp_model = DedicatedMCPModel()
+
+            # Get available download services
+            from registry.registry_client import ServiceRegistryClient
+            from config.settings import MCP_REGISTRY_URL
+            registry_client = ServiceRegistryClient(MCP_REGISTRY_URL)
+            download_services = [s for s in registry_client.discover_services() if s.type == "mcp_download"]
+
+            if not download_services:
+                print("[RAG WARNING] No download MCP services available")
+                # Return search results as summaries without downloading
+                processed_results = []
+                for result in search_results:
+                    processed_results.append({
+                        "title": result.get("title", ""),
+                        "url": result.get("url", ""),
+                        "summary": result.get("description", ""),
+                        "original_description": result.get("description", ""),
+                        "relevance_score": 0.5  # Default score
+                    })
+                # Sort by default score and return top K
+                sorted_results = sorted(processed_results, key=lambda x: x['relevance_score'], reverse=True)
+                return sorted_results[:RERANK_TOP_K_RESULTS]
+
+            download_service = download_services[0]
+
+            # Process each search result
+            processed_summaries = []
+
+            for idx, result in enumerate(search_results):
+                url = result.get("url", "")
+                title = result.get("title", "")
+                description = result.get("description", "")
+
+                if not url:
+                    print(f"[RAG WARNING] No URL found for result {idx}, skipping")
+                    continue
+
+                print(f"[RAG INFO] Processing result {idx+1}/{len(search_results)}: {title}")
+
+                # Download content using MCP download service
+                download_params = {"url": url}
+                download_result = mcp_model._call_mcp_service(
+                    {
+                        "id": download_service.id,
+                        "host": download_service.host,
+                        "port": download_service.port,
+                        "type": download_service.type,
+                        "metadata": download_service.metadata
+                    },
+                    "download",
+                    download_params
+                )
+
+                if download_result.get("status") == "success":
+                    # Get the downloaded content
+                    downloaded_content = ""
+                    file_path = download_result.get("result", {}).get("file_path", "")
+
+                    if file_path and os.path.exists(file_path):
+                        try:
+                            with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+                                downloaded_content = f.read()
+                        except Exception as e:
+                            print(f"[RAG WARNING] Error reading downloaded file {file_path}: {str(e)}")
+                            # If we can't read the file, try to get content from the description
+                            downloaded_content = description
+
+                    # Summarize the content in relation to the original user query
+                    from models.response_generator import ResponseGenerator
+                    response_generator = ResponseGenerator()
+
+                    # Create a prompt to summarize the content in the context of the user's request
+                    summary_prompt = f"""
+                    Original user request: {user_query}
+
+                    Content from webpage titled "{title}":
+                    {downloaded_content[:4000]}  # Limit content to avoid exceeding token limits
+
+                    Please provide a concise summary of this webpage content that is relevant to the user's original request.
+                    Focus on information that directly addresses the user's question or need.
+                    """
+
+                    try:
+                        summary = response_generator.generate_natural_language_response(summary_prompt)
+
+                        # Add the summary with metadata to our processed results
+                        processed_summaries.append({
+                            "title": title,
+                            "url": url,
+                            "summary": summary,
+                            "original_description": description,
+                            "relevance_score": 0.0  # Will be calculated during reranking
+                        })
+
+                        print(f"[RAG INFO] Successfully summarized content for {title}")
+
+                    except Exception as e:
+                        print(f"[RAG WARNING] Error generating summary for {title}: {str(e)}")
+                        # Add the result with the original description as fallback
+                        processed_summaries.append({
+                            "title": title,
+                            "url": url,
+                            "summary": description,
+                            "original_description": description,
+                            "relevance_score": 0.0
+                        })
+                else:
+                    print(f"[RAG WARNING] Failed to download content from {url}")
+                    # Add the result with the original description as fallback
+                    processed_summaries.append({
+                        "title": title,
+                        "url": url,
+                        "summary": description,
+                        "original_description": description,
+                        "relevance_score": 0.0
+                    })
+
+            # Create relevance scores for each summary based on how well it addresses the user query
+            from models.response_generator import ResponseGenerator
+            response_generator = ResponseGenerator()
+
+            for summary_obj in processed_summaries:
+                relevance_prompt = f"""
+                Original user request: {user_query}
+
+                Summary content: {summary_obj['summary']}
+
+                On a scale of 0.0 to 1.0, how relevant is this summary to the user's original request?
+                0.0 means completely irrelevant, 1.0 means highly relevant.
+                Please respond with only the numerical score.
+                """
+
+                try:
+                    relevance_response = response_generator.generate_natural_language_response(relevance_prompt)
+                    # Extract the numerical score from the response
+                    import re
+                    score_match = re.search(r'(\d+\.?\d*)', relevance_response)
+                    if score_match:
+                        score = float(score_match.group(1))
+                        summary_obj['relevance_score'] = min(1.0, max(0.0, score))  # Clamp between 0 and 1
+                    else:
+                        summary_obj['relevance_score'] = 0.5  # Default score if parsing fails
+                except Exception as e:
+                    print(f"[RAG WARNING] Error calculating relevance score: {str(e)}")
+                    summary_obj['relevance_score'] = 0.5  # Default score on error
+
+            # Sort by relevance score in descending order and take top K
+            sorted_summaries = sorted(processed_summaries, key=lambda x: x['relevance_score'], reverse=True)
+            top_summaries = sorted_summaries[:RERANK_TOP_K_RESULTS]
+
+            print(f"[RAG SUCCESS] Processed and reranked {len(processed_summaries)} results to top {len(top_summaries)}")
+
+            return top_summaries
+
+        except Exception as e:
+            print(f"[RAG ERROR] Error processing search results with download: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            # Return an empty list on error
+            return []

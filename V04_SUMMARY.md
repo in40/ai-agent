@@ -52,6 +52,7 @@ The v0.4 system continues to use the microservices architecture introduced in v0
 - `POST /api/rag/ingest` - Ingest documents into RAG
 - `POST /api/rag/retrieve` - Retrieve documents from RAG
 - `POST /api/rag/lookup` - Lookup documents in RAG
+- `POST /api/mcp/search` - Search using MCP services
 - `POST /api/rag/upload` - Upload documents to RAG
 - `POST /api/rag/clear` - Clear all documents from RAG
 

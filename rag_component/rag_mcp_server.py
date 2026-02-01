@@ -70,6 +70,8 @@ class RAGRequestHandler:
                 return await self.list_documents(parameters)
             elif action == "rerank_documents":
                 return await self.rerank_documents(parameters)
+            elif action == "process_search_results_with_download":
+                return await self.process_search_results_with_download(parameters)
             else:
                 return {
                     "error": f"Unknown action: {action}",
@@ -273,6 +275,43 @@ class RAGRequestHandler:
                 "status": "error"
             }
 
+    async def process_search_results_with_download(self, parameters: Dict[str, Any]) -> Dict[str, Any]:
+        """Process search results with download and summarization."""
+        try:
+            search_results = parameters.get("search_results", [])
+            user_query = parameters.get("user_query", "")
+
+            if not search_results:
+                return {
+                    "error": "Search results are required",
+                    "status": "error"
+                }
+
+            if not user_query:
+                return {
+                    "error": "User query is required",
+                    "status": "error"
+                }
+
+            # Use the new method in the RAG orchestrator
+            processed_results = self.rag_orchestrator.process_search_results_with_download(
+                search_results=search_results,
+                user_query=user_query
+            )
+
+            return {
+                "results": processed_results,
+                "count": len(processed_results),
+                "status": "success"
+            }
+
+        except Exception as e:
+            logger.error(f"Error processing search results with download: {str(e)}", exc_info=True)
+            return {
+                "error": str(e),
+                "status": "error"
+            }
+
 
 class RAGMCPServer:
     """MCP Server for RAG services."""
@@ -348,6 +387,14 @@ class RAGMCPServer:
                                 "documents": {"type": "array", "items": {"type": "object"}, "required": True},
                                 "top_k": {"type": "integer", "required": False}
                             }
+                        },
+                        {
+                            "name": "process_search_results_with_download",
+                            "description": "Process search results by downloading content, summarizing, and reranking",
+                            "parameters": {
+                                "search_results": {"type": "array", "items": {"type": "object"}, "required": True},
+                                "user_query": {"type": "string", "required": True}
+                            }
                         }
                     ]
                 }
@@ -413,6 +460,7 @@ class RAGMCPServer:
         app.router.add_post('/list_documents', handle_request)
         app.router.add_post('/list', handle_request)
         app.router.add_post('/rerank_documents', handle_request)
+        app.router.add_post('/process_search_results_with_download', handle_request)
 
         runner = web.AppRunner(app)
         await runner.setup()

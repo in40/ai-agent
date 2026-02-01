@@ -69,7 +69,8 @@ def agent_query(current_user_id):
             return jsonify({'error': f'Validation error: {validation_errors}'}), 400
         
         user_request = data.get('user_request')
-        
+        logger.info(f"[AGENT_SERVICE] Received user_request: '{user_request}' (length: {len(user_request) if user_request else 0})")
+
         # Extract optional parameters
         disable_sql_blocking = data.get('disable_sql_blocking', False)
         disable_databases = data.get('disable_databases', False)
