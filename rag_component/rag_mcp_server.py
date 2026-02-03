@@ -171,21 +171,50 @@ class RAGRequestHandler:
     async def list_documents(self, parameters: Dict[str, Any]) -> Dict[str, Any]:
         """List available documents in the RAG system."""
         try:
-            # This would depend on the specific vector store implementation
-            # For ChromaDB, we can get the collection's contents
-            # Note: This is a simplified implementation - in practice, you might need to store document metadata separately
+            # Get the vector store manager to access the store type
+            vector_store_manager = self.rag_orchestrator.vector_store_manager
 
-            # For now, return a placeholder response since ChromaDB doesn't have a direct way to list documents
-            # The documents are embedded and stored as vectors, not as raw documents
-            # So we'll return a message indicating that documents have been ingested
-            # In a real implementation, you'd want to maintain a separate document index
+            # Count documents based on the vector store type
+            collection_count = 0
+            if vector_store_manager.store_type.lower() == "chroma":
+                # For ChromaDB, access the collection count
+                collection_count = vector_store_manager.vector_store._collection.count()
+            elif vector_store_manager.store_type.lower() == "qdrant":
+                # For Qdrant, use the client to get collection info
+                from qdrant_client import QdrantClient
+                import os
 
-            # For now, we'll return a count of documents in the vector store
-            # This requires accessing the vector store directly
-            collection_count = self.rag_orchestrator.vector_store_manager.vector_store._collection.count()
+                # Get Qdrant config directly from environment to ensure latest values
+                qdrant_url = os.getenv("RAG_QDRANT_URL", "http://localhost:6333")
+                qdrant_api_key = os.getenv("RAG_QDRANT_API_KEY", "")
+
+                if qdrant_api_key:
+                    client = QdrantClient(
+                        url=qdrant_url,
+                        api_key=qdrant_api_key,
+                        prefer_grpc=False
+                    )
+                else:
+                    client = QdrantClient(
+                        url=qdrant_url,
+                        prefer_grpc=False
+                    )
+
+                # Get collection info and extract point count
+                collection_info = client.get_collection(vector_store_manager.collection_name)
+                collection_count = collection_info.point_count
+            elif vector_store_manager.store_type.lower() == "faiss":
+                # For FAISS, we don't have a direct count method implemented yet
+                # This would require custom implementation
+                collection_count = 0  # Placeholder - would need proper implementation
+            else:
+                return {
+                    "error": f"Unsupported vector store type: {vector_store_manager.store_type}",
+                    "status": "error"
+                }
 
             return {
-                "documents": [],  # ChromaDB doesn't directly store original documents in an easily listable form
+                "documents": [],  # Vector stores don't directly store original documents in an easily listable form
                 "count": collection_count,
                 "status": "success",
                 "info": f"Vector store contains {collection_count} embeddings"

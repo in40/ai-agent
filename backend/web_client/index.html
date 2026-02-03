@@ -742,7 +742,7 @@
 
                 // Create an AbortController for timeout handling
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 600000); // 10-minute timeout
+                const timeoutId = setTimeout(() => controller.abort(), 43200000); // 12-hour timeout
 
                 const response = await fetch(`${API_BASE_URL}/api/agent/query`, {
                     method: 'POST',
@@ -762,47 +762,34 @@
 
                 const result = await response.json();
 
-                // Initialize markdown-it
+                // Initialize markdown-it for rendering responses
                 const md = window.markdownit({
                     html: true,
                     linkify: true,
                     typographer: true
                 });
 
-                // Render the response using markdown
-                const renderedResponse = md.render(result.final_answer || result.final_response || 'No response generated');
+                // Extract the response content - try multiple possible fields
+                let responseText = '';
+                if (result.final_answer) {
+                    responseText = typeof result.final_answer === 'string' ? result.final_answer : JSON.stringify(result.final_answer);
+                } else if (result.synthesized_result) {
+                    responseText = typeof result.synthesized_result === 'string' ? result.synthesized_result : JSON.stringify(result.synthesized_result);
+                } else if (result.response) {
+                    responseText = typeof result.response === 'string' ? result.response : JSON.stringify(result.response);
+                } else {
+                    // Fallback to showing the entire result as JSON
+                    responseText = JSON.stringify(result, null, 2);
+                }
 
-                // Display the response
+                // Render the response with markdown
+                const renderedResponse = md.render(responseText);
+
+                // Display the formatted response
                 responseContainer.innerHTML = `
-                    <h5>Final Response:</h5>
-                    <div class="markdown-body">${renderedResponse}</div>
-
-                    ${result.generated_sql ? `
-                    <h5>Generated SQL:</h5>
-                    <pre class="bg-light p-2 rounded">${result.generated_sql}</pre>
-                    ` : ''}
-
-                    ${result.db_results && result.db_results.length > 0 ? `
-                    <h5>Database Results (${result.db_results.length} records):</h5>
-                    <div class="table-responsive">
-                        <table class="table table-sm table-striped">
-                            <thead>
-                                <tr>
-                                    ${Object.keys(result.db_results[0]).map(key => `<th>${key}</th>`).join('')}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${result.db_results.slice(0, 10).map(row => `
-                                    <tr>
-                                        ${Object.values(row).map(cell => `<td>${cell}</td>`).join('')}
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
+                    <div class="markdown-body">
+                        ${renderedResponse}
                     </div>
-                    ${result.db_results.length > 10 ? `<p class="text-muted">... and ${result.db_results.length - 10} more records</p>` : ''}
-                    ` : '<p>No database results returned</p>'}
-
                     <p><small class="text-muted">Processed in ${result.execution_time || 'unknown'} seconds</small></p>
                 `;
             } catch (error) {
@@ -859,7 +846,7 @@
             try {
                 // Create an AbortController for timeout handling
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 600000); // 10-minute timeout for ingestion
+                const timeoutId = setTimeout(() => controller.abort(), 43200000); // 12-hour timeout for ingestion
 
                 const response = await fetch(`${API_BASE_URL}/api/rag/ingest`, {
                     method: 'POST',
@@ -950,7 +937,7 @@
             try {
                 // Create an AbortController for timeout handling
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 600000); // 10-minute timeout for lookup
+                const timeoutId = setTimeout(() => controller.abort(), 43200000); // 12-hour timeout for lookup
 
                 const response = await fetch(`${API_BASE_URL}/api/rag/retrieve`, {
                     method: 'POST',
@@ -1120,7 +1107,7 @@
             try {
                 // Create an AbortController for timeout handling
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 600000); // 10-minute timeout for RAG queries
+                const timeoutId = setTimeout(() => controller.abort(), 43200000); // 12-hour timeout for RAG queries
 
                 const response = await fetch(`${API_BASE_URL}/api/rag/query`, {
                     method: 'POST',
@@ -1366,7 +1353,7 @@
             try {
                 // Create an AbortController for timeout handling
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 600000); // 10-minute timeout for MCP search
+                const timeoutId = setTimeout(() => controller.abort(), 43200000); // 12-hour timeout for MCP search
 
                 // Call the backend API to perform MCP search
                 const response = await fetch(`${API_BASE_URL}/api/mcp/search`, {

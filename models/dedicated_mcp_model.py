@@ -37,7 +37,8 @@ from config.settings import (
     DEFAULT_LLM_HOSTNAME,
     DEFAULT_LLM_PORT,
     DEFAULT_LLM_API_PATH,
-    FORCE_DEFAULT_MODEL_FOR_ALL
+    FORCE_DEFAULT_MODEL_FOR_ALL,
+    MCP_SERVICE_CALL_TIMEOUT
 )
 from utils.prompt_manager import PromptManager
 from utils.ssh_keep_alive import SSHKeepAliveContext
@@ -352,11 +353,19 @@ class DedicatedMCPModel:
                     # 2. Remove leading/trailing whitespace and newlines
                     sanitized = sanitized.strip()
 
-                    # 3. Try to fix common JSON issues
+                    # 3. Remove control characters that might be causing issues
+                    # Remove control characters (ASCII 0-31) except tab (9), newline (10), and carriage return (13)
+                    sanitized = ''.join(char if ord(char) >= 32 or ord(char) in [9, 10, 13] else ' ' for char in sanitized)
+
+                    # Replace problematic sequences
+                    sanitized = sanitized.replace('\u0000', '')  # null bytes
+                    sanitized = sanitized.replace('\x00', '')   # null bytes
+
+                    # 4. Try to fix common JSON issues
                     # Remove trailing commas before closing braces/brackets
                     sanitized = re.sub(r',(\s*[}\]])', r'\1', sanitized)
 
-                    # 4. Handle potential escape sequence issues
+                    # 5. Handle potential escape sequence issues
                     # Replace double backslashes followed by quotes (common in LLM outputs)
                     sanitized = sanitized.replace('\\\\', '\\')
 
@@ -420,7 +429,20 @@ class DedicatedMCPModel:
                         if brace_count == 0 and start_idx != -1:
                             # Found a complete JSON object
                             potential_json = response[start_idx:i+1]
-                            result, parsed_successfully = safe_json_parse(potential_json, "extracted potential JSON")
+
+                            # Clean the potential JSON to handle control characters and other issues
+                            cleaned_potential_json = potential_json.strip()
+
+                            # Remove control characters that might be causing issues
+                            import re
+                            # Remove control characters (ASCII 0-31) except tab (9), newline (10), and carriage return (13)
+                            cleaned_potential_json = ''.join(char if ord(char) >= 32 or ord(char) in [9, 10, 13] else ' ' for char in cleaned_potential_json)
+
+                            # Replace problematic sequences
+                            cleaned_potential_json = cleaned_potential_json.replace('\u0000', '')  # null bytes
+                            cleaned_potential_json = cleaned_potential_json.replace('\x00', '')   # null bytes
+
+                            result, parsed_successfully = safe_json_parse(cleaned_potential_json, "extracted potential JSON")
 
                             if parsed_successfully:
                                 logger.info(f"DedicatedMCPModel extracted JSON from response: {result}")
@@ -446,7 +468,20 @@ class DedicatedMCPModel:
 
             if json_match:
                 extracted_json = json_match.group(1)  # Get the captured group (the JSON part)
-                result, parsed_successfully = safe_json_parse(extracted_json, "extracted JSON from markdown")
+
+                # Clean the extracted JSON to handle control characters and other issues
+                cleaned_extracted_json = extracted_json.strip()
+
+                # Remove control characters that might be causing issues
+                import re
+                # Remove control characters (ASCII 0-31) except tab (9), newline (10), and carriage return (13)
+                cleaned_extracted_json = ''.join(char if ord(char) >= 32 or ord(char) in [9, 10, 13] else ' ' for char in cleaned_extracted_json)
+
+                # Replace problematic sequences
+                cleaned_extracted_json = cleaned_extracted_json.replace('\u0000', '')  # null bytes
+                cleaned_extracted_json = cleaned_extracted_json.replace('\x00', '')   # null bytes
+
+                result, parsed_successfully = safe_json_parse(cleaned_extracted_json, "extracted JSON from markdown")
 
                 if parsed_successfully:
                     logger.info(f"DedicatedMCPModel extracted JSON from response: {result}")
@@ -473,6 +508,11 @@ class DedicatedMCPModel:
                     cleaned_json = extracted_json.strip()
                     # Remove any trailing commas before closing braces or brackets
                     cleaned_json = re.sub(r',(\s*[}\]])', r'\1', cleaned_json)
+
+                    # Apply the same cleaning for control characters
+                    cleaned_json = ''.join(char if ord(char) >= 32 or ord(char) in [9, 10, 13] else ' ' for char in cleaned_json)
+                    cleaned_json = cleaned_json.replace('\u0000', '')
+                    cleaned_json = cleaned_json.replace('\x00', '')
 
                     result, parsed_successfully = safe_json_parse(cleaned_json, "cleaned JSON")
 
@@ -638,7 +678,7 @@ class DedicatedMCPModel:
                     endpoint,
                     json=payload,
                     headers={'Content-Type': 'application/json'},
-                    timeout=30  # 30-second timeout
+                    timeout=MCP_SERVICE_CALL_TIMEOUT  # Configurable timeout
                 )
 
                 if response.status_code == 200:
@@ -666,7 +706,7 @@ class DedicatedMCPModel:
                 # Use TCP socket to call the service
                 # Create a socket and connect to the service
                 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-                    sock.settimeout(30)  # 30-second timeout
+                    sock.settimeout(MCP_SERVICE_CALL_TIMEOUT)  # Configurable timeout
                     sock.connect((service_host, service_port))
 
                     # Prepare the request payload
@@ -720,7 +760,7 @@ class DedicatedMCPModel:
                     endpoint,
                     json=payload,
                     headers={'Content-Type': 'application/json'},
-                    timeout=30
+                    timeout=MCP_SERVICE_CALL_TIMEOUT  # Configurable timeout
                 )
 
                 if response.status_code == 200:
@@ -976,11 +1016,19 @@ class DedicatedMCPModel:
                     # 2. Remove leading/trailing whitespace and newlines
                     sanitized = sanitized.strip()
 
-                    # 3. Try to fix common JSON issues
+                    # 3. Remove control characters that might be causing issues
+                    # Remove control characters (ASCII 0-31) except tab (9), newline (10), and carriage return (13)
+                    sanitized = ''.join(char if ord(char) >= 32 or ord(char) in [9, 10, 13] else ' ' for char in sanitized)
+
+                    # Replace problematic sequences
+                    sanitized = sanitized.replace('\u0000', '')  # null bytes
+                    sanitized = sanitized.replace('\x00', '')   # null bytes
+
+                    # 4. Try to fix common JSON issues
                     # Remove trailing commas before closing braces/brackets
                     sanitized = re.sub(r',(\s*[}\]])', r'\1', sanitized)
 
-                    # 4. Handle potential escape sequence issues
+                    # 5. Handle potential escape sequence issues
                     # Replace double backslashes followed by quotes (common in LLM outputs)
                     sanitized = sanitized.replace('\\\\', '\\')
 

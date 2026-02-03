@@ -137,6 +137,10 @@ class ResponseGenerator:
                     logger.info(f"  Attached files: {len(attached_files)} file(s)")
                     for idx, file_info in enumerate(attached_files):
                         logger.info(f"    File {idx+1}: {file_info.get('filename', 'Unknown')} ({file_info.get('size', 'Unknown')} bytes)")
+            else:
+                # Even when screen logging is disabled, log the content being sent for enhancement
+                logger.info(f"[ENHANCEMENT_DEBUG] ResponseGenerator received request with prompt length: {len(generated_prompt)} characters")
+                logger.info(f"[ENHANCEMENT_DEBUG] Full generated prompt being sent for enhancement: {generated_prompt}")
 
             # Use SSH keep-alive during the LLM call
             with SSHKeepAliveContext():
@@ -184,11 +188,33 @@ class ResponseGenerator:
             # Re-raise the exception to trigger the retry
             raise
 
-    def generate_response(self, generated_prompt, attached_files=None):
+    def generate_response(self, user_request=None, informational_content=None, generated_prompt=None, attached_files=None, previous_signals=None, previous_tool_calls=None):
         """
-        Alias for generate_natural_language_response to maintain backward compatibility
+        Enhanced method to generate response with detailed logging of all inputs
         """
-        return self.generate_natural_language_response(generated_prompt, attached_files)
+        # Log all the content being sent for enhancement
+        logger.info(f"[ENHANCEMENT_DEBUG] generate_response called with:")
+        if user_request is not None:
+            logger.info(f"[ENHANCEMENT_DEBUG]   user_request: {user_request}")
+        if informational_content is not None:
+            logger.info(f"[ENHANCEMENT_DEBUG]   informational_content: {informational_content}")
+        if previous_signals is not None:
+            logger.info(f"[ENHANCEMENT_DEBUG]   previous_signals: {previous_signals}")
+        if previous_tool_calls is not None:
+            logger.info(f"[ENHANCEMENT_DEBUG]   previous_tool_calls: {previous_tool_calls}")
+
+        # If generated_prompt is provided, use it directly
+        if generated_prompt is not None:
+            return self.generate_natural_language_response(generated_prompt, attached_files)
+
+        # Otherwise, construct the prompt from user_request and informational_content
+        if user_request is not None and informational_content is not None:
+            # Construct a prompt combining user request and informational content
+            combined_prompt = f"User Request: {user_request}\n\nInformational Content:\n{informational_content}"
+            return self.generate_natural_language_response(combined_prompt, attached_files)
+
+        # Fallback to original behavior if only generated_prompt is provided
+        return self.generate_natural_language_response(user_request or generated_prompt, attached_files)
 
     def _get_llm_instance(self, provider=None, model=None):
         """

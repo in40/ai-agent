@@ -167,3 +167,9 @@ MCP_REGISTRY_URL = os.getenv("MCP_REGISTRY_URL", "http://127.0.0.1:8080")
 
 # RAG File Storage Configuration
 RAG_FILE_STORAGE_DIR = os.getenv("RAG_FILE_STORAGE_DIR", "./data/rag_uploaded_files")
+
+# Download Timeout Configuration
+DOWNLOAD_TIMEOUT_SECONDS = int(os.getenv("DOWNLOAD_TIMEOUT_SECONDS", "30"))
+
+# MCP Service Call Timeout Configuration
+MCP_SERVICE_CALL_TIMEOUT = int(os.getenv("MCP_SERVICE_CALL_TIMEOUT", "30"))

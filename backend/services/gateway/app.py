@@ -115,7 +115,7 @@ def proxy_auth(path=''):
             data=request.get_data(),
             cookies=request.cookies,
             allow_redirects=False,
-            timeout=3600  # Increased timeout to 1 hour for AI model responses
+            timeout=43200  # Increased timeout to 12 hours for AI model responses
         )
         
         excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
@@ -148,7 +148,7 @@ def proxy_agent(path=''):
             data=request.get_data(),
             cookies=request.cookies,
             allow_redirects=False,
-            timeout=3600  # Increased timeout to 1 hour for AI model responses
+            timeout=43200  # Increased timeout to 12 hours for AI model responses
         )
         
         excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
@@ -181,7 +181,7 @@ def proxy_rag(path=''):
             data=request.get_data(),
             cookies=request.cookies,
             allow_redirects=False,
-            timeout=3600  # Increased timeout to 1 hour for AI model responses
+            timeout=43200  # Increased timeout to 12 hours for AI model responses
         )
         
         excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
@@ -208,7 +208,7 @@ def agent_query(current_user_id):
             'Authorization': request.headers.get('Authorization', '')
         }
 
-        resp = requests.post(url, json=request.get_json(), headers=headers, timeout=3600)  # Increased timeout to 1 hour for AI model responses
+        resp = requests.post(url, json=request.get_json(), headers=headers, timeout=43200)  # Increased timeout to 12 hours for AI model responses
         return Response(resp.content, resp.status_code, resp.headers.items())
     except Exception as e:
         logger.error(f"Agent query convenience route error: {str(e)}")
@@ -227,7 +227,7 @@ def rag_query(current_user_id):
             'Authorization': request.headers.get('Authorization', '')
         }
 
-        resp = requests.post(url, json=request.get_json(), headers=headers, timeout=3600)  # Increased timeout to 1 hour for AI model responses
+        resp = requests.post(url, json=request.get_json(), headers=headers, timeout=43200)  # Increased timeout to 12 hours for AI model responses
         return Response(resp.content, resp.status_code, resp.headers.items())
     except Exception as e:
         logger.error(f"RAG query convenience route error: {str(e)}")
@@ -246,7 +246,7 @@ def rag_ingest(current_user_id):
             'Authorization': request.headers.get('Authorization', '')
         }
 
-        resp = requests.post(url, json=request.get_json(), headers=headers, timeout=3600)  # Increased timeout to 1 hour for AI model responses
+        resp = requests.post(url, json=request.get_json(), headers=headers, timeout=43200)  # Increased timeout to 12 hours for AI model responses
         # Return the response from the RAG service with its original status code
         excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
         headers = [(name, value) for (name, value) in resp.raw.headers.items()
@@ -270,7 +270,7 @@ def rag_retrieve(current_user_id):
             'Authorization': request.headers.get('Authorization', '')
         }
 
-        resp = requests.post(url, json=request.get_json(), headers=headers, timeout=3600)  # Increased timeout to 1 hour for AI model responses
+        resp = requests.post(url, json=request.get_json(), headers=headers, timeout=43200)  # Increased timeout to 12 hours for AI model responses
         return Response(resp.content, resp.status_code, resp.headers.items())
     except Exception as e:
         logger.error(f"RAG retrieve convenience route error: {str(e)}")
@@ -289,7 +289,7 @@ def rag_lookup(current_user_id):
             'Authorization': request.headers.get('Authorization', '')
         }
 
-        resp = requests.post(url, json=request.get_json(), headers=headers, timeout=3600)  # Increased timeout to 1 hour for AI model responses
+        resp = requests.post(url, json=request.get_json(), headers=headers, timeout=43200)  # Increased timeout to 12 hours for AI model responses
         return Response(resp.content, resp.status_code, resp.headers.items())
     except Exception as e:
         logger.error(f"RAG lookup convenience route error: {str(e)}")
@@ -553,7 +553,7 @@ def rag_upload(current_user_id):
         # Add authorization header
         forwarded_headers['Authorization'] = request.headers.get('Authorization', '')
 
-        resp = requests.post(url, files=files, headers=forwarded_headers, timeout=3600)  # 1 hour timeout for large uploads and processing
+        resp = requests.post(url, files=files, headers=forwarded_headers, timeout=43200)  # 12 hour timeout for large uploads and processing
         return Response(resp.content, resp.status_code, resp.headers.items())
     except Exception as e:
         logger.error(f"RAG upload convenience route error: {str(e)}")
@@ -574,7 +574,7 @@ def rag_clear(current_user_id):
             'Authorization': request.headers.get('Authorization', '')
         }
 
-        resp = requests.post(url, json=request.get_json(), headers=headers, timeout=3600)  # Increased timeout to 1 hour for AI model responses
+        resp = requests.post(url, json=request.get_json(), headers=headers, timeout=43200)  # Increased timeout to 12 hours for AI model responses
         # Return the response from the RAG service with its original status code
         excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
         headers = [(name, value) for (name, value) in resp.raw.headers.items()
@@ -597,7 +597,7 @@ def rag_upload_progress(current_user_id, session_id):
             'Authorization': request.headers.get('Authorization', '')
         }
 
-        resp = requests.get(url, headers=headers, timeout=3600)  # Increased timeout to 1 hour for AI model responses
+        resp = requests.get(url, headers=headers, timeout=43200)  # Increased timeout to 12 hours for AI model responses
         # Return the response from the RAG service with its original status code
         excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
         headers = [(name, value) for (name, value) in resp.raw.headers.items()
@@ -638,7 +638,7 @@ def rag_upload_with_progress(current_user_id):
         # Add authorization header
         forwarded_headers['Authorization'] = request.headers.get('Authorization', '')
 
-        resp = requests.post(url, files=files, headers=forwarded_headers, timeout=3600)  # 1 hour timeout for large uploads and processing
+        resp = requests.post(url, files=files, headers=forwarded_headers, timeout=43200)  # 12 hour timeout for large uploads and processing
         return Response(resp.content, resp.status_code, resp.headers.items())
     except Exception as e:
         logger.error(f"RAG upload with progress convenience route error: {str(e)}")
@@ -659,7 +659,7 @@ def rag_ingest_from_session(current_user_id):
             'Authorization': request.headers.get('Authorization', '')
         }
 
-        resp = requests.post(url, json=request.get_json(), headers=headers, timeout=3600)  # Increased timeout to 1 hour for AI model responses
+        resp = requests.post(url, json=request.get_json(), headers=headers, timeout=43200)  # Increased timeout to 12 hours for AI model responses
         # Return the response from the RAG service with its original status code
         excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
         headers = [(name, value) for (name, value) in resp.raw.headers.items()
@@ -688,7 +688,7 @@ def rag_limits():
         # Add authorization header
         forwarded_headers['Authorization'] = request.headers.get('Authorization', '')
 
-        resp = requests.get(url, headers=forwarded_headers, timeout=3600)  # Increased timeout to 1 hour for AI model responses
+        resp = requests.get(url, headers=forwarded_headers, timeout=43200)  # Increased timeout to 12 hours for AI model responses
         return Response(resp.content, resp.status_code, resp.headers.items())
     except Exception as e:
         logger.error(f"RAG limits convenience route error: {str(e)}")
@@ -720,7 +720,7 @@ def download_file(path):
         # Forward query parameters
         params = request.args.to_dict()
 
-        resp = requests.get(url, headers=headers, params=params, timeout=3600)  # Increased timeout to 1 hour for AI model responses
+        resp = requests.get(url, headers=headers, params=params, timeout=43200)  # Increased timeout to 12 hours for AI model responses
         # Return the response from the RAG service with its original status code
         excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
         headers = [(name, value) for (name, value) in resp.raw.headers.items()
@@ -757,10 +757,10 @@ def rag_import_processed(current_user_id):
         # Make request to RAG service
         if files:
             # Use requests with files
-            resp = requests.post(url, files=files, headers=headers, timeout=3600)  # Increased timeout to 1 hour
+            resp = requests.post(url, files=files, headers=headers, timeout=43200)  # Increased timeout to 12 hours
         else:
             # Forward without files if no files were provided
-            resp = requests.post(url, headers=headers, data=request.get_data(), timeout=3600)
+            resp = requests.post(url, headers=headers, data=request.get_data(), timeout=43200)
 
         # Return the response from the RAG service with its original status code
         excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
@@ -785,7 +785,7 @@ def auth_validate():
             'Authorization': request.headers.get('Authorization', '')
         }
 
-        resp = requests.post(url, json=request.get_json(), headers=headers, timeout=3600)  # Increased timeout to 1 hour for AI model responses
+        resp = requests.post(url, json=request.get_json(), headers=headers, timeout=43200)  # Increased timeout to 12 hours for AI model responses
         return Response(resp.content, resp.status_code, resp.headers.items())
     except Exception as e:
         logger.error(f"Auth validation convenience route error: {str(e)}")
@@ -841,7 +841,7 @@ if __name__ == '__main__':
                 'bind': f'0.0.0.0:{port}',
                 'workers': 4,
                 'worker_class': 'sync',
-                'timeout': 3600,  # 1 hour to match our timeout configuration
+                'timeout': 43200,  # 12 hours to accommodate long-running requests
                 'keepalive': 10,
                 'max_requests': 1000,
                 'max_requests_jitter': 100,

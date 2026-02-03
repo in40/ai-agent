@@ -13,6 +13,8 @@ import requests
 from typing import Dict, List, Optional, Tuple
 from datetime import datetime
 from urllib.parse import urlparse
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from dotenv import load_dotenv
 
 # Add the project root directory and registry directory to the Python path to allow imports
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -21,21 +23,42 @@ sys.path.insert(0, os.path.join(project_root, 'registry'))
 
 from registry_client import ServiceInfo, MCPServiceWrapper, HeartbeatFilter
 from http.server import BaseHTTPRequestHandler, HTTPServer
+from socketserver import ThreadingMixIn
+
+# Create a threaded HTTP server
+class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
+    """Handle requests in separate threads."""
+    # This allows concurrent requests to be processed
+    daemon_threads = True
 
 # Import settings to check if screen logging is enabled
 sys.path.insert(0, os.path.join(project_root, 'config'))
-from settings import ENABLE_SCREEN_LOGGING
+from settings import ENABLE_SCREEN_LOGGING, DOWNLOAD_TIMEOUT_SECONDS
+
+# Load environment variables from .env file
+load_dotenv(dotenv_path=os.path.join(project_root, '.env'))
+
+# Get the parallelism setting from environment, default to 4 if not set
+PARALLELISM = int(os.getenv('PARRALELISM', 4))  # Note: Using the existing env var name with typo
+
+# Create a lock for thread-safe file operations
+file_operation_lock = threading.Lock()
 
 
 class DownloadRequestHandler(BaseHTTPRequestHandler):
     """HTTP request handler for download requests"""
 
-    # Class variable to hold the download function
+    # Class variables to hold the download function and thread pool
     download_func = None
+    thread_pool = None
 
     @classmethod
     def set_download_func(cls, func):
         cls.download_func = func
+
+    @classmethod
+    def set_thread_pool(cls, pool):
+        cls.thread_pool = pool
 
     def do_POST(self):
         """Handle POST requests for download operations"""
@@ -70,29 +93,47 @@ class DownloadRequestHandler(BaseHTTPRequestHandler):
                 self._send_error_response(400, "Missing 'url' or 'parameters' in request", "unknown")
                 return
 
-            self.logger_info(f"Downloading from URL: {download_url}")
+            self.logger_info(f"Submitting download request for URL: {download_url}")
 
-            # Perform download using the bound function
+            # Perform download using the bound function via thread pool
             if DownloadRequestHandler.download_func is None:
                 self.logger_error("Download function not set")
                 self._send_error_response(500, "Server configuration error", "unknown")
                 return
 
-            success, file_path, error_msg = DownloadRequestHandler.download_func(download_url)
+            if DownloadRequestHandler.thread_pool is None:
+                self.logger_error("Thread pool not set")
+                self._send_error_response(500, "Server configuration error", "unknown")
+                return
 
-            # Create response
-            response = {
-                "success": True,
-                "result": {
-                    "success": success,
-                    "url": download_url,
-                    "file_path": file_path,
-                    "error": error_msg
+            # Submit the download task to the thread pool
+            future = DownloadRequestHandler.thread_pool.submit(DownloadRequestHandler.download_func, download_url)
+
+            # Wait for the result (this will block this request handler thread, but that's OK since
+            # each request gets its own thread from the HTTP server's internal thread pool)
+            try:
+                success, file_path, error_msg = future.result(timeout=DOWNLOAD_TIMEOUT_SECONDS + 10)  # Add buffer to timeout
+
+                # Create response
+                response = {
+                    "success": True,
+                    "result": {
+                        "success": success,
+                        "url": download_url,
+                        "file_path": file_path,
+                        "error": error_msg
+                    }
                 }
-            }
 
-            # Send successful response
-            self._send_json_response(200, response)
+                # Send successful response
+                self._send_json_response(200, response)
+
+            except TimeoutError:
+                self.logger_error(f"Download timed out for URL: {download_url}")
+                self._send_error_response(408, f"Download timed out after {DOWNLOAD_TIMEOUT_SECONDS + 10}s", download_url)
+            except Exception as e:
+                self.logger_error(f"Error during download execution: {str(e)}")
+                self._send_error_response(500, f"Download execution error: {str(e)}", download_url)
 
         except Exception as e:
             self.logger_error(f"Error handling request: {str(e)}")
@@ -144,7 +185,7 @@ class MCPDownloadServer:
 
     def __init__(self, host: str = '127.0.0.1', port: int = 8093, registry_url: str = 'http://127.0.0.1:8080',
                  service_id: Optional[str] = None, service_ttl: int = 60, log_level: str = 'INFO',
-                 download_dir: str = './downloads'):
+                 download_dir: str = './downloads', download_timeout: int = DOWNLOAD_TIMEOUT_SECONDS):
         self.host = host
         self.port = port
         self.registry_url = registry_url
@@ -153,6 +194,8 @@ class MCPDownloadServer:
         self.httpd: Optional[HTTPServer] = None
         self.running = False
         self.download_dir = download_dir
+        self.download_timeout = download_timeout
+        self.thread_pool: Optional[ThreadPoolExecutor] = None
 
         # Ensure download directory exists
         os.makedirs(self.download_dir, exist_ok=True)
@@ -186,15 +229,25 @@ class MCPDownloadServer:
             if not filename or '.' not in filename:
                 # If no filename in URL, try to extract from Content-Disposition header or use a default
                 filename = f"download_{int(datetime.now().timestamp())}.dat"
-            
-            file_path = os.path.join(self.download_dir, filename)
 
-            # Download the file
-            self.logger.info(f"Starting download from {url}")
-            response = requests.get(url, stream=True)
+            # Use a lock to ensure thread-safe file operations
+            with file_operation_lock:
+                file_path = os.path.join(self.download_dir, filename)
+
+                # Check if file already exists and generate a unique name if needed
+                counter = 1
+                original_file_path = file_path
+                while os.path.exists(file_path):
+                    name, ext = os.path.splitext(original_file_path)
+                    file_path = f"{name}_{counter}{ext}"
+                    counter += 1
+
+            # Download the file with timeout
+            self.logger.info(f"Starting download from {url} with timeout {self.download_timeout}s")
+            response = requests.get(url, stream=True, timeout=self.download_timeout)
             response.raise_for_status()
 
-            # Write the file
+            # Write the file (this is now thread-safe as each thread gets its own unique file path)
             with open(file_path, 'wb') as f:
                 for chunk in response.iter_content(chunk_size=8192):
                     f.write(chunk)
@@ -202,6 +255,10 @@ class MCPDownloadServer:
             self.logger.info(f"Successfully downloaded file to {file_path}")
             return True, file_path, None
 
+        except requests.exceptions.Timeout as e:
+            error_msg = f"Timeout downloading {url} after {self.download_timeout}s: {str(e)}"
+            self.logger.error(error_msg)
+            return False, "", error_msg
         except requests.exceptions.RequestException as e:
             error_msg = f"Network error downloading {url}: {str(e)}"
             self.logger.error(error_msg)
@@ -214,6 +271,10 @@ class MCPDownloadServer:
     def start(self):
         """Start the download server"""
         try:
+            # Initialize the thread pool with the configured parallelism
+            self.thread_pool = ThreadPoolExecutor(max_workers=PARALLELISM)
+            self.logger.info(f"Initialized thread pool with {PARALLELISM} workers")
+
             # Register with the service registry
             service_id = f"download-server-{self.host}-{self.port}".replace('.', '-').replace(':', '-')
             # Use 127.0.0.1 instead of 0.0.0.0 for service registration since 0.0.0.0 is not a valid call address
@@ -228,7 +289,8 @@ class MCPDownloadServer:
                     "service_type": "file_downloader",
                     "capabilities": ["url_download", "file_transfer"],
                     "download_dir": self.download_dir,
-                    "started_at": datetime.now().isoformat()
+                    "started_at": datetime.now().isoformat(),
+                    "max_concurrent_downloads": PARALLELISM
                 }
             )
 
@@ -246,14 +308,16 @@ class MCPDownloadServer:
                 # Stop the server if registration fails
                 raise Exception("Service registration failed")
 
-            # Set the download function for the DownloadRequestHandler class
+            # Set the download function and thread pool for the DownloadRequestHandler class
             DownloadRequestHandler.set_download_func(self.download_file)
+            DownloadRequestHandler.set_thread_pool(self.thread_pool)
 
-            # Create HTTP server with our custom request handler
-            self.httpd = HTTPServer((self.host, self.port), DownloadRequestHandler)
+            # Create threaded HTTP server with our custom request handler
+            self.httpd = ThreadedHTTPServer((self.host, self.port), DownloadRequestHandler)
 
             self.running = True
             self.logger.info(f"MCP Download Server listening on {self.host}:{self.port}")
+            self.logger.info(f"Server configured for {PARALLELISM} concurrent downloads")
 
             # Start serving requests
             while self.running:
@@ -273,6 +337,12 @@ class MCPDownloadServer:
                     self.httpd.server_close()
                 except Exception as cleanup_error:
                     self.logger.error(f"Error closing HTTP server: {cleanup_error}")
+            if self.thread_pool:
+                try:
+                    self.thread_pool.shutdown(wait=True)  # Wait for all threads to complete
+                    self.logger.info("Thread pool shut down successfully")
+                except Exception as cleanup_error:
+                    self.logger.error(f"Error shutting down thread pool: {cleanup_error}")
             self.logger.info("MCP Download Server stopped")
             raise
 
@@ -280,6 +350,12 @@ class MCPDownloadServer:
         """Stop the download server"""
         self.running = False
         self.logger.info("Stopping MCP Download Server...")
+
+        # Shutdown the thread pool gracefully
+        if self.thread_pool:
+            self.logger.info("Shutting down thread pool...")
+            self.thread_pool.shutdown(wait=True)  # Wait for all threads to complete
+            self.logger.info("Thread pool shut down successfully")
 
 
 def main():
@@ -295,6 +371,8 @@ def main():
                         help='Logging level (default: INFO)')
     parser.add_argument('--download-dir', type=str, default='./downloads',
                         help='Directory to save downloaded files (default: ./downloads)')
+    parser.add_argument('--download-timeout', type=int, default=DOWNLOAD_TIMEOUT_SECONDS,
+                        help=f'Download timeout in seconds (default: {DOWNLOAD_TIMEOUT_SECONDS})')
 
     args = parser.parse_args()
 
@@ -316,7 +394,8 @@ def main():
         service_id=args.service_id,
         service_ttl=args.service_ttl,
         log_level=args.log_level,
-        download_dir=args.download_dir
+        download_dir=args.download_dir,
+        download_timeout=args.download_timeout
     )
 
     try:
@@ -328,6 +407,9 @@ def main():
     except Exception as e:
         if ENABLE_SCREEN_LOGGING:
             print(f"Failed to start server: {e}")
+        # Ensure thread pool is shut down in case of error
+        if hasattr(server, 'thread_pool') and server.thread_pool:
+            server.thread_pool.shutdown(wait=True)
         exit(1)
 
 

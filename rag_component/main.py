@@ -270,8 +270,9 @@ class RAGOrchestrator:
                 })
 
         # If reranker is enabled, re-rank the documents
-        if self.reranker and formatted_docs:
-            formatted_docs = self.reranker.rerank_documents(query, formatted_docs, top_k=top_k)
+        # COMMENTED OUT AS REQUESTED: Reranking is now handled separately in the enhancement phase
+        # if self.reranker and formatted_docs:
+        #     formatted_docs = self.reranker.rerank_documents(query, formatted_docs, top_k=top_k)
 
         return formatted_docs
 
@@ -301,6 +302,11 @@ class RAGOrchestrator:
             # Import required components
             from models.dedicated_mcp_model import DedicatedMCPModel
             from rag_component.config import RERANK_TOP_K_RESULTS
+            from config.settings import str_to_bool
+            import os
+            import concurrent.futures
+            from functools import partial
+
             mcp_model = DedicatedMCPModel()
 
             # Get available download services
@@ -327,17 +333,19 @@ class RAGOrchestrator:
 
             download_service = download_services[0]
 
-            # Process each search result
-            processed_summaries = []
+            # Get parallelism setting from environment
+            parallelism = int(os.getenv('PARRALELISM', 4))
 
-            for idx, result in enumerate(search_results):
+            # Function to download content for a single result
+            def download_single_result(result_tuple):
+                idx, result = result_tuple
                 url = result.get("url", "")
                 title = result.get("title", "")
                 description = result.get("description", "")
 
                 if not url:
                     print(f"[RAG WARNING] No URL found for result {idx}, skipping")
-                    continue
+                    return None
 
                 print(f"[RAG INFO] Processing result {idx+1}/{len(search_results)}: {title}")
 
@@ -354,6 +362,24 @@ class RAGOrchestrator:
                     "download",
                     download_params
                 )
+
+                return {
+                    "idx": idx,
+                    "result": result,
+                    "url": url,
+                    "title": title,
+                    "description": description,
+                    "download_result": download_result
+                }
+
+            # Function to summarize downloaded content
+            def summarize_content(download_data):
+                idx = download_data["idx"]
+                result = download_data["result"]
+                url = download_data["url"]
+                title = download_data["title"]
+                description = download_data["description"]
+                download_result = download_data["download_result"]
 
                 if download_result.get("status") == "success":
                     # Get the downloaded content
@@ -387,66 +413,150 @@ class RAGOrchestrator:
                     try:
                         summary = response_generator.generate_natural_language_response(summary_prompt)
 
-                        # Add the summary with metadata to our processed results
-                        processed_summaries.append({
+                        # Return the summary with metadata
+                        return {
                             "title": title,
                             "url": url,
                             "summary": summary,
                             "original_description": description,
                             "relevance_score": 0.0  # Will be calculated during reranking
-                        })
-
-                        print(f"[RAG INFO] Successfully summarized content for {title}")
+                        }
 
                     except Exception as e:
                         print(f"[RAG WARNING] Error generating summary for {title}: {str(e)}")
-                        # Add the result with the original description as fallback
-                        processed_summaries.append({
+                        # Return the result with the original description as fallback
+                        return {
                             "title": title,
                             "url": url,
                             "summary": description,
                             "original_description": description,
                             "relevance_score": 0.0
-                        })
+                        }
                 else:
                     print(f"[RAG WARNING] Failed to download content from {url}")
-                    # Add the result with the original description as fallback
-                    processed_summaries.append({
+                    # Return the result with the original description as fallback
+                    return {
                         "title": title,
                         "url": url,
                         "summary": description,
                         "original_description": description,
                         "relevance_score": 0.0
-                    })
+                    }
 
-            # Create relevance scores for each summary based on how well it addresses the user query
-            from models.response_generator import ResponseGenerator
-            response_generator = ResponseGenerator()
+            # Prepare tuples of (index, result) for parallel processing
+            indexed_results = [(idx, result) for idx, result in enumerate(search_results)]
 
-            for summary_obj in processed_summaries:
-                relevance_prompt = f"""
-                Original user request: {user_query}
+            # Perform downloads in parallel
+            download_results = []
+            with concurrent.futures.ThreadPoolExecutor(max_workers=parallelism) as executor:
+                # Submit all download tasks
+                future_to_result = {executor.submit(download_single_result, item): item for item in indexed_results}
 
-                Summary content: {summary_obj['summary']}
+                # Collect download results as they complete
+                for future in concurrent.futures.as_completed(future_to_result):
+                    download_data = future.result()
+                    if download_data is not None:
+                        download_results.append(download_data)
 
-                On a scale of 0.0 to 1.0, how relevant is this summary to the user's original request?
-                0.0 means completely irrelevant, 1.0 means highly relevant.
-                Please respond with only the numerical score.
-                """
+            # Perform summarization in parallel for completed downloads
+            processed_summaries = []
+            with concurrent.futures.ThreadPoolExecutor(max_workers=parallelism) as executor:
+                # Submit all summarization tasks
+                future_to_download = {executor.submit(summarize_content, download_data): download_data for download_data in download_results}
 
-                try:
-                    relevance_response = response_generator.generate_natural_language_response(relevance_prompt)
-                    # Extract the numerical score from the response
-                    import re
-                    score_match = re.search(r'(\d+\.?\d*)', relevance_response)
-                    if score_match:
-                        score = float(score_match.group(1))
-                        summary_obj['relevance_score'] = min(1.0, max(0.0, score))  # Clamp between 0 and 1
+                # Collect summarization results as they complete
+                for future in concurrent.futures.as_completed(future_to_download):
+                    summary_result = future.result()
+                    if summary_result is not None:
+                        processed_summaries.append(summary_result)
+
+            # Use the RAG MCP server for reranking all summaries at once
+            try:
+                # Discover available RAG services
+                rag_services = [s for s in registry_client.discover_services() if s.type == "rag"]
+
+                if not rag_services:
+                    print("[RAG WARNING] No RAG MCP services available for reranking.")
+                    # Set default scores for all processed summaries
+                    for summary_obj in processed_summaries:
+                        summary_obj['relevance_score'] = 0.5  # Default score
+                else:
+                    rag_service = rag_services[0]  # Use the first available RAG service
+
+                    # Prepare documents for reranking - extract the summaries/content to be reranked
+                    rerank_documents = []
+                    for item in processed_summaries:
+                        # Create a document-like structure for reranking
+                        doc = {
+                            'content': item.get('summary', ''),  # Use the LLM-generated summary
+                            'title': item.get('title', ''),
+                            'url': item.get('url', ''),
+                            'original_description': item.get('original_description', '')
+                        }
+                        rerank_documents.append(doc)
+
+                    # Prepare parameters for the MCP rerank call
+                    from rag_component.config import RERANK_TOP_K_RESULTS
+                    rerank_params = {
+                        "query": user_query,
+                        "documents": rerank_documents,
+                        "top_k": RERANK_TOP_K_RESULTS
+                    }
+
+                    # Call the RAG MCP server for reranking
+                    rerank_result = mcp_model._call_mcp_service(
+                        {
+                            "id": rag_service.id,
+                            "host": rag_service.host,
+                            "port": rag_service.port,
+                            "type": rag_service.type,
+                            "metadata": rag_service.metadata
+                        },
+                        "rerank_documents",  # Action to perform
+                        rerank_params
+                    )
+
+                    # Process the reranking results
+                    if rerank_result.get("status") == "success":
+                        reranked_results = rerank_result.get("result", {}).get("results", [])
+
+                        # Update the processed summaries with reranking information
+                        # Create a mapping of original results by URL for quick lookup
+                        original_results_map = {item.get('url'): item for item in processed_summaries if item.get('url')}
+
+                        reranked_processed_summaries = []
+                        for reranked_doc in reranked_results:
+                            url = reranked_doc.get('url', '')
+                            # Find the original processed result that matches this reranked document
+                            original_result = original_results_map.get(url)
+
+                            if original_result:
+                                # Update with reranking score and position
+                                original_result['relevance_score'] = reranked_doc.get('score', 0.0)
+                                original_result['reranked'] = True
+                                reranked_processed_summaries.append(original_result)
+                            else:
+                                # If no original match found, create a new result with the reranked data
+                                reranked_processed_summaries.append({
+                                    'title': reranked_doc.get('title', ''),
+                                    'url': reranked_doc.get('url', ''),
+                                    'summary': reranked_doc.get('content', ''),
+                                    'original_description': reranked_doc.get('original_description', ''),
+                                    'relevance_score': reranked_doc.get('score', 0.0),
+                                    'reranked': True
+                                })
+
+                        processed_summaries = reranked_processed_summaries
                     else:
-                        summary_obj['relevance_score'] = 0.5  # Default score if parsing fails
-                except Exception as e:
-                    print(f"[RAG WARNING] Error calculating relevance score: {str(e)}")
-                    summary_obj['relevance_score'] = 0.5  # Default score on error
+                        print(f"[RAG WARNING] RAG MCP reranking failed: {rerank_result.get('error', 'Unknown error')}")
+                        # Set default scores for all processed summaries
+                        for summary_obj in processed_summaries:
+                            summary_obj['relevance_score'] = 0.5  # Default score
+            except Exception as e:
+                print(f"[RAG WARNING] Error during MCP-based reranking: {str(e)}")
+                # Set default scores for all processed summaries
+                for summary_obj in processed_summaries:
+                    summary_obj['relevance_score'] = 0.5  # Default score
 
             # Sort by relevance score in descending order and take top K
             sorted_summaries = sorted(processed_summaries, key=lambda x: x['relevance_score'], reverse=True)
