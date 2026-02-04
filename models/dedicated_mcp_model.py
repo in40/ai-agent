@@ -194,20 +194,140 @@ class DedicatedMCPModel:
         basic_system_prompt = system_prompt_template
         basic_system_prompt = basic_system_prompt.replace('{user_request}', '')
         basic_system_prompt = basic_system_prompt.replace('{mcp_services_json}', '{{}}')  # Escaped to avoid template issues
-        basic_system_prompt = basic_system_prompt.replace('{previous_tool_calls}', '[{{}}]')
-        basic_system_prompt = basic_system_prompt.replace('{previous_signals}', '[{{}}]')
-        basic_system_prompt = basic_system_prompt.replace('{informational_content}', '')
+        basic_system_prompt = basic_system_prompt.replace('{previous_tool_calls}', '[{{}}]')  # Empty array with escaped braces
+        basic_system_prompt = basic_system_prompt.replace('{previous_signals}', '[{{}}]')  # Empty array with escaped braces
+        basic_system_prompt = basic_system_prompt.replace('{informational_content}', '')  # Empty string
+
+        # The original prompt contains JSON examples with braces that need to be escaped
+        # to prevent LangChain from interpreting them as template variables
+        # We need to escape braces that are part of JSON examples but not our template variables
+        # Since we've already replaced our specific template variables, now we need to escape remaining braces
+        # that are part of JSON examples in the documentation
+
+        # To do this properly, let's identify and escape only the braces that are part of JSON examples
+        # but not our template variables. We'll use a more targeted approach.
+
+        # First, temporarily protect the template variable values we just inserted
+        # so we don't accidentally modify them when escaping other braces
+        import re
+
+        # Protect the values we just inserted by replacing them with placeholders
+        protected_values = {}
+        placeholder_counter = 0
+
+        # Replace our template variable values with placeholders
+        replacements = [
+            ('{{}}', 'PLACEHOLDER_EMPTY_OBJ_' + str(placeholder_counter := placeholder_counter + 1)),
+            ('[{{}}]', 'PLACEHOLDER_EMPTY_ARRAY_' + str(placeholder_counter := placeholder_counter + 1)),
+        ]
+
+        for old_val, new_val in replacements:
+            basic_system_prompt = basic_system_prompt.replace(old_val, new_val)
+            protected_values[new_val] = old_val
+
+        # Now escape remaining braces that are part of JSON examples in the documentation
+        # We'll escape braces that are not part of our template variables
+        # This is tricky, so let's escape braces that appear in common JSON contexts
+        # Look for patterns like "word {" or "} word" or ":" (as in JSON property:value)
+        # We'll use a more conservative approach: only escape braces that are clearly part of JSON examples
+
+        # Actually, let's use a different approach - we'll use a custom template format
+        # that doesn't conflict with JSON braces. We'll use a different delimiter for our template variables.
+        # But since we need to work with the existing LangChain infrastructure, let's go back to basics.
+
+        # The safest approach: identify the JSON examples in the original prompt and escape their braces
+        # while keeping our template variables intact.
+        # Since we've already replaced our template variables with static content,
+        # we now need to escape the remaining braces that are part of JSON examples.
+
+        # Let's use a more targeted approach: escape braces that appear in JSON contexts
+        # but not our template variables. Since we've already replaced template variables,
+        # we can now safely escape remaining braces.
+
+        # Actually, let's just escape braces that are not part of our protected values
+        # First, split the text by our protected values
+        import re
+        parts = []
+        current_pos = 0
+
+        # Create a regex pattern to find our protected values
+        protected_keys = list(protected_values.keys())
+        if protected_keys:
+            pattern = '|'.join(re.escape(key) for key in protected_keys)
+            for match in re.finditer(pattern, basic_system_prompt):
+                # Add text before the match
+                if current_pos < match.start():
+                    parts.append(('text', basic_system_prompt[current_pos:match.start()]))
+                # Add the protected value
+                parts.append(('protected', match.group()))
+                current_pos = match.end()
+            # Add remaining text
+            if current_pos < len(basic_system_prompt):
+                parts.append(('text', basic_system_prompt[current_pos:]))
+        else:
+            parts = [('text', basic_system_prompt)]
+
+        # Process each part: escape braces in text parts, keep protected values as-is
+        processed_parts = []
+        for part_type, part_content in parts:
+            if part_type == 'text':
+                # Escape braces in text parts (these are likely JSON examples)
+                escaped_content = part_content.replace('{', '{{').replace('}', '}}')
+                processed_parts.append(escaped_content)
+            else:  # protected
+                # Keep protected values as-is
+                processed_parts.append(part_content)
+
+        # Reconstruct the prompt
+        basic_system_prompt = ''.join(processed_parts)
+
+        # Now restore our template variable values from placeholders
+        for placeholder, original_value in protected_values.items():
+            basic_system_prompt = basic_system_prompt.replace(placeholder, original_value)
 
         # Check for any truly empty template variables in the basic_system_prompt that might cause issues
+        # We need to distinguish between escaped braces {{}}, literal braces in JSON docs "{}", and empty template vars {} (which are not valid)
         import re
-        # Look for template variables that are completely empty (like {} or { }) but not legitimate ones like {input_text}
-        all_vars = re.findall(r'\{([^}]*)\}', basic_system_prompt)
-        for var in all_vars:
-            # Only flag as problematic if it's truly empty (no variable name)
-            # Skip legitimate template variables like {user_request}, {mcp_services_json}, etc.
-            if var.strip() == '':  # Empty variable like {} or { }
-                # This shouldn't happen with our prompt, but let's handle it just in case
-                raise ValueError(f"Found empty template variable in system prompt: {{{var}}}")
+
+        # Use a more sophisticated approach to find actual empty template variables
+        # We want to match {} or { } but NOT {{}} or {{ }}, or legitimate JSON documentation like "{}"
+        # First, find all potential empty template variables
+        pattern = r'(?<!\{)\{(\s*)\}(?!\})'
+        all_matches = list(re.finditer(pattern, basic_system_prompt))
+
+        # Filter out legitimate uses of {} like in JSON documentation
+        for match in all_matches:
+            empty_var = match.group()
+            pos = match.start()
+
+            # Look for surrounding context that would indicate this is documentation vs a template variable
+            # Expand the context window to better capture surrounding text
+            start_context = max(0, pos - 50)
+            end_context = min(len(basic_system_prompt), pos + 50)
+            context = basic_system_prompt[start_context:end_context]
+
+            # Check for common patterns that indicate legitimate documentation vs template variables
+            # Pattern 1: If it's in quotes like "{}" - this is documentation
+            if '"{}"' in context or "'{}'" in context:
+                continue  # Skip this as it's likely legitimate documentation
+
+            # Pattern 2: If it's part of JSON examples in the prompt documentation
+            # Look for surrounding JSON structure indicators
+            json_indicators = ["JSON", "json", "структура", "format", "формат", "объект", "object"]
+            is_json_example = any(indicator in context.lower() for indicator in json_indicators)
+
+            if is_json_example:
+                continue  # Skip if it looks like a JSON example in documentation
+
+            # Pattern 3: Check if it's in a comment or documentation section
+            doc_indicators = ["например", "например:", "пример", "example", "format:", "формат:"]
+            is_documentation = any(indicator in context.lower() for indicator in doc_indicators)
+
+            if is_documentation:
+                continue  # Skip if it looks like documentation
+
+            # If none of the above conditions are met, this might be an actual empty template variable
+            raise ValueError(f"Found empty template variable in system prompt: {empty_var}")
 
         self.basic_prompt = ChatPromptTemplate.from_messages([
             ("system", basic_system_prompt),
@@ -270,15 +390,71 @@ class DedicatedMCPModel:
                 temp_system_prompt = temp_system_prompt.replace('{informational_content}', '')  # Empty string
 
                 # Check for any truly empty template variables in the temp_system_prompt that might cause issues
+                # We need to distinguish between escaped braces {{}}, literal braces in JSON docs "{}", and empty template vars {} (which are not valid)
                 import re
-                # Look for template variables that are completely empty (like {} or { }) but not legitimate ones like {input_text}
-                all_vars = re.findall(r'\{([^}]*)\}', temp_system_prompt)
-                for var in all_vars:
-                    # Only flag as problematic if it's truly empty (no variable name)
-                    # Skip legitimate template variables like {user_request}, {mcp_services_json}, etc.
-                    if var.strip() == '':  # Empty variable like {} or { }
-                        # This shouldn't happen with our prompt, but let's handle it just in case
-                        raise ValueError(f"Found empty template variable in system prompt: {{{var}}}")
+
+                # Use a more sophisticated approach to find actual empty template variables
+                # We want to match {} or { } but NOT {{}} or {{ }}, or legitimate JSON documentation like "{}"
+                # First, find all potential empty template variables
+                pattern = r'(?<!\{)\{(\s*)\}(?!\})'
+                all_matches = list(re.finditer(pattern, temp_system_prompt))
+
+                # Filter out legitimate uses of {} like in JSON documentation
+                for match in all_matches:
+                    empty_var = match.group()
+                    pos = match.start()
+
+                    # Look for surrounding context that would indicate this is documentation vs a template variable
+                    # Expand the context window to better capture surrounding text
+                    start_context = max(0, pos - 50)
+                    end_context = min(len(temp_system_prompt), pos + 50)
+                    context = temp_system_prompt[start_context:end_context]
+
+                    # Check for common patterns that indicate legitimate documentation vs template variables
+                    # Pattern 1: If it's in quotes like "{}" - this is documentation
+                    if '"{}"' in context or "'{}'" in context:
+                        continue  # Skip this as it's likely legitimate documentation
+
+                    # Pattern 2: If it's part of JSON examples in the prompt documentation
+                    # Look for surrounding JSON structure indicators
+                    json_indicators = ["JSON", "json", "структура", "format", "формат", "объект", "object"]
+                    is_json_example = any(indicator in context.lower() for indicator in json_indicators)
+
+                    if is_json_example:
+                        continue  # Skip if it looks like a JSON example in documentation
+
+                    # Pattern 3: Check if it's in a comment or documentation section
+                    doc_indicators = ["например", "например:", "пример", "example", "format:", "формат:"]
+                    is_documentation = any(indicator in context.lower() for indicator in doc_indicators)
+
+                    if is_documentation:
+                        continue  # Skip if it looks like documentation
+
+                    # If none of the above conditions are met, this might be an actual empty template variable
+                    raise ValueError(f"Found empty template variable in system prompt: {empty_var}")
+
+                # Before creating the prompt, ensure all JSON example braces are properly escaped
+                # to prevent "unmatched '{' in format spec" errors
+                import re
+
+                # Temporarily protect template variables we want to keep
+                protected_values = {}
+                placeholder_counter = 0
+
+                # Look for any remaining template variables that should stay as variables
+                # In this case, we want {input_text} to remain as a template variable
+                if '{input_text}' in temp_system_prompt:
+                    placeholder = f'PLACEHOLDER_INPUT_TEXT_{placeholder_counter}'
+                    temp_system_prompt = temp_system_prompt.replace('{input_text}', placeholder)
+                    protected_values[placeholder] = '{input_text}'
+
+                # Escape any remaining unescaped braces that are part of JSON examples
+                temp_system_prompt = temp_system_prompt.replace('{', '{{')
+                temp_system_prompt = temp_system_prompt.replace('}', '}}')
+
+                # Restore protected values
+                for placeholder, original_value in protected_values.items():
+                    temp_system_prompt = temp_system_prompt.replace(placeholder, original_value)
 
                 temp_prompt = ChatPromptTemplate.from_messages([
                     ("system", temp_system_prompt),
@@ -313,15 +489,71 @@ class DedicatedMCPModel:
                 temp_system_prompt = temp_system_prompt.replace('{informational_content}', '')  # Empty string
 
                 # Check for any truly empty template variables in the temp_system_prompt that might cause issues
+                # We need to distinguish between escaped braces {{}}, literal braces in JSON docs "{}", and empty template vars {} (which are not valid)
                 import re
-                # Look for template variables that are completely empty (like {} or { }) but not legitimate ones like {input_text}
-                all_vars = re.findall(r'\{([^}]*)\}', temp_system_prompt)
-                for var in all_vars:
-                    # Only flag as problematic if it's truly empty (no variable name)
-                    # Skip legitimate template variables like {user_request}, {mcp_services_json}, etc.
-                    if var.strip() == '':  # Empty variable like {} or { }
-                        # This shouldn't happen with our prompt, but let's handle it just in case
-                        raise ValueError(f"Found empty template variable in system prompt: {{{var}}}")
+
+                # Use a more sophisticated approach to find actual empty template variables
+                # We want to match {} or { } but NOT {{}} or {{ }}, or legitimate JSON documentation like "{}"
+                # First, find all potential empty template variables
+                pattern = r'(?<!\{)\{(\s*)\}(?!\})'
+                all_matches = re.finditer(pattern, temp_system_prompt)
+
+                # Filter out legitimate uses of {} like in JSON documentation
+                for match in all_matches:
+                    empty_var = match.group()
+                    pos = match.start()
+
+                    # Look for surrounding context that would indicate this is documentation vs a template variable
+                    # Expand the context window to better capture surrounding text
+                    start_context = max(0, pos - 50)
+                    end_context = min(len(temp_system_prompt), pos + 50)
+                    context = temp_system_prompt[start_context:end_context]
+
+                    # Check for common patterns that indicate legitimate documentation vs template variables
+                    # Pattern 1: If it's in quotes like "{}" - this is documentation
+                    if '"{}"' in context or "'{}'" in context:
+                        continue  # Skip this as it's likely legitimate documentation
+
+                    # Pattern 2: If it's part of JSON examples in the prompt documentation
+                    # Look for surrounding JSON structure indicators
+                    json_indicators = ["JSON", "json", "структура", "format", "формат", "объект", "object"]
+                    is_json_example = any(indicator in context.lower() for indicator in json_indicators)
+
+                    if is_json_example:
+                        continue  # Skip if it looks like a JSON example in documentation
+
+                    # Pattern 3: Check if it's in a comment or documentation section
+                    doc_indicators = ["например", "например:", "пример", "example", "format:", "формат:"]
+                    is_documentation = any(indicator in context.lower() for indicator in doc_indicators)
+
+                    if is_documentation:
+                        continue  # Skip if it looks like documentation
+
+                    # If none of the above conditions are met, this might be an actual empty template variable
+                    raise ValueError(f"Found empty template variable in system prompt: {empty_var}")
+
+                # Before creating the prompt, ensure all JSON example braces are properly escaped
+                # to prevent "unmatched '{' in format spec" errors
+                import re
+
+                # Temporarily protect template variables we want to keep
+                protected_values = {}
+                placeholder_counter = 0
+
+                # Look for any remaining template variables that should stay as variables
+                # In this case, we want {input_text} to remain as a template variable
+                if '{input_text}' in temp_system_prompt:
+                    placeholder = f'PLACEHOLDER_INPUT_TEXT_{placeholder_counter}'
+                    temp_system_prompt = temp_system_prompt.replace('{input_text}', placeholder)
+                    protected_values[placeholder] = '{input_text}'
+
+                # Escape any remaining unescaped braces that are part of JSON examples
+                temp_system_prompt = temp_system_prompt.replace('{', '{{')
+                temp_system_prompt = temp_system_prompt.replace('}', '}}')
+
+                # Restore protected values
+                for placeholder, original_value in protected_values.items():
+                    temp_system_prompt = temp_system_prompt.replace(placeholder, original_value)
 
                 temp_prompt = ChatPromptTemplate.from_messages([
                     ("system", temp_system_prompt),
@@ -371,8 +603,55 @@ class DedicatedMCPModel:
 
                     try:
                         return json.loads(sanitized), True
-                    except json.JSONDecodeError as e:
-                        logger.warning(f"Could not parse {description} even after sanitization: {sanitized}. Error: {e}")
+                    except json.JSONDecodeError:
+                        # If basic sanitization fails, try to extract JSON from the response
+                        # Look for JSON objects within the response
+                        try:
+                            # Find the first JSON object in the string
+                            brace_count = 0
+                            start_idx = -1
+
+                            for i, char in enumerate(sanitized):
+                                if char == '{':
+                                    if brace_count == 0:
+                                        start_idx = i
+                                    brace_count += 1
+                                elif char == '}':
+                                    brace_count -= 1
+                                    if brace_count == 0 and start_idx != -1:
+                                        # Found a complete JSON object
+                                        json_candidate = sanitized[start_idx:i+1]
+                                        try:
+                                            return json.loads(json_candidate), True
+                                        except json.JSONDecodeError:
+                                            # If this JSON object is invalid, continue looking
+                                            continue
+
+                            # If we still can't parse it, try to find JSON arrays too
+                            bracket_count = 0
+                            start_idx = -1
+
+                            for i, char in enumerate(sanitized):
+                                if char == '[':
+                                    if bracket_count == 0:
+                                        start_idx = i
+                                    bracket_count += 1
+                                elif char == ']':
+                                    bracket_count -= 1
+                                    if bracket_count == 0 and start_idx != -1:
+                                        # Found a complete JSON array
+                                        json_candidate = sanitized[start_idx:i+1]
+                                        try:
+                                            return json.loads(json_candidate), True
+                                        except json.JSONDecodeError:
+                                            # If this JSON array is invalid, continue looking
+                                            continue
+
+                        except Exception as inner_e:
+                            logger.warning(f"Error during JSON extraction: {inner_e}")
+
+                        # If all attempts fail, return the original sanitized string with failure flag
+                        logger.warning(f"Could not parse {description} even after advanced sanitization: {sanitized[:200]}...")
                         return sanitized, False
 
             # Try to parse the response as JSON
@@ -876,15 +1155,71 @@ class DedicatedMCPModel:
 
             # Create a temporary chain with the formatted system prompt
             # Check for any truly empty template variables in the temp_system_prompt that might cause issues
+            # We need to distinguish between escaped braces {{}}, literal braces in JSON docs "{}", and empty template vars {} (which are not valid)
             import re
-            # Look for template variables that are completely empty (like {} or { }) but not legitimate ones like {input_text}
-            all_vars = re.findall(r'\{([^}]*)\}', temp_system_prompt)
-            for var in all_vars:
-                # Only flag as problematic if it's truly empty (no variable name)
-                # Skip legitimate template variables like {user_request}, {mcp_services_json}, etc.
-                if var.strip() == '':  # Empty variable like {} or { }
-                    # This shouldn't happen with our prompt, but let's handle it just in case
-                    raise ValueError(f"Found empty template variable in system prompt: {{{var}}}")
+
+            # Use a more sophisticated approach to find actual empty template variables
+            # We want to match {} or { } but NOT {{}} or {{ }}, or legitimate JSON documentation like "{}"
+            # First, find all potential empty template variables
+            pattern = r'(?<!\{)\{(\s*)\}(?!\})'
+            all_matches = re.finditer(pattern, temp_system_prompt)
+
+            # Filter out legitimate uses of {} like in JSON documentation
+            for match in all_matches:
+                empty_var = match.group()
+                pos = match.start()
+
+                # Look for surrounding context that would indicate this is documentation vs a template variable
+                # Expand the context window to better capture surrounding text
+                start_context = max(0, pos - 50)
+                end_context = min(len(temp_system_prompt), pos + 50)
+                context = temp_system_prompt[start_context:end_context]
+
+                # Check for common patterns that indicate legitimate documentation vs template variables
+                # Pattern 1: If it's in quotes like "{}" - this is documentation
+                if '"{}"' in context or "'{}'" in context:
+                    continue  # Skip this as it's likely legitimate documentation
+
+                # Pattern 2: If it's part of JSON examples in the prompt documentation
+                # Look for surrounding JSON structure indicators
+                json_indicators = ["JSON", "json", "структура", "format", "формат", "объект", "object"]
+                is_json_example = any(indicator in context.lower() for indicator in json_indicators)
+
+                if is_json_example:
+                    continue  # Skip if it looks like a JSON example in documentation
+
+                # Pattern 3: Check if it's in a comment or documentation section
+                doc_indicators = ["например", "например:", "пример", "example", "format:", "формат:"]
+                is_documentation = any(indicator in context.lower() for indicator in doc_indicators)
+
+                if is_documentation:
+                    continue  # Skip if it looks like documentation
+
+                # If none of the above conditions are met, this might be an actual empty template variable
+                raise ValueError(f"Found empty template variable in system prompt: {empty_var}")
+
+            # Before creating the prompt, ensure all JSON example braces are properly escaped
+            # to prevent "unmatched '{' in format spec" errors
+            import re
+
+            # Temporarily protect template variables we want to keep
+            protected_values = {}
+            placeholder_counter = 0
+
+            # Look for any remaining template variables that should stay as variables
+            # In this case, we want {input_text} to remain as a template variable
+            if '{input_text}' in temp_system_prompt:
+                placeholder = f'PLACEHOLDER_INPUT_TEXT_{placeholder_counter}'
+                temp_system_prompt = temp_system_prompt.replace('{input_text}', placeholder)
+                protected_values[placeholder] = '{input_text}'
+
+            # Escape any remaining unescaped braces that are part of JSON examples
+            temp_system_prompt = temp_system_prompt.replace('{', '{{')
+            temp_system_prompt = temp_system_prompt.replace('}', '}}')
+
+            # Restore protected values
+            for placeholder, original_value in protected_values.items():
+                temp_system_prompt = temp_system_prompt.replace(placeholder, original_value)
 
             temp_prompt = ChatPromptTemplate.from_messages([
                 ("system", temp_system_prompt),
@@ -951,15 +1286,71 @@ class DedicatedMCPModel:
 
             # Create a temporary chain with the formatted system prompt
             # Check for any truly empty template variables in the temp_system_prompt that might cause issues
+            # We need to distinguish between escaped braces {{}}, literal braces in JSON docs "{}", and empty template vars {} (which are not valid)
             import re
-            # Look for template variables that are completely empty (like {} or { }) but not legitimate ones like {input_text}
-            all_vars = re.findall(r'\{([^}]*)\}', temp_system_prompt)
-            for var in all_vars:
-                # Only flag as problematic if it's truly empty (no variable name)
-                # Skip legitimate template variables like {user_request}, {mcp_services_json}, etc.
-                if var.strip() == '':  # Empty variable like {} or { }
-                    # This shouldn't happen with our prompt, but let's handle it just in case
-                    raise ValueError(f"Found empty template variable in system prompt: {{{var}}}")
+
+            # Use a more sophisticated approach to find actual empty template variables
+            # We want to match {} or { } but NOT {{}} or {{ }}, or legitimate JSON documentation like "{}"
+            # First, find all potential empty template variables
+            pattern = r'(?<!\{)\{(\s*)\}(?!\})'
+            all_matches = re.finditer(pattern, temp_system_prompt)
+
+            # Filter out legitimate uses of {} like in JSON documentation
+            for match in all_matches:
+                empty_var = match.group()
+                pos = match.start()
+
+                # Look for surrounding context that would indicate this is documentation vs a template variable
+                # Expand the context window to better capture surrounding text
+                start_context = max(0, pos - 50)
+                end_context = min(len(temp_system_prompt), pos + 50)
+                context = temp_system_prompt[start_context:end_context]
+
+                # Check for common patterns that indicate legitimate documentation vs template variables
+                # Pattern 1: If it's in quotes like "{}" - this is documentation
+                if '"{}"' in context or "'{}'" in context:
+                    continue  # Skip this as it's likely legitimate documentation
+
+                # Pattern 2: If it's part of JSON examples in the prompt documentation
+                # Look for surrounding JSON structure indicators
+                json_indicators = ["JSON", "json", "структура", "format", "формат", "объект", "object"]
+                is_json_example = any(indicator in context.lower() for indicator in json_indicators)
+
+                if is_json_example:
+                    continue  # Skip if it looks like a JSON example in documentation
+
+                # Pattern 3: Check if it's in a comment or documentation section
+                doc_indicators = ["например", "например:", "пример", "example", "format:", "формат:"]
+                is_documentation = any(indicator in context.lower() for indicator in doc_indicators)
+
+                if is_documentation:
+                    continue  # Skip if it looks like documentation
+
+                # If none of the above conditions are met, this might be an actual empty template variable
+                raise ValueError(f"Found empty template variable in system prompt: {empty_var}")
+
+            # Before creating the prompt, ensure all JSON example braces are properly escaped
+            # to prevent "unmatched '{' in format spec" errors
+            import re
+
+            # Temporarily protect template variables we want to keep
+            protected_values = {}
+            placeholder_counter = 0
+
+            # Look for any remaining template variables that should stay as variables
+            # In this case, we want {input_text} to remain as a template variable
+            if '{input_text}' in temp_system_prompt:
+                placeholder = f'PLACEHOLDER_INPUT_TEXT_{placeholder_counter}'
+                temp_system_prompt = temp_system_prompt.replace('{input_text}', placeholder)
+                protected_values[placeholder] = '{input_text}'
+
+            # Escape any remaining unescaped braces that are part of JSON examples
+            temp_system_prompt = temp_system_prompt.replace('{', '{{')
+            temp_system_prompt = temp_system_prompt.replace('}', '}}')
+
+            # Restore protected values
+            for placeholder, original_value in protected_values.items():
+                temp_system_prompt = temp_system_prompt.replace(placeholder, original_value)
 
             temp_prompt = ChatPromptTemplate.from_messages([
                 ("system", temp_system_prompt),
@@ -1034,8 +1425,55 @@ class DedicatedMCPModel:
 
                     try:
                         return json.loads(sanitized), True
-                    except json.JSONDecodeError as e:
-                        logger.warning(f"Could not parse {description} even after sanitization: {sanitized}. Error: {e}")
+                    except json.JSONDecodeError:
+                        # If basic sanitization fails, try to extract JSON from the response
+                        # Look for JSON objects within the response
+                        try:
+                            # Find the first JSON object in the string
+                            brace_count = 0
+                            start_idx = -1
+
+                            for i, char in enumerate(sanitized):
+                                if char == '{':
+                                    if brace_count == 0:
+                                        start_idx = i
+                                    brace_count += 1
+                                elif char == '}':
+                                    brace_count -= 1
+                                    if brace_count == 0 and start_idx != -1:
+                                        # Found a complete JSON object
+                                        json_candidate = sanitized[start_idx:i+1]
+                                        try:
+                                            return json.loads(json_candidate), True
+                                        except json.JSONDecodeError:
+                                            # If this JSON object is invalid, continue looking
+                                            continue
+
+                            # If we still can't parse it, try to find JSON arrays too
+                            bracket_count = 0
+                            start_idx = -1
+
+                            for i, char in enumerate(sanitized):
+                                if char == '[':
+                                    if bracket_count == 0:
+                                        start_idx = i
+                                    bracket_count += 1
+                                elif char == ']':
+                                    bracket_count -= 1
+                                    if bracket_count == 0 and start_idx != -1:
+                                        # Found a complete JSON array
+                                        json_candidate = sanitized[start_idx:i+1]
+                                        try:
+                                            return json.loads(json_candidate), True
+                                        except json.JSONDecodeError:
+                                            # If this JSON array is invalid, continue looking
+                                            continue
+
+                        except Exception as inner_e:
+                            logger.warning(f"Error during JSON extraction: {inner_e}")
+
+                        # If all attempts fail, return the original sanitized string with failure flag
+                        logger.warning(f"Could not parse {description} even after advanced sanitization: {sanitized[:200]}...")
                         return sanitized, False
 
             # Try to parse the response as JSON
@@ -1207,17 +1645,43 @@ class DedicatedMCPModel:
             # This could happen if there are unmatched curly braces in the original prompt
             import re
             # Find any template-like variables in the prompt that might be empty
-            # Look for patterns like {} or { } etc. but not legitimate ones like {input_text}
-            problematic_vars = re.findall(r'\{([^}]*)\}', temp_system_prompt)
-            for var_content in problematic_vars:
-                # Check if the variable content is truly empty (no variable name)
-                if var_content.strip() == '':  # Empty variable like {} or { }
-                    # Replace with a placeholder to avoid template errors
-                    # Find the actual variable pattern in the string and replace it
-                    import re
-                    temp_system_prompt = re.sub(r'\{' + re.escape(var_content) + r'\}', '{{EMPTY_VAR_PLACEHOLDER}}', temp_system_prompt, count=1)
+            # We need to distinguish between escaped braces {{}} (valid) and empty template vars {} (invalid)
+            # Use a negative lookbehind and lookahead to match single braces but not double braces
+            empty_var_pattern = r'(?<!\{)\{(\s*)\}(?!\})'  # Matches {} or { } but not {{ or }}
+            empty_matches = re.findall(empty_var_pattern, temp_system_prompt)
+
+            if empty_matches:
+                # There are truly empty template variables like {} or { }
+                # Find the actual empty variable to include in the error message
+                empty_var_match = re.search(empty_var_pattern, temp_system_prompt)
+                if empty_var_match:
+                    empty_var = '{' + empty_var_match.group(1) + '}'
+                    raise ValueError(f"Found empty template variable in system prompt: {empty_var}")
 
             # Create a temporary chain with the formatted system prompt
+            # Before creating the prompt, ensure all JSON example braces are properly escaped
+            # to prevent "unmatched '{' in format spec" errors
+            import re
+
+            # Temporarily protect template variables we want to keep
+            protected_values = {}
+            placeholder_counter = 0
+
+            # Look for any remaining template variables that should stay as variables
+            # In this case, we want {input_text} to remain as a template variable
+            if '{input_text}' in temp_system_prompt:
+                placeholder = f'PLACEHOLDER_INPUT_TEXT_{placeholder_counter}'
+                temp_system_prompt = temp_system_prompt.replace('{input_text}', placeholder)
+                protected_values[placeholder] = '{input_text}'
+
+            # Escape any remaining unescaped braces that are part of JSON examples
+            temp_system_prompt = temp_system_prompt.replace('{', '{{')
+            temp_system_prompt = temp_system_prompt.replace('}', '}}')
+
+            # Restore protected values
+            for placeholder, original_value in protected_values.items():
+                temp_system_prompt = temp_system_prompt.replace(placeholder, original_value)
+
             temp_prompt = ChatPromptTemplate.from_messages([
                 ("system", temp_system_prompt),
                 ("human", "{input_text}")
