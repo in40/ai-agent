@@ -7,11 +7,11 @@ It contains all requird components to check you hypohitesis:
 
 - subsystems to build agent's logic (langgraph based) - with some web ui (not really suitable for editing at the moment)
 
-- required MCP servers - web search (brahesearch based), rag mcp server (to work with vector databases, including embedding conversions and reranking), sql mcp server (to query databases), dns mcpserver (this is the siplest and fastest to test mcp integrations), download mcp server (i use it to download full web page content, returned from web search)
+- required MCP servers - web search (bravesearch based, you will need to provide your own api key), rag mcp server (to work with vector databases, including embedding conversions and reranking), sql mcp server (to query databases), dns mcp server (this is the simplest and fastest to test mcp integrations), download mcp server (i use it to download full web page content, returned from web search)
 
-- web ui to do queries to agent, and also separate tabs to import documents, do direct vector db requests, do direct web search resuest - this is very helpful for hyphotsis testing (how chunk documents, test different embedding models and so on)
+- web ui to do queries to agent, and also separate tabs to import documents, do direct vector db requests, do direct web search resuest - this is very helpful for hyphotesis testing (how to chunk documents, test different embedding models and so on)
 
-i have to mention, that whole sourccode was written by qwen code as part of experiment to find out if it can be done without any knowledge in it (fortunately/unfortunately - i found it's not (yet) possible).  so if you will need to change/fix something, just use some vibe coding agent to do so.
+i have to mention, that whole source code was written by qwen code as part of experiment to find out if it can be done without any knowledge in it (fortunately/unfortunately - i found it's not (yet) possible).  so if you will need to change/fix something, just use some vibe coding agent to do so.
 i done it for myself, but will be happy if it will help somebody else.
 
 
