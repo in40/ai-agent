@@ -1,4 +1,4 @@
-This is the only part written by human :) 
+This is the only part written by the human :) 
 ---
 This suit is ... for hands-on experience with RAG.
 It contains all requird components to check you hypohitesis:
