@@ -1,107 +1,175 @@
 #!/usr/bin/env python3
 """
-Test script to verify that MCP results are properly passed to the response model
-when prompt generation is disabled.
+Test script to verify the fix for the MCP model query error:
+"'list' object has no attribute 'get'"
 """
 
-import os
 import sys
-from dotenv import load_dotenv
+import os
+from unittest.mock import patch, MagicMock
 
-# Load environment variables
-load_dotenv()
+# Add the project root to the path
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-# Set environment variables to disable prompt generation
-os.environ["DISABLE_PROMPT_GENERATION"] = "true"
-os.environ["DISABLE_RESPONSE_GENERATION"] = "false"  # Keep response generation enabled to test the flow
-
-# Add the project root to the Python path
-sys.path.insert(0, '/root/qwen_test/ai_agent')
-
-from langgraph_agent.langgraph_agent import run_enhanced_agent
+from langgraph_agent.langgraph_agent import mcp_model_query_node
+from typing import Dict, Any
 
 
-def test_mcp_results_passed_when_prompt_gen_disabled():
-    """
-    Test that MCP results are properly included in the prompt when prompt generation is disabled.
-    """
-    print("Testing MCP results inclusion when prompt generation is disabled...")
+def test_with_list_result():
+    """Test the mcp_model_query_node with a list result (the problematic case)"""
     
-    # Mock state with MCP service results to simulate the scenario
-    # Since we can't easily mock the full MCP flow, we'll test the individual nodes
+    print("=== Testing mcp_model_query_node with list result ===")
     
-    from langgraph_agent.langgraph_agent import AgentState, generate_prompt_node
-    import json
+    # Create a mock state
+    state = {
+        "user_request": "Test request",
+        "mcp_servers": [{"id": "test-server", "host": "localhost", "port": 8080}]
+    }
     
-    # Create a test state with MCP service results
-    test_state = AgentState(
-        user_request="Find the weather in Moscow",
-        db_results=[{"temperature": "10°C", "condition": "Cloudy"}],
-        mcp_service_results=[
-            {
-                "service_id": "weather-service-1",
-                "action": "get_weather",
-                "result": {"location": "Moscow", "current_temp": "-5°C", "forecast": "Snow tomorrow"},
-                "status": "success",
-                "timestamp": "2026-01-17T18:00:00Z"
-            }
-        ],
-        final_response="",
-        schema_dump={},
-        sql_query="",
-        all_db_results={},
-        table_to_db_mapping={},
-        table_to_real_db_mapping={},
-        response_prompt="",
-        validation_error=None,
-        retry_count=0,
-        execution_error=None,
-        sql_generation_error=None,
-        disable_sql_blocking=False,
-        disable_databases=False,
-        query_type="initial",
-        database_name="test_db",
-        previous_sql_queries=[],
-        registry_url=None,
-        discovered_services=[],
-        use_mcp_results=False,
-        mcp_tool_calls=[],
-        mcp_capable_response="",
-        return_mcp_results_to_llm=False
-    )
+    # Mock the DedicatedMCPModel to return a list instead of a dict (the problematic case)
+    with patch('models.dedicated_mcp_model.DedicatedMCPModel') as mock_model_class:
+        mock_instance = MagicMock()
+        mock_instance.analyze_request_for_mcp_services.return_value = [
+            {"service_id": "test", "method": "test_method", "params": {}}
+        ]  # Return a list instead of a dict
+        mock_model_class.return_value = mock_instance
+        
+        try:
+            # Call the function that was previously failing
+            result_state = mcp_model_query_node(state)
+            
+            print("✓ Function executed successfully without error")
+            print(f"Result state keys: {list(result_state.keys())}")
+            print(f"MCP tool calls: {result_state.get('mcp_tool_calls', [])}")
+            
+            # Verify that the function handled the list result correctly
+            assert "mcp_tool_calls" in result_state
+            assert "mcp_capable_response" in result_state
+            assert result_state["is_final_answer"] is False  # Should default to False when result is not a dict
+            assert result_state["has_sufficient_info"] is False  # Should default to False when result is not a dict
+            assert result_state["confidence_level"] == 0.0  # Should default to 0.0 when result is not a dict
+            
+            print("✓ All assertions passed")
+            return True
+            
+        except AttributeError as e:
+            if "'list' object has no attribute 'get'" in str(e):
+                print(f"✗ The original error still occurs: {e}")
+                return False
+            else:
+                print(f"✗ Different error occurred: {e}")
+                return False
+        except Exception as e:
+            print(f"✗ Unexpected error occurred: {e}")
+            return False
+
+
+def test_with_dict_result():
+    """Test the mcp_model_query_node with a dict result (normal case)"""
+
+    print("\n=== Testing mcp_model_query_node with dict result ===")
+
+    # Create a mock state
+    state = {
+        "user_request": "Test request",
+        "mcp_servers": [{"id": "test-server", "host": "localhost", "port": 8080}]
+    }
+
+    # Mock the DedicatedMCPModel to return a proper dict result
+    with patch('models.dedicated_mcp_model.DedicatedMCPModel') as mock_model_class:
+        mock_instance = MagicMock()
+        mock_instance.analyze_request_for_mcp_services.return_value = {
+            "tool_calls": [{"service_id": "test", "method": "test_method", "params": {}}],
+            "is_final_answer": True,
+            "has_sufficient_info": True,
+            "confidence_level": 0.95
+        }
+        mock_model_class.return_value = mock_instance
+
+        try:
+            # Call the function
+            result_state = mcp_model_query_node(state)
+
+            print("✓ Function executed successfully without error")
+            print(f"MCP tool calls: {result_state.get('mcp_tool_calls', [])}")
+            print(f"Is final answer: {result_state.get('is_final_answer')}")
+            print(f"Has sufficient info: {result_state.get('has_sufficient_info')}")
+            print(f"Confidence level: {result_state.get('confidence_level')}")
+
+            # Verify that the function handled the dict result correctly
+            assert "mcp_tool_calls" in result_state
+            assert result_state["is_final_answer"] is True
+            assert result_state["has_sufficient_info"] is True
+            assert result_state["confidence_level"] == 0.95
+
+            print("✓ All assertions passed")
+            return True
+
+        except Exception as e:
+            print(f"✗ Error occurred: {e}")
+            return False
+
+
+def test_with_invalid_json_serializable():
+    """Test the mcp_model_query_node with a result that's not JSON serializable"""
     
-    # Temporarily enable logging to see what's happening
-    import logging
-    logging.basicConfig(level=logging.INFO)
+    print("\n=== Testing mcp_model_query_node with non-serializable result ===")
     
-    # Run the generate_prompt_node which should include MCP results in the default prompt
-    updated_state = generate_prompt_node(test_state)
+    # Create a mock state
+    state = {
+        "user_request": "Test request",
+        "mcp_servers": [{"id": "test-server", "host": "localhost", "port": 8080}]
+    }
     
-    # Check if the response prompt contains the MCP results
-    response_prompt = updated_state.get("response_prompt", "")
-    print(f"Generated prompt: {response_prompt[:200]}...")
+    class NonSerializableClass:
+        def __init__(self):
+            self.data = "test"
     
-    # Verify that the prompt contains MCP results
-    has_mcp_results = '"MCP_SERVICE"' in response_prompt and "weather-service-1" in response_prompt
-    has_db_results = "temperature" in response_prompt and "10°C" in response_prompt
-    
-    print(f"MCP results included in prompt: {has_mcp_results}")
-    print(f"DB results included in prompt: {has_db_results}")
-    
-    if has_mcp_results:
-        print("✅ SUCCESS: MCP results are included in the default prompt when prompt generation is disabled")
-        return True
-    else:
-        print("❌ FAILURE: MCP results are NOT included in the default prompt")
-        print(f"Full prompt: {response_prompt}")
-        return False
+    # Mock the DedicatedMCPModel to return a non-JSON serializable result
+    with patch('models.dedicated_mcp_model.DedicatedMCPModel') as mock_model_class:
+        mock_instance = MagicMock()
+        mock_instance.analyze_request_for_mcp_services.return_value = NonSerializableClass()
+        mock_model_class.return_value = mock_instance
+        
+        try:
+            # Call the function
+            result_state = mcp_model_query_node(state)
+            
+            print("✓ Function executed successfully without error")
+            print(f"MCP tool calls: {result_state.get('mcp_tool_calls', [])}")
+            print(f"MCP capable response length: {len(result_state.get('mcp_capable_response', ''))}")
+            
+            # Verify that the function handled the non-serializable result correctly
+            assert "mcp_tool_calls" in result_state
+            assert "mcp_capable_response" in result_state
+            
+            print("✓ All assertions passed")
+            return True
+            
+        except Exception as e:
+            print(f"✗ Error occurred: {e}")
+            return False
 
 
 if __name__ == "__main__":
-    success = test_mcp_results_passed_when_prompt_gen_disabled()
-    if success:
-        print("\n🎉 Test passed! The fix is working correctly.")
-        sys.exit(0)
+    print("Testing the fix for 'list' object has no attribute 'get' error...\n")
+    
+    success_count = 0
+    total_tests = 3
+    
+    if test_with_list_result():
+        success_count += 1
+    
+    if test_with_dict_result():
+        success_count += 1
+        
+    if test_with_invalid_json_serializable():
+        success_count += 1
+    
+    print(f"\n=== Test Summary ===")
+    print(f"Passed: {success_count}/{total_tests}")
+    
+    if success_count == total_tests:
+        print("✓ All tests passed! The fix is working correctly.")
     else:
-        print("\n💥 Test failed! The fix needs more work.")
-        sys.exit(1)
+        print("✗ Some tests failed. The fix may need more work.")

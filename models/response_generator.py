@@ -83,9 +83,13 @@ class ResponseGenerator:
             # Construct the base URL based on provider configuration for other providers
             if provider.lower() in ['openai', 'deepseek', 'qwen']:
                 # For cloud providers, use HTTPS with the specified hostname
-                # But for default OpenAI, allow using the default endpoint
-                if provider.lower() == 'openai' and hostname == "api.openai.com":
+                # But for default endpoints, allow using the default endpoint
+                if (provider.lower() == 'openai' and hostname == "api.openai.com"):
                     base_url = None  # Use default OpenAI endpoint
+                elif (provider.lower() == 'deepseek' and hostname == "api.deepseek.com"):
+                    base_url = "https://api.deepseek.com"  # Use DeepSeek's API endpoint
+                elif (provider.lower() == 'qwen' and hostname == "dashscope.aliyuncs.com"):
+                    base_url = None  # Use default Qwen endpoint
                 else:
                     base_url = f"https://{hostname}:{port}{api_path}"
             else:

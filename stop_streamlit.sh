@@ -5,11 +5,12 @@ echo "Stopping Streamlit application on port 8501..."
 
 # Find and kill the process running on port 8501
 PORT=8501
-PID=$(lsof -t -i:$PORT 2>/dev/null)
+PIDS=$(lsof -t -i:$PORT 2>/dev/null)
 
-if [ ! -z "$PID" ]; then
-    echo "Found process $PID running on port $PORT, stopping it..."
-    kill $PID
+if [ ! -z "$PIDS" ]; then
+    echo "Found processes running on port $PORT: $PIDS, stopping them..."
+    kill $PIDS
+    sleep 2
     echo "Streamlit application stopped."
 else
     echo "No process found running on port $PORT"

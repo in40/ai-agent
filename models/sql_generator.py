@@ -98,11 +98,15 @@ class SQLGenerator:
             self.use_structured_output = False
         else:
             # Construct the base URL based on provider configuration for other providers
-            if provider.lower() in ['openai', 'qwen']:
+            if provider.lower() in ['openai', 'deepseek', 'qwen']:
                 # For cloud providers, use HTTPS with the specified hostname
-                # But for default OpenAI, allow using the default endpoint
-                if provider.lower() == 'openai' and hostname == "api.openai.com":
+                # But for default endpoints, allow using the default endpoint
+                if (provider.lower() == 'openai' and hostname == "api.openai.com"):
                     base_url = None  # Use default OpenAI endpoint
+                elif (provider.lower() == 'deepseek' and hostname == "api.deepseek.com"):
+                    base_url = "https://api.deepseek.com"  # Use DeepSeek's API endpoint
+                elif (provider.lower() == 'qwen' and hostname == "dashscope.aliyuncs.com"):
+                    base_url = None  # Use default Qwen endpoint
                 else:
                     base_url = f"https://{hostname}:{port}{api_path}"
             else:
@@ -110,7 +114,10 @@ class SQLGenerator:
                 base_url = f"http://{hostname}:{port}{api_path}"
 
             # Select the appropriate API key based on the provider
-            api_key = OPENAI_API_KEY or ("sk-fake-key" if base_url else OPENAI_API_KEY)
+            if provider.lower() == 'deepseek':
+                api_key = DEEPSEEK_API_KEY or ("sk-fake-key" if base_url else DEEPSEEK_API_KEY)
+            else:
+                api_key = OPENAI_API_KEY or ("sk-fake-key" if base_url else OPENAI_API_KEY)
 
             # Create the LLM with the determined base URL and structured output
             llm_base = ChatOpenAI(
@@ -614,8 +621,10 @@ class SQLGenerator:
                 # Construct the base URL based on provider configuration for other providers
                 if actual_provider.lower() in ['openai', 'deepseek', 'qwen']:
                     # For cloud providers, use HTTPS with the specified hostname
-                    if actual_provider.lower() == 'openai' and actual_hostname == "api.openai.com":
-                        base_url = None  # Use default OpenAI endpoint
+                    if (actual_provider.lower() == 'openai' and actual_hostname == "api.openai.com") or \
+                       (actual_provider.lower() == 'deepseek' and actual_hostname == "api.deepseek.com") or \
+                       (actual_provider.lower() == 'qwen' and actual_hostname == "dashscope.aliyuncs.com"):
+                        base_url = None  # Use default endpoint for respective providers
                     else:
                         base_url = f"https://{actual_hostname}:{actual_port}{actual_api_path}"
                 else:

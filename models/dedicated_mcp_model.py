@@ -138,9 +138,13 @@ class DedicatedMCPModel:
             # Construct the base URL based on provider configuration for other providers
             if provider and provider.lower() in ['openai', 'deepseek', 'qwen']:
                 # For cloud providers, use HTTPS with the specified hostname
-                # But for default OpenAI, allow using the default endpoint
-                if provider.lower() == 'openai' and hostname == "api.openai.com":
+                # But for default endpoints, allow using the default endpoint
+                if (provider.lower() == 'openai' and hostname == "api.openai.com"):
                     base_url = None  # Use default OpenAI endpoint
+                elif (provider.lower() == 'deepseek' and hostname == "api.deepseek.com"):
+                    base_url = "https://api.deepseek.com"  # Use DeepSeek's API endpoint
+                elif (provider.lower() == 'qwen' and hostname == "dashscope.aliyuncs.com"):
+                    base_url = None  # Use default Qwen endpoint
                 else:
                     base_url = f"https://{hostname}:{port}{api_path}" if hostname and port and api_path else None
             else:
@@ -925,7 +929,6 @@ class DedicatedMCPModel:
         import requests
         from datetime import datetime
 
-        logger.info(f"Calling MCP service {service['id']} with DedicatedMCPModel for action '{action}' and parameters {parameters}")
 
         # Determine the protocol to use based on service metadata or default to HTTP
         service_protocol = service.get('metadata', {}).get('protocol', 'http')
@@ -1354,7 +1357,7 @@ class DedicatedMCPModel:
 
             temp_prompt = ChatPromptTemplate.from_messages([
                 ("system", temp_system_prompt),
-                ("human", "Analyze the user request and suggest appropriate MCP queries or services that might be needed to fulfill the request.")
+                ("human", "{input_text}")
             ])
 
             temp_chain = temp_prompt | self.llm | self.output_parser
@@ -1362,7 +1365,7 @@ class DedicatedMCPModel:
             # Log the full request to LLM, including all roles and prompts
             if ENABLE_SCREEN_LOGGING:
                 # Get the full prompt with all messages (system and human) without invoking the LLM
-                full_prompt = temp_prompt.format_messages(input_text="")
+                full_prompt = temp_prompt.format_messages(input_text=user_request)
                 logger.info("DedicatedMCPModel full LLM request:")
                 for i, message in enumerate(full_prompt):
                     if message.type == "system":
@@ -1386,7 +1389,7 @@ class DedicatedMCPModel:
             with SSHKeepAliveContext():
                 # Generate the response using the temporary chain
                 response = temp_chain.invoke({
-                    "input_text": ""
+                    "input_text": user_request
                 })
 
             # Helper function to safely parse JSON with sanitization
@@ -1748,8 +1751,10 @@ class DedicatedMCPModel:
                 # Construct the base URL based on provider configuration for other providers
                 if actual_provider.lower() in ["openai", "deepseek", "qwen"]:
                     # For cloud providers, use HTTPS with the specified hostname
-                    if actual_provider.lower() == "openai" and actual_hostname == "api.openai.com":
-                        base_url = None  # Use default OpenAI endpoint
+                    if (actual_provider.lower() == "openai" and actual_hostname == "api.openai.com") or \
+                       (actual_provider.lower() == "deepseek" and actual_hostname == "api.deepseek.com") or \
+                       (actual_provider.lower() == "qwen" and actual_hostname == "dashscope.aliyuncs.com"):
+                        base_url = None  # Use default endpoint for respective providers
                     else:
                         base_url = f"https://{actual_hostname}:{actual_port}{actual_api_path}"
                 else:

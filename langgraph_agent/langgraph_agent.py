@@ -129,8 +129,6 @@ def mcp_registry_call_node(state: AgentState) -> AgentState:
                 "discovered_services": []
             }
 
-            # Log state after manipulation
-            logger.info(f"[STATE_DEBUG] [MCP_REGISTRY_CALL] State AFTER manipulation: {json.dumps({k: str(v)[:200] for k, v in result_state.items()}, ensure_ascii=False)}")
 
             return result_state
 
@@ -165,8 +163,6 @@ def mcp_registry_call_node(state: AgentState) -> AgentState:
             "discovered_services": services_as_dicts
         }
 
-        # Log state after manipulation
-        logger.info(f"[STATE_DEBUG] [MCP_REGISTRY_CALL] State AFTER manipulation: {json.dumps({k: str(v)[:200] for k, v in result_state.items()}, ensure_ascii=False)}")
 
         return result_state
     except Exception as e:
@@ -214,7 +210,13 @@ def mcp_model_query_node(state: AgentState) -> AgentState:
         result = mcp_model.analyze_request_for_mcp_services(user_request, mcp_services)
 
         # Extract tool calls from the result according to the expected format in the prompt
-        tool_calls = result.get("tool_calls", [])
+        # Check if result is a dict before calling .get() on it
+        if isinstance(result, dict):
+            tool_calls = result.get("tool_calls", [])
+        else:
+            # If result is not a dict (e.g., it's a list), set tool_calls to an empty list
+            logger.warning(f"[MCP_MODEL_QUERY] Expected dict but got {type(result)}: {result}")
+            tool_calls = []
 
         # Validate and clean the tool calls to ensure they match the expected format
         validated_tool_calls = []
@@ -234,13 +236,19 @@ def mcp_model_query_node(state: AgentState) -> AgentState:
         logger.info(f"[MCP_MODEL_QUERY] Extracted {len(validated_tool_calls)} tool calls from LLM response")
 
         # Store the model response in the state
+        try:
+            mcp_capable_response = json.dumps(result, ensure_ascii=False)
+        except TypeError:
+            # If result is not JSON serializable, convert it to a string representation
+            mcp_capable_response = json.dumps(str(result), ensure_ascii=False)
+
         result_state = {
             **state,
             "mcp_tool_calls": validated_tool_calls,
-            "mcp_capable_response": json.dumps(result, ensure_ascii=False),
-            "is_final_answer": result.get("is_final_answer", False),
-            "has_sufficient_info": result.get("has_sufficient_info", False),
-            "confidence_level": result.get("confidence_level", 0.0)
+            "mcp_capable_response": mcp_capable_response,
+            "is_final_answer": result.get("is_final_answer", False) if isinstance(result, dict) else False,
+            "has_sufficient_info": result.get("has_sufficient_info", False) if isinstance(result, dict) else False,
+            "confidence_level": result.get("confidence_level", 0.0) if isinstance(result, dict) else 0.0
         }
 
         return result_state
@@ -371,8 +379,6 @@ def parallel_execution_node(state: AgentState) -> AgentState:
 
         if not tool_calls:
             logger.info("[PARALLEL_EXECUTION] No tool calls to execute, returning original state")
-            # Log state after manipulation
-            logger.info(f"[STATE_DEBUG] [PARALLEL_EXECUTION] [{parallel_execution_node.__name__}] State AFTER manipulation: {json.dumps({k: str(v)[:200] for k, v in state.items()}, ensure_ascii=False)}")
             return state
 
         # Define enhancement functions for different MCP tool types
@@ -605,8 +611,6 @@ def parallel_execution_node(state: AgentState) -> AgentState:
 
         def enhance_rag_result(result):
             """Enhance RAG-type results by reranking with the RAG MCP server"""
-            # Log the full raw result coming into the function
-            logger.info(f"[RAG_ENHANCEMENT] Raw RAG result coming into function: {result}")
 
             if result and isinstance(result, dict):
                 try:
@@ -637,41 +641,40 @@ def parallel_execution_node(state: AgentState) -> AgentState:
                     # Case 5: Results directly in the top level 'result' field (duplicate check with case 1 but more explicit)
                     elif isinstance(result.get('result'), list):
                         rag_results = result['result']
-                    # Case 6: If result['result'] is a list directly (without 'results' key)
+                    # Case 6: If result itself is a list of documents
+                    elif isinstance(result, list):
+                        rag_results = result
+                    # Case 7: If the result is a single document dict
+                    elif isinstance(result, dict) and 'content' in result and 'metadata' in result:
+                        rag_results = [result]
+                    # Case 8: Last resort - if none of the above matched
                     else:
-                        # Handle case where result['result'] might be something else
-                        logger.warning(f"[RAG_ENHANCEMENT] Unexpected result structure: {type(result.get('result'))}")
-                        # Try to see if the result itself is a list of documents
-                        if isinstance(result, list):
-                            rag_results = result
+                        # If we still haven't found results, log the structure for debugging
+                        logger.warning(f"[RAG_ENHANCEMENT] No RAG results found, result structure: {type(result)} with keys: {result.keys() if isinstance(result, dict) else 'N/A'}")
+
+                    logger.debug(f"[RAG_ENHANCEMENT] Detected {len(rag_results)} RAG results from structure")
 
                     # Get the user query from the state
                     user_query = state.get('user_request', '')
 
                     # If no RAG results to enhance, return an error
                     if not rag_results:
-                        logger.error("[RAG_ENHANCEMENT] No RAG results to enhance")
-                        error_result = {
+                        return {
                             "error": "No RAG results to enhance",
                             "enhanced_at": time.time(),
                             "type": "enhancement_error"
                         }
-                        logger.info(f"[RAG_ENHANCEMENT] Error result leaving function: {error_result}")
-                        return error_result
 
                     # Discover available RAG services for reranking
                     registry_client = ServiceRegistryClient(MCP_REGISTRY_URL)
                     rag_services = [s for s in registry_client.discover_services() if s.type == "rag"]
 
                     if not rag_services:
-                        logger.error("[RAG_ENHANCEMENT] No RAG MCP services available for reranking")
-                        error_result = {
+                        return {
                             "error": "No RAG MCP services available for reranking",
                             "enhanced_at": time.time(),
                             "type": "enhancement_error"
                         }
-                        logger.info(f"[RAG_ENHANCEMENT] Error result leaving function: {error_result}")
-                        return error_result
 
                     rag_service = rag_services[0]  # Use the first available RAG service
 
@@ -723,8 +726,6 @@ def parallel_execution_node(state: AgentState) -> AgentState:
                     if rerank_result.get("status") == "success":
                         reranked_results = rerank_result.get("result", {}).get("results", [])
 
-                        # Log what we received from the MCP reranker
-                        logger.info(f"[RAG_ENHANCEMENT] Received {len(reranked_results)} results from MCP reranker: {reranked_results}")
 
                         # Update the original RAG results with reranking information
                         # Create a mapping of content to reranked document for quick lookup
@@ -787,46 +788,29 @@ def parallel_execution_node(state: AgentState) -> AgentState:
                         enhanced['type'] = 'rag_enhanced_with_rerank'
                         enhanced['enhancement_method'] = 'rerank_documents_via_mcp'
 
-                        logger.info(f"[RAG_ENHANCEMENT] Successfully reranked from {len(rag_results)} to {len(updated_results)} documents")
                     else:
-                        logger.error(f"[RAG_ENHANCEMENT] RAG MCP reranking failed: {rerank_result.get('error', 'Unknown error')}")
-
                         # Return an error instead of original results
-                        error_result = {
+                        return {
                             "error": f"RAG MCP reranking failed: {rerank_result.get('error', 'Unknown error')}",
                             "enhanced_at": time.time(),
                             "type": "enhancement_error"
                         }
-                        logger.info(f"[RAG_ENHANCEMENT] Error result leaving function: {error_result}")
-                        return error_result
 
-                    # Log the full enhanced result leaving the function
-                    logger.info(f"[RAG_ENHANCEMENT] Enhanced RAG result leaving function: {enhanced}")
                     return enhanced
                 except Exception as e:
-                    logger.error(f"[RAG_ENHANCEMENT] Error during RAG enhancement: {str(e)}")
                     # Return an error indication
-                    error_result = {
+                    return {
                         "error": f"Error enhancing RAG result: {str(e)}",
                         "enhanced_at": time.time(),
                         "type": "enhancement_error"
                     }
-                    logger.info(f"[RAG_ENHANCEMENT] Error result leaving function: {error_result}")
-                    return error_result
             else:
-                # Log the error when enhancement is not possible
-                logger.warning(f"[PARALLEL_EXECUTION] Cannot enhance RAG result: {result}")
-                # Log specifically when input is not a dictionary
-                if not isinstance(result, dict):
-                    logger.warning(f"[RAG_ENHANCEMENT] Input is not a dictionary: type={type(result)}, value={result}")
                 # Return an error indication when enhancement is not possible
-                error_result = {
+                return {
                     "error": "Cannot enhance: result is not a valid dictionary",
                     "enhanced_at": time.time(),
                     "type": "enhancement_error"
                 }
-                logger.info(f"[RAG_ENHANCEMENT] Error result leaving function: {error_result}")
-                return error_result
 
         def enhance_generic_result(result):
             """Generic enhancement for other result types"""
@@ -996,8 +980,6 @@ def enhanced_results_collection_node(state: AgentState) -> AgentState:
                 "response_generated": False  # Indicates no LLM was used
             }
 
-            # Log state after manipulation
-            logger.info(f"[STATE_DEBUG] [ENHANCED_RESULTS_COLLECTION] [{enhanced_results_collection_node.__name__}] State AFTER manipulation: {json.dumps({k: str(v)[:200] for k, v in result_state.items()}, ensure_ascii=False)}")
 
             return result_state
         else:

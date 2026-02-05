@@ -1,4 +1,38 @@
-# AI Agent with MCP Architecture
+This is the only part written by human :) 
+---
+This suit is ... for hands-on experience with RAG.
+It contains all requird components to check you hypohitesis:
+
+- sybsystems to import, process, store and retrieve documents (vector db based- I personally used chroma and qdrant)
+
+- subsystems to build agent's logic (langgraph based) - with some web ui (not really suitable for editing at the moment)
+
+- required MCP servers - web search (brahesearch based), rag mcp server (to work with vector databases, including embedding conversions and reranking), sql mcp server (to query databases), dns mcpserver (this is the siplest and fastest to test mcp integrations), download mcp server (i use it to download full web page content, returned from web search)
+
+- web ui to do queries to agent, and also separate tabs to import documents, do direct vector db requests, do direct web search resuest - this is very helpful for hyphotsis testing (how chunk documents, test different embedding models and so on)
+
+i have to mention, that whole sourccode was written by qwen code as part of experiment to find out if it can be done without any knowledge in it (fortunately/unfortunately - i found it's not (yet) possible).  so if you will need to change/fix something, just use some vibe coding agent to do so.
+i done it for myself, but will be happy if it will help somebody else.
+
+
+but yes, then rewritten by llm model :)
+--
+What follows is a purpose-built experimentation suite for hands-on exploration of Retrieval-Augmented Generation. Designed not as a polished product but as a laboratory for inquiry, it provides every component necessary to formulate, test, and refine hypotheses about RAG systems:
+Document pipeline subsystems for importing, processing, storing, and retrieving content—anchored by vector databases (I've worked extensively with Chroma and Qdrant).
+Agent orchestration via LangGraph, structuring reasoning workflows with deliberate modularity—accompanied by a functional web interface (currently optimized for interaction rather than authoring).
+A constellation of MCP servers, each serving a distinct investigative purpose:
+Web search (BraheSearch-backed) for external knowledge grounding
+RAG MCP for vector operations, embedding transformations, and reranking
+SQL MCP for structured data interrogation
+DNS MCP—the simplest and swiftest path to validating MCP integration mechanics
+Download MCP, which I employ to capture full-page content from search results
+A unified web interface offering not only agent querying but dedicated workspaces for document ingestion, direct vector database inspection, and raw web search execution—each tab a sandbox for methodical hypothesis testing: chunking strategies, embedding model comparisons, retrieval tuning, and beyond.
+A candid disclosure: the entire codebase emerged from an experiment with Qwen Code—an attempt to determine whether a capable developer could be synthesized from pure promptcraft, absent domain knowledge. The verdict? Not yet. Human intuition, architectural judgment, and debugging tenacity remain irreplaceable. Should you wish to adapt or repair anything within the suite, I recommend enlisting a "vibe-coding" agent as collaborator—but keep a human hand on the tiller.
+I built this for my own curiosity. If it proves useful to another explorer on the same path, all the better.
+---
+
+
+# AI Agent experimenal suite with MCP, vector db and other subsystems 
 
 This AI agent processes natural language requests from users and leverages a flexible Model Context Protocol (MCP) architecture to interact with various services and tools. The system is built with an enhanced LangGraph-based architecture for complex workflows with sophisticated error handling and recovery mechanisms.
 
