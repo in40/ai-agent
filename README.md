@@ -4,11 +4,11 @@ Work in progress
 - migrating MCP servers to JSON RPC 2 (instead of original http)
 ----
 TODO
-- introduce functionality for LLM based document chanking (with PDF conversion this will require GPU on localhost)
-- confirm checkboxes for custom system prompt and responce geneartionsill work after migration to JSON-RPC-2 for MCP calls
+- confirm checkboxes for custom system prompt and responce geneartionsill work after migration to JSON-RPC-2 for MCP calls 
 - implement functionality for LLM-side MCP calls via implemented JSON RPC (default is agnet-managed calls)
 - implement functionality for LLM-side parralelism testing (this ia now supportd on LM Studio, but unclear if it's actually enhance performance on my current GPU, but definitely should improve speeds when external commercial LLM is used - DeepSeek in my case)
 - investigate, is LLM parameters can be set/requested form agent side - to be able to change temperature, top_*, etc - to see if moving to more strict genration with bring more code quality/stability or if relaxed generation will help to solve more complex issues
+- introduce functionality for LLM based document chanking (with PDF conversion this will require GPU on localhost)
 -
 
 ----
