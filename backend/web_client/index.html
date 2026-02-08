@@ -95,7 +95,7 @@
             background: linear-gradient(transparent, #fffbeb);
             pointer-events: none;
         }
-
+        
         .content-full {
             max-height: 500px;
             overflow-y: auto;
@@ -759,10 +759,13 @@
                     user_request: userRequest,
                     disable_sql_blocking: document.getElementById('disable-sql-blocking').checked,
                     disable_databases: document.getElementById('disable-databases').checked,
-                    custom_system_prompt: document.getElementById('use-custom-system-prompt').checked ? 
-                        document.getElementById('custom-system-prompt').value : null,
                     skip_final_response_generation: document.getElementById('skip-final-response-generation').checked
                 };
+
+                // Only add custom_system_prompt if the checkbox is checked
+                if (document.getElementById('use-custom-system-prompt').checked) {
+                    requestBody.custom_system_prompt = document.getElementById('custom-system-prompt').value;
+                }
 
                 // Create an AbortController for timeout handling
                 const controller = new AbortController();
@@ -1043,30 +1046,6 @@
                         `;
                     }).join('');
 
-                    // Add event listeners for expand/collapse buttons
-                    document.querySelectorAll('.toggle-content-btn').forEach(button => {
-                        button.addEventListener('click', function() {
-                            const index = this.getAttribute('data-index');
-                            const previewDiv = document.querySelector(`.content-preview[data-index="${index}"]`);
-                            const fullDiv = document.querySelector(`.content-full[data-index="${index}"]`);
-                            const icon = this.querySelector('i');
-                            const textSpan = this.querySelector('.btn-text');
-
-                            if (fullDiv.classList.contains('d-none')) {
-                                // Show full content
-                                previewDiv.classList.add('d-none');
-                                fullDiv.classList.remove('d-none');
-                                icon.className = 'fas fa-compress';
-                                textSpan.textContent = 'Collapse';
-                            } else {
-                                // Show preview
-                                fullDiv.classList.add('d-none');
-                                previewDiv.classList.remove('d-none');
-                                icon.className = 'fas fa-expand';
-                                textSpan.textContent = 'Expand';
-                            }
-                        });
-                    });
                 } else {
                     lookupResultsDiv.innerHTML = '<p class="text-muted">No documents found for your query.</p>';
                 }
@@ -1224,32 +1203,6 @@
                         `;
                     });
 
-                    // Add event listeners for expand/collapse buttons in context
-                    setTimeout(() => {
-                        document.querySelectorAll('.toggle-context-btn').forEach(button => {
-                            button.addEventListener('click', function() {
-                                const index = this.getAttribute('data-index');
-                                const previewDiv = document.querySelector(`.content-preview[data-index="${index}"]`);
-                                const fullDiv = document.querySelector(`.content-full[data-index="${index}"]`);
-                                const icon = this.querySelector('i');
-                                const textSpan = this.querySelector('.btn-text');
-
-                                if (fullDiv.classList.contains('d-none')) {
-                                    // Show full content
-                                    previewDiv.classList.add('d-none');
-                                    fullDiv.classList.remove('d-none');
-                                    icon.className = 'fas fa-compress';
-                                    textSpan.textContent = 'Collapse';
-                                } else {
-                                    // Show preview
-                                    fullDiv.classList.add('d-none');
-                                    previewDiv.classList.remove('d-none');
-                                    icon.className = 'fas fa-expand';
-                                    textSpan.textContent = 'Expand';
-                                }
-                            });
-                        });
-                    }, 100); // Small delay to ensure DOM is updated
                 } else if (result.context) {
                     // Render the context if it's a string or object
                     let contextContent = '';
@@ -1282,32 +1235,6 @@
                         </div>
                     `;
 
-                    // Add event listener for the full context expand/collapse button
-                    setTimeout(() => {
-                        const fullContextButton = document.querySelector('.toggle-context-btn[data-index="full-context"]');
-                        if (fullContextButton) {
-                            fullContextButton.addEventListener('click', function() {
-                                const previewDiv = document.querySelector('.content-preview[data-index="full-context"]');
-                                const fullDiv = document.querySelector('.content-full[data-index="full-context"]');
-                                const icon = this.querySelector('i');
-                                const textSpan = this.querySelector('.btn-text');
-
-                                if (fullDiv.classList.contains('d-none')) {
-                                    // Show full content
-                                    previewDiv.classList.add('d-none');
-                                    fullDiv.classList.remove('d-none');
-                                    icon.className = 'fas fa-compress';
-                                    textSpan.textContent = 'Collapse';
-                                } else {
-                                    // Show preview
-                                    fullDiv.classList.add('d-none');
-                                    previewDiv.classList.remove('d-none');
-                                    icon.className = 'fas fa-expand';
-                                    textSpan.textContent = 'Expand';
-                                }
-                            });
-                        }
-                    }, 100); // Small delay to ensure DOM is updated
                 }
 
                 if (result.sources && result.sources.length > 0) {
@@ -1463,30 +1390,6 @@
                         `;
                     }).join('');
 
-                    // Add event listeners for expand/collapse buttons
-                    document.querySelectorAll('.toggle-mcp-content-btn').forEach(button => {
-                        button.addEventListener('click', function() {
-                            const index = this.getAttribute('data-index');
-                            const previewDiv = document.querySelector(`.content-preview[data-index="${index}"]`);
-                            const fullDiv = document.querySelector(`.content-full[data-index="${index}"]`);
-                            const icon = this.querySelector('i');
-                            const textSpan = this.querySelector('.btn-text');
-
-                            if (fullDiv.classList.contains('d-none')) {
-                                // Show full content
-                                previewDiv.classList.add('d-none');
-                                fullDiv.classList.remove('d-none');
-                                icon.className = 'fas fa-compress';
-                                textSpan.textContent = 'Collapse';
-                            } else {
-                                // Show preview
-                                fullDiv.classList.add('d-none');
-                                previewDiv.classList.remove('d-none');
-                                icon.className = 'fas fa-expand';
-                                textSpan.textContent = 'Expand';
-                            }
-                        });
-                    });
                 } else {
                     mcpSearchResultsDiv.innerHTML = '<p class="text-muted">No results found for your query.</p>';
                 }
@@ -1561,6 +1464,85 @@
         const bsTabElements = [].slice.call(document.querySelectorAll('button[data-bs-toggle="tab"]'));
         bsTabElements.map(function (tabElement) {
             return new bootstrap.Tab(tabElement);
+        });
+
+        // Add event delegation for expand/collapse buttons
+        document.addEventListener('click', function(e) {
+            // Handle MCP search content expand/collapse
+            if (e.target.closest('.toggle-mcp-content-btn')) {
+                const button = e.target.closest('.toggle-mcp-content-btn');
+                const index = button.getAttribute('data-index');
+                const previewDiv = document.querySelector(`.content-preview[data-index="${index}"]`);
+                const fullDiv = document.querySelector(`.content-full[data-index="${index}"]`);
+                const icon = button.querySelector('i');
+                const textSpan = button.querySelector('.btn-text');
+
+                if (fullDiv && previewDiv) {
+                    if (fullDiv.classList.contains('d-none')) {
+                        // Show full content
+                        previewDiv.classList.add('d-none');
+                        fullDiv.classList.remove('d-none');
+                        icon.className = 'fas fa-compress';
+                        textSpan.textContent = 'Collapse';
+                    } else {
+                        // Show preview
+                        fullDiv.classList.add('d-none');
+                        previewDiv.classList.remove('d-none');
+                        icon.className = 'fas fa-expand';
+                        textSpan.textContent = 'Expand';
+                    }
+                }
+            }
+            // Handle lookup content expand/collapse
+            else if (e.target.closest('.toggle-content-btn')) {
+                const button = e.target.closest('.toggle-content-btn');
+                const index = button.getAttribute('data-index');
+                const previewDiv = document.querySelector(`.content-preview[data-index="${index}"]`);
+                const fullDiv = document.querySelector(`.content-full[data-index="${index}"]`);
+                const icon = button.querySelector('i');
+                const textSpan = button.querySelector('.btn-text');
+
+                if (fullDiv && previewDiv) {
+                    if (fullDiv.classList.contains('d-none')) {
+                        // Show full content
+                        previewDiv.classList.add('d-none');
+                        fullDiv.classList.remove('d-none');
+                        icon.className = 'fas fa-compress';
+                        textSpan.textContent = 'Collapse';
+                    } else {
+                        // Show preview
+                        fullDiv.classList.add('d-none');
+                        previewDiv.classList.remove('d-none');
+                        icon.className = 'fas fa-expand';
+                        textSpan.textContent = 'Expand';
+                    }
+                }
+            }
+            // Handle RAG context expand/collapse
+            else if (e.target.closest('.toggle-context-btn')) {
+                const button = e.target.closest('.toggle-context-btn');
+                const index = button.getAttribute('data-index');
+                const previewDiv = document.querySelector(`.content-preview[data-index="${index}"]`);
+                const fullDiv = document.querySelector(`.content-full[data-index="${index}"]`);
+                const icon = button.querySelector('i');
+                const textSpan = button.querySelector('.btn-text');
+
+                if (fullDiv && previewDiv) {
+                    if (fullDiv.classList.contains('d-none')) {
+                        // Show full content
+                        previewDiv.classList.add('d-none');
+                        fullDiv.classList.remove('d-none');
+                        icon.className = 'fas fa-compress';
+                        textSpan.textContent = 'Collapse';
+                    } else {
+                        // Show preview
+                        fullDiv.classList.add('d-none');
+                        previewDiv.classList.remove('d-none');
+                        icon.className = 'fas fa-expand';
+                        textSpan.textContent = 'Expand';
+                    }
+                }
+            }
         });
 
         // File upload functionality
