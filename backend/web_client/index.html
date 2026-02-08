@@ -434,7 +434,7 @@
                                     placeholder="Enter a natural language request to be processed by the AI agent. "></textarea>
                             </div>
 
-                            <div class="d-flex gap-2 mb-3">
+                            <div class="d-flex gap-2 mb-3 flex-wrap">
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" id="disable-sql-blocking">
                                     <label class="form-check-label" for="disable-sql-blocking">
@@ -447,6 +447,27 @@
                                         Disable Databases
                                     </label>
                                 </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="use-custom-system-prompt">
+                                    <label class="form-check-label" for="use-custom-system-prompt">
+                                        Use Custom System Prompt
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="skip-final-response-generation">
+                                    <label class="form-check-label" for="skip-final-response-generation">
+                                        Skip Final Response Generation
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="mb-3" id="custom-system-prompt-container" style="display: none;">
+                                <label for="custom-system-prompt" class="form-label">Custom System Prompt</label>
+                                <textarea
+                                    class="form-control"
+                                    id="custom-system-prompt"
+                                    rows="3"
+                                    placeholder="Enter your custom system prompt to override the default one..."></textarea>
                             </div>
 
                             <button id="submit-request" class="btn btn-primary btn-animated">
@@ -737,7 +758,10 @@
                 const requestBody = {
                     user_request: userRequest,
                     disable_sql_blocking: document.getElementById('disable-sql-blocking').checked,
-                    disable_databases: document.getElementById('disable-databases').checked
+                    disable_databases: document.getElementById('disable-databases').checked,
+                    custom_system_prompt: document.getElementById('use-custom-system-prompt').checked ? 
+                        document.getElementById('custom-system-prompt').value : null,
+                    skip_final_response_generation: document.getElementById('skip-final-response-generation').checked
                 };
 
                 // Create an AbortController for timeout handling
@@ -2531,10 +2555,20 @@
             }
         }
 
+        // Add event listener for the custom system prompt checkbox
+        document.getElementById('use-custom-system-prompt').addEventListener('change', function() {
+            const container = document.getElementById('custom-system-prompt-container');
+            if (this.checked) {
+                container.style.display = 'block';
+            } else {
+                container.style.display = 'none';
+            }
+        });
+
         // Run service status checks when the page loads
         document.addEventListener('DOMContentLoaded', function() {
             updateServiceStatus();
-            
+
             // Optionally, update status every 30 seconds
             setInterval(updateServiceStatus, 30000);
         });

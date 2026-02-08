@@ -83,6 +83,9 @@ class AgentState(TypedDict):
     rag_relevance_score: Annotated[float, lambda x, y: y]
     rag_query: Annotated[str, lambda x, y: y]
     rag_response: Annotated[str, lambda x, y: y]
+    # New fields for custom system prompt and response generation control
+    custom_system_prompt: Annotated[Optional[str], lambda x, y: y]  # Custom system prompt if provided
+    skip_final_response_generation: Annotated[bool, lambda x, y: y]  # Flag to skip response generation
 
 
 def input_reception_node(state: AgentState) -> AgentState:
@@ -205,9 +208,21 @@ def mcp_model_query_node(state: AgentState) -> AgentState:
         from models.dedicated_mcp_model import DedicatedMCPModel
         mcp_model = DedicatedMCPModel()
 
+        # Check if a custom system prompt is provided in the state
+        custom_system_prompt = state.get("custom_system_prompt", None)
+
+        # DEBUG logging for decision making
+        logger.debug(f"DEBUG: Decision point - custom_system_prompt value: {custom_system_prompt}")
+        
         # Call the model with the user request and available services
-        # The model internally handles the prompt template and extraction
-        result = mcp_model.analyze_request_for_mcp_services(user_request, mcp_services)
+        # If custom system prompt is provided, use it instead of the default
+        if custom_system_prompt:
+            logger.debug("DEBUG: Using custom system prompt")
+            result = mcp_model.analyze_request_for_mcp_services_with_custom_prompt(user_request, mcp_services, custom_system_prompt)
+        else:
+            logger.debug("DEBUG: Using default system prompt")
+            # The model internally handles the prompt template and extraction
+            result = mcp_model.analyze_request_for_mcp_services(user_request, mcp_services)
 
         # Extract tool calls from the result according to the expected format in the prompt
         # Check if result is a dict before calling .get() on it
@@ -948,6 +963,13 @@ def enhanced_results_collection_node(state: AgentState) -> AgentState:
         # Check the DISABLE_RESPONSE_GENERATION environment variable
         disable_response_generation = str_to_bool(os.getenv("DISABLE_RESPONSE_GENERATION", "false"))
 
+        # Check if skip_final_response_generation flag is set from the UI
+        skip_final_response_generation = state.get("skip_final_response_generation", False)
+        
+        # If the UI flag is set, treat it the same as the environment variable
+        if skip_final_response_generation:
+            disable_response_generation = True
+
         # Get the original user query and enhanced results from the state
         user_query = state.get("user_request", "")
         # Now that enhancement happens in parallel execution, the results are in mcp_results
@@ -956,6 +978,7 @@ def enhanced_results_collection_node(state: AgentState) -> AgentState:
         logger.info(f"[ENHANCED_RESULTS_COLLECTION] User query: '{user_query}'")
         logger.info(f"[ENHANCED_RESULTS_COLLECTION] Enhanced results count: {len(enhanced_results)}")
         logger.info(f"[ENHANCED_RESULTS_COLLECTION] Response generation disabled: {disable_response_generation}")
+        logger.info(f"[ENHANCED_RESULTS_COLLECTION] Skip final response generation flag: {skip_final_response_generation}")
 
         if disable_response_generation:
             # Return results directly to the user without LLM processing
@@ -1169,7 +1192,7 @@ class AgentMonitoringCallback:
         logger.info(f"[GRAPH END] Completed in {total_time:.2f}s, retries: {state.get('retry_count', 0)}")
 
 
-def run_enhanced_agent(user_request: str, mcp_servers: List[Dict[str, Any]] = None, disable_sql_blocking: bool = False, disable_databases: bool = False, registry_url: str = None) -> Dict[str, Any]:
+def run_enhanced_agent(user_request: str, mcp_servers: List[Dict[str, Any]] = None, disable_sql_blocking: bool = False, disable_databases: bool = False, custom_system_prompt: Optional[str] = None, skip_final_response_generation: bool = False, registry_url: str = None) -> Dict[str, Any]:
     """
     Function to run the enhanced agent with a user request.
     This serves as an entry point that will work with the reconstructed graph.
@@ -1233,8 +1256,13 @@ def run_enhanced_agent(user_request: str, mcp_servers: List[Dict[str, Any]] = No
         "rag_query": "",
         "rag_response": "",
         "enhancement_errors": [],
-        "mcp_execution_errors": []
+        "mcp_execution_errors": [],
+        "custom_system_prompt": custom_system_prompt,
+        "skip_final_response_generation": skip_final_response_generation
     }
+    
+    # DEBUG logging for initial state
+    logger.debug(f"DEBUG: Initial state created with custom_system_prompt: {initial_state.get('custom_system_prompt')}")
 
     # Create monitoring callback
     callback_handler = AgentMonitoringCallback()
@@ -1291,7 +1319,9 @@ def run_enhanced_agent(user_request: str, mcp_servers: List[Dict[str, Any]] = No
             "use_rag_flag": False,
             "rag_relevance_score": 0.0,
             "rag_query": "",
-            "rag_response": ""
+            "rag_response": "",
+            "custom_system_prompt": custom_system_prompt,
+            "skip_final_response_generation": skip_final_response_generation
         }
 
     callback_handler.on_graph_end(result)

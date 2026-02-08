@@ -1709,6 +1709,266 @@ class DedicatedMCPModel:
             # Return an empty list in case of error to prevent further issues
             return []
 
+    def analyze_request_for_mcp_services_with_custom_prompt(self, user_request: str, mcp_servers: List[Dict[str, Any]], custom_prompt: str) -> Dict[str, Any]:
+        """
+        Analyze the user request using a custom system prompt.
+
+        Args:
+            user_request: The user's natural language request
+            mcp_servers: List of available MCP servers
+            custom_prompt: Custom system prompt to use instead of default
+
+        Returns:
+            Dictionary containing suggested queries or actions to take
+        """
+        logger.info(f"[ANALYZE_WITH_CUSTOM_PROMPT] Analyzing request with custom prompt: '{user_request}' (length: {len(user_request) if user_request else 0})")
+
+        # Format MCP servers as JSON for the prompt
+        mcp_servers_json = json.dumps(mcp_servers, indent=2)
+
+        try:
+            # Format the custom prompt with the required variables
+            formatted_prompt = custom_prompt
+            escaped_mcp_servers_json = mcp_servers_json.replace('{', '{{').replace('}', '}}')
+            formatted_prompt = formatted_prompt.replace('{mcp_services_json}', escaped_mcp_servers_json)
+            formatted_prompt = formatted_prompt.replace('{user_request}', user_request or '')
+            formatted_prompt = formatted_prompt.replace('{previous_tool_calls}', '[{{}}]')
+            formatted_prompt = formatted_prompt.replace('{previous_signals}', '[{{}}]')
+            formatted_prompt = formatted_prompt.replace('{informational_content}', '')
+
+            # Create a temporary chain with the custom prompt
+            import re
+            # Check for any truly empty template variables
+            pattern = r'(?<!\{)\{(\s*)\}(?!\})'
+            all_matches = re.finditer(pattern, formatted_prompt)
+            
+            for match in all_matches:
+                empty_var = match.group()
+                pos = match.start()
+                start_context = max(0, pos - 50)
+                end_context = min(len(formatted_prompt), pos + 50)
+                context = formatted_prompt[start_context:end_context]
+                
+                if '"{}"' in context or "'{}'" in context:
+                    continue
+                json_indicators = ["JSON", "json", "структура", "format", "формат", "объект", "object"]
+                is_json_example = any(indicator in context.lower() for indicator in json_indicators)
+                if is_json_example:
+                    continue
+                doc_indicators = ["например", "например:", "пример", "example", "format:", "формат:"]
+                is_documentation = any(indicator in context.lower() for indicator in doc_indicators)
+                if is_documentation:
+                    continue
+                raise ValueError(f"Found empty template variable in system prompt: {empty_var}")
+
+            # Escape any remaining unescaped braces that are part of JSON examples
+            formatted_prompt = formatted_prompt.replace('{', '{{')
+            formatted_prompt = formatted_prompt.replace('}', '}}')
+
+            temp_prompt = ChatPromptTemplate.from_messages([
+                ("system", formatted_prompt),
+                ("human", "{input_text}")
+            ])
+
+            temp_chain = temp_prompt | self.llm | self.output_parser
+
+            # Log the full request to LLM, including all roles and prompts
+            if ENABLE_SCREEN_LOGGING:
+                # Get the full prompt with all messages (system and human) without invoking the LLM
+                full_prompt = temp_prompt.format_messages(input_text=user_request)
+                logger.info("DedicatedMCPModel full LLM request with custom prompt:")
+                for i, message in enumerate(full_prompt):
+                    if message.type == "system":
+                        logger.info(f"  System Message {i+1}:")
+                        logger.info(message.content)  # Log full content separately to avoid potential truncation in f-string
+                    else:
+                        logger.info(f"  Message {i+1} ({message.type}):")
+                        logger.info(message.content)  # Log full content separately to avoid potential truncation in f-string
+
+            # Use SSH keep-alive during the LLM call
+            with SSHKeepAliveContext():
+                # Generate the response using the temporary chain
+                response = temp_chain.invoke({
+                    "input_text": user_request
+                })
+
+            # Helper function to safely parse JSON with sanitization
+            def safe_json_parse(json_str, description="JSON"):
+                """Safely parse JSON with sanitization to handle common issues."""
+                try:
+                    # First, try to parse as-is
+                    return json.loads(json_str), True
+                except json.JSONDecodeError:
+                    # If that fails, try to sanitize and parse
+                    sanitized = json_str.strip()
+
+                    # Common sanitization steps:
+                    # 1. Remove markdown code block markers if present
+                    sanitized = re.sub(r'^```(?:json)?\s*', '', sanitized, flags=re.MULTILINE)
+                    sanitized = re.sub(r'```\s*$', '', sanitized, flags=re.MULTILINE)
+
+                    # 2. Remove leading/trailing whitespace and newlines
+                    sanitized = sanitized.strip()
+
+                    # 3. Remove control characters that might be causing issues
+                    # Remove control characters (ASCII 0-31) except tab (9), newline (10), and carriage return (13)
+                    sanitized = ''.join(char if ord(char) >= 32 or ord(char) in [9, 10, 13] else ' ' for char in sanitized)
+
+                    # Replace problematic sequences
+                    sanitized = sanitized.replace('\u0000', '')  # null bytes
+                    sanitized = sanitized.replace('\x00', '')   # null bytes
+
+                    # 4. Try to fix common JSON issues
+                    # Remove trailing commas before closing braces/brackets
+                    sanitized = re.sub(r',(\s*[}\]])', r'\1', sanitized)
+
+                    # 5. Handle potential escape sequence issues
+                    # Replace double backslashes followed by quotes (common in LLM outputs)
+                    sanitized = sanitized.replace('\\\\', '\\')
+
+                    try:
+                        return json.loads(sanitized), True
+                    except json.JSONDecodeError:
+                        # If basic sanitization fails, try to extract JSON from the response
+                        # Look for JSON objects within the response
+                        try:
+                            # Find the first JSON object in the string
+                            brace_count = 0
+                            start_idx = -1
+
+                            for i, char in enumerate(sanitized):
+                                if char == '{':
+                                    if brace_count == 0:
+                                        start_idx = i
+                                    brace_count += 1
+                                elif char == '}':
+                                    brace_count -= 1
+                                    if brace_count == 0 and start_idx != -1:
+                                        # Found a complete JSON object
+                                        json_candidate = sanitized[start_idx:i+1]
+                                        try:
+                                            return json.loads(json_candidate), True
+                                        except json.JSONDecodeError:
+                                            # If this JSON object is invalid, continue looking
+                                            continue
+
+                            # If we still can't parse it, try to find JSON arrays too
+                            bracket_count = 0
+                            start_idx = -1
+
+                            for i, char in enumerate(sanitized):
+                                if char == '[':
+                                    if bracket_count == 0:
+                                        start_idx = i
+                                    bracket_count += 1
+                                elif char == ']':
+                                    bracket_count -= 1
+                                    if bracket_count == 0 and start_idx != -1:
+                                        # Found a complete JSON array
+                                        json_candidate = sanitized[start_idx:i+1]
+                                        try:
+                                            return json.loads(json_candidate), True
+                                        except json.JSONDecodeError:
+                                            # If this JSON array is invalid, continue looking
+                                            continue
+
+                        except Exception as inner_e:
+                            logger.warning(f"Error during JSON extraction: {inner_e}")
+
+                        # If all attempts fail, return the original sanitized string with failure flag
+                        logger.warning(f"Could not parse {description} even after advanced sanitization: {sanitized[:200]}...")
+                        return sanitized, False
+
+            # Try to parse the response as JSON
+            try:
+                result, parsed_successfully = safe_json_parse(response, "full response")
+
+                if parsed_successfully:
+                    logger.info(f"DedicatedMCPModel analysis result with custom prompt: {result}")
+
+                    # Handle nested structure where the tool call is wrapped in a 'tool_call' key
+                    if isinstance(result, dict) and 'tool_call' in result:
+                        # Extract the actual tool call from the 'tool_call' key
+                        actual_tool_call = result['tool_call']
+                        if isinstance(actual_tool_call, dict):
+                            # Wrap the single tool call in a list and return
+                            return {"tool_calls": [actual_tool_call]}
+
+                    # Ensure the result has the expected format with a 'tool_calls' key
+                    if isinstance(result, list):
+                        # If the result is a list of tool calls, wrap it
+                        return {"tool_calls": result}
+                    elif isinstance(result, dict) and "tool_calls" not in result:
+                        # If the result is a single tool call object, wrap it in a list
+                        return {"tool_calls": [result]}
+                    else:
+                        # If it already has the 'tool_calls' key or is in the expected format, return as is
+                        return result
+            except Exception as e:
+                logger.warning(f"Error processing response as JSON: {e}")
+
+            logger.warning(f"DedicatedMCPModel analysis response is not valid JSON: {response}")
+
+            # Try to extract JSON from the response if it contains JSON within a larger string
+            # This handles cases where the LLM returns a response with JSON inside it
+            import re
+
+            # First, try to find JSON between ```json and ``` markers (common in LLM responses)
+            json_pattern = r'```(?:json)?\s*\n*(\{(?:.|\n)*?\})\s*\n*```'
+            json_match = re.search(json_pattern, response, re.DOTALL)
+
+            if json_match:
+                extracted_json = json_match.group(1)  # Get the captured group (the JSON part)
+
+                # Clean the extracted JSON to handle control characters and other issues
+                cleaned_extracted_json = extracted_json.strip()
+
+                # Remove control characters that might be causing issues
+                import re
+                # Remove control characters (ASCII 0-31) except tab (9), newline (10), and carriage return (13)
+                cleaned_extracted_json = ''.join(char if ord(char) >= 32 or ord(char) in [9, 10, 13] else ' ' for char in cleaned_extracted_json)
+
+                # Replace problematic sequences
+                cleaned_extracted_json = cleaned_extracted_json.replace('\u0000', '')  # null bytes
+                cleaned_extracted_json = cleaned_extracted_json.replace('\x00', '')   # null bytes
+
+                result, parsed_successfully = safe_json_parse(cleaned_extracted_json, "extracted JSON from markdown")
+
+                if parsed_successfully:
+                    logger.info(f"DedicatedMCPModel extracted JSON from response: {result}")
+
+                    # Handle nested structure where the tool call is wrapped in a 'tool_call' key
+                    if isinstance(result, dict) and 'tool_call' in result:
+                        # Extract the actual tool call from the 'tool_call' key
+                        actual_tool_call = result['tool_call']
+                        if isinstance(actual_tool_call, dict):
+                            # Wrap the single tool call in a list and return
+                            return {"tool_calls": [actual_tool_call]}
+
+                    # Ensure the extracted result has the expected format
+                    if isinstance(result, list):
+                        return {"tool_calls": result}
+                    elif isinstance(result, dict) and "tool_calls" not in result:
+                        return {"tool_calls": [result]}
+                    else:
+                        return result
+                else:
+                    logger.warning(f"Extracted text is still not valid JSON: {extracted_json}")
+
+            # If response is not valid JSON, return empty tool calls
+            return {"tool_calls": []}
+
+        except Exception as e:
+            # Log the error with repr to see the exact string representation
+            error_msg = str(e)
+            logger.error(f"Error analyzing request with DedicatedMCPModel using custom prompt: {repr(error_msg)}")
+            # Also log the original user request and mcp_servers for debugging
+            logger.debug(f"Original user_request: {repr(user_request)}")
+            logger.debug(f"MCP servers: {repr(mcp_servers)}")
+            logger.debug(f"Custom prompt: {repr(custom_prompt)}")
+            # Return a default structure in case of error
+            return {"suggested_queries": [], "analysis": f"Error analyzing request: {error_msg}"}
+
     def _get_llm_instance(self, provider=None, model=None):
         """
         Returns the LLM instance for use by other components

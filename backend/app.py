@@ -1,5 +1,9 @@
 """
 Backend API server for the AI Agent with authentication and multiple service endpoints
+
+NOTE: This is the API GATEWAY. When updating AI agent functionality, 
+DO NOT modify this file. Instead, modify the agent service at:
+/root/qwen/ai_agent/backend/services/agent/app.py
 """
 import os
 import jwt
@@ -38,7 +42,7 @@ CORS(app, resources={
 })
 
 # Initialize logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)  # Changed from INFO to DEBUG to capture debug messages
 logger = logging.getLogger(__name__)
 
 # In-memory user store (replace with database in production)
@@ -247,6 +251,16 @@ def agent_query(current_user_id):
             'disable_databases': {
                 'type': bool,
                 'required': False
+            },
+            'custom_system_prompt': {
+                'type': str,
+                'required': False,
+                'max_length': 5000,
+                'sanitize': True
+            },
+            'skip_final_response_generation': {
+                'type': bool,
+                'required': False
             }
         }
 
@@ -259,6 +273,12 @@ def agent_query(current_user_id):
         # Extract optional parameters
         disable_sql_blocking = data.get('disable_sql_blocking', False)
         disable_databases = data.get('disable_databases', False)
+        custom_system_prompt = data.get('custom_system_prompt', None)
+        # DEBUG logging for custom_system_prompt
+        logger.debug(f"DEBUG: Received custom_system_prompt value: {custom_system_prompt}")
+        skip_final_response_generation = data.get('skip_final_response_generation', False)
+        # DEBUG logging for skip_final_response_generation
+        logger.debug(f"DEBUG: Received skip_final_response_generation value: {skip_final_response_generation}")
 
         start_time = time.time()
 
@@ -270,8 +290,12 @@ def agent_query(current_user_id):
             user_request=user_request,
             disable_sql_blocking=disable_sql_blocking,
             disable_databases=disable_databases,
+            custom_system_prompt=custom_system_prompt,
+            skip_final_response_generation=skip_final_response_generation,
             registry_url=registry_url
         )
+        # DEBUG logging for result
+        logger.debug(f"DEBUG: Agent result: {result}")
 
         # Add execution time to result
         result['execution_time'] = time.time() - start_time

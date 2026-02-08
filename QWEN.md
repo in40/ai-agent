@@ -2,6 +2,14 @@
 
 This file is used to store personal information and preferences for the Qwen agent.
 
+## Important Architecture Notes
+
+When updating AI agent functionality:
+- The API gateway is located at: `/root/qwen/ai_agent/backend/app.py`
+- The actual agent service is located at: `/root/qwen/ai_agent/backend/services/agent/app.py`
+- When making changes to AI agent behavior, modify the agent service, NOT the API gateway
+- The API gateway only forwards requests to the appropriate microservices
+
 ## Task Status Tracking System
 
 ### Purpose

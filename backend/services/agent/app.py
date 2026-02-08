@@ -23,7 +23,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Initialize logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)  # Changed from INFO to DEBUG to capture debug messages
 logger = logging.getLogger(__name__)
 
 
@@ -61,6 +61,16 @@ def agent_query(current_user_id):
             'disable_databases': {
                 'type': bool,
                 'required': False
+            },
+            'custom_system_prompt': {
+                'type': str,
+                'required': False,
+                'max_length': 5000,
+                'sanitize': True
+            },
+            'skip_final_response_generation': {
+                'type': bool,
+                'required': False
             }
         }
         
@@ -74,15 +84,27 @@ def agent_query(current_user_id):
         # Extract optional parameters
         disable_sql_blocking = data.get('disable_sql_blocking', False)
         disable_databases = data.get('disable_databases', False)
-        
+        custom_system_prompt = data.get('custom_system_prompt', None)
+        skip_final_response_generation = data.get('skip_final_response_generation', False)
+
+        # DEBUG logging for received parameters
+        logger.debug(f"DEBUG: Agent service received custom_system_prompt: {custom_system_prompt}")
+        logger.debug(f"DEBUG: Agent service received skip_final_response_generation: {skip_final_response_generation}")
+
         start_time = time.time()
-        
-        # Run the agent - the new implementation doesn't use disable_sql_blocking and disable_databases
-        # Instead, it focuses on MCP services, so we'll pass an empty list of MCP servers for now
-        # In a real implementation, you would discover and pass the actual MCP servers
+
+        # Get registry URL from environment or data
+        registry_url = data.get('registry_url', os.getenv('MCP_REGISTRY_URL', 'http://127.0.0.1:8080'))
+
+        # Run the agent with all parameters
         result = run_enhanced_agent(
             user_request=user_request,
-            mcp_servers=[]  # Pass empty list of MCP servers for now
+            mcp_servers=[],  # Pass empty list of MCP servers for now
+            disable_sql_blocking=disable_sql_blocking,
+            disable_databases=disable_databases,
+            custom_system_prompt=custom_system_prompt,
+            skip_final_response_generation=skip_final_response_generation,
+            registry_url=registry_url
         )
         
         # Add execution time to result
