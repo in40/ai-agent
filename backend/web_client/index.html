@@ -762,9 +762,12 @@
                     skip_final_response_generation: document.getElementById('skip-final-response-generation').checked
                 };
 
-                // Only add custom_system_prompt if the checkbox is checked
+                // Only add custom_system_prompt if the checkbox is checked and there's content in the textbox
                 if (document.getElementById('use-custom-system-prompt').checked) {
-                    requestBody.custom_system_prompt = document.getElementById('custom-system-prompt').value;
+                    const customPromptValue = document.getElementById('custom-system-prompt').value;
+                    if (customPromptValue && customPromptValue.trim() !== '') {
+                        requestBody.custom_system_prompt = customPromptValue;
+                    }
                 }
 
                 // Create an AbortController for timeout handling
