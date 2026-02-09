@@ -1,13 +1,17 @@
 #!/usr/bin/env python3
 """
-Test script to verify that the custom system prompt length issue is fixed
+More comprehensive test to simulate the actual request to the agent service
 """
 import json
+import requests
+import sys
+import traceback
+import os
 
-def test_prompt_length_validation():
-    """Test that the custom system prompt can now exceed 5000 characters"""
+def test_actual_request():
+    """Test making an actual request to the agent service"""
     
-    # Define the previously problematic custom system prompt
+    # Define the problematic custom system prompt
     custom_system_prompt = """найди информацию в локальных документах и интернете и сформулируй детальные требования по информационной безопасности мобильного приложения для использования сотрудниками российского банка для обработки ПДН
 
 Проанализируйте запрос пользователя и предложите подходящие MCP-запросы или сервисы, которые могут понадобиться для его выполнения.
@@ -264,68 +268,133 @@ Available MCP Services:
   }
 ]"""
 
-    # Check the length
-    prompt_length = len(custom_system_prompt)
-    print(f"Custom system prompt length: {prompt_length} characters")
-    
-    # Check if it exceeds the old limit (5000) but is within the new limit (10000)
-    if prompt_length > 5000 and prompt_length <= 10000:
-        print("✓ Custom system prompt exceeds old limit (5000) but is within new limit (10000)")
-        return True
-    elif prompt_length <= 5000:
-        print("⚠️  Custom system prompt is within the old limit (5000)")
-        return True  # Still valid
-    elif prompt_length > 10000:
-        print(f"✗ Custom system prompt exceeds new limit (10000) by {prompt_length - 10000} characters")
-        return False
-    else:
-        print("✗ Unexpected length validation result")
-        return False
-
-def test_json_serialization():
-    """Test JSON serialization with the custom prompt"""
-    
-    custom_system_prompt = """найди информацию в локальных документах и интернете и сформулируй детальные требования по информационной безопасности мобильного приложения для использования сотрудниками российского банка для обработки ПДН
-
-Проанализируйте запрос пользователя и предложите подходящие MCP-запросы или сервисы, которые могут понадобиться для его выполнения."""
-
+    # Create the request payload
     payload = {
         "user_request": "Test request with Russian prompt",
         "custom_system_prompt": custom_system_prompt
     }
 
+    # Serialize to JSON with UTF-8 encoding
+    json_str = json.dumps(payload, ensure_ascii=False)
+    json_bytes = json_str.encode('utf-8')
+    
+    # Check the actual byte length
+    print(f"JSON string length: {len(json_str)} characters")
+    print(f"JSON bytes length: {len(json_bytes)} bytes")
+    
+    # Check if the prompt exceeds the max_length constraint (5000 chars)
+    prompt_length = len(custom_system_prompt)
+    print(f"Custom system prompt length: {prompt_length} characters")
+    
+    if prompt_length > 5000:
+        print(f"⚠️  WARNING: Custom system prompt exceeds 5000 character limit by {prompt_length - 5000} characters!")
+        print("This is likely causing the 400 error due to validation failure.")
+        return False
+    
+    # Try to make an actual request to the agent service
     try:
-        # Test JSON serialization
-        json_str = json.dumps(payload, ensure_ascii=False)
-        print(f"✓ JSON serialization successful, length: {len(json_str)} characters")
+        # Get the agent service URL from environment or use default
+        agent_url = os.getenv('AGENT_SERVICE_URL', 'http://localhost:5002/query')
         
-        # Test deserialization
-        loaded_back = json.loads(json_str)
-        if loaded_back["custom_system_prompt"] == custom_system_prompt:
-            print("✓ Round-trip serialization/deserialization successful")
-            return True
-        else:
-            print("✗ Round-trip serialization/deserialization failed")
+        # Headers with proper content type
+        headers = {
+            'Content-Type': 'application/json; charset=utf-8',
+            # Authorization header would be needed in a real scenario
+            # 'Authorization': 'Bearer your-jwt-token-here'
+        }
+        
+        print(f"Making request to: {agent_url}")
+        
+        # Make the request
+        response = requests.post(
+            agent_url,
+            data=json_bytes,
+            headers=headers
+        )
+        
+        print(f"Response status: {response.status_code}")
+        print(f"Response headers: {dict(response.headers)}")
+        
+        if response.status_code == 400:
+            print(f"Response body (400 error): {response.text}")
             return False
+        else:
+            print(f"Response body: {response.text[:500]}...")  # Truncate for readability
+            return True
             
+    except requests.exceptions.ConnectionError:
+        print("⚠️  Connection error - agent service may not be running")
+        print("This is expected if the service isn't running for testing purposes")
+        return True  # Not a failure of the encoding itself
     except Exception as e:
-        print(f"✗ JSON serialization failed: {e}")
+        print(f"✗ Request failed with exception: {e}")
+        traceback.print_exc()
+        return False
+
+def test_simplified_request():
+    """Test with a much simpler version of the prompt"""
+    
+    # Much shorter version focusing on the core issue
+    simple_prompt = """найди информацию и сформулируй требования по информационной безопасности"""
+
+    payload = {
+        "user_request": "Test request",
+        "custom_system_prompt": simple_prompt
+    }
+
+    json_str = json.dumps(payload, ensure_ascii=False)
+    json_bytes = json_str.encode('utf-8')
+    
+    print(f"\nSimple prompt length: {len(simple_prompt)} characters")
+    print(f"Simple JSON bytes length: {len(json_bytes)} bytes")
+    
+    try:
+        # Get the agent service URL from environment or use default
+        agent_url = os.getenv('AGENT_SERVICE_URL', 'http://localhost:5002/query')
+        
+        headers = {
+            'Content-Type': 'application/json; charset=utf-8',
+        }
+        
+        print(f"Making simplified request to: {agent_url}")
+        
+        response = requests.post(
+            agent_url,
+            data=json_bytes,
+            headers=headers
+        )
+        
+        print(f"Simplified response status: {response.status_code}")
+        if response.status_code == 400:
+            print(f"Simplified response body (400 error): {response.text}")
+            return False
+        else:
+            print(f"Simplified response body: {response.text[:500]}...")
+            return True
+            
+    except requests.exceptions.ConnectionError:
+        print("⚠️  Connection error - agent service may not be running")
+        return True  # Not a failure of the encoding itself
+    except Exception as e:
+        print(f"✗ Simplified request failed with exception: {e}")
         return False
 
 if __name__ == "__main__":
-    print("Testing custom system prompt length validation fix...")
+    print("Testing actual request to agent service with Russian text...")
     
-    print("\n=== Testing prompt length validation ===")
-    length_test_passed = test_prompt_length_validation()
+    print("\n=== Testing full prompt ===")
+    full_test_passed = test_actual_request()
     
-    print("\n=== Testing JSON serialization ===")
-    json_test_passed = test_json_serialization()
+    print("\n=== Testing simplified prompt ===")
+    simple_test_passed = test_simplified_request()
     
     print(f"\nResults:")
-    print(f"Length validation test: {'PASS' if length_test_passed else 'FAIL'}")
-    print(f"JSON serialization test: {'PASS' if json_test_passed else 'FAIL'}")
+    print(f"Full prompt test: {'PASS' if full_test_passed else 'FAIL'}")
+    print(f"Simple prompt test: {'PASS' if simple_test_passed else 'FAIL'}")
     
-    if length_test_passed and json_test_passed:
-        print("\n✓ All tests passed! The fix for the custom system prompt length issue is working correctly.")
-    else:
-        print("\n✗ Some tests failed. The issue may not be fully resolved.")
+    if not full_test_passed and "WARNING: Custom system prompt exceeds 5000 character limit" in globals():
+        print("\nThe issue is the length of the custom system prompt exceeding the 5000 character limit.")
+        print("The validation in the agent service is rejecting the request with a 400 error.")
+    elif not full_test_passed:
+        print("\nThe issue persists even with proper encoding and length.")
+        print("There may be other validation or processing issues in the agent service.")

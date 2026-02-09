@@ -65,7 +65,7 @@ def agent_query(current_user_id):
             'custom_system_prompt': {
                 'type': str,
                 'required': False,
-                'max_length': 5000,
+                'max_length': 10000,  # Increased from 5000 to accommodate longer custom prompts
                 'sanitize': True
             },
             'skip_final_response_generation': {

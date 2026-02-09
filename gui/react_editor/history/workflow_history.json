@@ -1,286 +1,6 @@
 {
   "states": [
     {
-      "id": "5d3e54e5-c95f-4744-94f4-9d36073a3271",
-      "timestamp": 1770285917.2658792,
-      "workflow": {
-        "name": "MyWorkflow",
-        "nodes": [
-          {
-            "data": {
-              "conditionalEdges": [],
-              "conditionalLogic": "",
-              "description": "Node: input_reception",
-              "editable": true,
-              "errorHandler": "",
-              "label": "Input Reception",
-              "logic": "Logic for input_reception node",
-              "nextNode": "mcp_registry_call",
-              "nodeFunction": "input_reception",
-              "stateUpdates": {},
-              "type": "default"
-            },
-            "id": "input_reception",
-            "position": {
-              "x": -268,
-              "y": 372
-            },
-            "style": {
-              "alignItems": "center",
-              "background": "#ffffff",
-              "border": "1px solid #555",
-              "borderRadius": "8px",
-              "display": "flex",
-              "height": "100px",
-              "justifyContent": "center",
-              "padding": "15px",
-              "width": "200px"
-            },
-            "type": "default",
-            "measured": {
-              "width": 200,
-              "height": 100
-            },
-            "selected": false,
-            "dragging": false
-          },
-          {
-            "data": {
-              "conditionalEdges": [],
-              "conditionalLogic": "",
-              "description": "Node: mcp_registry_call",
-              "editable": true,
-              "errorHandler": "",
-              "label": "Mcp Registry Call",
-              "logic": "Logic for mcp_registry_call node",
-              "nextNode": "mcp_model_query",
-              "nodeFunction": "mcp_registry_call",
-              "stateUpdates": {},
-              "type": "default"
-            },
-            "id": "mcp_registry_call",
-            "position": {
-              "x": 228,
-              "y": 498
-            },
-            "style": {
-              "alignItems": "center",
-              "background": "#ffffff",
-              "border": "1px solid #555",
-              "borderRadius": "8px",
-              "display": "flex",
-              "height": "100px",
-              "justifyContent": "center",
-              "padding": "15px",
-              "width": "200px"
-            },
-            "type": "default",
-            "measured": {
-              "width": 200,
-              "height": 100
-            },
-            "selected": true,
-            "dragging": false
-          },
-          {
-            "data": {
-              "conditionalEdges": [],
-              "conditionalLogic": "",
-              "description": "Node: mcp_model_query",
-              "editable": true,
-              "errorHandler": "",
-              "label": "Mcp Model Query",
-              "logic": "Logic for mcp_model_query node",
-              "nextNode": "planning_and_filtering",
-              "nodeFunction": "mcp_model_query",
-              "stateUpdates": {},
-              "type": "default"
-            },
-            "id": "mcp_model_query",
-            "position": {
-              "x": 700,
-              "y": 600
-            },
-            "style": {
-              "alignItems": "center",
-              "background": "#ffffff",
-              "border": "1px solid #555",
-              "borderRadius": "8px",
-              "display": "flex",
-              "height": "100px",
-              "justifyContent": "center",
-              "padding": "15px",
-              "width": "200px"
-            },
-            "type": "default",
-            "measured": {
-              "width": 200,
-              "height": 100
-            }
-          },
-          {
-            "data": {
-              "conditionalEdges": [],
-              "conditionalLogic": "",
-              "description": "Node: planning_and_filtering",
-              "editable": true,
-              "errorHandler": "",
-              "label": "Planning And Filtering",
-              "logic": "Logic for planning_and_filtering node",
-              "nextNode": "parallel_execution",
-              "nodeFunction": "planning_and_filtering",
-              "stateUpdates": {},
-              "type": "default"
-            },
-            "id": "planning_and_filtering",
-            "position": {
-              "x": 1378,
-              "y": 768
-            },
-            "style": {
-              "alignItems": "center",
-              "background": "#ffffff",
-              "border": "1px solid #555",
-              "borderRadius": "8px",
-              "display": "flex",
-              "height": "100px",
-              "justifyContent": "center",
-              "padding": "15px",
-              "width": "200px"
-            },
-            "type": "default",
-            "measured": {
-              "width": 200,
-              "height": 100
-            },
-            "selected": false,
-            "dragging": false
-          },
-          {
-            "data": {
-              "conditionalEdges": [],
-              "conditionalLogic": "",
-              "description": "Node: parallel_execution",
-              "editable": true,
-              "errorHandler": "",
-              "label": "Parallel Execution",
-              "logic": "Logic for parallel_execution node",
-              "nextNode": "enhanced_results_collection",
-              "nodeFunction": "parallel_execution",
-              "stateUpdates": {},
-              "type": "default"
-            },
-            "id": "parallel_execution",
-            "position": {
-              "x": -56,
-              "y": 1020
-            },
-            "style": {
-              "alignItems": "center",
-              "background": "#ffffff",
-              "border": "1px solid #555",
-              "borderRadius": "8px",
-              "display": "flex",
-              "height": "100px",
-              "justifyContent": "center",
-              "padding": "15px",
-              "width": "200px"
-            },
-            "type": "default",
-            "measured": {
-              "width": 200,
-              "height": 100
-            },
-            "selected": false,
-            "dragging": false
-          },
-          {
-            "data": {
-              "conditionalEdges": [],
-              "conditionalLogic": "",
-              "description": "Node: enhanced_results_collection",
-              "editable": true,
-              "errorHandler": "",
-              "label": "Enhanced Results Collection",
-              "logic": "Logic for enhanced_results_collection node",
-              "nextNode": "__end__",
-              "nodeFunction": "enhanced_results_collection",
-              "stateUpdates": {},
-              "type": "default"
-            },
-            "id": "enhanced_results_collection",
-            "position": {
-              "x": 568,
-              "y": 1242
-            },
-            "style": {
-              "alignItems": "center",
-              "background": "#ffffff",
-              "border": "1px solid #555",
-              "borderRadius": "8px",
-              "display": "flex",
-              "height": "100px",
-              "justifyContent": "center",
-              "padding": "15px",
-              "width": "200px"
-            },
-            "type": "default",
-            "measured": {
-              "width": 200,
-              "height": 100
-            },
-            "selected": false,
-            "dragging": false
-          }
-        ],
-        "edges": [
-          {
-            "animated": true,
-            "id": "e___start___input_reception",
-            "source": "__start__",
-            "target": "input_reception"
-          },
-          {
-            "animated": true,
-            "id": "e_input_reception_mcp_registry_call",
-            "source": "input_reception",
-            "target": "mcp_registry_call"
-          },
-          {
-            "animated": true,
-            "id": "e_mcp_model_query_planning_and_filtering",
-            "source": "mcp_model_query",
-            "target": "planning_and_filtering"
-          },
-          {
-            "animated": true,
-            "id": "e_mcp_registry_call_mcp_model_query",
-            "source": "mcp_registry_call",
-            "target": "mcp_model_query"
-          },
-          {
-            "animated": true,
-            "id": "e_parallel_execution_enhanced_results_collection",
-            "source": "parallel_execution",
-            "target": "enhanced_results_collection"
-          },
-          {
-            "animated": true,
-            "id": "e_planning_and_filtering_parallel_execution",
-            "source": "planning_and_filtering",
-            "target": "parallel_execution"
-          },
-          {
-            "animated": true,
-            "id": "e_enhanced_results_collection___end__",
-            "source": "enhanced_results_collection",
-            "target": "__end__"
-          }
-        ]
-      },
-      "label": "State 4 - 2026-02-05 10:05:17"
-    },
-    {
       "id": "a077cc36-4eab-4706-a600-17f883e2a4d7",
       "timestamp": 1770287375.424125,
       "workflow": {
@@ -833,8 +553,278 @@
         ]
       },
       "label": "State 4 - 2026-02-05 10:33:26"
+    },
+    {
+      "id": "62e86988-8f37-4712-9c13-51b3ba4acf69",
+      "timestamp": 1770573676.8617108,
+      "workflow": {
+        "name": "MyWorkflow",
+        "nodes": [
+          {
+            "data": {
+              "conditionalEdges": [],
+              "conditionalLogic": "",
+              "description": "Node: input_reception",
+              "editable": true,
+              "errorHandler": "",
+              "label": "Input Reception",
+              "logic": "Logic for input_reception node",
+              "nextNode": "mcp_registry_call",
+              "nodeFunction": "input_reception",
+              "stateUpdates": {},
+              "type": "default"
+            },
+            "id": "input_reception",
+            "position": {
+              "x": 0,
+              "y": 600
+            },
+            "style": {
+              "alignItems": "center",
+              "background": "#ffffff",
+              "border": "1px solid #555",
+              "borderRadius": "8px",
+              "display": "flex",
+              "height": "100px",
+              "justifyContent": "center",
+              "padding": "15px",
+              "width": "200px"
+            },
+            "type": "default",
+            "measured": {
+              "width": 200,
+              "height": 100
+            }
+          },
+          {
+            "data": {
+              "conditionalEdges": [],
+              "conditionalLogic": "",
+              "description": "Node: mcp_registry_call",
+              "editable": true,
+              "errorHandler": "",
+              "label": "Mcp Registry Call",
+              "logic": "Logic for mcp_registry_call node",
+              "nextNode": "mcp_model_query",
+              "nodeFunction": "mcp_registry_call",
+              "stateUpdates": {},
+              "type": "default"
+            },
+            "id": "mcp_registry_call",
+            "position": {
+              "x": 350,
+              "y": 600
+            },
+            "style": {
+              "alignItems": "center",
+              "background": "#ffffff",
+              "border": "1px solid #555",
+              "borderRadius": "8px",
+              "display": "flex",
+              "height": "100px",
+              "justifyContent": "center",
+              "padding": "15px",
+              "width": "200px"
+            },
+            "type": "default",
+            "measured": {
+              "width": 200,
+              "height": 100
+            }
+          },
+          {
+            "data": {
+              "conditionalEdges": [],
+              "conditionalLogic": "",
+              "description": "Node: mcp_model_query",
+              "editable": true,
+              "errorHandler": "",
+              "label": "Mcp Model Query",
+              "logic": "Logic for mcp_model_query node",
+              "nextNode": "planning_and_filtering",
+              "nodeFunction": "mcp_model_query",
+              "stateUpdates": {},
+              "type": "default"
+            },
+            "id": "mcp_model_query",
+            "position": {
+              "x": 700,
+              "y": 600
+            },
+            "style": {
+              "alignItems": "center",
+              "background": "#ffffff",
+              "border": "1px solid #555",
+              "borderRadius": "8px",
+              "display": "flex",
+              "height": "100px",
+              "justifyContent": "center",
+              "padding": "15px",
+              "width": "200px"
+            },
+            "type": "default",
+            "measured": {
+              "width": 200,
+              "height": 100
+            }
+          },
+          {
+            "data": {
+              "conditionalEdges": [],
+              "conditionalLogic": "",
+              "description": "Node: planning_and_filtering",
+              "editable": true,
+              "errorHandler": "",
+              "label": "Planning And Filtering",
+              "logic": "Logic for planning_and_filtering node",
+              "nextNode": "parallel_execution",
+              "nodeFunction": "planning_and_filtering",
+              "stateUpdates": {},
+              "type": "default"
+            },
+            "id": "planning_and_filtering",
+            "position": {
+              "x": 1050,
+              "y": 600
+            },
+            "style": {
+              "alignItems": "center",
+              "background": "#ffffff",
+              "border": "1px solid #555",
+              "borderRadius": "8px",
+              "display": "flex",
+              "height": "100px",
+              "justifyContent": "center",
+              "padding": "15px",
+              "width": "200px"
+            },
+            "type": "default",
+            "measured": {
+              "width": 200,
+              "height": 100
+            }
+          },
+          {
+            "data": {
+              "conditionalEdges": [],
+              "conditionalLogic": "",
+              "description": "Node: parallel_execution",
+              "editable": true,
+              "errorHandler": "",
+              "label": "Parallel Execution",
+              "logic": "Logic for parallel_execution node",
+              "nextNode": "enhanced_results_collection",
+              "nodeFunction": "parallel_execution",
+              "stateUpdates": {},
+              "type": "default"
+            },
+            "id": "parallel_execution",
+            "position": {
+              "x": 0,
+              "y": 900
+            },
+            "style": {
+              "alignItems": "center",
+              "background": "#ffffff",
+              "border": "1px solid #555",
+              "borderRadius": "8px",
+              "display": "flex",
+              "height": "100px",
+              "justifyContent": "center",
+              "padding": "15px",
+              "width": "200px"
+            },
+            "type": "default",
+            "measured": {
+              "width": 200,
+              "height": 100
+            }
+          },
+          {
+            "data": {
+              "conditionalEdges": [],
+              "conditionalLogic": "",
+              "description": "Node: enhanced_results_collection",
+              "editable": true,
+              "errorHandler": "",
+              "label": "Enhanced Results Collection",
+              "logic": "Logic for enhanced_results_collection node",
+              "nextNode": "__end__",
+              "nodeFunction": "enhanced_results_collection",
+              "stateUpdates": {},
+              "type": "default"
+            },
+            "id": "enhanced_results_collection",
+            "position": {
+              "x": 350,
+              "y": 900
+            },
+            "style": {
+              "alignItems": "center",
+              "background": "#ffffff",
+              "border": "1px solid #555",
+              "borderRadius": "8px",
+              "display": "flex",
+              "height": "100px",
+              "justifyContent": "center",
+              "padding": "15px",
+              "width": "200px"
+            },
+            "type": "default",
+            "measured": {
+              "width": 200,
+              "height": 100
+            }
+          }
+        ],
+        "edges": [
+          {
+            "animated": true,
+            "id": "e___start___input_reception",
+            "source": "__start__",
+            "target": "input_reception"
+          },
+          {
+            "animated": true,
+            "id": "e_input_reception_mcp_registry_call",
+            "source": "input_reception",
+            "target": "mcp_registry_call"
+          },
+          {
+            "animated": true,
+            "id": "e_mcp_model_query_planning_and_filtering",
+            "source": "mcp_model_query",
+            "target": "planning_and_filtering"
+          },
+          {
+            "animated": true,
+            "id": "e_mcp_registry_call_mcp_model_query",
+            "source": "mcp_registry_call",
+            "target": "mcp_model_query"
+          },
+          {
+            "animated": true,
+            "id": "e_parallel_execution_enhanced_results_collection",
+            "source": "parallel_execution",
+            "target": "enhanced_results_collection"
+          },
+          {
+            "animated": true,
+            "id": "e_planning_and_filtering_parallel_execution",
+            "source": "planning_and_filtering",
+            "target": "parallel_execution"
+          },
+          {
+            "animated": true,
+            "id": "e_enhanced_results_collection___end__",
+            "source": "enhanced_results_collection",
+            "target": "__end__"
+          }
+        ]
+      },
+      "label": "State 4 - 2026-02-08 18:01:16"
     }
   ],
   "max_states": 3,
-  "timestamp": 1770287606.634889
+  "timestamp": 1770573676.861783
 }

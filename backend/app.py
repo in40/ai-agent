@@ -18,8 +18,6 @@ from typing import Dict, Any, Optional
 import threading
 import time
 
-# Import the LangGraph agent
-from langgraph_agent.langgraph_agent import run_enhanced_agent
 from rag_component.main import RAGOrchestrator
 from config.settings import RESPONSE_LLM_PROVIDER, RESPONSE_LLM_MODEL
 from models.response_generator import ResponseGenerator
@@ -29,14 +27,15 @@ from backend.security import security_manager, require_permission, rate_limit, v
 
 # Initialize Flask app
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your-secret-key-change-this-in-production')
-app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY', 'jwt-secret-string-change-this-too')
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', '54d989bcf904ffb5fd8aa5842f929953985837026d64b1314046d6b8a9c1c801')
+app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY', '71ab14072ee24cb288aae255edb2f670c9a9e0d181365b04e45815f0c04ef41d')
 
 # Enable CORS for all routes
 CORS(app, resources={
     r"/api/*": {"origins": "*"},
     r"/auth/*": {"origins": "*"},
     r"/rag/*": {"origins": "*"},
+    r"/agent/*": {"origins": "*"},
     r"/streamlit/*": {"origins": "*"},
     r"/react/*": {"origins": "*"}
 })
@@ -227,83 +226,78 @@ def login():
 
         return jsonify({'message': 'Login failed!'}), 500
 
+# Proxy route for AI Agent service
 @app.route('/api/agent/query', methods=['POST'])
 @require_permission(Permission.WRITE_AGENT)
 @rate_limit(max_requests=30, window_seconds=60)  # 30 requests per minute
-def agent_query(current_user_id):
-    """Endpoint for the main AI agent functionality"""
+def proxy_agent_query():
+    """Proxy agent query requests to the AI Agent service"""
+    import requests
+    import json
+
+    agent_url = os.getenv('AGENT_URL', 'http://localhost:5002')
+    url = f"{agent_url}/query"  # Direct to the agent service's query endpoint
+
+    # Get the current user ID from the token validation decorator
+    token = request.headers.get('Authorization')
+    if token and token.startswith('Bearer '):
+        token = token[7:]
+    
+    # Get current user info for logging
     try:
-        data = request.get_json()
+        current_user_data = jwt.decode(token, app.config['JWT_SECRET_KEY'], algorithms=["HS256"])
+        current_user_id = current_user_data['user_id']
+    except:
+        current_user_id = 'unknown'
 
-        # Validate input
-        schema = {
-            'user_request': {
-                'type': str,
-                'required': True,
-                'min_length': 1,
-                'max_length': 2000,
-                'sanitize': True
-            },
-            'disable_sql_blocking': {
-                'type': bool,
-                'required': False
-            },
-            'disable_databases': {
-                'type': bool,
-                'required': False
-            },
-            'custom_system_prompt': {
-                'type': str,
-                'required': False,
-                'max_length': 5000,
-                'sanitize': True
-            },
-            'skip_final_response_generation': {
-                'type': bool,
-                'required': False
-            }
-        }
+    # Get the request data and ensure it's properly formatted
+    request_data = request.get_json()
+    if not request_data:
+        logger.error(f"No JSON data in agent query request from user {current_user_id}")
+        return jsonify({'error': 'Invalid request: no JSON data provided'}), 400
+    
+    # Log the incoming request data to debug
+    logger.debug(f"Incoming agent query request from user {current_user_id}: {request_data}")
 
-        validation_errors = validate_input(data, schema)
-        if validation_errors:
-            return jsonify({'error': f'Validation error: {validation_errors}'}), 400
+    # Ensure the user_request field exists and is not None
+    user_request = request_data.get('user_request')
+    if user_request is None:
+        logger.error(f"Missing user_request in agent query from user {current_user_id}")
+        return jsonify({'error': 'Missing user_request in request'}), 400
+    
+    # Ensure user_request is a string and not empty
+    if not isinstance(user_request, str) or len(user_request.strip()) == 0:
+        logger.error(f"Invalid user_request in agent query from user {current_user_id}: {user_request}")
+        return jsonify({'error': 'user_request must be a non-empty string'}), 400
 
-        user_request = data.get('user_request')
+    headers = {key: value for (key, value) in request.headers if key.lower() != 'host'}
+    headers['Host'] = agent_url.replace('http://', '').replace('https://', '')
+    # Add content-type header if not already present
+    if 'Content-Type' not in headers and 'content-type' not in headers:
+        headers['Content-Type'] = 'application/json'
 
-        # Extract optional parameters
-        disable_sql_blocking = data.get('disable_sql_blocking', False)
-        disable_databases = data.get('disable_databases', False)
-        custom_system_prompt = data.get('custom_system_prompt', None)
-        # DEBUG logging for custom_system_prompt
-        logger.debug(f"DEBUG: Received custom_system_prompt value: {custom_system_prompt}")
-        skip_final_response_generation = data.get('skip_final_response_generation', False)
-        # DEBUG logging for skip_final_response_generation
-        logger.debug(f"DEBUG: Received skip_final_response_generation value: {skip_final_response_generation}")
-
-        start_time = time.time()
-
-        # Get registry URL from environment or data
-        registry_url = data.get('registry_url', os.getenv('MCP_REGISTRY_URL', 'http://127.0.0.1:8080'))
-
-        # Run the agent with the updated function signature
-        result = run_enhanced_agent(
-            user_request=user_request,
-            disable_sql_blocking=disable_sql_blocking,
-            disable_databases=disable_databases,
-            custom_system_prompt=custom_system_prompt,
-            skip_final_response_generation=skip_final_response_generation,
-            registry_url=registry_url
+    try:
+        # Send the request data as JSON to the agent service
+        resp = requests.post(
+            url=url,
+            headers=headers,
+            json=request_data,  # Use json parameter to send as JSON
+            cookies=request.cookies,
+            allow_redirects=False
         )
-        # DEBUG logging for result
-        logger.debug(f"DEBUG: Agent result: {result}")
 
-        # Add execution time to result
-        result['execution_time'] = time.time() - start_time
+        excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
+        headers = [(name, value) for (name, value) in resp.raw.headers.items()
+                   if name.lower() not in excluded_headers]
 
-        return jsonify(result), 200
+        response = Response(resp.content, resp.status_code, headers)
+        
+        # Log successful proxy
+        logger.info(f"Agent query proxied successfully for user {current_user_id}")
+        return response
     except Exception as e:
-        logger.error(f"Agent query error: {str(e)}")
-        return jsonify({'error': f'Agent query failed: {str(e)}'}), 500
+        logger.error(f"Agent proxy error for user {current_user_id}: {str(e)}")
+        return jsonify({'error': 'Agent service unavailable'}), 503
 
 @app.route('/api/rag/query', methods=['POST'])
 @require_permission(Permission.READ_RAG)
@@ -606,16 +600,92 @@ def serve_static(path):
         return send_from_directory(static_dir, 'index.html')
 
 # Additional API endpoints
+@app.route('/api/agent/<path:path>', methods=['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS'])
+def proxy_agent(path=''):
+    """Proxy requests to the AI Agent service"""
+    import requests
+
+    agent_url = os.getenv('AGENT_URL', 'http://localhost:5002')
+    url = f"{agent_url}/{path}"
+
+    headers = {key: value for (key, value) in request.headers if key.lower() != 'host'}
+    headers['Host'] = agent_url.replace('http://', '').replace('https://', '')
+    
+    # Prepare request data based on method
+    if request.method in ['POST', 'PUT', 'PATCH']:
+        request_data = request.get_data()
+        if request.is_json:
+            # Use json parameter for JSON requests
+            resp = requests.request(
+                method=request.method,
+                url=url,
+                headers=headers,
+                json=request.get_json(),  # Use json parameter to preserve structure
+                cookies=request.cookies,
+                allow_redirects=False
+            )
+        else:
+            # Use data parameter for non-JSON requests
+            resp = requests.request(
+                method=request.method,
+                url=url,
+                headers=headers,
+                data=request_data,
+                cookies=request.cookies,
+                allow_redirects=False
+            )
+    else:
+        # For GET, DELETE, etc., no request body is expected
+        resp = requests.request(
+            method=request.method,
+            url=url,
+            headers=headers,
+            cookies=request.cookies,
+            allow_redirects=False
+        )
+
+    try:
+        excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
+        headers = [(name, value) for (name, value) in resp.raw.headers.items()
+                   if name.lower() not in excluded_headers]
+
+        response = Response(resp.content, resp.status_code, headers)
+        return response
+    except Exception as e:
+        logger.error(f"Agent proxy error: {str(e)}")
+        return jsonify({'error': 'Agent service unavailable'}), 503
+
+
 @app.route('/api/agent/status', methods=['GET'])
 @require_permission(Permission.READ_AGENT)
-def agent_status(current_user_id):
-    """Get the status of the AI agent"""
-    return jsonify({
-        'status': 'running',
-        'message': 'AI Agent is operational',
-        'timestamp': datetime.utcnow().isoformat(),
-        'version': '0.5.0'
-    }), 200
+def proxy_agent_status():
+    """Proxy agent status requests to the AI Agent service"""
+    import requests
+
+    agent_url = os.getenv('AGENT_URL', 'http://localhost:5002')
+    url = f"{agent_url}/status"  # Direct to the agent service's status endpoint
+
+    headers = {key: value for (key, value) in request.headers if key.lower() != 'host'}
+    headers['Host'] = agent_url.replace('http://', '').replace('https://', '')
+
+    try:
+        # For GET requests, no request body is expected
+        resp = requests.get(
+            url=url,
+            headers=headers,
+            cookies=request.cookies,
+            allow_redirects=False
+        )
+
+        excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
+        headers = [(name, value) for (name, value) in resp.raw.headers.items()
+                   if name.lower() not in excluded_headers]
+
+        response = Response(resp.content, resp.status_code, headers)
+        return response
+    except Exception as e:
+        logger.error(f"Agent status proxy error: {str(e)}")
+        return jsonify({'error': 'Agent service unavailable'}), 503
 
 @app.route('/api/rag/status', methods=['GET'])
 @require_permission(Permission.READ_RAG)

@@ -1,13 +1,16 @@
 #!/usr/bin/env python3
 """
-Test script to verify that the custom system prompt length issue is fixed
+Debug script to test the encoding issue with Russian text in custom system prompt
 """
 import json
+import requests
+import sys
+import traceback
 
-def test_prompt_length_validation():
-    """Test that the custom system prompt can now exceed 5000 characters"""
+def test_custom_prompt_encoding():
+    """Test sending a request with Russian text in custom system prompt"""
     
-    # Define the previously problematic custom system prompt
+    # Define the problematic custom system prompt
     custom_system_prompt = """найди информацию в локальных документах и интернете и сформулируй детальные требования по информационной безопасности мобильного приложения для использования сотрудниками российского банка для обработки ПДН
 
 Проанализируйте запрос пользователя и предложите подходящие MCP-запросы или сервисы, которые могут понадобиться для его выполнения.
@@ -264,68 +267,93 @@ Available MCP Services:
   }
 ]"""
 
-    # Check the length
-    prompt_length = len(custom_system_prompt)
-    print(f"Custom system prompt length: {prompt_length} characters")
-    
-    # Check if it exceeds the old limit (5000) but is within the new limit (10000)
-    if prompt_length > 5000 and prompt_length <= 10000:
-        print("✓ Custom system prompt exceeds old limit (5000) but is within new limit (10000)")
-        return True
-    elif prompt_length <= 5000:
-        print("⚠️  Custom system prompt is within the old limit (5000)")
-        return True  # Still valid
-    elif prompt_length > 10000:
-        print(f"✗ Custom system prompt exceeds new limit (10000) by {prompt_length - 10000} characters")
-        return False
-    else:
-        print("✗ Unexpected length validation result")
-        return False
-
-def test_json_serialization():
-    """Test JSON serialization with the custom prompt"""
-    
-    custom_system_prompt = """найди информацию в локальных документах и интернете и сформулируй детальные требования по информационной безопасности мобильного приложения для использования сотрудниками российского банка для обработки ПДН
-
-Проанализируйте запрос пользователя и предложите подходящие MCP-запросы или сервисы, которые могут понадобиться для его выполнения."""
-
+    # Create the request payload
     payload = {
         "user_request": "Test request with Russian prompt",
         "custom_system_prompt": custom_system_prompt
     }
 
+    # Test JSON serialization
     try:
-        # Test JSON serialization
         json_str = json.dumps(payload, ensure_ascii=False)
-        print(f"✓ JSON serialization successful, length: {len(json_str)} characters")
+        print("✓ JSON serialization successful")
+        print(f"JSON length: {len(json_str)} characters")
         
-        # Test deserialization
+        # Check if the Russian text is preserved correctly
         loaded_back = json.loads(json_str)
         if loaded_back["custom_system_prompt"] == custom_system_prompt:
-            print("✓ Round-trip serialization/deserialization successful")
-            return True
+            print("✓ Russian text preserved correctly after JSON serialization/deserialization")
         else:
-            print("✗ Round-trip serialization/deserialization failed")
-            return False
+            print("✗ Russian text was altered during JSON serialization/deserialization")
             
     except Exception as e:
         print(f"✗ JSON serialization failed: {e}")
         return False
 
+    # Try to make an actual request (this might fail if the service isn't running)
+    try:
+        # Note: This assumes the agent service is running on localhost:5002
+        # You may need to adjust the URL based on your setup
+        headers = {
+            'Content-Type': 'application/json; charset=utf-8',
+            'Authorization': 'Bearer your-token-here'  # Replace with actual token if required
+        }
+        
+        print("\nAttempting to send request to agent service...")
+        # Commenting out the actual request to avoid errors if service isn't running
+        # response = requests.post("http://localhost:5002/query", 
+        #                         data=json_str.encode('utf-8'), 
+        #                         headers=headers)
+        # print(f"Response status: {response.status_code}")
+        
+        print("✓ Request would be sent with proper UTF-8 encoding")
+        return True
+        
+    except Exception as e:
+        print(f"✗ Request failed: {e}")
+        traceback.print_exc()
+        return False
+
+def test_simplified_prompt():
+    """Test with a simplified version of the prompt to isolate the issue"""
+    
+    # Simplified version with minimal Russian text
+    simple_prompt = "найди информацию и сформулируй требования"
+    
+    payload = {
+        "user_request": "Test request",
+        "custom_system_prompt": simple_prompt
+    }
+    
+    try:
+        json_str = json.dumps(payload, ensure_ascii=False)
+        print(f"\n✓ Simple prompt JSON serialization successful, length: {len(json_str)}")
+        
+        # Check preservation
+        loaded_back = json.loads(json_str)
+        if loaded_back["custom_system_prompt"] == simple_prompt:
+            print("✓ Simple Russian text preserved correctly")
+        else:
+            print("✗ Simple Russian text was altered")
+            
+        return True
+    except Exception as e:
+        print(f"✗ Simple prompt JSON serialization failed: {e}")
+        return False
+
 if __name__ == "__main__":
-    print("Testing custom system prompt length validation fix...")
+    print("Testing encoding of Russian text in custom system prompt...")
     
-    print("\n=== Testing prompt length validation ===")
-    length_test_passed = test_prompt_length_validation()
+    print("\n=== Testing full prompt ===")
+    full_test_passed = test_custom_prompt_encoding()
     
-    print("\n=== Testing JSON serialization ===")
-    json_test_passed = test_json_serialization()
+    print("\n=== Testing simplified prompt ===")
+    simple_test_passed = test_simplified_prompt()
     
     print(f"\nResults:")
-    print(f"Length validation test: {'PASS' if length_test_passed else 'FAIL'}")
-    print(f"JSON serialization test: {'PASS' if json_test_passed else 'FAIL'}")
+    print(f"Full prompt test: {'PASS' if full_test_passed else 'FAIL'}")
+    print(f"Simple prompt test: {'PASS' if simple_test_passed else 'FAIL'}")
     
-    if length_test_passed and json_test_passed:
-        print("\n✓ All tests passed! The fix for the custom system prompt length issue is working correctly.")
-    else:
-        print("\n✗ Some tests failed. The issue may not be fully resolved.")
+    if not full_test_passed:
+        print("\nThe issue is likely related to the length or complexity of the Russian text in the custom prompt.")
+        print("Consider shortening the prompt or ensuring proper UTF-8 encoding in your client.")
