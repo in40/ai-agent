@@ -54,6 +54,12 @@ def health_check():
     }), 200
 
 
+@app.route('/api/health', methods=['GET'])
+def api_health_check():
+    """API health check endpoint (for frontend compatibility)"""
+    return health_check()
+
+
 @app.route('/', methods=['GET'])
 def serve_web_client():
     """Serve the main web client interface"""

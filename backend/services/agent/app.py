@@ -118,8 +118,21 @@ def agent_query(current_user_id):
 
 @app.route('/status', methods=['GET'])
 @require_permission(Permission.READ_AGENT)
-def agent_status():
+def agent_status(current_user_id):
     """Get the status of the AI agent"""
+    return jsonify({
+        'status': 'running',
+        'service': 'agent',
+        'message': 'AI Agent is operational',
+        'timestamp': datetime.utcnow().isoformat(),
+        'version': '0.5.0'
+    }), 200
+
+
+@app.route('/api/agent/status', methods=['GET'])
+@require_permission(Permission.READ_AGENT)
+def api_agent_status(current_user_id):
+    """Get the status of the AI agent (for frontend compatibility)"""
     return jsonify({
         'status': 'running',
         'service': 'agent',
