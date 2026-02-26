@@ -301,60 +301,47 @@ def rag_lookup(current_user_id):
 
 
 # Catch-all route for other /api/rag/* endpoints
-@app.route('/api/rag/<path:path>', methods=['GET', 'POST', 'PUT', 'DELETE'])
-@require_permission(Permission.READ_RAG)
-def rag_proxy(current_user_id, path):
-    """Proxy for other RAG API endpoints"""
+# NOTE: Specific routes must be defined BEFORE this catch-all
+@app.route('/api/rag/smart_ingest_files', methods=['POST'])
+@require_permission(Permission.WRITE_RAG)
+def rag_smart_ingest_files(current_user_id):
+    """Convenience route for smart file ingestion with async job processing"""
     try:
         # Forward to RAG service
-        url = f"{RAG_SERVICE_URL}/api/rag/{path}"
-        headers = {}
-        
-        # Forward Authorization header
-        auth_header = request.headers.get('Authorization')
-        if auth_header:
-            headers['Authorization'] = auth_header
-        
-        # Forward Content-Type if present (important for multipart/form-data)
-        content_type = request.headers.get('Content-Type')
-        if content_type:
-            headers['Content-Type'] = content_type
-        
-        # Forward request based on method
-        if request.method == 'GET':
-            resp = requests.get(url, headers=headers, timeout=30)
-        elif request.method == 'POST':
-            # Check if this is a file upload (multipart/form-data)
-            if request.content_type and 'multipart/form-data' in request.content_type:
-                # Handle file uploads - forward files and form data
-                # Don't set Content-Type header - requests library will set it correctly with boundary
-                headers.pop('Content-Type', None)
-                resp = requests.post(url, files=request.files, data=request.form, headers=headers, timeout=300)
-            elif request.content_type and 'application/json' in request.content_type:
-                # Handle JSON requests
-                json_data = request.get_json(silent=True) or {}
-                resp = requests.post(url, json=json_data, headers=headers, timeout=300)
-            else:
-                # Try to get JSON data, fallback to raw data
-                json_data = request.get_json(silent=True)
-                if json_data:
-                    resp = requests.post(url, json=json_data, headers=headers, timeout=300)
-                else:
-                    # Forward raw data
-                    resp = requests.post(url, data=request.data, headers=headers, timeout=300)
-        elif request.method == 'PUT':
-            resp = requests.put(url, json=request.get_json(silent=True) or {}, headers=headers, timeout=30)
-        elif request.method == 'DELETE':
-            resp = requests.delete(url, headers=headers, timeout=30)
-        else:
-            return jsonify({'error': 'Method not allowed'}), 405
-        
+        url = f"{RAG_SERVICE_URL}/api/rag/smart_ingest_files"
+
+        # Handle multipart form data for file uploads
+        # Prepare files for forwarding - properly handle multiple files with same key
+        files = []
+        for i, file_storage in enumerate(request.files.getlist('files')):
+            if file_storage and file_storage.filename != '':
+                # Read the file content to avoid stream issues
+                file_content = file_storage.read()
+                # Ensure content_type is not None, use a default if needed
+                content_type = file_storage.content_type or 'application/octet-stream'
+                files.append(('files', (file_storage.filename, file_content, content_type)))
+
+        # Prepare form data for other parameters
+        form_data = {}
+        for key, value in request.form.items():
+            form_data[key] = value
+
+        # Prepare headers (excluding Content-Type which will be set by requests for multipart)
+        forwarded_headers = {}
+        for key, value in request.headers:
+            if key.lower() not in ['content-type', 'content-length']:
+                forwarded_headers[key] = value
+
+        # Add authorization header
+        forwarded_headers['Authorization'] = request.headers.get('Authorization', '')
+
+        resp = requests.post(url, files=files, data=form_data, headers=forwarded_headers, timeout=43200)  # 12 hour timeout for processing
         return Response(resp.content, resp.status_code, resp.headers.items())
     except Exception as e:
-        logger.error(f"RAG proxy error for /api/rag/{path}: {str(e)}")
+        logger.error(f"Smart ingest files route error: {str(e)}")
         import traceback
         logger.error(traceback.format_exc())
-        return jsonify({'error': f'RAG service error: {str(e)}'}), 503
+        return jsonify({'error': 'RAG service unavailable'}), 503
 
 
 @app.route('/api/mcp/search', methods=['POST'])
@@ -835,6 +822,66 @@ def rag_import_processed(current_user_id):
         return jsonify({'error': 'RAG service unavailable'}), 503
 
 
+# Catch-all route for other /api/rag/* endpoints
+# NOTE: This MUST be after all specific /api/rag routes
+# Catch-all route for other /api/rag/* endpoints
+# NOTE: This MUST be after all specific /api/rag routes
+@app.route('/api/rag/<path:path>', methods=['GET', 'POST', 'PUT', 'DELETE'])
+@require_permission(Permission.READ_RAG)
+def rag_proxy(current_user_id, path):
+    """Proxy for other RAG API endpoints"""
+    try:
+        # Forward to RAG service
+        url = f"{RAG_SERVICE_URL}/api/rag/{path}"
+        headers = {}
+
+        # Forward Authorization header
+        auth_header = request.headers.get('Authorization')
+        if auth_header:
+            headers['Authorization'] = auth_header
+
+        # Forward Content-Type if present (important for multipart/form-data)
+        content_type = request.headers.get('Content-Type')
+        if content_type:
+            headers['Content-Type'] = content_type
+
+        # Forward request based on method
+        if request.method == 'GET':
+            resp = requests.get(url, headers=headers, timeout=30)
+        elif request.method == 'POST':
+            # Check if this is a file upload (multipart/form-data)
+            if request.content_type and 'multipart/form-data' in request.content_type:
+                # Handle file uploads - forward files and form data
+                # Don't set Content-Type header - requests library will set it correctly with boundary
+                headers.pop('Content-Type', None)
+                resp = requests.post(url, files=request.files, data=request.form, headers=headers, timeout=300)
+            elif request.content_type and 'application/json' in request.content_type:
+                # Handle JSON requests
+                json_data = request.get_json(silent=True) or {}
+                resp = requests.post(url, json=json_data, headers=headers, timeout=300)
+            else:
+                # Try to get JSON data, fallback to raw data
+                json_data = request.get_json(silent=True)
+                if json_data:
+                    resp = requests.post(url, json=json_data, headers=headers, timeout=300)
+                else:
+                    # Forward raw data
+                    resp = requests.post(url, data=request.data, headers=headers, timeout=300)
+        elif request.method == 'PUT':
+            resp = requests.put(url, json=request.get_json(silent=True) or {}, headers=headers, timeout=30)
+        elif request.method == 'DELETE':
+            resp = requests.delete(url, headers=headers, timeout=30)
+        else:
+            return jsonify({'error': 'Method not allowed'}), 405
+
+        return Response(resp.content, resp.status_code, resp.headers.items())
+    except Exception as e:
+        logger.error(f"RAG proxy error for /api/rag/{path}: {str(e)}")
+        import traceback
+        logger.error(traceback.format_exc())
+        return jsonify({'error': f'RAG service error: {str(e)}'}), 503
+
+
 @app.route('/api/auth/validate', methods=['POST'])
 def auth_validate():
     """Convenience route for token validation"""
@@ -909,6 +956,10 @@ if __name__ == '__main__':
                 'preload_app': True,
                 'accesslog': '-',
                 'errorlog': '-',
+                # Increase header size limits to support JWT tokens
+                'limit_request_line': 32768,
+                'limit_request_field_size': 32768,
+                'limit_request_fields': 100,
             }
             StandaloneApplication(app, options).run()
         except Exception as e:

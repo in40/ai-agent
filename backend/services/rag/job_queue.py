@@ -59,12 +59,12 @@ class SmartIngestionJob:
     documents_total: int
     documents_processed: int
     chunks_generated: int
-    # Configuration tracking fields
-    ingestion_mode: str  # 'files', 'webpage', 'docstore'
-    processing_mode: str  # 'download_only', 'vector_db', 'hybrid'
-    chunking_strategy: str  # 'smart_chunking', 'naive_chunking', 'section_based'
-    source_url: Optional[str]  # For web page mode
-    document_urls: Optional[List[str]]  # List of document URLs to process
+    # Configuration tracking fields (optional for backward compatibility)
+    ingestion_mode: str = 'files'  # 'files', 'webpage', 'docstore'
+    processing_mode: str = 'vector_db'  # 'download_only', 'vector_db', 'hybrid'
+    chunking_strategy: str = 'smart_chunking'  # 'smart_chunking', 'naive_chunking', 'section_based'
+    source_url: Optional[str] = None  # For web page mode
+    document_urls: Optional[List[str]] = None  # List of document URLs to process
 
     def to_dict(self):
         return asdict(self)

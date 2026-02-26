@@ -3168,6 +3168,8 @@
                 let useFormData = false;
 
                 if (selectedMode === 'files') {
+                    // File mode - use async endpoint
+                    endpoint = '/api/rag/smart_ingest_files';
                     console.log('[SmartIngest] Adding files to FormData...');
                     smartSelectedFilesArray.forEach((file, index) => {
                         console.log(`[SmartIngest] File ${index}:`, file.name, file.size, file.type);
@@ -3248,19 +3250,26 @@
                         const result = await response.json();
                         console.log('[SmartIngest] Result:', result);
 
-                        // For async operations (Document Store or Web Page mode), handle job response
-                        if ((selectedMode === 'docstore' || selectedMode === 'webpage') && result.job_id) {
+                        // For async operations (Files, Document Store, or Web Page mode), handle job response
+                        if ((selectedMode === 'files' || selectedMode === 'docstore' || selectedMode === 'webpage') && result.job_id) {
                             // Show job created message
-                            const docsCount = result.documents_found || selectedDocs.length;
+                            const docsCount = result.files_count || result.documents_found || selectedDocs.length || smartSelectedFilesArray.length;
                             statusDiv.innerHTML = `<strong>Job Created:</strong> ${result.job_id}<br>Processing ${docsCount} document(s) in background...`;
                             statusDiv.className = 'alert alert-info mt-3';
+
+                            // Clear file selection for file mode
+                            if (selectedMode === 'files') {
+                                smartSelectedFilesArray = [];
+                                updateSmartFileList();
+                                document.getElementById('smart-file-upload').value = '';
+                            }
 
                             // Start polling for job status
                             pollJobStatus(result.job_id);
                             return;
                         }
 
-                        // For synchronous file mode
+                        // Fallback for synchronous processing (should not happen now)
                         // Show errors if any
                         if (result.errors && result.errors.length > 0) {
                             console.error('[SmartIngest] Errors:', result.errors);
@@ -3272,18 +3281,13 @@
                         if (result.documents_processed > 0) {
                             resultDiv.innerHTML = `<strong>Success!</strong> Processed ${result.documents_processed} documents, generated ${result.total_chunks || 0} chunks.`;
                             resultDiv.className = 'alert alert-success mt-3';
-
-                            if (selectedMode === 'files') {
-                                smartSelectedFilesArray = [];
-                                updateSmartFileList();
-                            }
                         } else {
                             // Show error details
                             let errorMsg = 'No documents were processed.';
                             if (result.errors && result.errors.length > 0) {
                                 errorMsg += '<br><strong>Errors:</strong><br>';
                                 result.errors.forEach((err, idx) => {
-                                    errorMsg += `- ${err.doc_id || 'Unknown'}: ${err.error || 'Unknown error'}<br>`;
+                                    errorMsg += `- ${err.filename || err.doc_id || 'Unknown'}: ${err.error || 'Unknown error'}<br>`;
                                 });
                             }
                             resultDiv.innerHTML = `<strong>Failed:</strong> ${errorMsg}`;

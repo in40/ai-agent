@@ -1353,8 +1353,145 @@ def smart_ingest(current_user_id):
         from rag_component.document_loader import DocumentLoader
         from rag_component.vector_store_manager import VectorStoreManager
         from langchain_core.documents import Document
-        
+        from models.response_generator import ResponseGenerator
+        import re
+
         # Check if files were included in the request
+        if 'files' not in request.files:
+            return jsonify({'error': 'No files provided'}), 400
+
+        files = request.files.getlist('files')
+        if not files or all(f.filename == '' for f in files):
+            return jsonify({'error': 'No files selected'}), 400
+
+        # Get parameters from form
+        chunking_strategy = request.form.get('chunking_strategy', 'smart_chunking')
+        ingest_chunks = request.form.get('ingest_chunks', 'true').lower() == 'true'
+        custom_prompt = request.form.get('custom_prompt', '')
+        process_mode = request.form.get('process_mode', 'vector_db')
+
+        results = {
+            'documents_processed': 0,
+            'total_chunks': 0,
+            'errors': []
+        }
+
+        document_loader = DocumentLoader()
+        vector_store = VectorStoreManager() if ingest_chunks else None
+
+        # Get LLM instance if using smart chunking
+        llm = None
+        if chunking_strategy == 'smart_chunking':
+            response_gen = ResponseGenerator()
+            llm = response_gen._get_llm_instance(
+                provider=RESPONSE_LLM_PROVIDER,
+                model=RESPONSE_LLM_MODEL
+            )
+            if not custom_prompt:
+                from .smart_ingestion_enhanced import DEFAULT_SMART_CHUNKING_PROMPT
+                custom_prompt = DEFAULT_SMART_CHUNKING_PROMPT
+
+        for file in files:
+            try:
+                import tempfile
+                import os
+
+                # Save file temporarily
+                temp_fd, temp_path = tempfile.mkstemp(suffix='.pdf')
+                os.close(temp_fd)
+                file.save(temp_path)
+
+                # Extract text
+                docs = document_loader.load_document(temp_path)
+                document_content = "\n".join([doc.page_content for doc in docs])
+
+                if not document_content.strip():
+                    results['errors'].append({'filename': file.filename, 'error': 'Empty document'})
+                    os.remove(temp_path)
+                    continue
+
+                # Apply chunking strategy
+                chunks = []
+                
+                if chunking_strategy == 'smart_chunking' and llm and custom_prompt:
+                    try:
+                        # Prepare full prompt
+                        full_prompt = f"{custom_prompt}\n\n{document_content[:50000]}"  # Limit content
+                        
+                        logger.info(f"Calling LLM for chunking {file.filename}...")
+                        llm_response = llm.invoke(full_prompt)
+                        response_content = llm_response.content if hasattr(llm_response, 'content') else str(llm_response)
+                        
+                        # Parse JSON from response
+                        json_match = re.search(r'\{[\s\S]*\}', response_content)
+                        chunking_result = json.loads(json_match.group(0) if json_match else response_content)
+                        chunks_data = chunking_result.get('chunks', [])
+                        
+                        # Extract content from chunks
+                        chunks = [c.get('content', '') for c in chunks_data if c.get('content')]
+                        logger.info(f"LLM generated {len(chunks)} chunks for {file.filename}")
+                        
+                    except Exception as llm_error:
+                        logger.error(f"LLM chunking failed for {file.filename}: {llm_error}")
+                        # Fallback to simple chunking
+                        chunks = document_content.split('\n\n')
+                        chunks = [c.strip() for c in chunks if len(c.strip()) > 100]
+                        logger.info(f"Fallback simple chunking generated {len(chunks)} chunks")
+                else:
+                    # Simple chunking
+                    chunks = document_content.split('\n\n')
+                    chunks = [c.strip() for c in chunks if len(c.strip()) > 100]
+
+                if ingest_chunks and vector_store:
+                    lc_docs = []
+                    for i, chunk in enumerate(chunks):
+                        if not chunk.strip():
+                            continue
+                        lc_docs.append(Document(
+                            page_content=chunk,
+                            metadata={
+                                'source': file.filename,
+                                'chunk_id': i,
+                                'chunking_strategy': chunking_strategy,
+                                'process_mode': process_mode
+                            }
+                        ))
+                    if lc_docs:
+                        vector_store.add_documents(lc_docs)
+                        logger.info(f"Added {len(lc_docs)} chunks to vector store for {file.filename}")
+
+                results['documents_processed'] += 1
+                results['total_chunks'] += len(chunks)
+                os.remove(temp_path)
+
+            except Exception as e:
+                logger.error(f"Error processing {file.filename}: {e}")
+                results['errors'].append({'filename': file.filename, 'error': str(e)})
+
+        return jsonify(results), 200
+
+    except Exception as e:
+        logger.error(f"Smart ingest error: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
+        return jsonify({'error': f'Smart ingestion failed: {str(e)}'}), 500
+
+
+# Smart Ingestion from Files endpoint - ASYNC
+@app.route('/api/rag/smart_ingest_files', methods=['POST'])
+@require_permission(Permission.WRITE_RAG)
+def smart_ingest_files(current_user_id):
+    """
+    Smart ingestion from file uploads - ASYNC - creates background job
+    Accepts multipart/form-data with files and parameters
+    """
+    try:
+        import tempfile
+        import os
+        import uuid
+        import shutil
+        
+        # Check if files were included
         if 'files' not in request.files:
             return jsonify({'error': 'No files provided'}), 400
         
@@ -1362,68 +1499,252 @@ def smart_ingest(current_user_id):
         if not files or all(f.filename == '' for f in files):
             return jsonify({'error': 'No files selected'}), 400
         
-        # Get parameters from form
+        # Get parameters
         chunking_strategy = request.form.get('chunking_strategy', 'smart_chunking')
         ingest_chunks = request.form.get('ingest_chunks', 'true').lower() == 'true'
-        custom_prompt = request.form.get('custom_prompt', '')
         process_mode = request.form.get('process_mode', 'vector_db')
+        custom_prompt = request.form.get('custom_prompt', '')
         
-        results = {
-            'documents_processed': 0,
-            'total_chunks': 0,
-            'errors': []
-        }
+        if not custom_prompt:
+            from .smart_ingestion_enhanced import DEFAULT_SMART_CHUNKING_PROMPT
+            custom_prompt = DEFAULT_SMART_CHUNKING_PROMPT
         
-        document_loader = DocumentLoader()
-        vector_store = VectorStoreManager() if ingest_chunks else None
+        # Create temp directory for this job
+        job_temp_id = str(uuid.uuid4())
+        temp_dir = os.path.join(tempfile.gettempdir(), f"rag_ingest_{job_temp_id}")
+        os.makedirs(temp_dir, exist_ok=True)
         
+        # Save files and collect info
+        saved_files = []
         for file in files:
+            if file.filename == '':
+                continue
+            
+            # Debug logging
+            file_ext = os.path.splitext(file.filename)[1].lower()
+            logger.info(f"Processing file: {file.filename}, ext: {file_ext}")
+            
+            # Validate file type
+            file_ext = os.path.splitext(file.filename)[1].lower()
+            allowed_extensions = ['.pdf', '.txt', '.md', '.docx', '.html']
+            if file_ext not in allowed_extensions:
+                continue
+            
+            # Save file
+            safe_filename = secure_filename(file.filename)
+            file_path = os.path.join(temp_dir, safe_filename)
+            file.save(file_path)
+            saved_files.append({
+                'filename': safe_filename,
+                'original_filename': file.filename,
+                'path': file_path
+            })
+        
+        if not saved_files:
+            shutil.rmtree(temp_dir)
+            return jsonify({'error': 'No valid files to process'}), 400
+        
+        # Create background job with configuration tracking
+        from .job_queue import job_queue
+        
+        job = job_queue.create_job(
+            user_id=current_user_id,
+            job_type='smart_ingest_files',
+            parameters={
+                'temp_dir': temp_dir,
+                'files': saved_files,
+                'chunking_strategy': chunking_strategy,
+                'ingest_chunks': ingest_chunks,
+                'process_mode': process_mode,
+                'prompt': custom_prompt,
+                'total_documents': len(saved_files)
+            },
+            ingestion_mode='files',
+            processing_mode=process_mode,
+            chunking_strategy=chunking_strategy
+        )
+        
+        # Start background worker
+        def process_files_background(job):
+            """Background processing function for uploaded files"""
+            from .job_queue import job_queue
+            from rag_component.document_loader import DocumentLoader
+            from rag_component.vector_store_manager import VectorStoreManager
+            from langchain_core.documents import Document
+            from models.response_generator import ResponseGenerator
+            import re
+            import os
+            import shutil
+            
             try:
-                import tempfile
-                import os
+                job_id = job.job_id
+                temp_dir = job.parameters.get('temp_dir')
+                saved_files = job.parameters.get('files', [])
+                chunking_strategy = job.chunking_strategy
+                ingest_chunks = job.parameters.get('ingest_chunks', True)
+                process_mode = job.processing_mode
+                prompt = job.parameters.get('prompt', '')
+                total_documents = len(saved_files)
                 
-                # Save file temporarily
-                temp_fd, temp_path = tempfile.mkstemp(suffix='.pdf')
-                os.close(temp_fd)
-                file.save(temp_path)
+                document_loader = DocumentLoader()
+                vector_store = VectorStoreManager() if ingest_chunks else None
                 
-                # Extract text
-                docs = document_loader.load_document(temp_path)
-                document_content = "\n".join([doc.page_content for doc in docs])
+                # Get LLM instance if using smart chunking
+                llm = None
+                if chunking_strategy == 'smart_chunking':
+                    response_gen = ResponseGenerator()
+                    llm = response_gen._get_llm_instance(
+                        provider=RESPONSE_LLM_PROVIDER,
+                        model=RESPONSE_LLM_MODEL
+                    )
                 
-                if not document_content.strip():
-                    results['errors'].append({'filename': file.filename, 'error': 'Empty document'})
-                    os.remove(temp_path)
-                    continue
+                results = {
+                    'documents_processed': 0,
+                    'total_chunks': 0,
+                    'errors': [],
+                    'file_results': []
+                }
                 
-                # Simple chunking by paragraphs
-                chunks = document_content.split('\n\n')
-                chunks = [c.strip() for c in chunks if len(c.strip()) > 100]
+                for idx, file_info in enumerate(saved_files):
+                    try:
+                        # Update job progress
+                        job.progress = int((idx / total_documents) * 100) if total_documents > 0 else 0
+                        job.current_stage = f"Processing {file_info['filename']}"
+                        job.documents_processed = idx
+                        job_queue.update_job(job)
+                        
+                        logger.info(f"[Job {job_id}] Processing {file_info['filename']}")
+                        
+                        file_path = file_info['path']
+                        if not os.path.exists(file_path):
+                            results['errors'].append({'file': file_info['filename'], 'error': 'File not found'})
+                            results['file_results'].append({
+                                'filename': file_info['filename'],
+                                'status': 'failed',
+                                'error': 'File not found'
+                            })
+                            continue
+                        
+                        # Extract text
+                        docs = document_loader.load_document(file_path)
+                        document_content = "\n".join([doc.page_content for doc in docs])
+                        
+                        if not document_content.strip():
+                            results['errors'].append({'file': file_info['filename'], 'error': 'Empty document'})
+                            results['file_results'].append({
+                                'filename': file_info['filename'],
+                                'status': 'empty',
+                                'chunks': 0
+                            })
+                            continue
+                        
+                        # Apply chunking strategy
+                        chunks = []
+                        
+                        if chunking_strategy == 'smart_chunking' and llm and prompt:
+                            try:
+                                # Prepare full prompt
+                                full_prompt = f"{prompt}\n\n{document_content[:50000]}"
+                                
+                                logger.info(f"[Job {job_id}] Calling LLM for chunking {file_info['filename']}...")
+                                llm_response = llm.invoke(full_prompt)
+                                response_content = llm_response.content if hasattr(llm_response, 'content') else str(llm_response)
+                                
+                                # Parse JSON from response
+                                json_match = re.search(r'\{[\s\S]*\}', response_content)
+                                chunking_result = json.loads(json_match.group(0) if json_match else response_content)
+                                chunks_data = chunking_result.get('chunks', [])
+                                
+                                chunks = [c.get('content', '') for c in chunks_data if c.get('content')]
+                                logger.info(f"[Job {job_id}] LLM generated {len(chunks)} chunks")
+                                
+                            except Exception as llm_error:
+                                logger.error(f"[Job {job_id}] LLM chunking failed: {llm_error}")
+                                # Fallback to simple chunking
+                                chunks = document_content.split('\n\n')
+                                chunks = [c.strip() for c in chunks if len(c.strip()) > 100]
+                        else:
+                            # Simple chunking
+                            chunks = document_content.split('\n\n')
+                            chunks = [c.strip() for c in chunks if len(c.strip()) > 100]
+                        
+                        # Ingest chunks if requested
+                        if ingest_chunks and vector_store:
+                            lc_docs = []
+                            for i, chunk in enumerate(chunks):
+                                if not chunk.strip():
+                                    continue
+                                lc_docs.append(Document(
+                                    page_content=chunk,
+                                    metadata={
+                                        'source': f'upload:{file_info["original_filename"]}',
+                                        'chunk_id': i,
+                                        'chunking_strategy': chunking_strategy,
+                                        'process_mode': process_mode
+                                    }
+                                ))
+                            if lc_docs:
+                                vector_store.add_documents(lc_docs)
+                                logger.info(f"[Job {job_id}] Added {len(lc_docs)} chunks to vector store")
+                        
+                        results['documents_processed'] += 1
+                        results['total_chunks'] += len(chunks)
+                        results['file_results'].append({
+                            'filename': file_info['original_filename'],
+                            'status': 'success',
+                            'chunks': len(chunks)
+                        })
+                        
+                    except Exception as e:
+                        logger.error(f"[Job {job_id}] Error processing {file_info['filename']}: {e}")
+                        import traceback
+                        logger.error(traceback.format_exc())
+                        results['errors'].append({'file': file_info['filename'], 'error': str(e)})
+                        results['file_results'].append({
+                            'filename': file_info['filename'],
+                            'status': 'error',
+                            'error': str(e)
+                        })
                 
-                if ingest_chunks and vector_store:
-                    lc_docs = []
-                    for i, chunk in enumerate(chunks):
-                        lc_docs.append(Document(
-                            page_content=chunk,
-                            metadata={
-                                'source': file.filename,
-                                'chunk_id': i
-                            }
-                        ))
-                    vector_store.add_documents(lc_docs)
+                # Clean up temp directory
+                if temp_dir and os.path.exists(temp_dir):
+                    try:
+                        shutil.rmtree(temp_dir)
+                    except Exception as cleanup_error:
+                        logger.error(f"Failed to clean up temp dir: {cleanup_error}")
                 
-                results['documents_processed'] += 1
-                results['total_chunks'] += len(chunks)
-                os.remove(temp_path)
+                # Mark job as completed
+                job.progress = 100
+                job.current_stage = "completed"
+                job.documents_processed = results['documents_processed']
+                job.chunks_generated = results['total_chunks']
+                job.result = results
+                job_queue.update_job(job)
+                
+                logger.info(f"[Job {job_id}] File ingestion completed: {results['documents_processed']} documents, {results['total_chunks']} chunks")
                 
             except Exception as e:
-                logger.error(f"Error processing {file.filename}: {e}")
-                results['errors'].append({'filename': file.filename, 'error': str(e)})
+                logger.error(f"[Job {job_id}] File ingest worker error: {e}")
+                import traceback
+                logger.error(traceback.format_exc())
+                job.status = 'failed'
+                job.error = str(e)
+                job_queue.update_job(job)
         
-        return jsonify(results), 200
+        job_queue.start_worker(job.job_id, process_files_background)
+        
+        logger.info(f"Created file ingest job {job.job_id} for user {current_user_id}")
+        
+        return jsonify({
+            'job_id': job.job_id,
+            'status': job.status,
+            'files_count': len(saved_files),
+            'message': f'File ingestion job created for {len(saved_files)} file(s)',
+            'check_status_url': f'/jobs/{job.job_id}'
+        }), 202
         
     except Exception as e:
-        logger.error(f"Smart ingest error: {e}")
+        logger.error(f"Smart ingest files error: {e}")
         import traceback
         logger.error(traceback.format_exc())
         return jsonify({'error': f'Smart ingestion failed: {str(e)}'}), 500
