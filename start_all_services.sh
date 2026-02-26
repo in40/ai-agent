@@ -325,10 +325,10 @@ sleep 3
 
 
 # Start Document Store MCP Server (port 3070)
-echo -e "\${YELLOW}Starting Document Store MCP Server on port 3070...\${NC}"
-nohup bash -c "source '\$PROJECT_ROOT/ai_agent_env/bin/activate' && cd '\$PROJECT_ROOT/document-store-mcp-server' && python -m document_store_server.server --port 3070" > document_store.log 2>&1 &
-DOCUMENT_STORE_PID=\$!
-echo -e "\${GREEN}Document Store MCP Server started with PID \$DOCUMENT_STORE_PID\${NC}"
+echo -e "${YELLOW}Starting Document Store MCP Server on port 3070...${NC}"
+nohup bash -c "source '$PROJECT_ROOT/ai_agent_env/bin/activate' && cd '$PROJECT_ROOT/document-store-mcp-server' && python -m document_store_server.server --port 3070" > document_store.log 2>&1 &
+DOCUMENT_STORE_PID=$!
+echo -e "${GREEN}Document Store MCP Server started with PID $DOCUMENT_STORE_PID${NC}"
 
 # Wait for Document Store to start  
 sleep 2
