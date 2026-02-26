@@ -13,6 +13,10 @@ import redis
 import ipaddress
 from dataclasses import dataclass
 import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 # Use environment variables instead of config manager for now
 # from config import config_manager
 

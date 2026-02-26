@@ -9,6 +9,10 @@ from flask_cors import CORS
 import logging
 from datetime import datetime
 import json
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Import security components
 from backend.security import require_permission, validate_input, Permission
@@ -294,6 +298,63 @@ def rag_lookup(current_user_id):
     except Exception as e:
         logger.error(f"RAG lookup convenience route error: {str(e)}")
         return jsonify({'error': 'RAG service unavailable'}), 503
+
+
+# Catch-all route for other /api/rag/* endpoints
+@app.route('/api/rag/<path:path>', methods=['GET', 'POST', 'PUT', 'DELETE'])
+@require_permission(Permission.READ_RAG)
+def rag_proxy(current_user_id, path):
+    """Proxy for other RAG API endpoints"""
+    try:
+        # Forward to RAG service
+        url = f"{RAG_SERVICE_URL}/api/rag/{path}"
+        headers = {}
+        
+        # Forward Authorization header
+        auth_header = request.headers.get('Authorization')
+        if auth_header:
+            headers['Authorization'] = auth_header
+        
+        # Forward Content-Type if present (important for multipart/form-data)
+        content_type = request.headers.get('Content-Type')
+        if content_type:
+            headers['Content-Type'] = content_type
+        
+        # Forward request based on method
+        if request.method == 'GET':
+            resp = requests.get(url, headers=headers, timeout=30)
+        elif request.method == 'POST':
+            # Check if this is a file upload (multipart/form-data)
+            if request.content_type and 'multipart/form-data' in request.content_type:
+                # Handle file uploads - forward files and form data
+                # Don't set Content-Type header - requests library will set it correctly with boundary
+                headers.pop('Content-Type', None)
+                resp = requests.post(url, files=request.files, data=request.form, headers=headers, timeout=300)
+            elif request.content_type and 'application/json' in request.content_type:
+                # Handle JSON requests
+                json_data = request.get_json(silent=True) or {}
+                resp = requests.post(url, json=json_data, headers=headers, timeout=300)
+            else:
+                # Try to get JSON data, fallback to raw data
+                json_data = request.get_json(silent=True)
+                if json_data:
+                    resp = requests.post(url, json=json_data, headers=headers, timeout=300)
+                else:
+                    # Forward raw data
+                    resp = requests.post(url, data=request.data, headers=headers, timeout=300)
+        elif request.method == 'PUT':
+            resp = requests.put(url, json=request.get_json(silent=True) or {}, headers=headers, timeout=30)
+        elif request.method == 'DELETE':
+            resp = requests.delete(url, headers=headers, timeout=30)
+        else:
+            return jsonify({'error': 'Method not allowed'}), 405
+        
+        return Response(resp.content, resp.status_code, resp.headers.items())
+    except Exception as e:
+        logger.error(f"RAG proxy error for /api/rag/{path}: {str(e)}")
+        import traceback
+        logger.error(traceback.format_exc())
+        return jsonify({'error': f'RAG service error: {str(e)}'}), 503
 
 
 @app.route('/api/mcp/search', methods=['POST'])

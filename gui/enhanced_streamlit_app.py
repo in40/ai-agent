@@ -76,8 +76,21 @@ if 'debugger' not in st.session_state:
     graph = create_enhanced_agent_graph()
     st.session_state.debugger = WorkflowDebugger(graph)
 
+# Import RAG tabs
+from rag_tabs import create_smart_ingestion_tab, create_jobs_tab, create_rag_settings_tab
+
 # Create tabs for different views
-tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["Visualization", "Edit Workflow", "Workflow Details", "Run Simulation", "Debugging", "Export/Import"])
+tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9 = st.tabs([
+    "Visualization", 
+    "Edit Workflow", 
+    "Workflow Details", 
+    "Run Simulation", 
+    "Debugging", 
+    "Export/Import",
+    "📚 Smart Ingestion",
+    "💼 Jobs",
+    "⚙️ RAG Settings"
+])
 
 with tab1:
     st.header("Graph Visualization")
@@ -1022,6 +1035,16 @@ with tab6:
             import traceback
             st.code(traceback.format_exc())
 
+# RAG Tabs
+with tab7:
+    create_smart_ingestion_tab()
+
+with tab8:
+    create_jobs_tab()
+
+with tab9:
+    create_rag_settings_tab()
+
 # Sidebar with information
 with st.sidebar:
     st.header("About")
@@ -1042,6 +1065,9 @@ with st.sidebar:
     4. **Simulation Tab**: Run the workflow with sample inputs
     5. **Debugging Tab**: Set breakpoints and step through execution
     6. **Export/Import Tab**: Save/load workflow definitions
+    7. **Smart Ingestion Tab**: Upload and process documents with AI-powered chunking
+    8. **Jobs Tab**: View and manage background processing jobs
+    9. **RAG Settings Tab**: Configure RAG service connections
     """)
 
     st.header("Current Workflow")

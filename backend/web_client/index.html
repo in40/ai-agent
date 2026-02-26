@@ -524,6 +524,16 @@
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="smart-ingest-tab" data-bs-toggle="tab" data-bs-target="#smart-ingest-panel" type="button">
+                                <i class="fas fa-brain"></i> Smart Ingestion
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="jobs-tab" data-bs-toggle="tab" data-bs-target="#jobs-panel" type="button">
+                                <i class="fas fa-tasks"></i> Jobs
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
                             <button class="nav-link" id="import-tab" data-bs-toggle="tab" data-bs-target="#import-panel" type="button">
                                 <i class="fas fa-file-import"></i> Import Processed
                             </button>
@@ -595,6 +605,225 @@
                             </div>
                             <div id="ingest-result" class="alert alert-success mt-2" style="display: none;" role="alert">
                                 Documents processed successfully!
+                            </div>
+                        </div>
+
+                        <!-- Smart Ingestion Panel -->
+                        <div class="tab-pane fade" id="smart-ingest-panel" role="tabpanel">
+                            <h5><i class="fas fa-brain"></i> Smart Ingestion with AI Chunking</h5>
+                            <p class="text-muted">Upload documents for AI-powered semantic chunking using LLM. Supports multiple ingestion modes and processing strategies.</p>
+
+                            <!-- Ingestion Mode Selection -->
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h6 class="mb-0"><i class="fas fa-folder-open"></i> Ingestion Mode</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="ingestMode" id="mode-files" value="files" checked>
+                                                <label class="form-check-label" for="mode-files">
+                                                    <i class="fas fa-file-upload"></i> Direct File Upload
+                                                </label>
+                                                <small class="text-muted d-block">Upload PDF, TXT, MD files directly</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="ingestMode" id="mode-webpage" value="webpage">
+                                                <label class="form-check-label" for="mode-webpage">
+                                                    <i class="fas fa-globe"></i> Import from Web Page
+                                                </label>
+                                                <small class="text-muted d-block">Scan web page for document links</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="ingestMode" id="mode-docstore" value="docstore">
+                                                <label class="form-check-label" for="mode-docstore">
+                                                    <i class="fas fa-database"></i> Import from Document Store
+                                                </label>
+                                                <small class="text-muted d-block">Select from downloaded documents</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Processing Mode Selection -->
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h6 class="mb-0"><i class="fas fa-cogs"></i> Processing Mode</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="processMode" id="process-download" value="download_only">
+                                                <label class="form-check-label" for="process-download">
+                                                    <i class="fas fa-download"></i> Download Only
+                                                </label>
+                                                <small class="text-muted d-block">Just download documents</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="processMode" id="process-vector" value="vector_db" checked>
+                                                <label class="form-check-label" for="process-vector">
+                                                    <i class="fas fa-database"></i> Import to Vector DB
+                                                </label>
+                                                <small class="text-muted d-block">Chunk and store in vector database</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="processMode" id="process-hybrid" value="hybrid">
+                                                <label class="form-check-label" for="process-hybrid">
+                                                    <i class="fas fa-project-diagram"></i> Hybrid (Vector + Graph)
+                                                </label>
+                                                <small class="text-muted d-block">Store in both Vector DB and Neo4j Graph DB</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- File Upload Mode -->
+                            <div id="mode-files-panel" class="ingest-mode-panel">
+                                <div class="mb-4">
+                                    <div id="smart-drop-zone" class="border-2 border-dashed border-primary rounded p-4 text-center mb-3" style="cursor: pointer; background-color: #f8f9fa;">
+                                        <i class="fas fa-file-upload fa-3x mb-3 text-primary"></i>
+                                        <p class="mb-0">Drag & drop PDF, TXT, or MD files here or click to browse</p>
+                                        <p class="text-muted small mb-0">Supported formats: .pdf, .txt, .md</p>
+                                        <input type="file" id="smart-file-upload" class="d-none" multiple accept=".pdf,.txt,.md">
+                                    </div>
+                                    <div id="smart-selected-files" class="mt-2" style="display: none;">
+                                        <h6>Selected files:</h6>
+                                        <ul id="smart-file-list" class="list-group"></ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Web Page Mode -->
+                            <div id="mode-webpage-panel" class="ingest-mode-panel" style="display: none;">
+                                <div class="mb-4">
+                                    <label for="webpage-url" class="form-label">Web Page URL</label>
+                                    <input type="url" class="form-control" id="webpage-url" placeholder="https://example.com/documents">
+                                    <small class="text-muted">Enter a URL containing links to documents. The system will scan the page and extract all document links.</small>
+                                    
+                                    <div class="mt-3">
+                                        <button id="scan-webpage-btn" class="btn btn-info">
+                                            <i class="fas fa-search"></i> Scan Web Page
+                                        </button>
+                                    </div>
+                                    
+                                    <div id="webpage-results" class="mt-3" style="display: none;">
+                                        <h6>Found Documents:</h6>
+                                        <ul id="webpage-doc-list" class="list-group"></ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Document Store Mode -->
+                            <div id="mode-docstore-panel" class="ingest-mode-panel" style="display: none;">
+                                <div class="mb-4">
+                                    <button id="load-docstore-btn" class="btn btn-primary mb-3">
+                                        <i class="fas fa-sync-alt"></i> Load Available Documents
+                                    </button>
+                                    
+                                    <div id="docstore-results" style="display: none;">
+                                        <h6>Available Documents in Document Store:</h6>
+                                        <div id="docstore-doc-list" class="list-group"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Common Options -->
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h6 class="mb-0"><i class="fas fa-sliders-h"></i> Processing Options</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label for="chunking-strategy" class="form-label">Chunking Strategy</label>
+                                            <select class="form-select" id="chunking-strategy">
+                                                <option value="smart_chunking" selected>Smart Chunking (LLM)</option>
+                                                <option value="naive_chunking">Naive Chunking</option>
+                                                <option value="section_based">Section-Based</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="custom-chunking-prompt" class="form-label">Custom Prompt (optional)</label>
+                                            <input type="text" class="form-control" id="custom-chunking-prompt" placeholder="Override default chunking prompt">
+                                        </div>
+                                    </div>
+                                    <div class="form-check mt-3">
+                                        <input class="form-check-input" type="checkbox" id="ingest-chunks-checkbox" checked>
+                                        <label class="form-check-label" for="ingest-chunks-checkbox">
+                                            Ingest chunks into database(s) after processing
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Action Button -->
+                            <div class="d-flex justify-content-between mt-3">
+                                <button id="smart-ingest-btn" class="btn btn-primary btn-animated" disabled>
+                                    <span id="smart-ingest-spinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
+                                    <i class="fas fa-brain"></i> Start Smart Ingestion
+                                </button>
+                                <div id="smart-ingest-progress" class="progress flex-grow-1 ms-3" style="height: 20px; display: none;">
+                                    <div id="smart-ingest-progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%"></div>
+                                </div>
+                            </div>
+
+                            <!-- Status Messages -->
+                            <div id="smart-ingest-status" class="alert alert-info mt-3" style="display: none;" role="alert">
+                                <i class="fas fa-spinner fa-spin"></i> Processing documents with AI chunking...
+                            </div>
+                            <div id="smart-ingest-result" class="alert alert-success mt-3" style="display: none;" role="alert">
+                                Smart ingestion completed successfully!
+                            </div>
+                            <div id="smart-ingest-error" class="alert alert-danger mt-3" style="display: none;" role="alert">
+                                Smart ingestion failed!
+                            </div>
+                        </div>
+
+                        <!-- Jobs Panel -->
+                        <div class="tab-pane fade" id="jobs-panel" role="tabpanel">
+                            <h5><i class="fas fa-tasks"></i> Background Jobs Management</h5>
+                            <p class="text-muted">View and manage background processing jobs. Monitor progress, retry failed jobs, and view results.</p>
+
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <button id="refresh-jobs-btn" class="btn btn-outline-primary">
+                                    <i class="fas fa-sync-alt"></i> Refresh Jobs
+                                </button>
+                                <div class="d-flex gap-2">
+                                    <select class="form-select form-select-sm" id="jobs-status-filter" style="width: auto;">
+                                        <option value="all">All Status</option>
+                                        <option value="pending">Pending</option>
+                                        <option value="processing">Processing</option>
+                                        <option value="completed">Completed</option>
+                                        <option value="failed">Failed</option>
+                                        <option value="cancelled">Cancelled</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div id="jobs-container">
+                                <div id="jobs-loading" class="text-center py-4">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <p class="mt-2">Loading jobs...</p>
+                                </div>
+                                <div id="jobs-list" class="list-group" style="display: none;"></div>
+                                <div id="no-jobs-message" class="text-center py-4" style="display: none;">
+                                    <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                                    <p class="text-muted">No jobs found</p>
+                                </div>
                             </div>
                         </div>
 
@@ -2558,7 +2787,676 @@
 
             // Optionally, update status every 30 seconds
             setInterval(updateServiceStatus, 30000);
+            
+            // Initialize Smart Ingestion and Jobs tabs
+            initSmartIngestion();
+            initJobsManagement();
         });
+        
+        // ==================== Smart Ingestion Functions ====================
+        function initSmartIngestion() {
+            const smartDropZone = document.getElementById('smart-drop-zone');
+            const smartFileInput = document.getElementById('smart-file-upload');
+            const smartIngestBtn = document.getElementById('smart-ingest-btn');
+            const smartFileList = document.getElementById('smart-file-list');
+            const smartSelectedFiles = document.getElementById('smart-selected-files');
+            
+            // Mode switching
+            const modeRadios = document.querySelectorAll('input[name="ingestMode"]');
+            const processModeRadios = document.querySelectorAll('input[name="processMode"]');
+            
+            let smartSelectedFilesArray = [];
+            let webpageDocuments = [];
+            let docstoreDocuments = [];
+            
+            // Mode radio button handlers
+            modeRadios.forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    // Hide all panels
+                    document.getElementById('mode-files-panel').style.display = 'none';
+                    document.getElementById('mode-webpage-panel').style.display = 'none';
+                    document.getElementById('mode-docstore-panel').style.display = 'none';
+                    
+                    // Show selected panel
+                    const selectedMode = e.target.value;
+                    document.getElementById(`mode-${selectedMode}-panel`).style.display = 'block';
+                    
+                    updateSmartIngestButton();
+                });
+            });
+            
+            // Click to upload
+            if (smartDropZone) {
+                smartDropZone.addEventListener('click', () => smartFileInput.click());
+            }
+            
+            // File input change
+            if (smartFileInput) {
+                smartFileInput.addEventListener('change', (e) => {
+                    console.log('[SmartInest] File input changed, files:', e.target.files.length);
+                    smartSelectedFilesArray = Array.from(e.target.files);
+                    console.log('[SmartInest] Files array updated:', smartSelectedFilesArray);
+                    updateSmartFileList();
+                });
+            }
+            
+            // Drag and drop
+            if (smartDropZone) {
+                smartDropZone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    smartDropZone.classList.add('bg-primary', 'text-white');
+                });
+                
+                smartDropZone.addEventListener('dragleave', () => {
+                    smartDropZone.classList.remove('bg-primary', 'text-white');
+                });
+                
+                smartDropZone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    smartDropZone.classList.remove('bg-primary', 'text-white');
+                    smartSelectedFilesArray = Array.from(e.dataTransfer.files);
+                    updateSmartFileList();
+                });
+            }
+            
+            // Scan webpage button
+            const scanWebpageBtn = document.getElementById('scan-webpage-btn');
+            if (scanWebpageBtn) {
+                scanWebpageBtn.addEventListener('click', scanWebPage);
+            }
+            
+            // Load Document Store button
+            const loadDocstoreBtn = document.getElementById('load-docstore-btn');
+            if (loadDocstoreBtn) {
+                loadDocstoreBtn.addEventListener('click', loadDocumentStore);
+            }
+            
+            // Smart ingest button
+            if (smartIngestBtn) {
+                smartIngestBtn.addEventListener('click', startSmartIngestion);
+            }
+            
+            function updateSmartFileList() {
+                if (smartSelectedFilesArray.length > 0) {
+                    smartSelectedFiles.style.display = 'block';
+                    smartFileList.innerHTML = smartSelectedFilesArray.map(f => {
+                        // Format file size
+                        let sizeDisplay;
+                        if (f.size < 1024) {
+                            sizeDisplay = f.size + ' B';
+                        } else if (f.size < 1024 * 1024) {
+                            sizeDisplay = (f.size / 1024).toFixed(1) + ' KB';
+                        } else {
+                            sizeDisplay = (f.size / (1024 * 1024)).toFixed(2) + ' MB';
+                        }
+                        
+                        return `<li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="fas fa-file-pdf text-danger"></i> ${f.name}
+                            </div>
+                            <span class="badge bg-primary rounded-pill">${sizeDisplay}</span>
+                        </li>`;
+                    }).join('');
+                    
+                    // Show total size
+                    const totalSize = smartSelectedFilesArray.reduce((sum, f) => sum + f.size, 0);
+                    let totalSizeDisplay;
+                    if (totalSize < 1024) {
+                        totalSizeDisplay = totalSize + ' B';
+                    } else if (totalSize < 1024 * 1024) {
+                        totalSizeDisplay = (totalSize / 1024).toFixed(1) + ' KB';
+                    } else {
+                        totalSizeDisplay = (totalSize / (1024 * 1024)).toFixed(2) + ' MB';
+                    }
+                    
+                    smartFileList.innerHTML += `<li class="list-group-item text-muted text-right">
+                        <strong>Total: ${smartSelectedFilesArray.length} file(s), ${totalSizeDisplay}</strong>
+                    </li>`;
+                } else {
+                    smartSelectedFiles.style.display = 'none';
+                }
+                updateSmartIngestButton();
+            }
+            
+            function updateSmartIngestButton() {
+                const selectedMode = document.querySelector('input[name="ingestMode"]:checked').value;
+                let hasDocuments = false;
+                
+                if (selectedMode === 'files') {
+                    hasDocuments = smartSelectedFilesArray.length > 0;
+                } else if (selectedMode === 'webpage') {
+                    hasDocuments = webpageDocuments.length > 0;
+                } else if (selectedMode === 'docstore') {
+                    hasDocuments = docstoreDocuments.filter(d => d.selected).length > 0;
+                }
+                
+                smartIngestBtn.disabled = !hasDocuments;
+            }
+            
+            async function scanWebPage() {
+                const urlInput = document.getElementById('webpage-url');
+                const resultsDiv = document.getElementById('webpage-results');
+                const docList = document.getElementById('webpage-doc-list');
+                
+                if (!urlInput.value) {
+                    alert('Please enter a URL');
+                    return;
+                }
+                
+                docList.innerHTML = '<li class="list-group-item"><i class="fas fa-spinner fa-spin"></i> Scanning...</li>';
+                resultsDiv.style.display = 'block';
+                
+                try {
+                    const response = await fetch('/api/rag/scan_webpage', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${AUTH_TOKEN}`
+                        },
+                        body: JSON.stringify({ url: urlInput.value })
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        webpageDocuments = data.documents || [];
+                        
+                        if (webpageDocuments.length > 0) {
+                            docList.innerHTML = webpageDocuments.map((doc, i) => 
+                                `<li class="list-group-item">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="webdoc-${i}" checked onchange="updateSmartIngestButton()">
+                                        <label class="form-check-label" for="webdoc-${i}">${doc}</label>
+                                    </div>
+                                </li>`
+                            ).join('');
+                        } else {
+                            docList.innerHTML = '<li class="list-group-item text-muted">No documents found on this page</li>';
+                        }
+                    } else {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+                } catch (error) {
+                    docList.innerHTML = `<li class="list-group-item text-danger">Error: ${error.message}</li>`;
+                }
+                
+                updateSmartIngestButton();
+            }
+            
+            async function loadDocumentStore() {
+                const resultsDiv = document.getElementById('docstore-results');
+                const docList = document.getElementById('docstore-doc-list');
+                
+                // Check if user is authenticated
+                if (!AUTH_TOKEN) {
+                    docList.innerHTML = `<li class="list-group-item text-warning">
+                        <strong>🔐 Authentication Required</strong><br>
+                        <small>You need to be logged in to access Document Store features.</small><br>
+                        <button class="btn btn-sm btn-primary mt-2" onclick="window.location.href='login.html'">
+                            <i class="fas fa-sign-in-alt"></i> Go to Login
+                        </button>
+                    </li>`;
+                    resultsDiv.style.display = 'block';
+                    console.log('No AUTH_TOKEN found - user needs to log in');
+                    return;
+                }
+                
+                console.log('Loading Document Store documents...');
+                
+                docList.innerHTML = '<li class="list-group-item"><i class="fas fa-spinner fa-spin"></i> Loading from Document Store...</li>';
+                resultsDiv.style.display = 'block';
+                
+                try {
+                    const response = await fetch('/api/rag/document_store/jobs', {
+                        headers: {
+                            'Authorization': `Bearer ${AUTH_TOKEN}`
+                        }
+                    });
+                    
+                    // Handle 401 Unauthorized - show message instead of redirect
+                    if (response.status === 401) {
+                        localStorage.removeItem('authToken');
+                        docList.innerHTML = `<li class="list-group-item text-warning">
+                            <strong>⚠️ Session Expired</strong><br>
+                            <small>Your session has expired. Please log in again.</small><br>
+                            <button class="btn btn-sm btn-primary mt-2" onclick="window.location.href='login.html'">
+                                <i class="fas fa-sign-in-alt"></i> Go to Login
+                            </button>
+                        </li>`;
+                        return;
+                    }
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        console.log('Document Store data:', data);
+                        const jobs = data.jobs || [];
+                        
+                        docstoreDocuments = [];
+                        const items = [];
+                        
+                        jobs.forEach(job => {
+                            const documents = job.documents || job.result?.documents || [];
+                            documents.forEach(doc => {
+                                const docId = doc.doc_id || doc.filename || `doc_${Math.random().toString(36).substr(2, 9)}`;
+                                docstoreDocuments.push({
+                                    id: docId,
+                                    doc_id: docId,  // Store doc_id separately for API call
+                                    filename: doc.filename || 'Unknown Document',
+                                    format: doc.format || 'pdf',
+                                    selected: false,
+                                    job_id: job.job_id || job.id || ''
+                                });
+                            });
+                        });
+                        
+                        if (docstoreDocuments.length > 0) {
+                            items.push(...docstoreDocuments.map((doc, i) => 
+                                `<li class="list-group-item">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="docstore-${i}" onchange="toggleDocstoreDoc(${i}, this.checked)">
+                                        <label class="form-check-label" for="docstore-${i}">
+                                            <i class="fas fa-file-pdf text-danger"></i> ${doc.filename}
+                                            <small class="text-muted">(${doc.format}) - Job: ${doc.job_id}</small>
+                                        </label>
+                                    </div>
+                                </li>`
+                            ));
+                            docList.innerHTML = items.join('');
+                        } else {
+                            docList.innerHTML = '<li class="list-group-item text-muted">No documents found in Document Store. Please upload documents to Document Store first.</li>';
+                        }
+                    } else {
+                        const error = await response.json();
+                        console.error('API Error:', error);
+                        throw new Error(error.error || error.message || `HTTP ${response.status}`);
+                    }
+                } catch (error) {
+                    console.error('Error loading Document Store:', error);
+                    docList.innerHTML = `<li class="list-group-item text-danger">
+                        <strong>Error loading documents:</strong> ${error.message}<br>
+                        <small>Make sure Document Store MCP Server is running on port 3070</small>
+                    </li>`;
+                }
+                
+                resultsDiv.style.display = 'block';
+                updateSmartIngestButton();
+            }
+            
+            window.toggleDocstoreDoc = function(index, checked) {
+                if (docstoreDocuments[index]) {
+                    docstoreDocuments[index].selected = checked;
+                    updateSmartIngestButton();
+                }
+            };
+            
+            async function startSmartIngestion() {
+                const selectedMode = document.querySelector('input[name="ingestMode"]:checked').value;
+                const processMode = document.querySelector('input[name="processMode"]:checked').value;
+
+                console.log('[SmartInest] Starting with mode:', selectedMode);
+                console.log('[SmartInest] Files array:', smartSelectedFilesArray);
+                console.log('[SmartInest] Files count:', smartSelectedFilesArray.length);
+
+                const statusDiv = document.getElementById('smart-ingest-status');
+                const resultDiv = document.getElementById('smart-ingest-result');
+                const errorDiv = document.getElementById('smart-ingest-error');
+                const spinner = document.getElementById('smart-ingest-spinner');
+                const progressDiv = document.getElementById('smart-ingest-progress');
+
+                statusDiv.style.display = 'block';
+                resultDiv.style.display = 'none';
+                errorDiv.style.display = 'none';
+                spinner.classList.remove('d-none');
+                progressDiv.style.display = 'flex';
+                smartIngestBtn.disabled = true;
+
+                // Prepare request based on mode
+                let endpoint = '/api/rag/smart_ingest';
+                let body = new FormData();
+                let useFormData = false;
+
+                if (selectedMode === 'files') {
+                    console.log('[SmartInest] Adding files to FormData...');
+                    smartSelectedFilesArray.forEach((file, index) => {
+                        console.log(`[SmartInest] File ${index}:`, file.name, file.size, file.type);
+                        body.append('files', file);
+                        useFormData = true;
+                    });
+                    console.log('[SmartInest] FormData entries:');
+                    for (let [key, value] of body.entries()) {
+                        console.log(`  ${key}:`, value);
+                    }
+                } else if (selectedMode === 'webpage') {
+                    const selectedDocs = webpageDocuments.filter((_, i) => {
+                        const checkbox = document.getElementById(`webdoc-${i}`);
+                        return checkbox && checkbox.checked;
+                    });
+                    body = JSON.stringify({ urls: selectedDocs });
+                } else if (selectedMode === 'docstore') {
+                    // Use Document Store endpoint
+                    endpoint = '/api/rag/smart_ingest_docstore';
+                    const selectedDocs = docstoreDocuments.filter(d => d.selected);
+                    body = JSON.stringify({
+                        documents: selectedDocs.map(d => ({
+                            job_id: d.job_id,
+                            doc_id: d.doc_id  // Use the stored doc_id directly
+                        }))
+                    });
+                }
+
+                // Add common parameters
+                if (selectedMode === 'files') {
+                    body.append('chunking_strategy', document.getElementById('chunking-strategy').value);
+                    body.append('ingest_chunks', document.getElementById('ingest-chunks-checkbox').checked);
+                    body.append('process_mode', processMode);
+                    const customPrompt = document.getElementById('custom-chunking-prompt').value;
+                    if (customPrompt) body.append('custom_prompt', customPrompt);
+                } else {
+                    body = JSON.stringify({
+                        ...JSON.parse(body instanceof FormData ? '{}' : body),
+                        chunking_strategy: document.getElementById('chunking-strategy').value,
+                        ingest_chunks: document.getElementById('ingest-chunks-checkbox').checked,
+                        process_mode: processMode,
+                        custom_prompt: document.getElementById('custom-chunking-prompt').value
+                    });
+                }
+
+                // Build fetch options
+                const fetchOptions = {
+                    method: 'POST',
+                    body
+                };
+
+                // Only set Authorization header, NOT Content-Type for FormData
+                // Browser will set Content-Type with boundary automatically for FormData
+                if (AUTH_TOKEN) {
+                    const headers = {
+                        'Authorization': `Bearer ${AUTH_TOKEN}`
+                    };
+                    // Only set Content-Type for JSON requests
+                    if (!useFormData) {
+                        headers['Content-Type'] = 'application/json';
+                    }
+                    fetchOptions.headers = headers;
+                }
+
+                console.log('[SmartInest] Fetch options:', fetchOptions);
+                console.log('[SmartInest] Request body:', body);
+
+                try {
+                    const response = await fetch(endpoint, fetchOptions);
+                    console.log('[SmartInest] Response status:', response.status);
+
+                    if (response.ok) {
+                        const result = await response.json();
+                        console.log('[SmartInest] Result:', result);
+
+                        // For async operations (Document Store mode), handle job response
+                        if (selectedMode === 'docstore' && result.job_id) {
+                            // Show job created message
+                            statusDiv.innerHTML = `<strong>Job Created:</strong> ${result.job_id}<br>Processing in background...`;
+                            statusDiv.className = 'alert alert-info mt-3';
+                            
+                            // Start polling for job status
+                            pollJobStatus(result.job_id);
+                            return;
+                        }
+
+                        // Show errors if any
+                        if (result.errors && result.errors.length > 0) {
+                            console.error('[SmartInest] Errors:', result.errors);
+                        }
+
+                        statusDiv.style.display = 'none';
+                        resultDiv.style.display = 'block';
+
+                        if (result.documents_processed > 0) {
+                            resultDiv.innerHTML = `<strong>Success!</strong> Processed ${result.documents_processed} documents, generated ${result.total_chunks || 0} chunks.`;
+                            resultDiv.className = 'alert alert-success mt-3';
+
+                            if (selectedMode === 'files') {
+                                smartSelectedFilesArray = [];
+                                updateSmartFileList();
+                            }
+                        } else {
+                            // Show error details
+                            let errorMsg = 'No documents were processed.';
+                            if (result.errors && result.errors.length > 0) {
+                                errorMsg += '<br><strong>Errors:</strong><br>';
+                                result.errors.forEach((err, idx) => {
+                                    errorMsg += `- ${err.doc_id || 'Unknown'}: ${err.error || 'Unknown error'}<br>`;
+                                });
+                            }
+                            resultDiv.innerHTML = `<strong>Failed:</strong> ${errorMsg}`;
+                            resultDiv.className = 'alert alert-warning mt-3';
+                        }
+                    } else {
+                        const error = await response.json();
+                        console.error('[SmartInest] Error response:', error);
+                        throw new Error(error.error || `HTTP ${response.status}`);
+                    }
+                } catch (error) {
+                    console.error('[SmartInest] Error:', error);
+                    statusDiv.style.display = 'none';
+                    errorDiv.style.display = 'block';
+                    errorDiv.innerHTML = `<strong>Error:</strong> ${error.message}`;
+                } finally {
+                    spinner.classList.add('d-none');
+                    progressDiv.style.display = 'none';
+                    updateSmartIngestButton();
+                }
+            }
+            
+            // Poll job status for async operations
+            let jobPollInterval = null;
+            async function pollJobStatus(jobId) {
+                const statusDiv = document.getElementById('smart-ingest-status');
+                const resultDiv = document.getElementById('smart-ingest-result');
+                const errorDiv = document.getElementById('smart-ingest-error');
+                const spinner = document.getElementById('smart-ingest-spinner');
+                const progressDiv = document.getElementById('smart-ingest-progress');
+                
+                jobPollInterval = setInterval(async () => {
+                    try {
+                        const response = await fetch(`/jobs/${jobId}`, {
+                            headers: {
+                                'Authorization': `Bearer ${AUTH_TOKEN}`
+                            }
+                        });
+                        
+                        if (!response.ok) {
+                            throw new Error(`HTTP ${response.status}`);
+                        }
+                        
+                        const job = await response.json();
+                        console.log('[JobPoll] Job status:', job);
+                        
+                        // Update progress bar
+                        const progress = job.progress || 0;
+                        const stage = job.current_stage || 'Initializing...';
+                        const docsProcessed = job.documents_processed || 0;
+                        
+                        statusDiv.innerHTML = `
+                            <strong>Processing Job:</strong> ${jobId}<br>
+                            <strong>Status:</strong> ${job.status || 'pending'}<br>
+                            <strong>Progress:</strong> ${progress}%<br>
+                            <strong>Stage:</strong> ${stage}<br>
+                            <strong>Documents Processed:</strong> ${docsProcessed}
+                        `;
+                        
+                        // Update progress bar
+                        const progressBar = document.getElementById('smart-ingest-progress-bar');
+                        if (progressBar) {
+                            progressBar.style.width = `${progress}%`;
+                        }
+                        
+                        // Check if job is complete
+                        if (job.status === 'completed') {
+                            clearInterval(jobPollInterval);
+                            spinner.classList.add('d-none');
+                            progressDiv.style.display = 'none';
+                            statusDiv.style.display = 'none';
+                            
+                            const result = job.result || {};
+                            resultDiv.style.display = 'block';
+                            
+                            if (result.documents_processed > 0) {
+                                resultDiv.innerHTML = `
+                                    <strong>Success!</strong><br>
+                                    Processed ${result.documents_processed} documents<br>
+                                    Generated ${result.total_chunks || 0} chunks
+                                `;
+                                resultDiv.className = 'alert alert-success mt-3';
+                            } else {
+                                resultDiv.innerHTML = `<strong>Warning:</strong> No documents were processed.`;
+                                resultDiv.className = 'alert alert-warning mt-3';
+                            }
+                            
+                            smartIngestBtn.disabled = false;
+                        } else if (job.status === 'failed') {
+                            clearInterval(jobPollInterval);
+                            spinner.classList.add('d-none');
+                            progressDiv.style.display = 'none';
+                            statusDiv.style.display = 'none';
+                            
+                            errorDiv.style.display = 'block';
+                            errorDiv.innerHTML = `<strong>Job Failed:</strong> ${job.error || 'Unknown error'}`;
+                            errorDiv.className = 'alert alert-danger mt-3';
+                            
+                            smartIngestBtn.disabled = false;
+                        }
+                        
+                    } catch (error) {
+                        console.error('[JobPoll] Error:', error);
+                        clearInterval(jobPollInterval);
+                        spinner.classList.add('d-none');
+                        progressDiv.style.display = 'none';
+                        statusDiv.style.display = 'none';
+                        
+                        errorDiv.style.display = 'block';
+                        errorDiv.innerHTML = `<strong>Error polling job:</strong> ${error.message}`;
+                        errorDiv.className = 'alert alert-danger mt-3';
+                        
+                        smartIngestBtn.disabled = false;
+                    }
+                }, 3000); // Poll every 3 seconds
+            }
+        }
+        
+        // ==================== Jobs Management Functions ====================
+        function initJobsManagement() {
+            const refreshBtn = document.getElementById('refresh-jobs-btn');
+            const statusFilter = document.getElementById('jobs-status-filter');
+            const jobsList = document.getElementById('jobs-list');
+            const jobsLoading = document.getElementById('jobs-loading');
+            const noJobsMsg = document.getElementById('no-jobs-message');
+            
+            if (refreshBtn) {
+                refreshBtn.addEventListener('click', loadJobs);
+            }
+            
+            if (statusFilter) {
+                statusFilter.addEventListener('change', loadJobs);
+            }
+            
+            // Load jobs on tab switch
+            document.getElementById('jobs-tab')?.addEventListener('shown.bs.tab', loadJobs);
+            
+            async function loadJobs() {
+                jobsLoading.style.display = 'block';
+                jobsList.style.display = 'none';
+                noJobsMsg.style.display = 'none';
+                
+                try {
+                    const response = await fetch('/jobs', {
+                        headers: {
+                            'Authorization': `Bearer ${AUTH_TOKEN}`
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        let jobs = data.jobs || [];
+                        
+                        // Apply filter
+                        const filter = statusFilter?.value || 'all';
+                        if (filter !== 'all') {
+                            jobs = jobs.filter(j => j.status === filter);
+                        }
+                        
+                        jobsLoading.style.display = 'none';
+                        
+                        if (jobs.length === 0) {
+                            noJobsMsg.style.display = 'block';
+                        } else {
+                            jobsList.style.display = 'block';
+                            jobsList.innerHTML = jobs.map(job => `
+                                <div class="list-group-item list-group-item-action">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">
+                                            <span class="badge bg-${getStatusBadge(job.status)} me-2">${job.status}</span>
+                                            ${job.job_id}
+                                        </h6>
+                                        <small>${formatDate(job.created_at)}</small>
+                                    </div>
+                                    <p class="mb-1">Type: ${job.job_type || 'N/A'} | Chunks: ${job.chunks_generated || 0}</p>
+                                    ${job.error ? `<small class="text-danger"><i class="fas fa-exclamation-triangle"></i> ${job.error.substring(0, 100)}...</small>` : ''}
+                                    <div class="mt-2">
+                                        ${job.status === 'pending' ? `<button class="btn btn-sm btn-primary" onclick="startJob('${job.job_id}')"><i class="fas fa-play"></i> Start</button>` : ''}
+                                        ${job.status === 'failed' || job.status === 'cancelled' ? `<button class="btn btn-sm btn-warning" onclick="retryJob('${job.job_id}')"><i class="fas fa-redo"></i> Retry</button>` : ''}
+                                        ${job.status === 'processing' ? `<button class="btn btn-sm btn-danger" onclick="cancelJob('${job.job_id}')"><i class="fas fa-stop"></i> Cancel</button>` : ''}
+                                        <button class="btn btn-sm btn-outline-danger" onclick="deleteJob('${job.job_id}')"><i class="fas fa-trash"></i> Delete</button>
+                                    </div>
+                                </div>
+                            `).join('');
+                        }
+                    } else {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+                } catch (error) {
+                    jobsLoading.style.display = 'none';
+                    jobsList.innerHTML = `<div class="alert alert-danger">Failed to load jobs: ${error.message}</div>`;
+                    jobsList.style.display = 'block';
+                }
+            }
+            
+            function getStatusBadge(status) {
+                const badges = {
+                    'pending': 'secondary',
+                    'processing': 'primary',
+                    'completed': 'success',
+                    'failed': 'danger',
+                    'cancelled': 'warning'
+                };
+                return badges[status] || 'secondary';
+            }
+            
+            function formatDate(dateStr) {
+                if (!dateStr) return 'N/A';
+                return new Date(dateStr).toLocaleString();
+            }
+            
+            window.startJob = async (jobId) => {
+                await fetch(`/jobs/${jobId}/start_processing`, { method: 'POST', headers: { 'Authorization': `Bearer ${AUTH_TOKEN}` } });
+                loadJobs();
+            };
+            
+            window.retryJob = async (jobId) => {
+                await fetch(`/jobs/${jobId}/retry`, { method: 'POST', headers: { 'Authorization': `Bearer ${AUTH_TOKEN}` } });
+                loadJobs();
+            };
+            
+            window.cancelJob = async (jobId) => {
+                await fetch(`/jobs/${jobId}/cancel`, { method: 'POST', headers: { 'Authorization': `Bearer ${AUTH_TOKEN}` } });
+                loadJobs();
+            };
+            
+            window.deleteJob = async (jobId) => {
+                if (confirm('Are you sure you want to delete this job?')) {
+                    await fetch(`/jobs/${jobId}/delete`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${AUTH_TOKEN}` } });
+                    loadJobs();
+                }
+            };
+        }
     </script>
 </body>
 </html>

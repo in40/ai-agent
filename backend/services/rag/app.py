@@ -19,6 +19,12 @@ from models.response_generator import ResponseGenerator
 # Import security components
 from backend.security import require_permission, validate_input, Permission
 
+# Import job queue blueprint
+from backend.services.rag.job_queue import jobs_bp
+
+# Import smart ingestion endpoints (need to import after app is created to avoid circular imports)
+# We'll register them directly by importing the functions
+
 # Initialize Flask app
 app = Flask(__name__)
 # Set maximum content length to 500MB to allow for multiple file uploads
@@ -30,6 +36,9 @@ CORS(app)
 # Initialize logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Register job queue blueprint
+app.register_blueprint(jobs_bp)
 
 def secure_filename(filename: str) -> str:
     """
@@ -1225,6 +1234,452 @@ def import_processed_documents(current_user_id):
         import traceback
         logger.error(traceback.format_exc())
         return jsonify({'error': f'Processed document import failed: {str(e)}'}), 500
+
+
+# Document Store endpoints
+@app.route('/api/rag/document_store/jobs', methods=['GET'])
+@require_permission(Permission.READ_RAG)
+def list_document_store_jobs(current_user_id):
+    """List all ingestion jobs from Document Store MCP Server with documents"""
+    try:
+        from .document_store_client import document_store_client
+        
+        # Get list of jobs
+        jobs_result = document_store_client.list_ingestion_jobs()
+        
+        # Handle nested response structure
+        if jobs_result.get('success'):
+            result = jobs_result.get('result', {})
+            # Check if result itself has success and jobs (nested MCP response)
+            if isinstance(result, dict) and result.get('success'):
+                jobs = result.get('jobs', [])
+            else:
+                jobs = result.get('jobs', [])
+            
+            # For each job, get the list of documents
+            for job in jobs:
+                job_id = job.get('job_id')
+                if job_id:
+                    # Call list_documents for this job
+                    docs_result = document_store_client.list_documents(job_id)
+                    if docs_result.get('success'):
+                        docs_data = docs_result.get('result', {})
+                        if isinstance(docs_data, dict) and docs_data.get('success'):
+                            job['documents'] = docs_data.get('documents', [])
+                        else:
+                            job['documents'] = docs_data.get('documents', [])
+                    else:
+                        job['documents'] = []
+                else:
+                    job['documents'] = []
+            
+            return jsonify({'jobs': jobs}), 200
+        else:
+            return jsonify({'error': jobs_result.get('error', 'Unknown error')}), 500
+            
+    except Exception as e:
+        logger.error(f"Error listing Document Store jobs: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/rag/document_store/import', methods=['POST'])
+@require_permission(Permission.WRITE_RAG)
+def import_from_document_store(current_user_id):
+    """Import documents from Document Store and process them"""
+    try:
+        data = request.get_json()
+        job_id = data.get('job_id')
+        doc_ids = data.get('doc_ids', [])
+        
+        if not job_id and not doc_ids:
+            return jsonify({'error': 'job_id or doc_ids required'}), 400
+        
+        from .document_store_client import document_store_client
+        from rag_component.main import RAGOrchestrator
+        
+        # Get documents from Document Store
+        if job_id:
+            docs_result = document_store_client.get_documents_by_job(job_id)
+        else:
+            docs_result = document_store_client.get_documents(doc_ids)
+        
+        if not docs_result.get('success'):
+            return jsonify({'error': docs_result.get('error', 'Failed to get documents')}), 500
+        
+        documents = docs_result.get('result', {}).get('documents', [])
+        
+        # Process each document
+        results = {'processed': 0, 'errors': [], 'chunks_total': 0}
+        rag = RAGOrchestrator()
+        
+        for doc in documents:
+            try:
+                content = doc.get('content', '')
+                if content:
+                    # Add to RAG
+                    rag_result = rag.ingest_text(
+                        text=content,
+                        metadata={
+                            'source': 'document_store',
+                            'filename': doc.get('filename', ''),
+                            'doc_id': doc.get('doc_id', '')
+                        }
+                    )
+                    results['processed'] += 1
+                    results['chunks_total'] += len(rag_result.get('chunks', []))
+            except Exception as e:
+                results['errors'].append({
+                    'doc_id': doc.get('doc_id', ''),
+                    'error': str(e)
+                })
+        
+        return jsonify(results), 200
+        
+    except Exception as e:
+        logger.error(f"Error importing from Document Store: {e}")
+        return jsonify({'error': str(e)}), 500
+
+
+# Smart Ingestion endpoint - handles file uploads
+@app.route('/api/rag/smart_ingest', methods=['POST'])
+@require_permission(Permission.WRITE_RAG)
+def smart_ingest(current_user_id):
+    """
+    Smart ingestion endpoint - handles file uploads and LLM-based chunking
+    """
+    try:
+        from rag_component.document_loader import DocumentLoader
+        from rag_component.vector_store_manager import VectorStoreManager
+        from langchain_core.documents import Document
+        
+        # Check if files were included in the request
+        if 'files' not in request.files:
+            return jsonify({'error': 'No files provided'}), 400
+        
+        files = request.files.getlist('files')
+        if not files or all(f.filename == '' for f in files):
+            return jsonify({'error': 'No files selected'}), 400
+        
+        # Get parameters from form
+        chunking_strategy = request.form.get('chunking_strategy', 'smart_chunking')
+        ingest_chunks = request.form.get('ingest_chunks', 'true').lower() == 'true'
+        custom_prompt = request.form.get('custom_prompt', '')
+        process_mode = request.form.get('process_mode', 'vector_db')
+        
+        results = {
+            'documents_processed': 0,
+            'total_chunks': 0,
+            'errors': []
+        }
+        
+        document_loader = DocumentLoader()
+        vector_store = VectorStoreManager() if ingest_chunks else None
+        
+        for file in files:
+            try:
+                import tempfile
+                import os
+                
+                # Save file temporarily
+                temp_fd, temp_path = tempfile.mkstemp(suffix='.pdf')
+                os.close(temp_fd)
+                file.save(temp_path)
+                
+                # Extract text
+                docs = document_loader.load_document(temp_path)
+                document_content = "\n".join([doc.page_content for doc in docs])
+                
+                if not document_content.strip():
+                    results['errors'].append({'filename': file.filename, 'error': 'Empty document'})
+                    os.remove(temp_path)
+                    continue
+                
+                # Simple chunking by paragraphs
+                chunks = document_content.split('\n\n')
+                chunks = [c.strip() for c in chunks if len(c.strip()) > 100]
+                
+                if ingest_chunks and vector_store:
+                    lc_docs = []
+                    for i, chunk in enumerate(chunks):
+                        lc_docs.append(Document(
+                            page_content=chunk,
+                            metadata={
+                                'source': file.filename,
+                                'chunk_id': i
+                            }
+                        ))
+                    vector_store.add_documents(lc_docs)
+                
+                results['documents_processed'] += 1
+                results['total_chunks'] += len(chunks)
+                os.remove(temp_path)
+                
+            except Exception as e:
+                logger.error(f"Error processing {file.filename}: {e}")
+                results['errors'].append({'filename': file.filename, 'error': str(e)})
+        
+        return jsonify(results), 200
+        
+    except Exception as e:
+        logger.error(f"Smart ingest error: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
+        return jsonify({'error': f'Smart ingestion failed: {str(e)}'}), 500
+
+
+# Smart Ingestion from Document Store endpoint - ASYNC
+@app.route('/api/rag/smart_ingest_docstore', methods=['POST'])
+@require_permission(Permission.WRITE_RAG)
+def smart_ingest_docstore(current_user_id):
+    """
+    Smart ingestion from Document Store - ASYNC - creates background job
+    """
+    try:
+        data = request.get_json()
+        documents = data.get('documents', [])
+        
+        if not documents:
+            return jsonify({'error': 'No documents specified'}), 400
+        
+        from .job_queue import job_queue, JobStatus
+        
+        chunking_strategy = data.get('chunking_strategy', 'smart_chunking')
+        ingest_chunks = data.get('ingest_chunks', True)
+        process_mode = data.get('process_mode', 'vector_db')
+        
+        # Create background job
+        job = job_queue.create_job(
+            user_id=current_user_id,
+            job_type='smart_ingest_docstore',
+            parameters={
+                'documents': documents,
+                'chunking_strategy': chunking_strategy,
+                'ingest_chunks': ingest_chunks,
+                'process_mode': process_mode,
+                'total_documents': len(documents)
+            }
+        )
+        
+        # Start background worker
+        job_queue.start_worker(job.job_id, _process_smart_ingest_docstore)
+        
+        logger.info(f"Created smart ingest job {job.job_id} for user {current_user_id}")
+        
+        return jsonify({
+            'job_id': job.job_id,
+            'status': job.status,
+            'message': 'Smart ingestion job created. Processing in background.',
+            'check_status_url': f'/jobs/{job.job_id}'
+        }), 202
+        
+    except Exception as e:
+        logger.error(f"Smart ingest docstore error: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
+        return jsonify({'error': f'Smart ingestion failed: {str(e)}'}), 500
+
+
+def _process_smart_ingest_docstore(job):
+    """
+    Background worker for smart ingestion from Document Store
+    """
+    from .job_queue import job_queue
+    from .document_store_client import document_store_client
+    from rag_component.document_loader import DocumentLoader
+    from rag_component.vector_store_manager import VectorStoreManager
+    from langchain_core.documents import Document
+    from models.response_generator import ResponseGenerator
+    
+    try:
+        job_id = job.job_id
+        documents = job.parameters.get('documents', [])
+        chunking_strategy = job.parameters.get('chunking_strategy', 'smart_chunking')
+        ingest_chunks = job.parameters.get('ingest_chunks', True)
+        total_documents = len(documents)
+        
+        document_loader = DocumentLoader()
+        vector_store = VectorStoreManager() if ingest_chunks else None
+        
+        results = {
+            'documents_processed': 0,
+            'total_chunks': 0,
+            'errors': []
+        }
+        
+        for idx, doc_ref in enumerate(documents):
+            try:
+                # Update job progress
+                job.progress = int((idx / total_documents) * 100)
+                job.current_stage = f"Processing document {idx + 1}/{total_documents}"
+                job.documents_processed = idx
+                job_queue.update_job(job)
+                
+                doc_id = doc_ref.get('doc_id')
+                job_id_param = doc_ref.get('job_id')
+                
+                if not job_id_param or not doc_id:
+                    results['errors'].append({'doc_id': doc_id, 'error': 'Missing job_id or doc_id'})
+                    continue
+                
+                logger.info(f"[Job {job_id}] Processing {doc_id} from {job_id_param}")
+                
+                # Get document from Document Store as PDF
+                doc_result = document_store_client.get_document(job_id_param, doc_id, format='pdf')
+                
+                if not doc_result.get('success'):
+                    results['errors'].append({'doc_id': doc_id, 'error': 'Failed to get document'})
+                    continue
+                
+                # Get the PDF content - handle nested structure
+                result_data = doc_result.get('result', {})
+                pdf_data = result_data.get('content', '')
+                
+                # Handle case where content is itself a dict with 'content' field
+                if isinstance(pdf_data, dict):
+                    pdf_data = pdf_data.get('content', '')
+                
+                if not pdf_data:
+                    results['errors'].append({'doc_id': doc_id, 'error': 'Empty document'})
+                    continue
+                
+                # Save PDF to temp file and extract text
+                import tempfile
+                import base64
+                import os
+                
+                temp_fd, temp_path = tempfile.mkstemp(suffix='.pdf')
+                os.close(temp_fd)
+                
+                # Decode base64 PDF data
+                if isinstance(pdf_data, str) and pdf_data.startswith('JVBER'):
+                    with open(temp_path, 'wb') as f:
+                        f.write(base64.b64decode(pdf_data))
+                else:
+                    results['errors'].append({'doc_id': doc_id, 'error': 'Unsupported PDF format'})
+                    continue
+                
+                # Extract text using document loader
+                docs = document_loader.load_document(temp_path)
+                document_content = "\n".join([doc.page_content for doc in docs])
+                os.remove(temp_path)
+                
+                if not document_content.strip():
+                    results['errors'].append({'doc_id': doc_id, 'error': 'Could not extract text from PDF'})
+                    continue
+                
+                # Use LLM-based smart chunking if requested
+                chunks = []
+                if chunking_strategy == 'smart_chunking':
+                    try:
+                        response_gen = ResponseGenerator()
+                        llm = response_gen._get_llm_instance(
+                            provider=RESPONSE_LLM_PROVIDER,
+                            model=RESPONSE_LLM_MODEL
+                        )
+                        
+                        # Use default smart chunking prompt
+                        smart_chunking_prompt = """# ROLE
+You are an expert document engineer specializing in semantic chunking of technical standards for vector database ingestion.
+
+## CORE PRINCIPLES
+1. PRESERVE SEMANTIC UNITS: Never split complete concepts
+2. TARGET SIZE: 200-450 tokens per chunk
+3. MINIMAL OVERLAP: Apply overlap ONLY at procedural boundaries (max 50 tokens)
+4. CONTEXT ANCHORING: Always include section headers/subheaders
+
+## OUTPUT FORMAT
+Return ONLY valid JSON:
+{
+  "document": "document identifier",
+  "total_chunks": integer,
+  "chunks": [
+    {
+      "chunk_id": integer,
+      "section": "section number",
+      "title": "chunk title",
+      "content": "chunk text"
+    }
+  ]
+}
+
+---
+TEXT TO CHUNK:
+"""
+                        
+                        # Prepare full prompt
+                        full_prompt = f"{smart_chunking_prompt}\n\n{document_content[:50000]}"  # Limit content
+                        
+                        logger.info(f"[Job {job_id}] Calling LLM for chunking {doc_id}...")
+                        response = llm.invoke(full_prompt)
+                        response_content = response.content if hasattr(response, 'content') else str(response)
+                        
+                        # Parse JSON from response
+                        import json
+                        json_match = re.search(r'\{[\s\S]*\}', response_content)
+                        chunking_result = json.loads(json_match.group(0) if json_match else response_content)
+                        chunks_data = chunking_result.get('chunks', [])
+                        
+                        # Extract content from chunks
+                        chunks = [c.get('content', '') for c in chunks_data if c.get('content')]
+                        logger.info(f"[Job {job_id}] LLM generated {len(chunks)} chunks for {doc_id}")
+                        
+                    except Exception as chunk_error:
+                        logger.error(f"[Job {job_id}] LLM chunking failed for {doc_id}: {chunk_error}")
+                        import traceback
+                        logger.error(traceback.format_exc())
+                        # Fallback to simple chunking
+                        chunks = document_content.split('\n\n')
+                        chunks = [c.strip() for c in chunks if len(c.strip()) > 100]
+                        logger.info(f"[Job {job_id}] Fallback simple chunking generated {len(chunks)} chunks")
+                else:
+                    # Simple chunking
+                    chunks = document_content.split('\n\n')
+                    chunks = [c.strip() for c in chunks if len(c.strip()) > 100]
+
+                if ingest_chunks and vector_store:
+                    lc_docs = []
+                    for i, chunk in enumerate(chunks):
+                        if not chunk.strip():
+                            continue
+                        lc_docs.append(Document(
+                            page_content=chunk,
+                            metadata={
+                                'source': f'docstore:{job_id_param}:{doc_id}',
+                                'chunk_id': i,
+                                'chunking_strategy': chunking_strategy
+                            }
+                        ))
+                    if lc_docs:
+                        vector_store.add_documents(lc_docs)
+                        logger.info(f"[Job {job_id}] Added {len(lc_docs)} chunks to vector store for {doc_id}")
+
+                results['documents_processed'] += 1
+                results['total_chunks'] += len(chunks)
+                
+            except Exception as e:
+                logger.error(f"[Job {job_id}] Error processing document {doc_ref}: {e}")
+                import traceback
+                logger.error(traceback.format_exc())
+                results['errors'].append({'doc_ref': str(doc_ref), 'error': str(e)})
+        
+        # Mark job as completed
+        job.progress = 100
+        job.current_stage = "completed"
+        job.documents_processed = total_documents
+        job.result = results
+        job_queue.update_job(job)
+        
+        logger.info(f"[Job {job_id}] Smart ingestion completed: {results['documents_processed']} documents, {results['total_chunks']} chunks")
+        
+    except Exception as e:
+        logger.error(f"[Job {job_id}] Smart ingest docstore worker error: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
+        job.status = 'failed'
+        job.error = str(e)
+        job_queue.update_job(job)
 
 
 if __name__ == '__main__':

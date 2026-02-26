@@ -139,6 +139,34 @@ kill_port 8092
 echo "Preparing port 8093 for Download MCP Server..."
 kill_port 8093
 
+# Setup SSH tunnel for Neo4j Graph Database
+echo -e "${YELLOW}Setting up SSH tunnel for Neo4j Graph Database...${NC}"
+if [ -f "$PROJECT_ROOT/.env" ]; then
+    source "$PROJECT_ROOT/.env"
+fi
+NEO4J_SSH_HOST="${NEO4J_SSH_HOST:-192.168.51.187}"
+NEO4J_SSH_USER="${NEO4J_SSH_USER:-sorokin}"
+NEO4J_SSH_KEY="${NEO4J_SSH_KEY:-~/.ssh/id_ed25519_graphrag}"
+NEO4J_SSH_KEY=$(eval echo "$NEO4J_SSH_KEY")
+
+# Kill any existing Neo4j tunnels
+pkill -f "ssh.*-L.*7687.*$NEO4J_SSH_HOST" 2>/dev/null || true
+
+# Establish new tunnel if SSH key exists
+if [ -f "$NEO4J_SSH_KEY" ]; then
+    ssh -N -f -i "$NEO4J_SSH_KEY" \
+        -o StrictHostKeyChecking=no \
+        -o UserKnownHostsFile=/dev/null \
+        -L 7687:localhost:7687 \
+        -L 7474:localhost:7474 \
+        ${NEO4J_SSH_USER}@${NEO4J_SSH_HOST} 2>/dev/null && \
+    echo -e "${GREEN}✓ SSH tunnel for Neo4j established${NC}" || \
+    echo -e "${YELLOW}⚠ Could not establish SSH tunnel for Neo4j${NC}"
+else
+    echo -e "${YELLOW}⚠ SSH key not found: $NEO4J_SSH_KEY${NC}"
+    echo -e "${YELLOW}  Neo4j hybrid mode will not be available${NC}"
+fi
+
 # Start the workflow API in the background
 echo -e "${YELLOW}Starting workflow API on port 5004...${NC}"
 cd "$PROJECT_ROOT/gui/react_editor" && nohup bash -c "source '$PROJECT_ROOT/ai_agent_env/bin/activate' && python workflow_api.py" > workflow_api.log 2>&1 &
@@ -295,6 +323,16 @@ echo -e "${GREEN}Download MCP Server started with PID $DOWNLOAD_PID${NC}"
 # Wait for Download server to start
 sleep 3
 
+
+# Start Document Store MCP Server (port 3070)
+echo -e "\${YELLOW}Starting Document Store MCP Server on port 3070...\${NC}"
+nohup bash -c "source '\$PROJECT_ROOT/ai_agent_env/bin/activate' && cd '\$PROJECT_ROOT/document-store-mcp-server' && python -m document_store_server.server --port 3070" > document_store.log 2>&1 &
+DOCUMENT_STORE_PID=\$!
+echo -e "\${GREEN}Document Store MCP Server started with PID \$DOCUMENT_STORE_PID\${NC}"
+
+# Wait for Document Store to start  
+sleep 2
+
 echo -e "${GREEN}"
 echo "=========================================================="
 echo "ALL AI AGENT SERVICES ARE NOW RUNNING"
@@ -314,6 +352,7 @@ echo "Search MCP Server:   http://localhost:8090"
 echo "RAG MCP Server:      http://localhost:8091"
 echo "SQL MCP Server:      http://localhost:8092"
 echo "Download MCP Server: http://localhost:8093"
+echo "Document Store MCP:       http://localhost:3070"
 echo "=========================================================="
 echo -e "${NC}"
 
@@ -347,7 +386,7 @@ cleanup() {
     fi
 
     # Kill all background processes
-    for pid_var in WORKFLOW_PID AUTH_PID AGENT_PID RAG_PID GATEWAY_PID LANGGRAPH_PID STREAMLIT_PID REACT_PID REGISTRY_PID DNS_PID SEARCH_PID RAG_MCP_PID SQL_PID DOWNLOAD_PID; do
+    for pid_var in WORKFLOW_PID AUTH_PID AGENT_PID RAG_PID GATEWAY_PID LANGGRAPH_PID STREAMLIT_PID REACT_PID REGISTRY_PID DNS_PID SEARCH_PID RAG_MCP_PID SQL_PID DOWNLOAD_PID DOCUMENT_STORE_PID; do
         pid_val=${!pid_var}
         if [ ! -z "$pid_val" ] && kill -0 $pid_val 2>/dev/null; then
             echo -e "${YELLOW}Stopping $pid_var (PID: $pid_val)...${NC}"
