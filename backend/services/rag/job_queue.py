@@ -46,7 +46,7 @@ class JobStatus(Enum):
 class SmartIngestionJob:
     job_id: str
     user_id: str
-    job_type: str  # 'web_page' or 'file_upload'
+    job_type: str  # 'web_page', 'file_upload', 'docstore', 'webpage_scan'
     status: str
     created_at: str
     updated_at: str
@@ -59,19 +59,26 @@ class SmartIngestionJob:
     documents_total: int
     documents_processed: int
     chunks_generated: int
-    
+    # Configuration tracking fields
+    ingestion_mode: str  # 'files', 'webpage', 'docstore'
+    processing_mode: str  # 'download_only', 'vector_db', 'hybrid'
+    chunking_strategy: str  # 'smart_chunking', 'naive_chunking', 'section_based'
+    source_url: Optional[str]  # For web page mode
+    document_urls: Optional[List[str]]  # List of document URLs to process
+
     def to_dict(self):
         return asdict(self)
-    
+
     @classmethod
     def from_dict(cls, data):
         # Only pass fields that are part of the dataclass
         # This handles cases where extra fields were added to Redis data
         valid_fields = {
-            'job_id', 'user_id', 'job_type', 'status', 'created_at', 
-            'updated_at', 'expires_at', 'parameters', 'progress', 
-            'current_stage', 'result', 'error', 'documents_total', 
-            'documents_processed', 'chunks_generated'
+            'job_id', 'user_id', 'job_type', 'status', 'created_at',
+            'updated_at', 'expires_at', 'parameters', 'progress',
+            'current_stage', 'result', 'error', 'documents_total',
+            'documents_processed', 'chunks_generated', 'ingestion_mode',
+            'processing_mode', 'chunking_strategy', 'source_url', 'document_urls'
         }
         filtered_data = {k: v for k, v in data.items() if k in valid_fields}
         return cls(**filtered_data)
@@ -85,12 +92,15 @@ class JobQueue:
         self.lock = threading.Lock()
         self.workers: Dict[str, threading.Thread] = {}
         
-    def create_job(self, user_id: str, job_type: str, parameters: Dict[str, Any]) -> SmartIngestionJob:
+    def create_job(self, user_id: str, job_type: str, parameters: Dict[str, Any], 
+                   ingestion_mode: str = 'files', processing_mode: str = 'vector_db',
+                   chunking_strategy: str = 'smart_chunking', source_url: Optional[str] = None,
+                   document_urls: Optional[List[str]] = None) -> SmartIngestionJob:
         """Create a new job"""
         job_id = f"job_{uuid.uuid4().hex[:12]}"
         now = datetime.utcnow().isoformat()
         expires_at = (datetime.utcnow() + timedelta(hours=24)).isoformat()
-        
+
         job = SmartIngestionJob(
             job_id=job_id,
             user_id=user_id,
@@ -104,9 +114,14 @@ class JobQueue:
             current_stage="queued",
             result=None,
             error=None,
-            documents_total=0,
+            documents_total=parameters.get('total_documents', 0),
             documents_processed=0,
-            chunks_generated=0
+            chunks_generated=0,
+            ingestion_mode=ingestion_mode,
+            processing_mode=processing_mode,
+            chunking_strategy=chunking_strategy,
+            source_url=source_url,
+            document_urls=document_urls
         )
         
         # Store job
@@ -301,6 +316,11 @@ def get_job_status(job_id):
 
     return jsonify({
         'job_id': job.job_id,
+        'job_type': job.job_type,
+        'ingestion_mode': job.ingestion_mode,
+        'processing_mode': job.processing_mode,
+        'chunking_strategy': job.chunking_strategy,
+        'source_url': job.source_url,
         'status': job.status,
         'progress': job.progress,
         'current_stage': job.current_stage,
@@ -319,12 +339,16 @@ def get_user_jobs(user_id):
     """Get all jobs for a user"""
     limit = request.args.get('limit', 20, type=int)
     jobs = job_queue.get_user_jobs(user_id, limit)
-    
+
     return jsonify({
         'jobs': [
             {
                 'job_id': j.job_id,
                 'job_type': j.job_type,
+                'ingestion_mode': j.ingestion_mode,
+                'processing_mode': j.processing_mode,
+                'chunking_strategy': j.chunking_strategy,
+                'source_url': j.source_url,
                 'status': j.status,
                 'progress': j.progress,
                 'current_stage': j.current_stage,

@@ -2937,15 +2937,15 @@
                 const urlInput = document.getElementById('webpage-url');
                 const resultsDiv = document.getElementById('webpage-results');
                 const docList = document.getElementById('webpage-doc-list');
-                
+
                 if (!urlInput.value) {
                     alert('Please enter a URL');
                     return;
                 }
-                
-                docList.innerHTML = '<li class="list-group-item"><i class="fas fa-spinner fa-spin"></i> Scanning...</li>';
+
+                docList.innerHTML = '<li class="list-group-item"><i class="fas fa-spinner fa-spin"></i> Scanning web page...</li>';
                 resultsDiv.style.display = 'block';
-                
+
                 try {
                     const response = await fetch('/api/rag/scan_webpage', {
                         method: 'POST',
@@ -2955,32 +2955,85 @@
                         },
                         body: JSON.stringify({ url: urlInput.value })
                     });
-                    
+
                     if (response.ok) {
                         const data = await response.json();
                         webpageDocuments = data.documents || [];
-                        
+
                         if (webpageDocuments.length > 0) {
-                            docList.innerHTML = webpageDocuments.map((doc, i) => 
-                                `<li class="list-group-item">
+                            // Helper function to get file icon based on URL
+                            function getFileIcon(url) {
+                                const urlLower = url.toLowerCase();
+                                if (urlLower.includes('.pdf') || urlLower.includes('/pdf/')) return 'fa-file-pdf text-danger';
+                                if (urlLower.includes('.docx') || urlLower.includes('/docx/')) return 'fa-file-word text-primary';
+                                if (urlLower.includes('.txt') || urlLower.includes('/txt/')) return 'fa-file-alt text-secondary';
+                                if (urlLower.includes('.html') || urlLower.includes('.htm')) return 'fa-file-code text-info';
+                                if (urlLower.includes('.md') || urlLower.includes('/md/')) return 'fa-file-markdown text-dark';
+                                return 'fa-file text-muted';
+                            }
+
+                            // Helper function to get filename from URL
+                            function getFilename(url) {
+                                try {
+                                    const pathname = new URL(url).pathname;
+                                    const filename = pathname.split('/').pop() || pathname;
+                                    return filename.length > 60 ? filename.substring(0, 57) + '...' : filename;
+                                } catch {
+                                    return url;
+                                }
+                            }
+
+                            docList.innerHTML = webpageDocuments.map((doc, i) => {
+                                const filename = getFilename(doc);
+                                const icon = getFileIcon(doc);
+                                return `
+                                <li class="list-group-item">
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" id="webdoc-${i}" checked onchange="updateSmartIngestButton()">
-                                        <label class="form-check-label" for="webdoc-${i}">${doc}</label>
+                                        <label class="form-check-label d-flex align-items-center" for="webdoc-${i}">
+                                            <i class="fas ${icon} me-2"></i>
+                                            <span>${filename}</span>
+                                        </label>
                                     </div>
-                                </li>`
-                            ).join('');
+                                </li>`;
+                            }).join('');
+
+                            // Add summary
+                            docList.innerHTML += `
+                                <li class="list-group-item list-group-item-info">
+                                    <strong>✓ Found ${webpageDocuments.length} document(s)</strong>
+                                    <button class="btn btn-sm btn-outline-secondary float-end ms-2" onclick="toggleAllWebDocs(true)">
+                                        <i class="fas fa-check-square"></i> Select All
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-secondary float-end" onclick="toggleAllWebDocs(false)">
+                                        <i class="fas fa-square"></i> Deselect All
+                                    </button>
+                                </li>
+                            `;
                         } else {
-                            docList.innerHTML = '<li class="list-group-item text-muted">No documents found on this page</li>';
+                            docList.innerHTML = '<li class="list-group-item text-muted"><i class="fas fa-inbox"></i> No document links found on this page</li>';
                         }
                     } else {
-                        throw new Error(`HTTP ${response.status}`);
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || `HTTP ${response.status}`);
                     }
                 } catch (error) {
-                    docList.innerHTML = `<li class="list-group-item text-danger">Error: ${error.message}</li>`;
+                    console.error('Scan web page error:', error);
+                    docList.innerHTML = `<li class="list-group-item text-danger">
+                        <i class="fas fa-exclamation-triangle"></i> 
+                        <strong>Error:</strong> ${error.message}
+                    </li>`;
                 }
-                
+
                 updateSmartIngestButton();
             }
+
+            // Helper function to toggle all web document checkboxes
+            window.toggleAllWebDocs = function(checked) {
+                const checkboxes = document.querySelectorAll('input[id^="webdoc-"]');
+                checkboxes.forEach(cb => cb.checked = checked);
+                updateSmartIngestButton();
+            };
             
             async function loadDocumentStore() {
                 const resultsDiv = document.getElementById('docstore-results');
@@ -3092,9 +3145,9 @@
                 const selectedMode = document.querySelector('input[name="ingestMode"]:checked').value;
                 const processMode = document.querySelector('input[name="processMode"]:checked').value;
 
-                console.log('[SmartInest] Starting with mode:', selectedMode);
-                console.log('[SmartInest] Files array:', smartSelectedFilesArray);
-                console.log('[SmartInest] Files count:', smartSelectedFilesArray.length);
+                console.log('[SmartIngest] Starting with mode:', selectedMode);
+                console.log('[SmartIngest] Files array:', smartSelectedFilesArray);
+                console.log('[SmartIngest] Files count:', smartSelectedFilesArray.length);
 
                 const statusDiv = document.getElementById('smart-ingest-status');
                 const resultDiv = document.getElementById('smart-ingest-result');
@@ -3115,22 +3168,32 @@
                 let useFormData = false;
 
                 if (selectedMode === 'files') {
-                    console.log('[SmartInest] Adding files to FormData...');
+                    console.log('[SmartIngest] Adding files to FormData...');
                     smartSelectedFilesArray.forEach((file, index) => {
-                        console.log(`[SmartInest] File ${index}:`, file.name, file.size, file.type);
+                        console.log(`[SmartIngest] File ${index}:`, file.name, file.size, file.type);
                         body.append('files', file);
                         useFormData = true;
                     });
-                    console.log('[SmartInest] FormData entries:');
+                    console.log('[SmartIngest] FormData entries:');
                     for (let [key, value] of body.entries()) {
                         console.log(`  ${key}:`, value);
                     }
                 } else if (selectedMode === 'webpage') {
+                    // Web page mode - use async job endpoint
+                    endpoint = '/api/rag/smart_ingest_webpage';
                     const selectedDocs = webpageDocuments.filter((_, i) => {
                         const checkbox = document.getElementById(`webdoc-${i}`);
                         return checkbox && checkbox.checked;
                     });
-                    body = JSON.stringify({ urls: selectedDocs });
+                    const urlInput = document.getElementById('webpage-url');
+                    body = JSON.stringify({
+                        url: urlInput.value,
+                        document_urls: selectedDocs,
+                        chunking_strategy: document.getElementById('chunking-strategy').value,
+                        ingest_chunks: document.getElementById('ingest-chunks-checkbox').checked,
+                        process_mode: processMode,
+                        custom_prompt: document.getElementById('custom-chunking-prompt').value || undefined
+                    });
                 } else if (selectedMode === 'docstore') {
                     // Use Document Store endpoint
                     endpoint = '/api/rag/smart_ingest_docstore';
@@ -3139,25 +3202,20 @@
                         documents: selectedDocs.map(d => ({
                             job_id: d.job_id,
                             doc_id: d.doc_id  // Use the stored doc_id directly
-                        }))
+                        })),
+                        chunking_strategy: document.getElementById('chunking-strategy').value,
+                        ingest_chunks: document.getElementById('ingest-chunks-checkbox').checked,
+                        process_mode: processMode
                     });
                 }
 
-                // Add common parameters
+                // Add common parameters for file mode
                 if (selectedMode === 'files') {
                     body.append('chunking_strategy', document.getElementById('chunking-strategy').value);
                     body.append('ingest_chunks', document.getElementById('ingest-chunks-checkbox').checked);
                     body.append('process_mode', processMode);
                     const customPrompt = document.getElementById('custom-chunking-prompt').value;
                     if (customPrompt) body.append('custom_prompt', customPrompt);
-                } else {
-                    body = JSON.stringify({
-                        ...JSON.parse(body instanceof FormData ? '{}' : body),
-                        chunking_strategy: document.getElementById('chunking-strategy').value,
-                        ingest_chunks: document.getElementById('ingest-chunks-checkbox').checked,
-                        process_mode: processMode,
-                        custom_prompt: document.getElementById('custom-chunking-prompt').value
-                    });
                 }
 
                 // Build fetch options
@@ -3179,31 +3237,33 @@
                     fetchOptions.headers = headers;
                 }
 
-                console.log('[SmartInest] Fetch options:', fetchOptions);
-                console.log('[SmartInest] Request body:', body);
+                console.log('[SmartIngest] Fetch options:', fetchOptions);
+                console.log('[SmartIngest] Request body:', body);
 
                 try {
                     const response = await fetch(endpoint, fetchOptions);
-                    console.log('[SmartInest] Response status:', response.status);
+                    console.log('[SmartIngest] Response status:', response.status);
 
                     if (response.ok) {
                         const result = await response.json();
-                        console.log('[SmartInest] Result:', result);
+                        console.log('[SmartIngest] Result:', result);
 
-                        // For async operations (Document Store mode), handle job response
-                        if (selectedMode === 'docstore' && result.job_id) {
+                        // For async operations (Document Store or Web Page mode), handle job response
+                        if ((selectedMode === 'docstore' || selectedMode === 'webpage') && result.job_id) {
                             // Show job created message
-                            statusDiv.innerHTML = `<strong>Job Created:</strong> ${result.job_id}<br>Processing in background...`;
+                            const docsCount = result.documents_found || selectedDocs.length;
+                            statusDiv.innerHTML = `<strong>Job Created:</strong> ${result.job_id}<br>Processing ${docsCount} document(s) in background...`;
                             statusDiv.className = 'alert alert-info mt-3';
-                            
+
                             // Start polling for job status
                             pollJobStatus(result.job_id);
                             return;
                         }
 
+                        // For synchronous file mode
                         // Show errors if any
                         if (result.errors && result.errors.length > 0) {
-                            console.error('[SmartInest] Errors:', result.errors);
+                            console.error('[SmartIngest] Errors:', result.errors);
                         }
 
                         statusDiv.style.display = 'none';
@@ -3231,7 +3291,7 @@
                         }
                     } else {
                         const error = await response.json();
-                        console.error('[SmartInest] Error response:', error);
+                        console.error('[SmartIngest] Error response:', error);
                         throw new Error(error.error || `HTTP ${response.status}`);
                     }
                 } catch (error) {
@@ -3389,7 +3449,32 @@
                             noJobsMsg.style.display = 'block';
                         } else {
                             jobsList.style.display = 'block';
-                            jobsList.innerHTML = jobs.map(job => `
+                            jobsList.innerHTML = jobs.map(job => {
+                                // Get configuration info
+                                const ingestionMode = job.ingestion_mode || job.job_type || 'files';
+                                const processingMode = job.processing_mode || 'vector_db';
+                                const chunkingStrategy = job.chunking_strategy || 'smart_chunking';
+                                const sourceUrl = job.source_url;
+                                
+                                // Create configuration badge
+                                let configInfo = `
+                                    <small class="text-muted">
+                                        <i class="fas fa-folder-open"></i> ${ingestionMode} |
+                                        <i class="fas fa-cogs"></i> ${processingMode} |
+                                        <i class="fas fa-scissors"></i> ${chunkingStrategy}
+                                    </small>
+                                `;
+                                
+                                // Add source URL for web page mode
+                                if (sourceUrl) {
+                                    configInfo += `
+                                        <br><small class="text-muted">
+                                            <i class="fas fa-link"></i> Source: <a href="${sourceUrl}" target="_blank" class="text-truncate d-inline-block" style="max-width: 300px;">${sourceUrl}</a>
+                                        </small>
+                                    `;
+                                }
+                                
+                                return `
                                 <div class="list-group-item list-group-item-action">
                                     <div class="d-flex w-100 justify-content-between">
                                         <h6 class="mb-1">
@@ -3398,7 +3483,12 @@
                                         </h6>
                                         <small>${formatDate(job.created_at)}</small>
                                     </div>
-                                    <p class="mb-1">Type: ${job.job_type || 'N/A'} | Chunks: ${job.chunks_generated || 0}</p>
+                                    <p class="mb-1">
+                                        Type: ${job.job_type || 'N/A'} | 
+                                        Docs: ${job.documents_processed || 0}/${job.documents_total || 0} | 
+                                        Chunks: ${job.chunks_generated || 0}
+                                    </p>
+                                    ${configInfo}
                                     ${job.error ? `<small class="text-danger"><i class="fas fa-exclamation-triangle"></i> ${job.error.substring(0, 100)}...</small>` : ''}
                                     <div class="mt-2">
                                         ${job.status === 'pending' ? `<button class="btn btn-sm btn-primary" onclick="startJob('${job.job_id}')"><i class="fas fa-play"></i> Start</button>` : ''}
@@ -3407,7 +3497,7 @@
                                         <button class="btn btn-sm btn-outline-danger" onclick="deleteJob('${job.job_id}')"><i class="fas fa-trash"></i> Delete</button>
                                     </div>
                                 </div>
-                            `).join('');
+                            `}).join('');
                         }
                     } else {
                         throw new Error(`HTTP ${response.status}`);

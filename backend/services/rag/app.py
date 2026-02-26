@@ -1429,6 +1429,345 @@ def smart_ingest(current_user_id):
         return jsonify({'error': f'Smart ingestion failed: {str(e)}'}), 500
 
 
+# Web Page Scanning endpoint
+@app.route('/api/rag/scan_webpage', methods=['POST'])
+@require_permission(Permission.WRITE_RAG)
+def scan_webpage(current_user_id):
+    """
+    Scan a web page for document links (PDF, DOCX, TXT, HTML, MD)
+    Returns list of document URLs found on the page
+    """
+    try:
+        from .smart_ingestion_enhanced import extract_document_links_from_page
+        import requests
+        
+        data = request.get_json()
+        
+        # Validate input
+        schema = {
+            'url': {
+                'type': str,
+                'required': True,
+                'min_length': 1,
+                'max_length': 2048,
+                'sanitize': True
+            }
+        }
+        
+        validation_errors = validate_input(data, schema)
+        if validation_errors:
+            return jsonify({'error': f'Validation error: {validation_errors}'}), 400
+        
+        page_url = data.get('url')
+        
+        # Fetch the web page
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (compatible; AI Agent RAG Bot/1.0; +https://example.com/bot)'
+        }
+        
+        logger.info(f"Scanning web page for documents: {page_url}")
+        response = requests.get(page_url, headers=headers, timeout=30, verify=True)
+        response.raise_for_status()
+        
+        # Extract document links
+        document_urls = extract_document_links_from_page(page_url, response.text)
+        
+        logger.info(f"Found {len(document_urls)} document links on {page_url}")
+        
+        return jsonify({
+            'documents': document_urls,
+            'count': len(document_urls),
+            'page_url': page_url
+        }), 200
+        
+    except requests.exceptions.Timeout:
+        logger.error(f"Timeout fetching web page: {page_url}")
+        return jsonify({'error': 'Timeout fetching web page. The server took too long to respond.'}), 408
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Failed to fetch web page: {str(e)}")
+        return jsonify({'error': f'Failed to fetch web page: {str(e)}'}), 400
+    except Exception as e:
+        logger.error(f"Scan webpage error: {str(e)}")
+        import traceback
+        logger.error(traceback.format_exc())
+        return jsonify({'error': f'Scan failed: {str(e)}'}), 500
+
+
+# Smart Ingestion from Web Page endpoint - ASYNC
+@app.route('/api/rag/smart_ingest_webpage', methods=['POST'])
+@require_permission(Permission.WRITE_RAG)
+def smart_ingest_webpage(current_user_id):
+    """
+    Smart ingestion from web page - ASYNC - creates background job
+    Scans web page for documents, then processes them in background
+    """
+    try:
+        from .smart_ingestion_enhanced import extract_document_links_from_page
+        import requests
+        
+        data = request.get_json()
+        page_url = data.get('url')
+        
+        if not page_url:
+            return jsonify({'error': 'Web page URL is required'}), 400
+        
+        # Get processing parameters
+        chunking_strategy = data.get('chunking_strategy', 'smart_chunking')
+        ingest_chunks = data.get('ingest_chunks', True)
+        process_mode = data.get('process_mode', 'vector_db')
+        custom_prompt = data.get('custom_prompt', '')
+        document_urls = data.get('document_urls', [])  # Pre-scanned URLs
+        
+        # If no document_urls provided, scan the page now
+        if not document_urls:
+            logger.info(f"Scanning web page for documents: {page_url}")
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (compatible; AI Agent RAG Bot/1.0; +https://example.com/bot)'
+            }
+            response = requests.get(page_url, headers=headers, timeout=30, verify=True)
+            response.raise_for_status()
+            document_urls = extract_document_links_from_page(page_url, response.text)
+            
+            if not document_urls:
+                return jsonify({'error': 'No document links found on the page'}), 404
+            
+            logger.info(f"Found {len(document_urls)} document URLs")
+        
+        # Use default smart chunking prompt if not provided
+        if not custom_prompt:
+            from .smart_ingestion_enhanced import DEFAULT_SMART_CHUNKING_PROMPT
+            custom_prompt = DEFAULT_SMART_CHUNKING_PROMPT
+        
+        # Create background job with configuration tracking
+        from .job_queue import job_queue
+        
+        job = job_queue.create_job(
+            user_id=current_user_id,
+            job_type='smart_ingest_webpage',
+            parameters={
+                'page_url': page_url,
+                'document_urls': document_urls,
+                'chunking_strategy': chunking_strategy,
+                'ingest_chunks': ingest_chunks,
+                'process_mode': process_mode,
+                'prompt': custom_prompt,
+                'total_documents': len(document_urls)
+            },
+            ingestion_mode='webpage',
+            processing_mode=process_mode,
+            chunking_strategy=chunking_strategy,
+            source_url=page_url,
+            document_urls=document_urls
+        )
+        
+        # Start background worker
+        def process_webpage_background(job):
+            """Background processing function for web page documents"""
+            from .job_queue import job_queue
+            from rag_component.document_loader import DocumentLoader
+            from rag_component.vector_store_manager import VectorStoreManager
+            from langchain_core.documents import Document
+            from models.response_generator import ResponseGenerator
+            import tempfile
+            import os
+            import re
+            import requests
+            
+            try:
+                job_id = job.job_id
+                doc_urls = job.document_urls or job.parameters.get('document_urls', [])
+                chunking_strategy = job.chunking_strategy
+                ingest_chunks = job.parameters.get('ingest_chunks', True)
+                process_mode = job.processing_mode
+                prompt = job.parameters.get('prompt', '')
+                total_documents = len(doc_urls)
+                
+                document_loader = DocumentLoader()
+                vector_store = VectorStoreManager() if ingest_chunks else None
+                
+                results = {
+                    'documents_processed': 0,
+                    'total_chunks': 0,
+                    'errors': [],
+                    'document_results': []
+                }
+                
+                for idx, doc_url in enumerate(doc_urls):
+                    try:
+                        # Update job progress
+                        job.progress = int((idx / total_documents) * 100) if total_documents > 0 else 0
+                        job.current_stage = f"Processing document {idx + 1}/{total_documents}"
+                        job.documents_processed = idx
+                        job_queue.update_job(job)
+                        
+                        logger.info(f"[Job {job_id}] Processing {doc_url}")
+                        
+                        # Download document
+                        temp_path = None
+                        try:
+                            download_response = requests.get(doc_url, timeout=60)
+                            download_response.raise_for_status()
+                            
+                            # Create temp file
+                            file_ext = os.path.splitext(doc_url.split('?')[0])[1].lower()
+                            if not file_ext:
+                                file_ext = '.pdf'  # Default to PDF
+                            
+                            temp_fd, temp_path = tempfile.mkstemp(suffix=file_ext)
+                            os.close(temp_fd)
+                            
+                            with open(temp_path, 'wb') as f:
+                                f.write(download_response.content)
+                            
+                            logger.info(f"[Job {job_id}] Downloaded {doc_url} to {temp_path}")
+                            
+                        except Exception as download_error:
+                            logger.error(f"[Job {job_id}] Download failed for {doc_url}: {download_error}")
+                            results['errors'].append({'url': doc_url, 'error': str(download_error)})
+                            results['document_results'].append({
+                                'url': doc_url,
+                                'status': 'failed',
+                                'error': str(download_error)
+                            })
+                            continue
+                        
+                        # Extract text
+                        docs = document_loader.load_document(temp_path)
+                        document_content = "\n".join([doc.page_content for doc in docs])
+                        
+                        if not document_content.strip():
+                            results['errors'].append({'url': doc_url, 'error': 'Empty document'})
+                            results['document_results'].append({
+                                'url': doc_url,
+                                'status': 'empty',
+                                'chunks': 0
+                            })
+                            if temp_path and os.path.exists(temp_path):
+                                os.remove(temp_path)
+                            continue
+                        
+                        # Apply chunking strategy
+                        chunks = []
+                        
+                        if chunking_strategy == 'smart_chunking' and prompt:
+                            try:
+                                # Get LLM instance
+                                response_gen = ResponseGenerator()
+                                llm = response_gen._get_llm_instance(
+                                    provider=RESPONSE_LLM_PROVIDER,
+                                    model=RESPONSE_LLM_MODEL
+                                )
+                                
+                                # Prepare full prompt
+                                full_prompt = f"{prompt}\n\n{document_content[:50000]}"  # Limit content
+                                
+                                logger.info(f"[Job {job_id}] Calling LLM for chunking...")
+                                llm_response = llm.invoke(full_prompt)
+                                response_content = llm_response.content if hasattr(llm_response, 'content') else str(llm_response)
+                                
+                                # Parse JSON from response
+                                json_match = re.search(r'\{[\s\S]*\}', response_content)
+                                chunking_result = json.loads(json_match.group(0) if json_match else response_content)
+                                chunks_data = chunking_result.get('chunks', [])
+                                
+                                # Extract content from chunks
+                                chunks = [c.get('content', '') for c in chunks_data if c.get('content')]
+                                logger.info(f"[Job {job_id}] LLM generated {len(chunks)} chunks")
+                                
+                            except Exception as llm_error:
+                                logger.error(f"[Job {job_id}] LLM chunking failed: {llm_error}")
+                                # Fallback to simple chunking
+                                chunks = document_content.split('\n\n')
+                                chunks = [c.strip() for c in chunks if len(c.strip()) > 100]
+                                logger.info(f"[Job {job_id}] Fallback simple chunking generated {len(chunks)} chunks")
+                        else:
+                            # Simple chunking
+                            chunks = document_content.split('\n\n')
+                            chunks = [c.strip() for c in chunks if len(c.strip()) > 100]
+                        
+                        # Ingest chunks if requested
+                        if ingest_chunks and vector_store:
+                            lc_docs = []
+                            for i, chunk in enumerate(chunks):
+                                if not chunk.strip():
+                                    continue
+                                lc_docs.append(Document(
+                                    page_content=chunk,
+                                    metadata={
+                                        'source': f'webpage:{page_url}:{doc_url}',
+                                        'chunk_id': i,
+                                        'chunking_strategy': chunking_strategy,
+                                        'process_mode': process_mode
+                                    }
+                                ))
+                            if lc_docs:
+                                vector_store.add_documents(lc_docs)
+                                logger.info(f"[Job {job_id}] Added {len(lc_docs)} chunks to vector store")
+                                
+                                # If hybrid mode, also store in Neo4j (future enhancement)
+                                if process_mode == 'hybrid':
+                                    logger.info(f"[Job {job_id}] Hybrid mode selected - Neo4j integration pending")
+                        
+                        results['documents_processed'] += 1
+                        results['total_chunks'] += len(chunks)
+                        results['document_results'].append({
+                            'url': doc_url,
+                            'status': 'success',
+                            'chunks': len(chunks)
+                        })
+                        
+                        # Clean up temp file
+                        if temp_path and os.path.exists(temp_path):
+                            os.remove(temp_path)
+                            
+                    except Exception as e:
+                        logger.error(f"[Job {job_id}] Error processing {doc_url}: {e}")
+                        import traceback
+                        logger.error(traceback.format_exc())
+                        results['errors'].append({'url': doc_url, 'error': str(e)})
+                        results['document_results'].append({
+                            'url': doc_url,
+                            'status': 'error',
+                            'error': str(e)
+                        })
+                
+                # Mark job as completed
+                job.progress = 100
+                job.current_stage = "completed"
+                job.documents_processed = results['documents_processed']
+                job.chunks_generated = results['total_chunks']
+                job.result = results
+                job_queue.update_job(job)
+                
+                logger.info(f"[Job {job_id}] Web page ingestion completed: {results['documents_processed']} documents, {results['total_chunks']} chunks")
+                
+            except Exception as e:
+                logger.error(f"[Job {job_id}] Web page ingest worker error: {e}")
+                import traceback
+                logger.error(traceback.format_exc())
+                job.status = 'failed'
+                job.error = str(e)
+                job_queue.update_job(job)
+        
+        job_queue.start_worker(job.job_id, process_webpage_background)
+        
+        logger.info(f"Created web page ingest job {job.job_id} for user {current_user_id}")
+        
+        return jsonify({
+            'job_id': job.job_id,
+            'status': job.status,
+            'documents_found': len(document_urls),
+            'message': f'Web page ingestion job created for {len(document_urls)} documents',
+            'check_status_url': f'/jobs/{job.job_id}'
+        }), 202
+        
+    except Exception as e:
+        logger.error(f"Smart ingest webpage error: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
+        return jsonify({'error': f'Smart ingestion failed: {str(e)}'}), 500
+
+
 # Smart Ingestion from Document Store endpoint - ASYNC
 @app.route('/api/rag/smart_ingest_docstore', methods=['POST'])
 @require_permission(Permission.WRITE_RAG)
@@ -1439,17 +1778,17 @@ def smart_ingest_docstore(current_user_id):
     try:
         data = request.get_json()
         documents = data.get('documents', [])
-        
+
         if not documents:
             return jsonify({'error': 'No documents specified'}), 400
-        
+
         from .job_queue import job_queue, JobStatus
-        
+
         chunking_strategy = data.get('chunking_strategy', 'smart_chunking')
         ingest_chunks = data.get('ingest_chunks', True)
         process_mode = data.get('process_mode', 'vector_db')
-        
-        # Create background job
+
+        # Create background job with configuration tracking
         job = job_queue.create_job(
             user_id=current_user_id,
             job_type='smart_ingest_docstore',
@@ -1459,21 +1798,24 @@ def smart_ingest_docstore(current_user_id):
                 'ingest_chunks': ingest_chunks,
                 'process_mode': process_mode,
                 'total_documents': len(documents)
-            }
+            },
+            ingestion_mode='docstore',
+            processing_mode=process_mode,
+            chunking_strategy=chunking_strategy
         )
-        
+
         # Start background worker
         job_queue.start_worker(job.job_id, _process_smart_ingest_docstore)
-        
+
         logger.info(f"Created smart ingest job {job.job_id} for user {current_user_id}")
-        
+
         return jsonify({
             'job_id': job.job_id,
             'status': job.status,
             'message': 'Smart ingestion job created. Processing in background.',
             'check_status_url': f'/jobs/{job.job_id}'
         }), 202
-        
+
     except Exception as e:
         logger.error(f"Smart ingest docstore error: {e}")
         import traceback
