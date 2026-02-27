@@ -3379,6 +3379,7 @@
                                     doc_id: docId,  // Store doc_id separately for API call
                                     filename: doc.filename || 'Unknown Document',
                                     format: doc.format || 'pdf',
+                                    size: doc.size || 0,  // Store file size in bytes
                                     selected: false,
                                     job_id: job.job_id || job.id || '',
                                     source_website: job.source_website || doc.original_url || ''
@@ -3389,12 +3390,13 @@
                         if (docstoreDocuments.length > 0) {
                             items.push(...docstoreDocuments.map((doc, i) => {
                                 const sourceInfo = doc.source_website ? ` - <small class="text-primary">🌐 ${doc.source_website}</small>` : '';
+                                const sizeInfo = doc.size > 0 ? ` - <small class="text-muted">💾 ${formatFileSize(doc.size)}</small>` : '';
                                 return `<li class="list-group-item">
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" id="docstore-${i}" onchange="toggleDocstoreDoc(${i}, this.checked)">
                                         <label class="form-check-label" for="docstore-${i}">
                                             <i class="fas fa-file-pdf text-danger"></i> ${doc.filename}
-                                            <br><small class="text-muted">(${doc.format}) - Job: ${doc.job_id}${sourceInfo}</small>
+                                            <br><small class="text-muted">(${doc.format}) - Job: ${doc.job_id}${sourceInfo}${sizeInfo}</small>
                                         </label>
                                     </div>
                                 </li>`
