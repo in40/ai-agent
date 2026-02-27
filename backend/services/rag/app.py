@@ -1645,21 +1645,38 @@ def smart_ingest_files(current_user_id):
                             try:
                                 # Prepare full prompt
                                 full_prompt = f"{prompt}\n\n{document_content[:50000]}"
-                                
+
                                 logger.info(f"[Job {job_id}] Calling LLM for chunking {file_info['filename']}...")
                                 llm_response = llm.invoke(full_prompt)
-                                response_content = llm_response.content if hasattr(llm_response, 'content') else str(llm_response)
                                 
-                                # Parse JSON from response
+                                # Extract content from LLM response (handle both direct content and chat completion structures)
+                                response_content = None
+                                if hasattr(llm_response, 'content') and llm_response.content:
+                                    response_content = llm_response.content
+                                elif hasattr(llm_response, 'choices') and llm_response.choices:
+                                    # Chat completion format (LM Studio, OpenAI, etc.)
+                                    response_content = llm_response.choices[0].message.content
+                                else:
+                                    response_content = str(llm_response)
+
+                                # Parse JSON from response - handle markdown code blocks
                                 json_match = re.search(r'\{[\s\S]*\}', response_content)
-                                chunking_result = json.loads(json_match.group(0) if json_match else response_content)
-                                chunks_data = chunking_result.get('chunks', [])
-                                
-                                chunks = [c.get('content', '') for c in chunks_data if c.get('content')]
-                                logger.info(f"[Job {job_id}] LLM generated {len(chunks)} chunks")
-                                
+                                if json_match:
+                                    json_str = json_match.group(0)
+                                    # Remove markdown code block markers if present
+                                    json_str = re.sub(r'^```json\s*|\s*```$', '', json_str.strip())
+                                    chunking_result = json.loads(json_str)
+                                    chunks_data = chunking_result.get('chunks', [])
+                                    chunks = [c.get('content', '') for c in chunks_data if c.get('content')]
+                                    logger.info(f"[Job {job_id}] LLM generated {len(chunks)} chunks for {file_info['filename']}")
+                                else:
+                                    logger.error(f"[Job {job_id}] No JSON found in LLM response")
+                                    raise ValueError("No JSON in LLM response")
+
                             except Exception as llm_error:
                                 logger.error(f"[Job {job_id}] LLM chunking failed: {llm_error}")
+                                import traceback
+                                logger.error(traceback.format_exc())
                                 # Fallback to simple chunking
                                 chunks = document_content.split('\n\n')
                                 chunks = [c.strip() for c in chunks if len(c.strip()) > 100]
