@@ -3454,6 +3454,7 @@
                 let endpoint = '/api/rag/smart_ingest';
                 let body = new FormData();
                 let useFormData = false;
+                let selectedDocs = [];  // Track selected documents for status display
 
                 if (selectedMode === 'files') {
                     // File mode - use async endpoint
@@ -3487,7 +3488,7 @@
                 } else if (selectedMode === 'docstore') {
                     // Use Document Store endpoint
                     endpoint = '/api/rag/smart_ingest_docstore';
-                    const selectedDocs = docstoreDocuments.filter(d => d.selected);
+                    selectedDocs = docstoreDocuments.filter(d => d.selected);
                     body = JSON.stringify({
                         documents: selectedDocs.map(d => ({
                             job_id: d.job_id,
