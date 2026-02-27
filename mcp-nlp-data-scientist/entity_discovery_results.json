@@ -1,0 +1,151 @@
+{
+  "analyzed_documents": [
+    "gost-r-34_1.pdf",
+    "r-1323565.1_18.pdf"
+  ],
+  "recommended_entity_types": [
+    {
+      "name": "STANDARD_REFERENCE",
+      "description": "Technical standards (GOST, ISO, etc.) with version numbers and codes",
+      "importance": "high",
+      "examples_from_text": [
+        "ГОСТ Р 34.12—2015",
+        "Р 1323565.1.044—2022"
+      ],
+      "pattern_suggestions": [
+        "^ГОСТ \\b\\w+\\b-\\d{4}$",
+        "^\\b\\w+\\.\\d+\\.\\d+-\\d{4}$"
+      ],
+      "frequency_estimate": "common"
+    },
+    {
+      "name": "REGULATORY_DOCUMENT",
+      "description": "Laws, decrees, and official documents with numerical identifiers",
+      "importance": "high",
+      "examples_from_text": [
+        "Федеральный закон № 162-ФЗ",
+        "Приказ № 749-ст"
+      ],
+      "pattern_suggestions": [
+        "^\\bФедеральный \\b\\w+\\b\\d+-\\d{1,2}[-]\\d{2}$"
+      ],
+      "frequency_estimate": "common"
+    },
+    {
+      "name": "ORGANIZATION_RU",
+      "description": "Government and commercial organizations with specific naming conventions",
+      "importance": "high",
+      "examples_from_text": [
+        "Федеральное агентство",
+        "ОАО «ИнфоТеКС»",
+        "КРИПТО-ПРО"
+      ],
+      "pattern_suggestions": [
+        "^\\bФедеральное \\b\\w+\\b$",
+        "^\\b\\w+\\s\\d{1,2}\\.\\d{1,2}\\.\\d{4}$"
+      ],
+      "frequency_estimate": "common"
+    },
+    {
+      "name": "DATE_RU",
+      "description": "Russian formatted dates with specific month and year patterns",
+      "importance": "high",
+      "examples_from_text": [
+        "19 июня 2015 г.",
+        "29 ноября 2022 г."
+      ],
+      "pattern_suggestions": [
+        "^\\d{1,2} \\b(январь|февраль|март|апрель|май|июнь|июль|август|сентябрь|октябрь|ноябрь|декабрь)\\b \\d{4} \\bг\\.?$"
+      ],
+      "frequency_estimate": "common"
+    },
+    {
+      "name": "CRYPTO_TERM",
+      "description": "Cryptography-related terminology specific to Russian standards",
+      "importance": "high",
+      "examples_from_text": [
+        "криптографическая защита информации",
+        "шифрование"
+      ],
+      "pattern_suggestions": [
+        "\\b(криптографический|шифрование|подпись|хэш)\\b"
+      ],
+      "frequency_estimate": "common"
+    },
+    {
+      "name": "TECHNICAL_SYSTEM",
+      "description": "Systems and platforms mentioned in cybersecurity contexts",
+      "importance": "medium",
+      "examples_from_text": [
+        "СКЗИ",
+        "операционная система"
+      ],
+      "pattern_suggestions": [
+        "^\\bСКЗИ\\b",
+        "^\\b\\w+\\s\\d{1,2}\\.\\d{1,2}$"
+      ],
+      "frequency_estimate": "occasional"
+    },
+    {
+      "name": "VULNERABILITY",
+      "description": "Security weaknesses or vulnerabilities in technical systems",
+      "importance": "medium",
+      "examples_from_text": [
+        "уязвимость",
+        "критическая ошибка"
+      ],
+      "pattern_suggestions": [
+        "\\b(уязвимость|ошибка|слабость)\\b"
+      ],
+      "frequency_estimate": "rare"
+    },
+    {
+      "name": "DOCUMENT_SECTION",
+      "description": "Sections, chapters, and appendices in technical documents",
+      "importance": "medium",
+      "examples_from_text": [
+        "Раздел 3",
+        "Приложение А"
+      ],
+      "pattern_suggestions": [
+        "^\\b(раздел|приложение)\\s\\d{1,2}$"
+      ],
+      "frequency_estimate": "common"
+    },
+    {
+      "name": "MEASUREMENT",
+      "description": "Technical measurements and units in standards",
+      "importance": "low",
+      "examples_from_text": [
+        "256 бит",
+        "10 КБ",
+        "5 лет"
+      ],
+      "pattern_suggestions": [
+        "\\b\\d{1,3} \\b(бит|КБ|ГБ|лет)\\b"
+      ],
+      "frequency_estimate": "rare"
+    },
+    {
+      "name": "PROCESS_STAGE",
+      "description": "Phases of technical processes or workflows",
+      "importance": "low",
+      "examples_from_text": [
+        "формирование подписи",
+        "проверка ключа"
+      ],
+      "pattern_suggestions": [
+        "\\b(формирование|проверка)\\s\\w+\\b"
+      ],
+      "frequency_estimate": "rare"
+    }
+  ],
+  "priority_implementation": [
+    "STANDARD_REFERENCE",
+    "REGULATORY_DOCUMENT",
+    "ORGANIZATION_RU",
+    "DATE_RU",
+    "CRYPTO_TERM"
+  ],
+  "additional_observations": "Documents consistently reference technical standards with version numbers, regulatory documents with numerical identifiers, and organizations using specific naming conventions. Dates are frequently formatted in Russian style. Cryptographic terms appear in context of security protocols."
+}

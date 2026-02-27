@@ -115,21 +115,55 @@ For each chunk, generate structured metadata:
   "overlap_source": "chunk_X_end or null",
   "overlap_tokens": integer,
   "token_count": integer,
-  "content": "chunk text with overlaps PREPENDED (not appended to previous chunk)"
+  "content": "chunk text with overlaps PREPENDED (not appended to previous chunk)",
+  "entities": [/* optional: array of extracted entities for knowledge graph */]
 }
+
+## ENTITY EXTRACTION RULES (for Knowledge Graph)
+For each chunk, extract key entities to build a knowledge graph:
+1. **STANDARDS**: GOST, ISO, IEC, RFC standards (e.g., "GOST R 34.10-2012", "ISO 27001")
+2. **ORGANIZATIONS**: Companies, government bodies, agencies (e.g., "FSB Russia", "ISO/IEC")
+3. **TECHNOLOGIES**: Technical terms, algorithms, protocols (e.g., "elliptic curve cryptography", "SHA-256")
+4. **LOCATIONS**: Geographical entities, countries, regions (e.g., "Russian Federation", "Moscow")
+5. **CONCEPTS**: Key domain concepts (e.g., "digital signature", "hash function", "encryption key")
+6. **PERSONS**: People mentioned (rare in technical docs)
+
+For each entity, provide:
+{
+  "name": "exact entity name as appears in text",
+  "type": "STANDARD | ORGANIZATION | TECHNOLOGY | LOCATION | CONCEPT | PERSON",
+  "relevance": "high | medium | low"  // high if central to chunk, low if mentioned in passing
+}
+
+Example entities array:
+"entities": [
+  {"name": "GOST R 34.10-2012", "type": "STANDARD", "relevance": "high"},
+  {"name": "elliptic curve", "type": "TECHNOLOGY", "relevance": "high"},
+  {"name": "Russian Federation", "type": "LOCATION", "relevance": "medium"},
+  {"name": "digital signature", "type": "CONCEPT", "relevance": "high"}
+]
 
 ## OUTPUT FORMAT
 Return ONLY valid JSON matching this schema:
 {
   "document": "extracted document identifier (e.g., GOST_R_XXXXX-YYYY)",
   "total_chunks": integer,
+  "total_entities": integer,  // count of all extracted entities
+  "entity_types": {  // count by type
+    "STANDARD": integer,
+    "ORGANIZATION": integer,
+    "TECHNOLOGY": integer,
+    "LOCATION": integer,
+    "CONCEPT": integer,
+    "PERSON": integer
+  },
   "overlap_strategy": "targeted_procedural_only",
   "chunks": [ /* array of chunk objects per metadata requirements */ ],
   "embedding_recommendations": {
     "model": "text-embedding-3-large or equivalent multilingual",
     "chunk_size_target": "200-450 tokens",
     "overlap_strategy": "Apply overlaps ONLY at procedural boundaries to preserve algorithmic continuity",
-    "metadata_indexing": "Index section, chunk_type, contains_formula fields for hybrid search"
+    "metadata_indexing": "Index section, chunk_type, contains_formula, entities fields for hybrid search"
   }
 }
 

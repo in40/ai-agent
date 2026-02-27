@@ -1,0 +1,135 @@
+{
+  "timestamp": "2026-02-27T10:43:13.070131",
+  "document": "gost-r-50922-2006.pdf",
+  "pages": 12,
+  "text_length": 25077,
+  "processing_times": {
+    "spacy_extraction_seconds": 0.5997796058654785,
+    "standards_extraction_seconds": 0.00910329818725586,
+    "llm_extraction_seconds": 34.685518741607666
+  },
+  "results": {
+    "entities_spacy_count": 251,
+    "standards_count": 11,
+    "entities_llm_count": 0,
+    "standards_found": [
+      {
+        "text": "50922\u20142006",
+        "label": "STANDARD",
+        "label_description": "STANDARD_YEAR Standard",
+        "start": 245,
+        "end": 255,
+        "confidence": 0.95,
+        "standard_type": "STANDARD_YEAR"
+      },
+      {
+        "text": "50922\u20142006",
+        "label": "STANDARD",
+        "label_description": "STANDARD_YEAR Standard",
+        "start": 2060,
+        "end": 2070,
+        "confidence": 0.95,
+        "standard_type": "STANDARD_YEAR"
+      },
+      {
+        "text": "50922\u20142006",
+        "label": "STANDARD",
+        "label_description": "STANDARD_YEAR Standard",
+        "start": 3453,
+        "end": 3463,
+        "confidence": 0.95,
+        "standard_type": "STANDARD_YEAR"
+      },
+      {
+        "text": "50922\u20142006",
+        "label": "STANDARD",
+        "label_description": "STANDARD_YEAR Standard",
+        "start": 4766,
+        "end": 4776,
+        "confidence": 0.95,
+        "standard_type": "STANDARD_YEAR"
+      },
+      {
+        "text": "50922\u20142006",
+        "label": "STANDARD",
+        "label_description": "STANDARD_YEAR Standard",
+        "start": 7045,
+        "end": 7055,
+        "confidence": 0.95,
+        "standard_type": "STANDARD_YEAR"
+      },
+      {
+        "text": "50922\u20142006",
+        "label": "STANDARD",
+        "label_description": "STANDARD_YEAR Standard",
+        "start": 10928,
+        "end": 10938,
+        "confidence": 0.95,
+        "standard_type": "STANDARD_YEAR"
+      },
+      {
+        "text": "50922\u20142006",
+        "label": "STANDARD",
+        "label_description": "STANDARD_YEAR Standard",
+        "start": 14673,
+        "end": 14683,
+        "confidence": 0.95,
+        "standard_type": "STANDARD_YEAR"
+      },
+      {
+        "text": "50922\u20142006",
+        "label": "STANDARD",
+        "label_description": "STANDARD_YEAR Standard",
+        "start": 18282,
+        "end": 18292,
+        "confidence": 0.95,
+        "standard_type": "STANDARD_YEAR"
+      },
+      {
+        "text": "50922\u20142006",
+        "label": "STANDARD",
+        "label_description": "STANDARD_YEAR Standard",
+        "start": 20013,
+        "end": 20023,
+        "confidence": 0.95,
+        "standard_type": "STANDARD_YEAR"
+      },
+      {
+        "text": "50922\u20142006",
+        "label": "STANDARD",
+        "label_description": "STANDARD_YEAR Standard",
+        "start": 20704,
+        "end": 20714,
+        "confidence": 0.95,
+        "standard_type": "STANDARD_YEAR"
+      },
+      {
+        "text": "50922\u20142006",
+        "label": "STANDARD",
+        "label_description": "STANDARD_YEAR Standard",
+        "start": 24081,
+        "end": 24091,
+        "confidence": 0.95,
+        "standard_type": "STANDARD_YEAR"
+      }
+    ],
+    "entity_types_spacy": {
+      "total": 251,
+      "by_type": {
+        "ORG": 36,
+        "DATE": 5,
+        "PERSON": 61,
+        "GPE": 11,
+        "STANDARD": 4,
+        "CARDINAL": 117,
+        "NORP": 5,
+        "PRODUCT": 4,
+        "WORK_OF_ART": 2,
+        "QUANTITY": 4,
+        "LAW": 1,
+        "TIME": 1
+      },
+      "unique_types": 12
+    }
+  }
+}

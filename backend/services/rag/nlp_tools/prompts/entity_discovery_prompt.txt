@@ -1,0 +1,147 @@
+# Entity Discovery Prompt for Technical/Regulatory Documents
+
+## Purpose
+This prompt is used by the NLP Data Scientist MCP server to analyze documents and discover relevant entity types for entity extraction.
+
+## Usage
+Send this prompt to the LLM with document text samples to get recommended entity types and patterns.
+
+---
+
+## Prompt Template
+
+```
+You are an expert NLP entity extraction specialist focused on technical and regulatory documents, particularly Russian GOST standards and cybersecurity documentation.
+
+## TASK
+Analyze the provided document samples and recommend entity types that should be extracted for effective information retrieval and knowledge graph construction.
+
+## RESEARCH-BASED ENTITY CATEGORIES
+
+Based on industry best practices for technical/regulatory NER, consider these categories:
+
+### Core Technical Entities (from cybersecurity NER research):
+1. **STANDARD_REFERENCE** - Technical standards (GOST, ISO, IEC, RFC, NIST)
+   - Examples: "ГОСТ Р 50922-2006", "ISO 27001", "RFC 8446"
+   
+2. **REGULATORY_DOCUMENT** - Laws, regulations, guidelines
+   - Examples: "Федеральный закон № 152-ФЗ", "Приказ № 239"
+   
+3. **TECHNICAL_SYSTEM** - Systems, platforms, software, hardware
+   - Examples: "СКЗИ", "операционная система", "криптографическое средство"
+   
+4. **VULNERABILITY** - Security vulnerabilities, weaknesses
+   - Examples: "уязвимость", "критическая ошибка"
+   
+5. **THREAT_INDICATOR** - Technical indicators of compromise
+   - Examples: IP addresses, hash values, malware names
+
+### Document Structure Entities:
+6. **DOCUMENT_SECTION** - Sections, chapters, appendices
+   - Examples: "Раздел 3", "Приложение А", "Статья 5"
+   
+7. **ORGANIZATION_RU** - Russian government and commercial organizations
+   - Examples: "Федеральное агентство", "ФСБ России", "ОАО"
+   
+8. **DATE_RU** - Russian format dates (critical for validity periods)
+   - Examples: "27 декабря 2006", "01.01.2023"
+   
+9. **PERSON** - Authors, approvers, responsible persons
+   - Examples: "Иванов И.И.", "директор Петров"
+
+### Domain-Specific Entities:
+10. **CRYPTO_TERM** - Cryptography and security terminology
+    - Examples: "электронная подпись", "хэш-функция", "шифрование"
+    
+11. **MEASUREMENT** - Technical measurements and units
+    - Examples: "256 бит", "10 КБ", "5 лет"
+    
+12. **PROCESS_STAGE** - Process phases, workflow stages
+    - Examples: "формирование подписи", "проверка ключа"
+
+## ANALYSIS INSTRUCTIONS
+
+For each document sample:
+
+1. **Identify recurring entity patterns** - What types of named entities appear frequently?
+
+2. **Assess entity importance** - Which entities are critical for:
+   - Document classification?
+   - Search and retrieval?
+   - Compliance tracking?
+   - Knowledge graph construction?
+
+3. **Note entity characteristics**:
+   - Are they technical terms?
+   - Do they follow specific patterns (numbers, dates, codes)?
+   - Are they domain-specific jargon?
+
+4. **Recommend entity types** - Based on the analysis, recommend 8-15 entity types that should be extracted.
+
+## OUTPUT FORMAT
+
+Return your analysis in this exact JSON format:
+
+{
+  "analyzed_documents": ["list of document names"],
+  "recommended_entity_types": [
+    {
+      "name": "ENTITY_TYPE_NAME",
+      "description": "Clear description of what this entity type captures",
+      "importance": "high|medium|low",
+      "examples_from_text": ["example1", "example2"],
+      "pattern_suggestions": ["regex or pattern suggestions if applicable"],
+      "frequency_estimate": "common|occasional|rare"
+    }
+  ],
+  "priority_implementation": ["top 5 entity types to implement first"],
+  "additional_observations": "Any other insights about the document structure or entity patterns"
+}
+
+## DOCUMENT SAMPLES TO ANALYZE
+
+{document_samples}
+
+## IMPORTANT NOTES
+
+- Focus on entities that appear REPEATEDLY across documents
+- Prioritize entities that help with compliance and search
+- Consider both explicit entities (names, numbers) and implicit entities (concepts, processes)
+- Russian language documents may have different entity patterns than English
+- Technical standards have very structured entity patterns (leverage this!)
+
+Analyze the documents thoroughly and provide actionable entity type recommendations.
+```
+
+---
+
+## Example Usage (via MCP Server)
+
+```bash
+curl -X POST http://localhost:3065/mcp \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "id": "entity-discovery-1",
+    "method": "tools/call",
+    "params": {
+      "name": "analyze_for_entity_types",
+      "arguments": {
+        "document_samples": ["... text samples ..."],
+        "domain": "russian_gost_cybersecurity"
+      }
+    }
+  }'
+```
+
+---
+
+## Storage Location
+
+This prompt is stored at: `mcp_nlp_server/nlp_tools/prompts/entity_discovery_prompt.txt`
+
+---
+
+## Version History
+
+- **v1.0** (2026-02-27): Initial prompt based on cybersecurity NER research and GOST document analysis

@@ -142,10 +142,40 @@ class DocumentStoreClient:
             job_id: Ingestion job ID
 
         Returns:
-            List of documents with metadata
+            List of documents with metadata including source website
         """
         logger.info(f"Listing documents for job: {job_id}")
         return self._call_tool("list_documents", {"job_id": job_id})
+
+    def list_documents_with_source(self, job_id: str) -> Dict[str, Any]:
+        """
+        List documents for a specific job with source website info.
+
+        Args:
+            job_id: Ingestion job ID
+
+        Returns:
+            List of documents with metadata including source website
+        """
+        logger.info(f"Listing documents with source for job: {job_id}")
+        result = self._call_tool("list_documents", {"job_id": job_id})
+        
+        # Try to load source metadata if available
+        if result.get('success'):
+            import os
+            import json
+            metadata_file = f"/root/qwen/ai_agent/document-store-mcp-server/data/ingested/{job_id}/documents/.source_metadata.json"
+            if os.path.exists(metadata_file):
+                try:
+                    with open(metadata_file, 'r') as f:
+                        source_meta = json.load(f)
+                    # Add source info to result
+                    result['source_website'] = source_meta.get('source_urls', ['unknown'])[0] if source_meta.get('source_urls') else 'unknown'
+                    result['downloaded_at'] = source_meta.get('downloaded_at', 'unknown')
+                except:
+                    pass
+        
+        return result
 
     def get_document(self, job_id: str, doc_id: str, format: str = "txt") -> Dict[str, Any]:
         """

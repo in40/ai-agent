@@ -1412,35 +1412,195 @@ def smart_ingest(current_user_id):
 
                 # Apply chunking strategy
                 chunks = []
-                
+
                 if chunking_strategy == 'smart_chunking' and llm and custom_prompt:
                     try:
-                        # Prepare full prompt
-                        full_prompt = f"{custom_prompt}\n\n{document_content[:50000]}"  # Limit content
+                        # Qwen 3.5 35B has 262k context window - can handle most docs in single call
+                        # Threshold: 800k chars ≈ 200k tokens (leaves room for prompt + output)
+                        MAX_SINGLE_CALL = 800000  # chars
                         
-                        logger.info(f"Calling LLM for chunking {file.filename}...")
-                        llm_response = llm.invoke(full_prompt)
-                        response_content = llm_response.content if hasattr(llm_response, 'content') else str(llm_response)
-                        
-                        # Parse JSON from response
-                        json_match = re.search(r'\{[\s\S]*\}', response_content)
-                        chunking_result = json.loads(json_match.group(0) if json_match else response_content)
-                        chunks_data = chunking_result.get('chunks', [])
-                        
-                        # Extract content from chunks
-                        chunks = [c.get('content', '') for c in chunks_data if c.get('content')]
-                        logger.info(f"LLM generated {len(chunks)} chunks for {file.filename}")
-                        
+                        if len(document_content) > MAX_SINGLE_CALL:
+                            # VERY LARGE DOCUMENT (> 800k chars, ~200k tokens)
+                            # Split into sections with Context Summary for coherence
+                            logger.info(f"Large document ({len(document_content)} chars), splitting into sections")
+                            
+                            MAX_SECTION_SIZE = 700000  # ~175k tokens per section
+                            sections = []
+                            remaining = document_content
+                            
+                            while len(remaining) > MAX_SECTION_SIZE:
+                                # Split at paragraph boundary
+                                cut_point = remaining.rfind('\n\n', 0, MAX_SECTION_SIZE)
+                                if cut_point == -1:
+                                    cut_point = MAX_SECTION_SIZE
+                                sections.append(remaining[:cut_point])
+                                remaining = remaining[cut_point:].lstrip()
+                            
+                            if remaining:
+                                sections.append(remaining)
+                            
+                            logger.info(f"Split into {len(sections)} sections for LLM chunking")
+                            
+                            # Process each section with Context Summary handoff
+                            all_chunks = []
+                            previous_summary = ""
+                            previous_entities = []
+                            
+                            for section_idx, section in enumerate(sections):
+                                logger.info(f"Processing section {section_idx + 1}/{len(sections)} ({len(section)} chars)")
+                                
+                                # Build context header for sections 2+
+                                if previous_summary:
+                                    context_header = f"""
+## Context from Previous Section
+
+**Summary:** {previous_summary}
+
+**Key Entities:** {', '.join(previous_entities)}
+
+Continue chunking with this context in mind. Maintain semantic continuity with adjacent sections.
+"""
+                                else:
+                                    context_header = ""
+                                
+                                # Build prompt with document context
+                                section_prompt = f"""{custom_prompt}
+
+{context_header}
+
+## Document: {file_info['original_filename']}
+## Section {section_idx + 1} of {len(sections)}
+
+{section}
+
+## Output Format
+Return JSON with these fields:
+{{
+  "document": "document identifier",
+  "total_chunks": integer,
+  "chunks": [
+    {{
+      "chunk_id": 1,
+      "section": "section number",
+      "title": "descriptive title",
+      "chunk_type": "chunk type",
+      "content": "chunk text here",
+      "token_count": integer
+    }}
+  ],
+  "document_summary": "2-3 sentences summarizing what this section covers",
+  "key_entities": ["important entities from this section for graph context"],
+  "embedding_recommendations": {{
+    "model": "text-embedding-3-large or equivalent multilingual",
+    "chunk_size_target": "200-450 tokens",
+    "metadata_indexing": "Index section, chunk_type, contains_formula fields"
+  }}
+}}
+"""
+                                
+                                llm_response = llm.invoke(section_prompt)
+                                response_content = llm_response.content if hasattr(llm_response, 'content') else str(llm_response)
+                                
+                                # Parse JSON from response
+                                json_match = re.search(r'\{[\s\S]*\}', response_content)
+                                chunking_result = json.loads(json_match.group(0) if json_match else response_content)
+                                chunks_data = chunking_result.get('chunks', [])
+                                
+                                section_chunks = [c.get('content', '') for c in chunks_data if c.get('content')]
+                                all_chunks.extend(section_chunks)
+                                
+                                # Save context for next section
+                                previous_summary = chunking_result.get('document_summary', '')
+                                previous_entities = chunking_result.get('key_entities', [])
+                                
+                                logger.info(f"Section {section_idx + 1}: LLM generated {len(section_chunks)} chunks")
+                            
+                            chunks = all_chunks
+                            logger.info(f"Total: LLM generated {len(chunks)} chunks from {len(sections)} sections for {file_info['original_filename']}")
+                            
+                        else:
+                            # MOST DOCUMENTS (97%): Single LLM call with full document context
+                            logger.info(f"Document fits in single LLM call ({len(document_content)} chars)")
+                            
+                            # Build prompt for single-call processing
+                            single_prompt = f"""{custom_prompt}
+
+## Document: {file_info['original_filename']}
+
+{document_content}
+
+## Output Format
+Return JSON with these fields:
+{{
+  "document": "document identifier (e.g., GOST_R_XXXXX-YYYY)",
+  "total_chunks": integer,
+  "chunks": [
+    {{
+      "chunk_id": 1,
+      "section": "section number or appendix_X",
+      "title": "descriptive title in language of document",
+      "chunk_type": "one of: header_and_scope | references_and_definitions | formula_with_context | testing_procedure | appendix_example",
+      "contains_formula": boolean,
+      "contains_table": boolean,
+      "formula_id": "1,2,3... or null",
+      "formula_reference": "referenced formula number or null",
+      "content": "chunk text here",
+      "token_count": integer (200-450 tokens per chunk)
+    }}
+  ],
+  "document_summary": "2-3 sentences summarizing document content for graph context",
+  "key_entities": ["important entities from document for graph context (standards, organizations, technologies, etc.)"],
+  "embedding_recommendations": {{
+    "model": "text-embedding-3-large or equivalent multilingual",
+    "chunk_size_target": "200-450 tokens",
+    "overlap_strategy": "Apply overlaps ONLY at procedural boundaries to preserve algorithmic continuity",
+    "metadata_indexing": "Index section, chunk_type, contains_formula, document_summary fields for hybrid search"
+  }}
+}}
+
+## Chunking Guidelines
+- Target 200-450 tokens per chunk
+- Preserve semantic units (formulas, tables, procedures)
+- Include section headers in chunk content
+- Extract entities: GOST/ISO standards, organizations, technologies, dates, concepts
+"""
+                            
+                            llm_response = llm.invoke(single_prompt)
+                            response_content = llm_response.content if hasattr(llm_response, 'content') else str(llm_response)
+                            
+                            # Parse JSON from response
+                            json_match = re.search(r'\{[\s\S]*\}', response_content)
+                            chunking_result = json.loads(json_match.group(0) if json_match else response_content)
+                            chunks_data = chunking_result.get('chunks', [])
+                            
+                            chunks = [c.get('content', '') for c in chunks_data if c.get('content')]
+                            
+                            # Store document-level metadata for graph context
+                            document_summary = chunking_result.get('document_summary', '')
+                            key_entities = chunking_result.get('key_entities', [])
+                            
+                            logger.info(f"Single-call LLM generated {len(chunks)} chunks for {file_info['original_filename']}")
+                            if document_summary:
+                                logger.info(f"Document summary: {document_summary[:100]}...")
+                            if key_entities:
+                                logger.info(f"Key entities: {len(key_entities)} entities extracted")
+
                     except Exception as llm_error:
-                        logger.error(f"LLM chunking failed for {file.filename}: {llm_error}")
+                        logger.error(f"LLM chunking failed for {file_info['filename']}: {llm_error}")
+                        import traceback
+                        logger.error(traceback.format_exc())
                         # Fallback to simple chunking
                         chunks = document_content.split('\n\n')
                         chunks = [c.strip() for c in chunks if len(c.strip()) > 100]
                         logger.info(f"Fallback simple chunking generated {len(chunks)} chunks")
+                        document_summary = ""
+                        key_entities = []
                 else:
                     # Simple chunking
                     chunks = document_content.split('\n\n')
                     chunks = [c.strip() for c in chunks if len(c.strip()) > 100]
+                    document_summary = ""
+                    key_entities = []
 
                 if ingest_chunks and vector_store:
                     lc_docs = []
@@ -1640,8 +1800,12 @@ def smart_ingest_files(current_user_id):
                         
                         # Apply chunking strategy
                         chunks = []
-                        
-                        if chunking_strategy == 'smart_chunking' and llm and prompt:
+
+                        # Skip chunking if download_only mode
+                        if process_mode == 'download_only':
+                            logger.info(f"[Job {job_id}] Download-only mode - skipping chunking for {file_info['filename']}")
+                            chunks = []
+                        elif chunking_strategy == 'smart_chunking' and llm and prompt:
                             try:
                                 # Prepare full prompt
                                 full_prompt = f"{prompt}\n\n{document_content[:50000]}"
@@ -1697,19 +1861,45 @@ def smart_ingest_files(current_user_id):
                                         'source': f'upload:{file_info["original_filename"]}',
                                         'chunk_id': i,
                                         'chunking_strategy': chunking_strategy,
-                                        'process_mode': process_mode
+                                        'process_mode': process_mode,
+                                        'document_summary': document_summary if i == 0 else '',  # Store on first chunk
+                                        'key_entities': key_entities if i == 0 else []  # Store on first chunk
                                     }
                                 ))
                             if lc_docs:
                                 vector_store.add_documents(lc_docs)
                                 logger.info(f"[Job {job_id}] Added {len(lc_docs)} chunks to vector store")
+
+                        # Save to Document Store if download_only mode
+                        if process_mode == 'download_only':
+                            docstore_dir = f"/root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_{job_id}/documents"
+                            os.makedirs(docstore_dir, exist_ok=True)
+                            
+                            # Copy file to Document Store
+                            import shutil
+                            dest_path = os.path.join(docstore_dir, file_info['original_filename'])
+                            shutil.copy2(file_info['path'], dest_path)
+                            logger.info(f"[Job {job_id}] Saved {file_info['original_filename']} to Document Store")
+                            
+                            results['document_results'].append({
+                                'filename': file_info['original_filename'],
+                                'status': 'saved_to_store',
+                                'chunks': 0,
+                                'path': dest_path
+                            })
+                        else:
+                            results['document_results'].append({
+                                'filename': file_info['original_filename'],
+                                'status': 'success',
+                                'chunks': len(chunks)
+                            })
                         
                         results['documents_processed'] += 1
                         results['total_chunks'] += len(chunks)
                         results['file_results'].append({
                             'filename': file_info['original_filename'],
-                            'status': 'success',
-                            'chunks': len(chunks)
+                            'status': 'saved_to_store' if process_mode == 'download_only' else 'success',
+                            'chunks': 0 if process_mode == 'download_only' else len(chunks)
                         })
                         
                     except Exception as e:
@@ -1919,16 +2109,172 @@ def smart_ingest_webpage(current_user_id):
                 process_mode = job.processing_mode
                 prompt = job.parameters.get('prompt', '')
                 total_documents = len(doc_urls)
-                
+
                 document_loader = DocumentLoader()
-                vector_store = VectorStoreManager() if ingest_chunks else None
-                
+                vector_store = VectorStoreManager() if ingest_chunks and process_mode != 'download_only' else None
+
                 results = {
                     'documents_processed': 0,
                     'total_chunks': 0,
                     'errors': [],
                     'document_results': []
                 }
+
+                # If download_only mode, download and save to Document Store
+                if process_mode == 'download_only':
+                    logger.info(f"[Job {job_id}] Download-only mode - saving to Document Store")
+
+                    # Create document store directory for this job with source info
+                    # Extract source domain from first URL for folder naming
+                    source_domain = "unknown"
+                    if doc_urls:
+                        from urllib.parse import urlparse
+                        parsed = urlparse(doc_urls[0])
+                        source_domain = parsed.netloc.replace('.', '_')
+                    
+                    docstore_dir = f"/root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_{job_id}_{source_domain}/documents"
+                    os.makedirs(docstore_dir, exist_ok=True)
+
+                    # Create metadata file to track source
+                    metadata_file = os.path.join(docstore_dir, ".source_metadata.json")
+                    import json
+                    with open(metadata_file, 'w') as f:
+                        json.dump({
+                            'job_id': job_id,
+                            'source_urls': doc_urls,
+                            'downloaded_at': datetime.utcnow().isoformat(),
+                            'process_mode': 'download_only'
+                        }, f, indent=2)
+
+                    for idx, doc_url in enumerate(doc_urls):
+                        try:
+                            job.progress = int((idx / total_documents) * 100) if total_documents > 0 else 0
+                            job.current_stage = f"Downloading document {idx + 1}/{total_documents}"
+                            job.documents_processed = idx
+                            job_queue.update_job(job)
+
+                            # Download document
+                            download_response = requests.get(doc_url, timeout=60)
+                            download_response.raise_for_status()
+
+                            # Extract filename - try multiple methods in order of preference
+                            from urllib.parse import urlparse, unquote
+                            parsed_url = urlparse(doc_url)
+                            
+                            # Method 1: Check Content-Disposition header (most reliable)
+                            filename = None
+                            content_disposition = download_response.headers.get('content-disposition', '')
+                            if content_disposition:
+                                # Parse: attachment; filename="gost-r-34-10-2012.pdf"
+                                import re
+                                filename_match = re.findall('filename[^;=\n]*=["\']?([^"\';\n]*)', content_disposition)
+                                if filename_match:
+                                    filename = unquote(filename_match[0])
+                                    logger.info(f"[Job {job_id}] Got filename from Content-Disposition: {filename}")
+                            
+                            # Method 2: Try to get filename from URL path
+                            if not filename:
+                                filename = os.path.basename(unquote(parsed_url.path))
+                                logger.info(f"[Job {job_id}] Got filename from URL path: {filename}")
+                            
+                            # Method 3: Generate filename with source info
+                            if not filename or filename == '' or filename == '/' or len(filename) < 4:
+                                # Try to get meaningful part from URL
+                                path_parts = parsed_url.path.strip('/').split('/')
+                                # Look for parts that look like filenames (contain dots or are long)
+                                for part in reversed(path_parts):
+                                    if '.' in part and len(part) > 3:
+                                        filename = unquote(part)
+                                        break
+                                
+                                if not filename or len(filename) < 4:
+                                    filename = f"doc_{source_domain}_{idx:03d}.pdf"
+                                logger.info(f"[Job {job_id}] Generated filename: {filename}")
+                            
+                            # Clean filename - remove query params, special chars, timestamps that look like IDs
+                            filename = filename.split('?')[0]
+                            filename = filename.replace('%20', '_').replace(' ', '_')
+                            
+                            # Remove timestamp-like prefixes (e.g., "1699366818935-gost-r-34.pdf" → "gost-r-34.pdf")
+                            timestamp_pattern = r'^\d{10,13}[-_]?'
+                            filename = re.sub(timestamp_pattern, '', filename)
+                            
+                            # Ensure we have an extension
+                            if not os.path.splitext(filename)[1]:
+                                # Try to detect from content type
+                                content_type = download_response.headers.get('content-type', '')
+                                if 'pdf' in content_type:
+                                    filename += '.pdf'
+                                elif 'html' in content_type:
+                                    filename += '.html'
+                                elif 'text' in content_type:
+                                    filename += '.txt'
+                                else:
+                                    filename += '.pdf'  # Default to PDF
+                            
+                            # Sanitize filename - remove any remaining problematic characters
+                            filename = re.sub(r'[<>:"|?*]', '_', filename)
+                            
+                            # Make filename unique if it already exists
+                            save_path = os.path.join(docstore_dir, filename)
+                            if os.path.exists(save_path):
+                                base, ext = os.path.splitext(filename)
+                                counter = 1
+                                while os.path.exists(f"{base}_{counter}{ext}"):
+                                    counter += 1
+                                filename = f"{base}_{counter}{ext}"
+                                save_path = os.path.join(docstore_dir, filename)
+
+                            # Save to Document Store
+                            with open(save_path, 'wb') as f:
+                                f.write(download_response.content)
+
+                            logger.info(f"[Job {job_id}] Saved {filename} from {doc_url} to Document Store")
+                            
+                            # Save individual document metadata for Document Store MCP
+                            import json
+                            doc_metadata = {
+                                'original_filename': filename,
+                                'original_url': doc_url,
+                                'source_website': source_domain,
+                                'downloaded_at': datetime.utcnow().isoformat(),
+                                'job_id': job_id,
+                                'process_mode': 'download_only',
+                                'content_type': download_response.headers.get('content-type', 'application/pdf')
+                            }
+                            metadata_path = os.path.join(docstore_dir, f"{os.path.splitext(filename)[0]}.metadata.json")
+                            with open(metadata_path, 'w') as f:
+                                json.dump(doc_metadata, f, indent=2)
+
+                            results['documents_processed'] += 1
+                            results['document_results'].append({
+                                'url': doc_url,
+                                'status': 'saved_to_store',
+                                'chunks': 0,
+                                'filename': filename,
+                                'original_url': doc_url,
+                                'source_domain': source_domain,
+                                'path': save_path
+                            })
+                        except Exception as download_error:
+                            logger.error(f"[Job {job_id}] Download failed for {doc_url}: {download_error}")
+                            results['errors'].append({'url': doc_url, 'error': str(download_error)})
+                            results['document_results'].append({
+                                'url': doc_url,
+                                'status': 'failed',
+                                'error': str(download_error)
+                            })
+
+                    # Mark job as completed
+                    job.progress = 100
+                    job.current_stage = f"completed (saved to Document Store from {source_domain})"
+                    job.documents_processed = results['documents_processed']
+                    job.chunks_generated = 0
+                    job.result = results
+                    job_queue.update_job(job)
+
+                    logger.info(f"[Job {job_id}] Download-only completed: {results['documents_processed']} documents saved to Document Store")
+                    return  # Exit early - no processing needed
                 
                 for idx, doc_url in enumerate(doc_urls):
                     try:
@@ -2251,6 +2597,9 @@ def _process_smart_ingest_docstore(job):
                 
                 # Use LLM-based smart chunking if requested
                 chunks = []
+                document_summary = ""
+                key_entities = []
+                
                 if chunking_strategy == 'smart_chunking':
                     try:
                         response_gen = ResponseGenerator()
@@ -2258,53 +2607,181 @@ def _process_smart_ingest_docstore(job):
                             provider=RESPONSE_LLM_PROVIDER,
                             model=RESPONSE_LLM_MODEL
                         )
+
+                        # Qwen 3.5 35B has 262k context window - can handle most docs in single call
+                        # Threshold: 800k chars ≈ 200k tokens (leaves room for prompt + output)
+                        MAX_SINGLE_CALL = 800000  # chars
                         
-                        # Use default smart chunking prompt
-                        smart_chunking_prompt = """# ROLE
+                        if len(document_content) > MAX_SINGLE_CALL:
+                            # VERY LARGE DOCUMENT (> 800k chars, ~200k tokens)
+                            # Split into sections with Context Summary for coherence
+                            logger.info(f"[Job {job_id}] Large document ({len(document_content)} chars), splitting into sections")
+                            
+                            MAX_SECTION_SIZE = 700000  # ~175k tokens per section
+                            sections = []
+                            remaining = document_content
+                            
+                            while len(remaining) > MAX_SECTION_SIZE:
+                                # Split at paragraph boundary
+                                cut_point = remaining.rfind('\n\n', 0, MAX_SECTION_SIZE)
+                                if cut_point == -1:
+                                    cut_point = MAX_SECTION_SIZE
+                                sections.append(remaining[:cut_point])
+                                remaining = remaining[cut_point:].lstrip()
+                            
+                            if remaining:
+                                sections.append(remaining)
+                            
+                            logger.info(f"[Job {job_id}] Split into {len(sections)} sections for LLM chunking")
+                            
+                            # Process each section with Context Summary handoff
+                            all_chunks = []
+                            previous_summary = ""
+                            previous_entities = []
+                            
+                            for section_idx, section in enumerate(sections):
+                                logger.info(f"[Job {job_id}] Processing section {section_idx + 1}/{len(sections)} ({len(section)} chars)")
+                                
+                                # Build context header for sections 2+
+                                if previous_summary:
+                                    context_header = f"""
+## Context from Previous Section
+
+**Summary:** {previous_summary}
+
+**Key Entities:** {', '.join(previous_entities)}
+
+Continue chunking with this context in mind. Maintain semantic continuity with adjacent sections.
+"""
+                                else:
+                                    context_header = ""
+                                
+                                # Build prompt with document context
+                                section_prompt = f"""# ROLE
 You are an expert document engineer specializing in semantic chunking of technical standards for vector database ingestion.
 
 ## CORE PRINCIPLES
 1. PRESERVE SEMANTIC UNITS: Never split complete concepts
 2. TARGET SIZE: 200-450 tokens per chunk
-3. MINIMAL OVERLAP: Apply overlap ONLY at procedural boundaries (max 50 tokens)
+3. MINIMAL OVERLAP: Apply overlap ONLY at procedural boundaries to preserve algorithmic continuity
 4. CONTEXT ANCHORING: Always include section headers/subheaders
 
 ## OUTPUT FORMAT
-Return ONLY valid JSON:
-{
-  "document": "document identifier",
+Return ONLY valid JSON with these fields:
+{{
+  "document": "document identifier (e.g., GOST_R_XXXXX-YYYY)",
   "total_chunks": integer,
   "chunks": [
-    {
-      "chunk_id": integer,
-      "section": "section number",
-      "title": "chunk title",
-      "content": "chunk text"
-    }
-  ]
-}
+    {{
+      "chunk_id": 1,
+      "section": "section number or appendix_X",
+      "title": "descriptive title in language of document",
+      "chunk_type": "one of: header_and_scope | references_and_definitions | formula_with_context | testing_procedure | appendix_example",
+      "contains_formula": boolean,
+      "contains_table": boolean,
+      "content": "chunk text here",
+      "token_count": integer (200-450 tokens per chunk)
+    }}
+  ],
+  "document_summary": "2-3 sentences summarizing what this section covers for graph context",
+  "key_entities": ["important entities from this section for graph context (standards, organizations, technologies, etc.)"]
+}}
 
----
-TEXT TO CHUNK:
+{context_header}
+
+## Document: {doc_id}
+## Section {section_idx + 1} of {len(sections)}
+
+{section}
 """
-                        
-                        # Prepare full prompt
-                        full_prompt = f"{smart_chunking_prompt}\n\n{document_content[:50000]}"  # Limit content
-                        
-                        logger.info(f"[Job {job_id}] Calling LLM for chunking {doc_id}...")
-                        response = llm.invoke(full_prompt)
-                        response_content = response.content if hasattr(response, 'content') else str(response)
-                        
-                        # Parse JSON from response
-                        import json
-                        json_match = re.search(r'\{[\s\S]*\}', response_content)
-                        chunking_result = json.loads(json_match.group(0) if json_match else response_content)
-                        chunks_data = chunking_result.get('chunks', [])
-                        
-                        # Extract content from chunks
-                        chunks = [c.get('content', '') for c in chunks_data if c.get('content')]
-                        logger.info(f"[Job {job_id}] LLM generated {len(chunks)} chunks for {doc_id}")
-                        
+                                
+                                llm_response = llm.invoke(section_prompt)
+                                response_content = llm_response.content if hasattr(llm_response, 'content') else str(llm_response)
+                                
+                                # Parse JSON from response
+                                import json
+                                json_match = re.search(r'\{[\s\S]*\}', response_content)
+                                chunking_result = json.loads(json_match.group(0) if json_match else response_content)
+                                chunks_data = chunking_result.get('chunks', [])
+                                
+                                section_chunks = [c.get('content', '') for c in chunks_data if c.get('content')]
+                                all_chunks.extend(section_chunks)
+                                
+                                # Save context for next section
+                                previous_summary = chunking_result.get('document_summary', '')
+                                previous_entities = chunking_result.get('key_entities', [])
+                                
+                                logger.info(f"[Job {job_id}] Section {section_idx + 1}: LLM generated {len(section_chunks)} chunks")
+                            
+                            chunks = all_chunks
+                            
+                            # Use last section's summary and entities (or merge all)
+                            document_summary = previous_summary
+                            key_entities = previous_entities
+                            
+                            logger.info(f"[Job {job_id}] Total: LLM generated {len(chunks)} chunks from {len(sections)} sections for {doc_id}")
+                            
+                        else:
+                            # MOST DOCUMENTS (97%): Single LLM call with full document context
+                            logger.info(f"[Job {job_id}] Document fits in single LLM call ({len(document_content)} chars)")
+                            
+                            # Build prompt for single-call processing
+                            single_prompt = f"""# ROLE
+You are an expert document engineer specializing in semantic chunking of technical standards for vector database ingestion.
+
+## CORE PRINCIPLES
+1. PRESERVE SEMANTIC UNITS: Never split complete concepts
+2. TARGET SIZE: 200-450 tokens per chunk
+3. MINIMAL OVERLAP: Apply overlap ONLY at procedural boundaries to preserve algorithmic continuity
+4. CONTEXT ANCHORING: Always include section headers/subheaders
+
+## OUTPUT FORMAT
+Return ONLY valid JSON with these fields:
+{{
+  "document": "document identifier (e.g., GOST_R_XXXXX-YYYY)",
+  "total_chunks": integer,
+  "chunks": [
+    {{
+      "chunk_id": 1,
+      "section": "section number or appendix_X",
+      "title": "descriptive title in language of document",
+      "chunk_type": "one of: header_and_scope | references_and_definitions | formula_with_context | testing_procedure | appendix_example",
+      "contains_formula": boolean,
+      "contains_table": boolean,
+      "content": "chunk text here",
+      "token_count": integer (200-450 tokens per chunk)
+    }}
+  ],
+  "document_summary": "2-3 sentences summarizing document content for graph context",
+  "key_entities": ["important entities from document for graph context (standards, organizations, technologies, dates, concepts)"]
+}}
+
+## Document: {doc_id}
+
+{document_content}
+"""
+                            
+                            llm_response = llm.invoke(single_prompt)
+                            response_content = llm_response.content if hasattr(llm_response, 'content') else str(llm_response)
+                            
+                            # Parse JSON from response
+                            import json
+                            json_match = re.search(r'\{[\s\S]*\}', response_content)
+                            chunking_result = json.loads(json_match.group(0) if json_match else response_content)
+                            chunks_data = chunking_result.get('chunks', [])
+                            
+                            chunks = [c.get('content', '') for c in chunks_data if c.get('content')]
+                            
+                            # Store document-level metadata for graph context
+                            document_summary = chunking_result.get('document_summary', '')
+                            key_entities = chunking_result.get('key_entities', [])
+                            
+                            logger.info(f"[Job {job_id}] Single-call LLM generated {len(chunks)} chunks for {doc_id}")
+                            if document_summary:
+                                logger.info(f"[Job {job_id}] Document summary: {document_summary[:100]}...")
+                            if key_entities:
+                                logger.info(f"[Job {job_id}] Key entities: {len(key_entities)} entities extracted")
+
                     except Exception as chunk_error:
                         logger.error(f"[Job {job_id}] LLM chunking failed for {doc_id}: {chunk_error}")
                         import traceback
@@ -2328,12 +2805,55 @@ TEXT TO CHUNK:
                             metadata={
                                 'source': f'docstore:{job_id_param}:{doc_id}',
                                 'chunk_id': i,
-                                'chunking_strategy': chunking_strategy
+                                'chunking_strategy': chunking_strategy,
+                                'document_summary': document_summary if i == 0 else '',  # Store on first chunk
+                                'key_entities': key_entities if i == 0 else []  # Store on first chunk
                             }
                         ))
                     if lc_docs:
                         vector_store.add_documents(lc_docs)
                         logger.info(f"[Job {job_id}] Added {len(lc_docs)} chunks to vector store for {doc_id}")
+                        
+                        # If hybrid mode, also store in Neo4j
+                        if job.parameters.get('process_mode') == 'hybrid':
+                            try:
+                                from .neo4j_integration import get_neo4j_connection
+                                from .smart_ingestion_enhanced import process_hybrid_mode
+                                
+                                neo4j = get_neo4j_connection()
+                                if neo4j and neo4j.connected:
+                                    # Convert chunks to dict format for Neo4j
+                                    chunk_dicts = []
+                                    for i, chunk in enumerate(chunks):
+                                        if chunk.strip():
+                                            chunk_dicts.append({
+                                                'chunk_id': i,
+                                                'content': chunk,
+                                                'section': '',
+                                                'title': '',
+                                                'chunk_type': 'document_chunk'
+                                            })
+                                    
+                                    # Store in Neo4j
+                                    graph_result = process_hybrid_mode(
+                                        chunks=chunk_dicts,
+                                        doc_id=f"docstore_{job_id_param}_{doc_id}",
+                                        filename=doc_id,
+                                        metadata={
+                                            'user_id': current_user_id,
+                                            'job_id': job_id,
+                                            'document_summary': document_summary,
+                                            'key_entities': key_entities
+                                        }
+                                    )
+                                    
+                                    logger.info(f"[Job {job_id}] Hybrid mode: stored in Neo4j")
+                                else:
+                                    logger.warning(f"[Job {job_id}] Neo4j not connected - skipping graph storage")
+                            except Exception as graph_error:
+                                logger.error(f"[Job {job_id}] Neo4j storage failed: {graph_error}")
+                                import traceback
+                                logger.error(traceback.format_exc())
 
                 results['documents_processed'] += 1
                 results['total_chunks'] += len(chunks)
@@ -2360,6 +2880,289 @@ TEXT TO CHUNK:
         job.status = 'failed'
         job.error = str(e)
         job_queue.update_job(job)
+
+
+# Graph Knowledge Base Endpoints
+@app.route('/api/rag/graph/search', methods=['POST'])
+@require_permission(Permission.READ_RAG)
+def graph_search(current_user_id):
+    """
+    Search the knowledge graph for entities and relationships.
+    
+    Request body:
+    {
+        "query": "search query",
+        "entity_types": ["STANDARD", "TECHNOLOGY", ...],  // optional filter
+        "limit": 20
+    }
+    """
+    try:
+        from .neo4j_integration import get_neo4j_connection
+        
+        data = request.get_json() or {}
+        query = data.get('query', '')
+        entity_types = data.get('entity_types', [])
+        limit = data.get('limit', 20)
+        
+        if not query:
+            return jsonify({'error': 'Query is required'}), 400
+        
+        neo4j = get_neo4j_connection()
+        if not neo4j or not neo4j.connected:
+            return jsonify({'error': 'Neo4j not available'}), 503
+        
+        with neo4j.driver.session() as session:
+            # Search entities
+            if entity_types:
+                type_filter = "AND e.type IN $entity_types"
+            else:
+                type_filter = ""
+            
+            entity_query = f"""
+                MATCH (e:Entity)
+                WHERE e.name CONTAINS $query OR e.description CONTAINS $query
+                {type_filter}
+                RETURN e.name as name, e.type as type, e.relevance as relevance
+                ORDER BY e.relevance DESC
+                LIMIT $limit
+            """
+            
+            result = session.run(
+                entity_query,
+                query=query,
+                entity_types=entity_types,
+                limit=limit
+            )
+            
+            entities = [{'name': r['name'], 'type': r['type'], 'relevance': r['relevance']} for r in result]
+            
+            # Get relationships for found entities
+            if entities:
+                entity_names = [e['name'] for e in entities]
+                rel_query = """
+                    MATCH (source:Entity)-[r]-(target:Entity)
+                    WHERE source.name IN $names OR target.name IN $names
+                    RETURN source.name as source, target.name as target, type(r) as relationship
+                    LIMIT 50
+                """
+                rel_result = session.run(rel_query, names=entity_names)
+                relationships = [{'source': r['source'], 'target': r['target'], 'relationship': r['relationship']} for r in rel_result]
+            else:
+                relationships = []
+            
+            return jsonify({
+                'entities': entities,
+                'relationships': relationships,
+                'total': len(entities)
+            }), 200
+            
+    except Exception as e:
+        logger.error(f"Graph search error: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/rag/graph/stats', methods=['GET'])
+@require_permission(Permission.READ_RAG)
+def graph_statistics(current_user_id):
+    """Get statistics about the knowledge graph"""
+    try:
+        from .neo4j_integration import get_neo4j_connection
+        
+        neo4j = get_neo4j_connection()
+        if not neo4j or not neo4j.connected:
+            return jsonify({'error': 'Neo4j not available'}), 503
+        
+        with neo4j.driver.session() as session:
+            # Count entities by type
+            type_counts = session.run("""
+                MATCH (e:Entity)
+                RETURN e.type as type, count(e) as count
+                ORDER BY count DESC
+            """)
+            entities_by_type = {r['type']: r['count'] for r in type_counts}
+            
+            # Total entities
+            total = session.run("MATCH (e:Entity) RETURN count(e) as count").single()['count']
+            
+            # Total relationships
+            rels = session.run("MATCH ()-[r]->() RETURN count(r) as count").single()['count']
+            
+            # Top entities
+            top = session.run("""
+                MATCH (e:Entity)
+                OPTIONAL MATCH (e)--(other:Entity)
+                WITH e, count(other) as connections
+                RETURN e.name as name, e.type as type, connections
+                ORDER BY connections DESC
+                LIMIT 10
+            """)
+            top_entities = [{'name': r['name'], 'type': r['type'], 'connections': r['connections']} for r in top]
+            
+            return jsonify({
+                'total_entities': total,
+                'entities_by_type': entities_by_type,
+                'total_relationships': rels,
+                'top_entities': top_entities
+            }), 200
+            
+    except Exception as e:
+        logger.error(f"Graph stats error: {e}")
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/rag/graph/entity/<entity_name>', methods=['GET'])
+@require_permission(Permission.READ_RAG)
+def get_entity(current_user_id, entity_name: str):
+    """Get a specific entity and its relationships"""
+    try:
+        from .neo4j_integration import get_neo4j_connection
+        
+        neo4j = get_neo4j_connection()
+        if not neo4j or not neo4j.connected:
+            return jsonify({'error': 'Neo4j not available'}), 503
+        
+        from urllib.parse import unquote
+        entity_name = unquote(entity_name)
+        
+        with neo4j.driver.session() as session:
+            # Get entity details
+            entity = session.run("""
+                MATCH (e:Entity {name: $name})
+                RETURN e.name as name, e.type as type, e.relevance as relevance, e.updated_at as updated_at
+            """, {'name': entity_name}).single()
+            
+            if not entity:
+                return jsonify({'error': 'Entity not found'}), 404
+            
+            # Get relationships
+            rels = session.run("""
+                MATCH (e:Entity {name: $name})-[r]-(other:Entity)
+                RETURN other.name as other_name, other.type as other_type, type(r) as relationship
+            """, {'name': entity_name})
+            
+            relationships = [{'other_name': r['other_name'], 'other_type': r['other_type'], 'relationship': r['relationship']} for r in rels]
+            
+            return jsonify({
+                'name': entity['name'],
+                'type': entity['type'],
+                'relevance': entity['relevance'],
+                'updated_at': entity['updated_at'],
+                'relationships': relationships
+            }), 200
+            
+    except Exception as e:
+        logger.error(f"Get entity error: {e}")
+        return jsonify({'error': str(e)}), 500
+
+
+# NLP Data Scientist Endpoints
+@app.route('/api/rag/nlp/extract_entities', methods=['POST'])
+@require_permission(Permission.READ_RAG)
+def nlp_extract_entities(current_user_id):
+    """Extract entities from text using spaCy + patterns"""
+    try:
+        data = request.get_json() or {}
+        text = data.get('text', '')
+        
+        if not text:
+            return jsonify({'error': 'Text is required'}), 400
+        
+        from nlp_tools.entity_extractor import get_entity_extractor
+        
+        extractor = get_entity_extractor()
+        entities = extractor.extract_all_entities(text)
+        stats = extractor.get_entity_statistics(entities)
+        
+        return jsonify({
+            'entities': entities,
+            'statistics': stats
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"Entity extraction error: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/rag/nlp/extract_entities_llm', methods=['POST'])
+@require_permission(Permission.READ_RAG)
+def nlp_extract_entities_llm(current_user_id):
+    """Extract entities from text using LLM"""
+    try:
+        data = request.get_json() or {}
+        text = data.get('text', '')
+        
+        if not text:
+            return jsonify({'error': 'Text is required'}), 400
+        
+        from nlp_tools.llm_entity_extractor import get_llm_entity_extractor
+        
+        extractor = get_llm_entity_extractor()
+        result = extractor.extract_entities(text)
+        
+        return jsonify(result), 200
+        
+    except Exception as e:
+        logger.error(f"LLM entity extraction error: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/rag/nlp/analyze_document', methods=['POST'])
+@require_permission(Permission.READ_RAG)
+def nlp_analyze_document(current_user_id):
+    """Analyze document with entity extraction"""
+    try:
+        data = request.get_json() or {}
+        text = data.get('text', '')
+        
+        if not text:
+            return jsonify({'error': 'Text is required'}), 400
+        
+        from nlp_tools.entity_extractor import get_entity_extractor
+        
+        extractor = get_entity_extractor()
+        analysis = extractor.analyze_document(text)
+        
+        return jsonify(analysis), 200
+        
+    except Exception as e:
+        logger.error(f"Document analysis error: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/rag/nlp/extract_standards', methods=['POST'])
+@require_permission(Permission.READ_RAG)
+def nlp_extract_standards(current_user_id):
+    """Extract technical standards from text"""
+    try:
+        data = request.get_json() or {}
+        text = data.get('text', '')
+        
+        if not text:
+            return jsonify({'error': 'Text is required'}), 400
+        
+        from nlp_tools.entity_extractor import get_entity_extractor
+        
+        extractor = get_entity_extractor()
+        standards = extractor.extract_standards_pattern(text)
+        
+        return jsonify({
+            'standards': standards,
+            'count': len(standards)
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"Standards extraction error: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
+        return jsonify({'error': str(e)}), 500
 
 
 if __name__ == '__main__':

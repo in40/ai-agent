@@ -207,30 +207,52 @@ class Neo4jIntegration:
     def create_knowledge_graph(self, chunks: List[Dict[str, Any]]) -> Dict[str, int]:
         """
         Create knowledge graph from chunks by extracting entities and relationships.
-        This is an advanced feature that analyzes chunk content to build semantic relationships.
+        Uses LLM-extracted entities from chunk metadata if available, otherwise falls back to regex extraction.
         """
         if not self.connected:
             return {'entities': 0, 'relationships': 0}
-            
+
         stats = {'entities': 0, 'relationships': 0}
-        
+
         try:
             with self.driver.session() as session:
                 for chunk in chunks:
                     content = chunk.get('content', '')
                     chunk_id = f"chunk_{chunk.get('chunk_id', 0)}"
+
+                    # Check if LLM already extracted entities
+                    entities = chunk.get('entities', [])
                     
-                    # Extract and create entities (simplified - in production use NLP)
-                    # This is a placeholder for more sophisticated entity extraction
-                    entities = self._extract_entities(content)
-                    
+                    # If no LLM entities, fall back to regex extraction
+                    if not entities:
+                        entities = self._extract_entities(content)
+
                     for entity in entities:
+                        # Handle both dict format (from LLM) and simple format (from regex)
+                        if isinstance(entity, dict):
+                            entity_name = entity.get('name', '')
+                            entity_type = entity.get('type', 'CONCEPT')
+                            relevance = entity.get('relevance', 'medium')
+                        else:
+                            # Backward compatibility with old format
+                            entity_name = entity.get('name', '') if isinstance(entity, dict) else str(entity)
+                            entity_type = entity.get('type', 'CONCEPT')
+                            relevance = 'medium'
+
+                        if not entity_name:
+                            continue
+
                         session.run("""
                             MERGE (e:Entity {name: $name, type: $type})
-                            SET e.updated_at = datetime()
-                        """, entity)
+                            SET e.updated_at = datetime(),
+                                e.relevance = $relevance
+                        """, {
+                            'name': entity_name,
+                            'type': entity_type,
+                            'relevance': relevance
+                        })
                         stats['entities'] += 1
-                        
+
                         # Create relationship between chunk and entity
                         session.run("""
                             MATCH (c:Chunk {chunk_id: $chunk_id})
@@ -238,14 +260,14 @@ class Neo4jIntegration:
                             MERGE (c)-[:MENTIONS]->(e)
                         """, {
                             'chunk_id': chunk_id,
-                            'name': entity['name'],
-                            'type': entity['type']
+                            'name': entity_name,
+                            'type': entity_type
                         })
                         stats['relationships'] += 1
-                        
+
         except Exception as e:
             logger.error(f"Error creating knowledge graph: {e}")
-            
+
         return stats
     
     def _extract_entities(self, text: str) -> List[Dict[str, str]]:

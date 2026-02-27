@@ -173,47 +173,56 @@ class FileStorage:
     def list_documents(self, job_id: str) -> List[Dict[str, Any]]:
         """
         List all documents for a job.
-        
+
         Args:
             job_id: Ingestion job ID
-            
+
         Returns:
-            List of document info dictionaries
+            List of document info dictionaries with original filenames from metadata
         """
         docs_dir = self._get_documents_dir(job_id)
-        
+
         if not docs_dir.exists():
             return []
-        
+
         documents = []
         seen_ids = set()
-        
+
         for file_path in docs_dir.iterdir():
             if file_path.suffix == '.json' and 'metadata' in file_path.stem:
                 continue
-            
+
             doc_id = file_path.stem
             if doc_id in seen_ids:
                 continue
             seen_ids.add(doc_id)
-            
+
             # Get metadata if available
             metadata = self.get_metadata(job_id, doc_id) or {}
-            
+
             # Get file size
             try:
                 size = file_path.stat().st_size
             except:
                 size = 0
+
+            # Use original filename from metadata if available, otherwise use file path name
+            original_filename = metadata.get('original_filename', file_path.name)
             
+            # Get source website from metadata if available
+            source_website = metadata.get('source_website', '')
+            original_url = metadata.get('original_url', '')
+
             documents.append({
                 "doc_id": doc_id,
-                "filename": file_path.name,
+                "filename": original_filename,  # Use original filename from metadata
+                "original_url": original_url,  # Add source URL
+                "source_website": source_website,  # Add source website
                 "format": file_path.suffix[1:],  # Remove dot
                 "size": size,
                 "metadata": metadata
             })
-        
+
         return sorted(documents, key=lambda x: x["doc_id"])
     
     def delete_job_documents(self, job_id: str) -> int:

@@ -553,6 +553,11 @@
                                 <i class="fas fa-question-circle"></i> Query RAG
                             </button>
                         </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="data-scientist-tab" data-bs-toggle="tab" data-bs-target="#data-scientist-panel" type="button">
+                                <i class="fas fa-flask"></i> Data Scientist
+                            </button>
+                        </li>
                     </ul>
 
                     <div class="tab-content p-3 bg-white border-start border-end border-bottom mt-2">
@@ -911,6 +916,89 @@
                             </div>
                             <div id="rag-response" class="response-container mt-3">
                                 <p class="text-muted">Submit a query to see RAG results here...</p>
+                            </div>
+                        </div>
+
+                        <!-- Data Scientist Panel -->
+                        <div class="tab-pane fade" id="data-scientist-panel" role="tabpanel">
+                            <h5><i class="fas fa-flask"></i> NLP Data Scientist Tools</h5>
+                            <p class="text-muted">Advanced NLP entity extraction and document analysis using AI</p>
+
+                            <!-- Entity Extraction -->
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h6 class="mb-0"><i class="fas fa-tags"></i> Entity Extraction</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label for="ds-text-input" class="form-label">Text to Analyze</label>
+                                        <textarea class="form-control" id="ds-text-input" rows="4" placeholder="Enter text for entity extraction..."></textarea>
+                                        <small class="text-muted">Extract entities like standards, organizations, dates, technical terms, etc.</small>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Extraction Method</label>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="dsMethod" id="ds-method-spacy" value="spacy" checked>
+                                            <label class="form-check-label" for="ds-method-spacy">
+                                                spaCy + Patterns (Fast)
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="dsMethod" id="ds-method-llm" value="llm">
+                                            <label class="form-check-label" for="ds-method-llm">
+                                                LLM-based (More accurate, slower)
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <button id="ds-extract-btn" class="btn btn-primary btn-animated">
+                                        <i class="fas fa-magic"></i> Extract Entities
+                                    </button>
+                                    <div id="ds-extract-results" class="mt-3" style="display: none;">
+                                        <h6>Extracted Entities:</h6>
+                                        <div id="ds-entities-list" class="list-group"></div>
+                                        <div id="ds-entity-stats" class="alert alert-info mt-3"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Document Analysis -->
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h6 class="mb-0"><i class="fas fa-file-alt"></i> Document Analysis</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label for="ds-doc-input" class="form-label">Document Text</label>
+                                        <textarea class="form-control" id="ds-doc-input" rows="4" placeholder="Paste document text for analysis..."></textarea>
+                                    </div>
+                                    <button id="ds-analyze-btn" class="btn btn-success btn-animated">
+                                        <i class="fas fa-chart-bar"></i> Analyze Document
+                                    </button>
+                                    <div id="ds-analysis-results" class="mt-3" style="display: none;">
+                                        <h6>Analysis Results:</h6>
+                                        <div id="ds-analysis-output" class="alert alert-success"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Standards Extraction -->
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h6 class="mb-0"><i class="fas fa-book"></i> Extract Standards</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label for="ds-standards-input" class="form-label">Text to Search</label>
+                                        <textarea class="form-control" id="ds-standards-input" rows="3" placeholder="Enter text to search for GOST, ISO, RFC standards..."></textarea>
+                                    </div>
+                                    <button id="ds-standards-btn" class="btn btn-info btn-animated">
+                                        <i class="fas fa-search"></i> Find Standards
+                                    </button>
+                                    <div id="ds-standards-results" class="mt-3" style="display: none;">
+                                        <h6>Found Standards:</h6>
+                                        <div id="ds-standards-list" class="list-group"></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1699,6 +1787,202 @@
         bsTabElements.map(function (tabElement) {
             return new bootstrap.Tab(tabElement);
         });
+
+        // ============================================
+        // Data Scientist Functionality
+        // ============================================
+        const dsExtractBtn = document.getElementById('ds-extract-btn');
+        const dsAnalyzeBtn = document.getElementById('ds-analyze-btn');
+        const dsStandardsBtn = document.getElementById('ds-standards-btn');
+
+        // Entity Extraction
+        if (dsExtractBtn) {
+            dsExtractBtn.addEventListener('click', async () => {
+                const textInput = document.getElementById('ds-text-input');
+                const text = textInput.value.trim();
+                if (!text) {
+                    alert('Please enter text to analyze');
+                    return;
+                }
+
+                const method = document.querySelector('input[name="dsMethod"]:checked').value;
+                
+                dsExtractBtn.disabled = true;
+                dsExtractBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Extracting...';
+
+                try {
+                    const endpoint = method === 'llm' 
+                        ? '/api/rag/nlp/extract_entities_llm' 
+                        : '/api/rag/nlp/extract_entities';
+
+                    const response = await fetch(API_BASE_URL + endpoint, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${AUTH_TOKEN}`
+                        },
+                        body: JSON.stringify({ text: text })
+                    });
+
+                    const result = await response.json();
+                    
+                    if (response.ok && result.entities) {
+                        displayEntityExtractionResults(result);
+                    } else {
+                        alert('Entity extraction failed: ' + (result.error || 'Unknown error'));
+                    }
+                } catch (error) {
+                    console.error('Entity extraction error:', error);
+                    alert('Entity extraction failed: ' + error.message);
+                } finally {
+                    dsExtractBtn.disabled = false;
+                    dsExtractBtn.innerHTML = '<i class="fas fa-magic"></i> Extract Entities';
+                }
+            });
+        }
+
+        // Document Analysis
+        if (dsAnalyzeBtn) {
+            dsAnalyzeBtn.addEventListener('click', async () => {
+                const docInput = document.getElementById('ds-doc-input');
+                const text = docInput.value.trim();
+                if (!text) {
+                    alert('Please enter document text');
+                    return;
+                }
+
+                dsAnalyzeBtn.disabled = true;
+                dsAnalyzeBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Analyzing...';
+
+                try {
+                    const response = await fetch(API_BASE_URL + '/api/rag/nlp/analyze_document', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${AUTH_TOKEN}`
+                        },
+                        body: JSON.stringify({ text: text })
+                    });
+
+                    const result = await response.json();
+                    
+                    if (response.ok) {
+                        displayDocumentAnalysis(result);
+                    } else {
+                        alert('Document analysis failed: ' + (result.error || 'Unknown error'));
+                    }
+                } catch (error) {
+                    console.error('Document analysis error:', error);
+                    alert('Document analysis failed: ' + error.message);
+                } finally {
+                    dsAnalyzeBtn.disabled = false;
+                    dsAnalyzeBtn.innerHTML = '<i class="fas fa-chart-bar"></i> Analyze Document';
+                }
+            });
+        }
+
+        // Standards Extraction
+        if (dsStandardsBtn) {
+            dsStandardsBtn.addEventListener('click', async () => {
+                const standardsInput = document.getElementById('ds-standards-input');
+                const text = standardsInput.value.trim();
+                if (!text) {
+                    alert('Please enter text to search');
+                    return;
+                }
+
+                dsStandardsBtn.disabled = true;
+                dsStandardsBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Searching...';
+
+                try {
+                    const response = await fetch(API_BASE_URL + '/api/rag/nlp/extract_standards', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${AUTH_TOKEN}`
+                        },
+                        body: JSON.stringify({ text: text })
+                    });
+
+                    const result = await response.json();
+                    
+                    if (response.ok && result.standards) {
+                        displayStandardsResults(result);
+                    } else {
+                        alert('Standards extraction failed: ' + (result.error || 'Unknown error'));
+                    }
+                } catch (error) {
+                    console.error('Standards extraction error:', error);
+                    alert('Standards extraction failed: ' + error.message);
+                } finally {
+                    dsStandardsBtn.disabled = false;
+                    dsStandardsBtn.innerHTML = '<i class="fas fa-search"></i> Find Standards';
+                }
+            });
+        }
+
+        // Helper function to display entity extraction results
+        function displayEntityExtractionResults(result) {
+            const resultsDiv = document.getElementById('ds-extract-results');
+            const entitiesList = document.getElementById('ds-entities-list');
+            const statsDiv = document.getElementById('ds-entity-stats');
+
+            const entities = result.entities || [];
+            const stats = result.statistics || {};
+
+            // Display entities
+            if (entities.length > 0) {
+                entitiesList.innerHTML = entities.map(entity => `
+                    <div class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">${entity.text}</h6>
+                            <small class="badge bg-primary">${entity.label}</small>
+                        </div>
+                        <small class="text-muted">Confidence: ${(entity.confidence * 100).toFixed(0)}%</small>
+                    </div>
+                `).join('');
+            } else {
+                entitiesList.innerHTML = '<div class="list-group-item text-muted">No entities found</div>';
+            }
+
+            // Display statistics
+            statsDiv.innerHTML = `
+                <strong>Total Entities:</strong> ${stats.total_entities || 0}<br>
+                <strong>Entity Types:</strong> ${Object.keys(stats.by_type || {}).join(', ') || 'None'}
+            `;
+
+            resultsDiv.style.display = 'block';
+        }
+
+        // Helper function to display document analysis results
+        function displayDocumentAnalysis(result) {
+            const resultsDiv = document.getElementById('ds-analysis-results');
+            const outputDiv = document.getElementById('ds-analysis-output');
+
+            outputDiv.innerHTML = `<pre>${JSON.stringify(result, null, 2)}</pre>`;
+            resultsDiv.style.display = 'block';
+        }
+
+        // Helper function to display standards results
+        function displayStandardsResults(result) {
+            const resultsDiv = document.getElementById('ds-standards-results');
+            const standardsList = document.getElementById('ds-standards-list');
+
+            const standards = result.standards || [];
+
+            if (standards.length > 0) {
+                standardsList.innerHTML = standards.map(std => `
+                    <div class="list-group-item">
+                        <strong>${std.text}</strong>
+                        <br><small class="text-muted">Type: ${std.standard_type || 'Standard'} | Confidence: ${(std.confidence * 100).toFixed(0)}%</small>
+                    </div>
+                `).join('');
+            } else {
+                standardsList.innerHTML = '<div class="list-group-item text-muted">No standards found</div>';
+            }
+
+            resultsDiv.style.display = 'block';
+        }
 
         // Add event delegation for expand/collapse buttons
         document.addEventListener('click', function(e) {
@@ -3096,23 +3380,25 @@
                                     filename: doc.filename || 'Unknown Document',
                                     format: doc.format || 'pdf',
                                     selected: false,
-                                    job_id: job.job_id || job.id || ''
+                                    job_id: job.job_id || job.id || '',
+                                    source_website: job.source_website || doc.original_url || ''
                                 });
                             });
                         });
-                        
+
                         if (docstoreDocuments.length > 0) {
-                            items.push(...docstoreDocuments.map((doc, i) => 
-                                `<li class="list-group-item">
+                            items.push(...docstoreDocuments.map((doc, i) => {
+                                const sourceInfo = doc.source_website ? ` - <small class="text-primary">🌐 ${doc.source_website}</small>` : '';
+                                return `<li class="list-group-item">
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" id="docstore-${i}" onchange="toggleDocstoreDoc(${i}, this.checked)">
                                         <label class="form-check-label" for="docstore-${i}">
                                             <i class="fas fa-file-pdf text-danger"></i> ${doc.filename}
-                                            <small class="text-muted">(${doc.format}) - Job: ${doc.job_id}</small>
+                                            <br><small class="text-muted">(${doc.format}) - Job: ${doc.job_id}${sourceInfo}</small>
                                         </label>
                                     </div>
                                 </li>`
-                            ));
+                            }));
                             docList.innerHTML = items.join('');
                         } else {
                             docList.innerHTML = '<li class="list-group-item text-muted">No documents found in Document Store. Please upload documents to Document Store first.</li>';
