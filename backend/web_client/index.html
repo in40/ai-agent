@@ -558,6 +558,11 @@
                                 <i class="fas fa-flask"></i> Data Scientist
                             </button>
                         </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="graph-explorer-tab" data-bs-toggle="tab" data-bs-target="#graph-explorer-panel" type="button">
+                                <i class="fas fa-project-diagram"></i> Graph Explorer
+                            </button>
+                        </li>
                     </ul>
 
                     <div class="tab-content p-3 bg-white border-start border-end border-bottom mt-2">
@@ -1001,12 +1006,166 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Graph Explorer Panel -->
+                        <div class="tab-pane fade" id="graph-explorer-panel" role="tabpanel">
+                            <h5><i class="fas fa-project-diagram"></i> Neo4j Graph Explorer</h5>
+                            <p class="text-muted">Visualize and explore entities and relationships in the knowledge graph</p>
+
+                            <!-- Graph Controls -->
+                            <div class="card mb-4">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h6 class="mb-0"><i class="fas fa-filter"></i> Graph Controls</h6>
+                                    <div>
+                                        <button id="graph-refresh-btn" class="btn btn-sm btn-outline-primary me-2">
+                                            <i class="fas fa-sync-alt"></i> Refresh
+                                        </button>
+                                        <button id="graph-fit-btn" class="btn btn-sm btn-outline-secondary">
+                                            <i class="fas fa-compress-arrows-alt"></i> Fit to Screen
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row g-3">
+                                        <div class="col-md-3">
+                                            <label class="form-label">Entity Types</label>
+                                            <select id="graph-entity-filter" class="form-select" multiple size="6">
+                                                <option value="STANDARD" selected>Standards</option>
+                                                <option value="ORGANIZATION" selected>Organizations</option>
+                                                <option value="TECHNOLOGY" selected>Technologies</option>
+                                                <option value="LOCATION" selected>Locations</option>
+                                                <option value="DATE" selected>Dates</option>
+                                                <option value="PERSON" selected>Persons</option>
+                                                <option value="CONCEPT" selected>Concepts</option>
+                                            </select>
+                                            <small class="text-muted">Hold Ctrl to select multiple</small>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label">Search Entity</label>
+                                            <input type="text" id="graph-search-input" class="form-control" placeholder="Search entities...">
+                                            <small class="text-muted">Search by name</small>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label">Max Nodes</label>
+                                            <select id="graph-limit-select" class="form-select">
+                                                <option value="50">50 nodes</option>
+                                                <option value="100" selected>100 nodes</option>
+                                                <option value="200">200 nodes</option>
+                                                <option value="500">500 nodes</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label">&nbsp;</label>
+                                            <button id="graph-search-btn" class="btn btn-primary w-100">
+                                                <i class="fas fa-search"></i> Load Graph
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Graph Statistics -->
+                            <div class="row mb-3">
+                                <div class="col-md-3">
+                                    <div class="card text-center">
+                                        <div class="card-body py-2">
+                                            <h6 class="text-muted mb-1">Total Entities</h6>
+                                            <h4 class="mb-0" id="graph-total-entities">-</h4>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="card text-center">
+                                        <div class="card-body py-2">
+                                            <h6 class="text-muted mb-1">Relationships</h6>
+                                            <h4 class="mb-0" id="graph-total-relationships">-</h4>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="card text-center">
+                                        <div class="card-body py-2">
+                                            <h6 class="text-muted mb-1">Visible Nodes</h6>
+                                            <h4 class="mb-0" id="graph-visible-nodes">-</h4>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="card text-center">
+                                        <div class="card-body py-2">
+                                            <h6 class="text-muted mb-1">Entity Types</h6>
+                                            <h4 class="mb-0" id="graph-entity-types">-</h4>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Graph Visualization -->
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6 class="mb-0"><i class="fas fa-eye"></i> Graph Visualization</h6>
+                                </div>
+                                <div class="card-body p-0" style="height: 600px; position: relative;">
+                                    <div id="graph-container" style="width: 100%; height: 100%;"></div>
+                                    <div id="graph-loading" class="position-absolute top-50 start-50 translate-middle text-center" style="display: none;">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <p class="mt-2">Loading graph data...</p>
+                                    </div>
+                                    <div id="graph-error" class="position-absolute top-50 start-50 translate-middle text-center" style="display: none;">
+                                        <div class="alert alert-danger">
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                            <p id="graph-error-message" class="mb-0"></p>
+                                        </div>
+                                    </div>
+                                    <div id="graph-empty" class="position-absolute top-50 start-50 translate-middle text-center" style="display: none;">
+                                        <div class="alert alert-info">
+                                            <i class="fas fa-info-circle"></i>
+                                            <p class="mb-0">No entities found matching your criteria</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Entity Details Panel -->
+                            <div class="card mt-3" id="entity-details-card" style="display: none;">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h6 class="mb-0"><i class="fas fa-info-circle"></i> Entity Details</h6>
+                                    <button id="close-entity-details" class="btn btn-sm btn-outline-secondary">
+                                        <i class="fas fa-times"></i> Close
+                                    </button>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-8">
+                                            <h5 id="entity-detail-name">-</h5>
+                                            <p class="text-muted" id="entity-detail-type">-</p>
+                                            <div id="entity-detail-properties"></div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <h6>Connected Entities</h6>
+                                            <div id="entity-connections" class="list-group"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- D3.js and Force Graph for graph visualization -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://unpkg.com/force-graph@1.51.1/dist/force-graph.min.js"></script>
+    <script>
+        // Verify libraries loaded
+        console.log('[GraphExplorer] D3 loaded:', typeof d3 !== 'undefined');
+        console.log('[GraphExplorer] ForceGraph loaded:', typeof ForceGraph !== 'undefined');
+    </script>
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Global variables
@@ -3372,20 +3531,70 @@
                         
                         jobs.forEach(job => {
                             const documents = job.documents || job.result?.documents || [];
+                            console.log('[DocStore] Job documents:', documents);
+                            
                             documents.forEach(doc => {
-                                const docId = doc.doc_id || doc.filename || `doc_${Math.random().toString(36).substr(2, 9)}`;
+                                console.log('[DocStore] Processing document:', doc);
+                                
+                                const docId = doc.doc_id || `doc_${Math.random().toString(36).substr(2, 9)}`;
+                                
+                                // Extract filename with multiple fallback strategies
+                                let filename = 'Unknown Document';
+                                
+                                // Strategy 1: Try metadata.original_filename
+                                if (doc.metadata && doc.metadata.original_filename) {
+                                    filename = doc.metadata.original_filename;
+                                    console.log('[DocStore] Got filename from metadata.original_filename:', filename);
+                                }
+                                // Strategy 2: Try top-level original_filename
+                                else if (doc.original_filename) {
+                                    filename = doc.original_filename;
+                                    console.log('[DocStore] Got filename from original_filename:', filename);
+                                }
+                                // Strategy 3: Try filename field if it looks real (not doc_XXX.pdf)
+                                else if (doc.filename && !doc.filename.match(/^doc_\d+\.pdf$/)) {
+                                    filename = doc.filename;
+                                    console.log('[DocStore] Got filename from filename field:', filename);
+                                }
+                                // Strategy 4: Extract from doc_id (e.g., "rst_gov_ru:8443_gost-r-50739-1995=edt2006" -> "gost-r-50739-1995.pdf")
+                                else if (docId.includes('_')) {
+                                    const parts = docId.split('_');
+                                    // Try to find a part that looks like a filename
+                                    for (let i = parts.length - 1; i >= 0; i--) {
+                                        const part = parts[i];
+                                        if (part.includes('.') || part.includes('gost') || part.includes('iso') || part.includes('rfc')) {
+                                            filename = part.includes('.') ? part : part + '.pdf';
+                                            console.log('[DocStore] Extracted filename from doc_id part:', filename);
+                                            break;
+                                        }
+                                    }
+                                    // If no good part found, use the last part
+                                    if (filename === 'Unknown Document' && parts.length > 0) {
+                                        const lastPart = parts[parts.length - 1];
+                                        filename = lastPart.includes('.') ? lastPart : lastPart + '.pdf';
+                                        console.log('[DocStore] Using last doc_id part as filename:', filename);
+                                    }
+                                }
+                                // Strategy 5: Use doc_id as last resort
+                                else {
+                                    filename = docId.includes('.') ? docId : docId + '.pdf';
+                                    console.log('[DocStore] Using doc_id as filename:', filename);
+                                }
+                                
                                 docstoreDocuments.push({
                                     id: docId,
                                     doc_id: docId,  // Store doc_id separately for API call
-                                    filename: doc.filename || 'Unknown Document',
+                                    filename: filename,
                                     format: doc.format || 'pdf',
                                     size: doc.size || 0,  // Store file size in bytes
                                     selected: false,
                                     job_id: job.job_id || job.id || '',
-                                    source_website: job.source_website || doc.original_url || ''
+                                    source_website: job.source_website || doc.source_website || doc.original_url || ''
                                 });
                             });
                         });
+                        
+                        console.log('[DocStore] Final docstoreDocuments:', docstoreDocuments);
 
                         if (docstoreDocuments.length > 0) {
                             items.push(...docstoreDocuments.map((doc, i) => {
@@ -3652,15 +3861,42 @@
                             const result = job.result || {};
                             resultDiv.style.display = 'block';
                             
-                            if (result.documents_processed > 0) {
+                            if (result.documents_processed > 0 || job.documents_processed > 0) {
+                                // Get filenames from job parameters
+                                let filesText = '';
+                                if (job.parameters && job.parameters.documents && job.parameters.documents.length > 0) {
+                                    const docs = job.parameters.documents;
+                                    if (docs.length === 1) {
+                                        const name = docs[0].filename || docs[0].doc_id || 'Unknown';
+                                        filesText = `<br><strong>File:</strong> ${name}`;
+                                    } else if (docs.length <= 5) {
+                                        const names = docs.map(d => d.filename || d.doc_id || 'Unknown').join(', ');
+                                        filesText = `<br><strong>Files:</strong> ${names}`;
+                                    } else {
+                                        filesText = `<br><strong>Files:</strong> ${docs.length} documents`;
+                                    }
+                                }
+                                
+                                const docsCount = result.documents_processed || job.documents_processed || 0;
+                                const chunksCount = result.total_chunks || job.chunks_generated || 0;
+                                
                                 resultDiv.innerHTML = `
                                     <strong>Success!</strong><br>
-                                    Processed ${result.documents_processed} documents<br>
-                                    Generated ${result.total_chunks || 0} chunks
+                                    Processed ${docsCount} documents<br>
+                                    Generated ${chunksCount} chunks
+                                    ${filesText}
                                 `;
                                 resultDiv.className = 'alert alert-success mt-3';
                             } else {
-                                resultDiv.innerHTML = `<strong>Warning:</strong> No documents were processed.`;
+                                // Show error details
+                                let errorMsg = 'No documents were processed.';
+                                if (result.errors && result.errors.length > 0) {
+                                    errorMsg += '<br><strong>Errors:</strong><br>';
+                                    result.errors.forEach((err, idx) => {
+                                        errorMsg += `- ${err.filename || err.doc_id || 'Unknown'}: ${err.error || 'Unknown error'}<br>`;
+                                    });
+                                }
+                                resultDiv.innerHTML = `<strong>Failed:</strong> ${errorMsg}`;
                                 resultDiv.className = 'alert alert-warning mt-3';
                             }
                             
@@ -3766,7 +4002,21 @@
                                         </small>
                                     `;
                                 }
-                                
+
+                                // Add filenames for docstore mode
+                                let filesInfo = '';
+                                if (job.parameters && job.parameters.documents && job.parameters.documents.length > 0) {
+                                    const docs = job.parameters.documents;
+                                    if (docs.length <= 3) {
+                                        // Show all filenames if 3 or less
+                                        const names = docs.map(d => d.filename || d.doc_id || 'Unknown').join(', ');
+                                        filesInfo = `<br><small class="text-muted"><i class="fas fa-file"></i> Files: ${names}</small>`;
+                                    } else {
+                                        // Show count if more than 3
+                                        filesInfo = `<br><small class="text-muted"><i class="fas fa-file"></i> Files: ${docs.length} documents</small>`;
+                                    }
+                                }
+
                                 return `
                                 <div class="list-group-item list-group-item-action">
                                     <div class="d-flex w-100 justify-content-between">
@@ -3777,11 +4027,12 @@
                                         <small>${formatDate(job.created_at)}</small>
                                     </div>
                                     <p class="mb-1">
-                                        Type: ${job.job_type || 'N/A'} | 
-                                        Docs: ${job.documents_processed || 0}/${job.documents_total || 0} | 
+                                        Type: ${job.job_type || 'N/A'} |
+                                        Docs: ${job.documents_processed || 0}/${job.documents_total || 0} |
                                         Chunks: ${job.chunks_generated || 0}
                                     </p>
                                     ${configInfo}
+                                    ${filesInfo}
                                     ${job.error ? `<small class="text-danger"><i class="fas fa-exclamation-triangle"></i> ${job.error.substring(0, 100)}...</small>` : ''}
                                     <div class="mt-2">
                                         ${job.status === 'pending' ? `<button class="btn btn-sm btn-primary" onclick="startJob('${job.job_id}')"><i class="fas fa-play"></i> Start</button>` : ''}
@@ -3840,6 +4091,396 @@
                 }
             };
         }
+
+        // ==================== Graph Explorer Functions ====================
+        let graphInstance = null;
+        let graphData = { nodes: [], links: [] };
+        let selectedEntity = null;
+
+        function initGraphExplorer() {
+            const graphContainer = document.getElementById('graph-container');
+            if (!graphContainer) {
+                console.error('[GraphExplorer] Container not found');
+                return;
+            }
+
+            console.log('[GraphExplorer] Container size:', graphContainer.clientWidth, 'x', graphContainer.clientHeight);
+
+            // Check if ForceGraph library is loaded
+            if (typeof ForceGraph === 'undefined') {
+                console.error('[GraphExplorer] ForceGraph library not loaded');
+                document.getElementById('graph-error-message').textContent = 'Graph visualization library not loaded. Please refresh the page.';
+                document.getElementById('graph-error').style.display = 'block';
+                return;
+            }
+
+            console.log('[GraphExplorer] Initializing ForceGraph...');
+
+            // Initialize Force Graph
+            graphInstance = ForceGraph()(graphContainer)
+                .graphData({ nodes: [], links: [] })
+                .nodeLabel('name')
+                .nodeColor(node => getEntityColor(node.type))
+                .nodeRelSize(8)
+                .linkColor(() => '#999')
+                .linkWidth(2)
+                .linkDirectionalParticles(0)
+                .onNodeClick(handleNodeClick)
+                .onNodeHover(node => {
+                    graphContainer.style.cursor = node ? 'pointer' : 'default';
+                });
+
+            console.log('[GraphExplorer] Graph instance created:', graphInstance);
+
+            // Apply custom forces after initialization
+            setTimeout(() => {
+                if (graphInstance && typeof d3 !== 'undefined') {
+                    graphInstance
+                        .d3Force('charge', d3.forceManyBody().strength(-300))
+                        .d3Force('link', d3.forceLink().distance(150))
+                        .d3Force('center', d3.forceCenter(graphContainer.clientWidth / 2, graphContainer.clientHeight / 2));
+                    console.log('[GraphExplorer] Forces applied');
+                }
+            }, 100);
+
+            // Auto-fit on first load
+            setTimeout(() => {
+                if (graphInstance && graphData.nodes.length > 0) {
+                    graphInstance.zoomToFit(1000, 50);
+                    console.log('[GraphExplorer] Auto-fit completed');
+                }
+            }, 500);
+        }
+
+        function getEntityColor(type) {
+            const colors = {
+                'STANDARD': '#ff6b6b',      // Red
+                'ORGANIZATION': '#4ecdc4',  // Teal
+                'TECHNOLOGY': '#45b7d1',    // Blue
+                'LOCATION': '#f9ca24',      // Yellow
+                'DATE': '#a55eea',          // Purple
+                'PERSON': '#fd9644',        // Orange
+                'CONCEPT': '#26de81',       // Green
+                'Chunk': '#778ca3',         // Gray
+                'Document': '#2d3436'       // Dark gray
+            };
+            return colors[type] || '#999999';
+        }
+
+        function getEntityTypeName(type) {
+            const names = {
+                'STANDARD': 'Standards',
+                'ORGANIZATION': 'Organizations',
+                'TECHNOLOGY': 'Technologies',
+                'LOCATION': 'Locations',
+                'DATE': 'Dates',
+                'PERSON': 'Persons',
+                'CONCEPT': 'Concepts',
+                'Chunk': 'Chunks',
+                'Document': 'Documents'
+            };
+            return names[type] || type;
+        }
+
+        async function loadGraphData() {
+            const loadingEl = document.getElementById('graph-loading');
+            const errorEl = document.getElementById('graph-error');
+            const emptyEl = document.getElementById('graph-empty');
+            const container = document.getElementById('graph-container');
+
+            // Show loading
+            loadingEl.style.display = 'block';
+            errorEl.style.display = 'none';
+            emptyEl.style.display = 'none';
+
+            try {
+                // Get selected entity types
+                const typeSelect = document.getElementById('graph-entity-filter');
+                const selectedTypes = Array.from(typeSelect.selectedOptions).map(opt => opt.value);
+
+                // Get search query
+                const searchQuery = document.getElementById('graph-search-input').value.trim();
+
+                // Get limit
+                const limit = parseInt(document.getElementById('graph-limit-select').value);
+
+                console.log('[GraphExplorer] Fetching graph data...', { selectedTypes, searchQuery, limit });
+
+                // Fetch graph data from API
+                const response = await fetch('/api/rag/graph/visualize', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${AUTH_TOKEN}`
+                    },
+                    body: JSON.stringify({
+                        entity_types: selectedTypes,
+                        search_query: searchQuery,
+                        limit: limit
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                const result = await response.json();
+                console.log('[GraphExplorer] Received graph data:', result);
+
+                loadingEl.style.display = 'none';
+
+                if (!result.nodes || result.nodes.length === 0) {
+                    emptyEl.style.display = 'block';
+                    graphData = { nodes: [], links: [] };
+                    if (graphInstance) graphInstance.graphData(graphData);
+                    updateGraphStats(0, 0, {});
+                    return;
+                }
+
+                // Process graph data
+                graphData = {
+                    nodes: result.nodes || [],
+                    links: result.links || []
+                };
+
+                console.log('[GraphExplorer] Graph data processed:', graphData.nodes.length, 'nodes');
+
+                // Initialize graph if not already done
+                if (!graphInstance) {
+                    console.log('[GraphExplorer] Initializing graph instance...');
+                    initGraphExplorer();
+                }
+
+                // Wait for graph to be ready and then set data
+                const waitForGraph = setInterval(() => {
+                    if (graphInstance) {
+                        clearInterval(waitForGraph);
+                        console.log('[GraphExplorer] Setting graph data with', graphData.nodes.length, 'nodes');
+                        
+                        // Set the graph data
+                        graphInstance.graphData(graphData);
+                        
+                        // Update statistics
+                        updateGraphStats(graphData.nodes.length, graphData.links.length, result.type_counts || {});
+
+                        // Auto-fit
+                        setTimeout(() => {
+                            if (graphInstance && graphData.nodes.length > 0) {
+                                console.log('[GraphExplorer] Fitting to screen...');
+                                graphInstance.zoomToFit(1000, 50);
+                            }
+                        }, 300);
+                    }
+                }, 100);
+
+                // Timeout in case graph never initializes
+                setTimeout(() => {
+                    clearInterval(waitForGraph);
+                    if (!graphInstance) {
+                        console.error('[GraphExplorer] Graph instance failed to initialize');
+                        errorEl.style.display = 'block';
+                        document.getElementById('graph-error-message').textContent = 'Failed to initialize graph. Please refresh the page.';
+                    }
+                }, 3000);
+
+            } catch (error) {
+                console.error('[GraphExplorer] Error loading graph:', error);
+                loadingEl.style.display = 'none';
+                errorEl.style.display = 'block';
+                document.getElementById('graph-error-message').textContent = `Failed to load graph: ${error.message}`;
+            }
+        }
+
+        function updateGraphStats(nodeCount, linkCount, typeCounts) {
+            document.getElementById('graph-visible-nodes').textContent = nodeCount;
+            document.getElementById('graph-total-relationships').textContent = linkCount;
+            
+            // Count entity types
+            const typeList = Object.entries(typeCounts)
+                .map(([type, count]) => `${getEntityTypeName(type)}: ${count}`)
+                .join(', ');
+            document.getElementById('graph-entity-types').textContent = Object.keys(typeCounts).length || '-';
+            
+            // Update total entities if we have it
+            if (typeCounts.total) {
+                document.getElementById('graph-total-entities').textContent = typeCounts.total;
+            }
+        }
+
+        async function handleNodeClick(node) {
+            selectedEntity = node;
+            
+            // Show entity details panel
+            const detailsCard = document.getElementById('entity-details-card');
+            detailsCard.style.display = 'block';
+            
+            document.getElementById('entity-detail-name').textContent = node.name;
+            document.getElementById('entity-detail-type').textContent = getEntityTypeName(node.type);
+            
+            // Show properties
+            const propsDiv = document.getElementById('entity-detail-properties');
+            let propsHtml = '<div class="list-group">';
+            
+            if (node.id) {
+                propsHtml += `<div class="list-group-item"><strong>ID:</strong> ${node.id}</div>`;
+            }
+            if (node.document) {
+                propsHtml += `<div class="list-group-item"><strong>Document:</strong> ${node.document}</div>`;
+            }
+            if (node.source) {
+                propsHtml += `<div class="list-group-item"><strong>Source:</strong> ${node.source}</div>`;
+            }
+            if (node.confidence) {
+                propsHtml += `<div class="list-group-item"><strong>Confidence:</strong> ${(node.confidence * 100).toFixed(0)}%</div>`;
+            }
+            
+            propsHtml += '</div>';
+            propsDiv.innerHTML = propsHtml;
+            
+            // Load connected entities
+            await loadEntityConnections(node);
+            
+            // Highlight selected node
+            if (graphInstance) {
+                graphInstance.centerOn(node);
+            }
+            
+            // Scroll to details
+            detailsCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        async function loadEntityConnections(node) {
+            try {
+                const response = await fetch('/api/rag/graph/entity/connections', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${AUTH_TOKEN}`
+                    },
+                    body: JSON.stringify({
+                        entity_name: node.name,
+                        entity_type: node.type,
+                        limit: 20
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                const result = await response.json();
+                const connectionsDiv = document.getElementById('entity-connections');
+                
+                if (!result.connections || result.connections.length === 0) {
+                    connectionsDiv.innerHTML = '<p class="text-muted">No connections found</p>';
+                    return;
+                }
+
+                let html = '';
+                result.connections.forEach(conn => {
+                    const relType = conn.relationship || 'RELATED';
+                    const targetName = conn.target_name || conn.name;
+                    const targetType = conn.target_type || conn.type;
+                    
+                    html += `
+                        <div class="list-group-item list-group-item-action" style="cursor: pointer;" 
+                             onclick="highlightEntity('${targetName}', '${targetType}')">
+                            <div class="d-flex w-100 justify-content-between">
+                                <small class="text-truncate" style="max-width: 150px;">${targetName}</small>
+                                <small class="badge bg-secondary">${getEntityTypeName(targetType)}</small>
+                            </div>
+                            <small class="text-muted">${relType}</small>
+                        </div>
+                    `;
+                });
+                
+                connectionsDiv.innerHTML = html;
+                
+            } catch (error) {
+                console.error('[GraphExplorer] Error loading connections:', error);
+                document.getElementById('entity-connections').innerHTML = '<p class="text-danger">Failed to load connections</p>';
+            }
+        }
+
+        function highlightEntity(name, type) {
+            if (!graphInstance) return;
+            
+            // Find the node
+            const node = graphData.nodes.find(n => n.name === name && n.type === type);
+            if (node) {
+                handleNodeClick(node);
+            }
+        }
+
+        // Event listeners for Graph Explorer
+        document.getElementById('graph-search-btn')?.addEventListener('click', loadGraphData);
+        document.getElementById('graph-refresh-btn')?.addEventListener('click', loadGraphData);
+        
+        document.getElementById('graph-fit-btn')?.addEventListener('click', () => {
+            if (graphInstance && graphData.nodes.length > 0) {
+                graphInstance.zoomToFit(1000, 50);
+            }
+        });
+
+        document.getElementById('close-entity-details')?.addEventListener('click', () => {
+            document.getElementById('entity-details-card').style.display = 'none';
+            selectedEntity = null;
+        });
+
+        // Initialize graph explorer when tab is shown
+        document.getElementById('graph-explorer-tab')?.addEventListener('shown.bs.tab', () => {
+            console.log('[GraphExplorer] Tab shown, checking libraries...');
+            console.log('[GraphExplorer] ForceGraph:', typeof ForceGraph);
+            console.log('[GraphExplorer] d3:', typeof d3);
+            
+            // Wait for tab transition to complete
+            setTimeout(() => {
+                // Always initialize the graph when tab is shown (if not already done)
+                if (!graphInstance) {
+                    console.log('[GraphExplorer] Initializing graph for first time...');
+                    initGraphExplorer();
+                }
+                
+                // Load graph data on first visit (if not already loaded)
+                if (graphData.nodes.length === 0 && graphData.links.length === 0) {
+                    console.log('[GraphExplorer] Loading graph data for first time...');
+                    loadGraphData();
+                } else {
+                    console.log('[GraphExplorer] Graph already loaded with', graphData.nodes.length, 'nodes');
+                    // If graph already has data, make sure it's displayed
+                    setTimeout(() => {
+                        if (graphInstance && graphData.nodes.length > 0) {
+                            console.log('[GraphExplorer] Re-applying existing graph data...');
+                            graphInstance.graphData(graphData);
+                            // Trigger resize to ensure rendering
+                            const container = document.getElementById('graph-container');
+                            if (container) {
+                                graphInstance.width(container.clientWidth);
+                                graphInstance.height(container.clientHeight);
+                            }
+                        }
+                    }, 300);
+                }
+            }, 300);
+        });
+
+        // Check libraries on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('[GraphExplorer] DOM loaded');
+            console.log('[GraphExplorer] ForceGraph available:', typeof ForceGraph !== 'undefined');
+            console.log('[GraphExplorer] d3 available:', typeof d3 !== 'undefined');
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            if (graphInstance) {
+                const container = document.getElementById('graph-container');
+                if (container) {
+                    graphInstance.width(container.clientWidth);
+                    graphInstance.height(container.clientHeight);
+                }
+            }
+        });
     </script>
 </body>
 </html>

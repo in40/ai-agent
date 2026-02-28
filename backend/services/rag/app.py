@@ -4,6 +4,7 @@ Handles document processing and retrieval
 """
 import os
 import re
+import json
 from pathlib import Path
 from flask import Flask, request, jsonify
 from flask_cors import CORS
@@ -24,6 +25,9 @@ from backend.services.rag.job_queue import jobs_bp
 
 # Import smart ingestion endpoints (need to import after app is created to avoid circular imports)
 # We'll register them directly by importing the functions
+
+# Import robust JSON parsing utilities
+from .json_utils import parse_json_robust, validate_chunking_result
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -1262,14 +1266,21 @@ def list_document_store_jobs(current_user_id):
                 if job_id:
                     # Call list_documents for this job
                     docs_result = document_store_client.list_documents(job_id)
+                    logger.info(f"[DocStore API] list_documents result for {job_id}: {docs_result}")
+                    
                     if docs_result.get('success'):
                         docs_data = docs_result.get('result', {})
+                        logger.info(f"[DocStore API] docs_data: {docs_data}")
+                        
                         if isinstance(docs_data, dict) and docs_data.get('success'):
                             job['documents'] = docs_data.get('documents', [])
+                            logger.info(f"[DocStore API] Set job['documents'] from nested success: {job['documents'][:2] if job['documents'] else []}")
                         else:
                             job['documents'] = docs_data.get('documents', [])
+                            logger.info(f"[DocStore API] Set job['documents'] directly: {job['documents'][:2] if job['documents'] else []}")
                     else:
                         job['documents'] = []
+                        logger.warning(f"[DocStore API] list_documents failed: {docs_result}")
                 else:
                     job['documents'] = []
             
@@ -1500,19 +1511,24 @@ Return JSON with these fields:
                                 
                                 llm_response = llm.invoke(section_prompt)
                                 response_content = llm_response.content if hasattr(llm_response, 'content') else str(llm_response)
+
+                                # Parse JSON from response using robust parser
+                                chunking_result = parse_json_robust(response_content, default_on_error={'chunks': []})
                                 
-                                # Parse JSON from response
-                                json_match = re.search(r'\{[\s\S]*\}', response_content)
-                                chunking_result = json.loads(json_match.group(0) if json_match else response_content)
+                                # Validate the result
+                                is_valid, errors = validate_chunking_result(chunking_result)
+                                if not is_valid:
+                                    logger.warning(f"Section {section_idx + 1}: Invalid chunking result - {errors}")
+                                
                                 chunks_data = chunking_result.get('chunks', [])
-                                
+
                                 section_chunks = [c.get('content', '') for c in chunks_data if c.get('content')]
                                 all_chunks.extend(section_chunks)
-                                
+
                                 # Save context for next section
                                 previous_summary = chunking_result.get('document_summary', '')
                                 previous_entities = chunking_result.get('key_entities', [])
-                                
+
                                 logger.info(f"Section {section_idx + 1}: LLM generated {len(section_chunks)} chunks")
                             
                             chunks = all_chunks
@@ -1567,18 +1583,23 @@ Return JSON with these fields:
                             
                             llm_response = llm.invoke(single_prompt)
                             response_content = llm_response.content if hasattr(llm_response, 'content') else str(llm_response)
+
+                            # Parse JSON from response using robust parser
+                            chunking_result = parse_json_robust(response_content, default_on_error={'chunks': []})
                             
-                            # Parse JSON from response
-                            json_match = re.search(r'\{[\s\S]*\}', response_content)
-                            chunking_result = json.loads(json_match.group(0) if json_match else response_content)
+                            # Validate the result
+                            is_valid, errors = validate_chunking_result(chunking_result)
+                            if not is_valid:
+                                logger.warning(f"Invalid chunking result - {errors}")
+                            
                             chunks_data = chunking_result.get('chunks', [])
-                            
+
                             chunks = [c.get('content', '') for c in chunks_data if c.get('content')]
-                            
+
                             # Store document-level metadata for graph context
                             document_summary = chunking_result.get('document_summary', '')
                             key_entities = chunking_result.get('key_entities', [])
-                            
+
                             logger.info(f"Single-call LLM generated {len(chunks)} chunks for {file_info['original_filename']}")
                             if document_summary:
                                 logger.info(f"Document summary: {document_summary[:100]}...")
@@ -2819,7 +2840,7 @@ Return ONLY valid JSON with these fields:
                             try:
                                 from .neo4j_integration import get_neo4j_connection
                                 from .smart_ingestion_enhanced import process_hybrid_mode
-                                
+
                                 neo4j = get_neo4j_connection()
                                 if neo4j and neo4j.connected:
                                     # Convert chunks to dict format for Neo4j
@@ -2833,20 +2854,23 @@ Return ONLY valid JSON with these fields:
                                                 'title': '',
                                                 'chunk_type': 'document_chunk'
                                             })
-                                    
+
+                                    # Get user_id from job metadata (background job doesn't have current_user_id)
+                                    job_user_id = job.user_id or 'unknown'
+
                                     # Store in Neo4j
                                     graph_result = process_hybrid_mode(
                                         chunks=chunk_dicts,
                                         doc_id=f"docstore_{job_id_param}_{doc_id}",
                                         filename=doc_id,
                                         metadata={
-                                            'user_id': current_user_id,
+                                            'user_id': job_user_id,
                                             'job_id': job_id,
                                             'document_summary': document_summary,
                                             'key_entities': key_entities
                                         }
                                     )
-                                    
+
                                     logger.info(f"[Job {job_id}] Hybrid mode: stored in Neo4j")
                                 else:
                                     logger.warning(f"[Job {job_id}] Neo4j not connected - skipping graph storage")
@@ -2868,9 +2892,10 @@ Return ONLY valid JSON with these fields:
         job.progress = 100
         job.current_stage = "completed"
         job.documents_processed = total_documents
+        job.chunks_generated = results['total_chunks']
         job.result = results
         job_queue.update_job(job)
-        
+
         logger.info(f"[Job {job_id}] Smart ingestion completed: {results['documents_processed']} documents, {results['total_chunks']} chunks")
         
     except Exception as e:
@@ -3054,6 +3079,201 @@ def get_entity(current_user_id, entity_name: str):
             
     except Exception as e:
         logger.error(f"Get entity error: {e}")
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/rag/graph/visualize', methods=['POST'])
+@require_permission(Permission.READ_RAG)
+def graph_visualize(current_user_id):
+    """
+    Get graph data for visualization.
+    
+    Request body:
+    {
+        "entity_types": ["STANDARD", "ORGANIZATION", ...],  // optional filter
+        "search_query": "search term",  // optional search in entity names
+        "limit": 100  // max nodes to return
+    }
+    """
+    try:
+        from .neo4j_integration import get_neo4j_connection
+
+        data = request.get_json() or {}
+        entity_types = data.get('entity_types', [])
+        search_query = data.get('search_query', '')
+        limit = data.get('limit', 100)
+
+        neo4j = get_neo4j_connection()
+        if not neo4j or not neo4j.connected:
+            return jsonify({'error': 'Neo4j not available'}), 503
+
+        with neo4j.driver.session() as session:
+            # Build query
+            type_filter = ""
+            params = {'limit': limit}
+            
+            if entity_types:
+                type_filter = "AND e.type IN $entity_types"
+                params['entity_types'] = entity_types
+            
+            search_filter = ""
+            if search_query:
+                search_filter = "AND (e.name CONTAINS $search_query OR e.description CONTAINS $search_query)"
+                params['search_query'] = search_query
+            
+            # Get entities
+            entity_query = f"""
+                MATCH (e:Entity)
+                WHERE true {type_filter} {search_filter}
+                RETURN e.name as name, e.type as type, e.relevance as relevance, 
+                       e.updated_at as updated_at
+                ORDER BY e.relevance DESC
+                LIMIT $limit
+            """
+            
+            result = session.run(entity_query, **params)
+            nodes = []
+            node_names = set()
+            entity_timestamps = {}  # Map entity name to timestamp for co-occurrence detection
+            
+            for r in result:
+                nodes.append({
+                    'id': r['name'],  # Use name as ID since we don't have elementId
+                    'name': r['name'],
+                    'type': r['type'],
+                    'relevance': r['relevance'] or 0,
+                    'updated_at': str(r['updated_at']) if r['updated_at'] else ''
+                })
+                node_names.add(r['name'])
+                if r['updated_at']:
+                    entity_timestamps[r['name']] = r['updated_at']
+            
+            # Get relationships - including both direct and co-occurrence based
+            links = []
+            
+            if nodes:
+                # First: Get any existing Entity-Entity relationships
+                entity_rel_query = """
+                    MATCH (source:Entity)-[r]-(target:Entity)
+                    WHERE source.name IN $names AND target.name IN $names
+                    RETURN source.name as source, target.name as target, type(r) as relationship
+                    LIMIT 500
+                """
+                rel_result = session.run(entity_rel_query, names=list(node_names))
+                for r in rel_result:
+                    links.append({
+                        'source': r['source'],
+                        'target': r['target'],
+                        'relationship': r['relationship']
+                    })
+                
+                # Second: Create co-occurrence relationships based on timestamp proximity
+                # Entities created within 2 seconds of each other likely came from same document
+                cooccur_query = """
+                    MATCH (e1:Entity), (e2:Entity)
+                    WHERE e1.name IN $names AND e2.name IN $names
+                    AND e1.name < e2.name  // Avoid duplicates
+                    AND e1.type <> e2.type  // Different types more likely to be related
+                    AND e1.updated_at IS NOT NULL AND e2.updated_at IS NOT NULL
+                    AND abs(duration.between(e1.updated_at, e2.updated_at).seconds) < 2
+                    RETURN e1.name as source, e2.name as target, 'CO_OCCUR' as relationship
+                    LIMIT 500
+                """
+                cooccur_result = session.run(cooccur_query, names=list(node_names))
+                for r in cooccur_result:
+                    # Avoid duplicate links
+                    link_exists = any(
+                        (l['source'] == r['source'] and l['target'] == r['target']) or
+                        (l['source'] == r['target'] and l['target'] == r['source'])
+                        for l in links
+                    )
+                    if not link_exists:
+                        links.append({
+                            'source': r['source'],
+                            'target': r['target'],
+                            'relationship': r['relationship']
+                        })
+            
+            # Count by type
+            type_counts = {}
+            for node in nodes:
+                t = node['type']
+                type_counts[t] = type_counts.get(t, 0) + 1
+            type_counts['total'] = len(nodes)
+            
+            return jsonify({
+                'nodes': nodes,
+                'links': links,
+                'type_counts': type_counts
+            }), 200
+
+    except Exception as e:
+        logger.error(f"Graph visualize error: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/rag/graph/entity/connections', methods=['POST'])
+@require_permission(Permission.READ_RAG)
+def get_entity_connections(current_user_id):
+    """
+    Get connections for a specific entity.
+    
+    Request body:
+    {
+        "entity_name": "entity name",
+        "entity_type": "STANDARD",
+        "limit": 20
+    }
+    """
+    try:
+        from .neo4j_integration import get_neo4j_connection
+
+        data = request.get_json() or {}
+        entity_name = data.get('entity_name', '')
+        entity_type = data.get('entity_type', '')
+        limit = data.get('limit', 20)
+
+        if not entity_name:
+            return jsonify({'error': 'Entity name is required'}), 400
+
+        neo4j = get_neo4j_connection()
+        if not neo4j or not neo4j.connected:
+            return jsonify({'error': 'Neo4j not available'}), 503
+
+        with neo4j.driver.session() as session:
+            # Get connected entities
+            query = """
+                MATCH (e:Entity {name: $name})-[r]-(other:Entity)
+                RETURN other.name as target_name, other.type as target_type, type(r) as relationship,
+                       other.relevance as relevance, other.document as document
+                ORDER BY other.relevance DESC
+                LIMIT $limit
+            """
+            
+            result = session.run(query, name=entity_name, limit=limit)
+            connections = []
+            for r in result:
+                connections.append({
+                    'target_name': r['target_name'],
+                    'target_type': r['target_type'],
+                    'relationship': r['relationship'],
+                    'relevance': r['relevance'],
+                    'document': r['document']
+                })
+            
+            return jsonify({
+                'entity_name': entity_name,
+                'entity_type': entity_type,
+                'connections': connections,
+                'total': len(connections)
+            }), 200
+
+    except Exception as e:
+        logger.error(f"Get entity connections error: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
         return jsonify({'error': str(e)}), 500
 
 

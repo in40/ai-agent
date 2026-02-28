@@ -850,31 +850,33 @@ def _process_documents_internal(
     return results
 
 
-def process_hybrid_mode(chunks: List[Dict], doc_id: str, filename: str, metadata: Dict) -> Dict:
+def process_hybrid_mode(chunks: List[Dict], doc_id: str, filename: str, metadata: Dict, llm=None) -> Dict:
     """
     Process chunks in hybrid mode - store in both Vector DB and Neo4j Graph DB.
-    
+    Includes automatic entity extraction using LLM.
+
     Args:
         chunks: List of chunk dictionaries from LLM chunking
         doc_id: Document identifier
         filename: Original filename
         metadata: Additional metadata
-        
+        llm: Optional LLM instance for entity extraction (if None, will create one)
+
     Returns:
         Dictionary with processing results
     """
     result = {
         'vector_store': {'success': False, 'chunks_stored': 0},
-        'graph_store': {'success': False, 'nodes_created': 0, 'relationships_created': 0},
+        'graph_store': {'success': False, 'nodes_created': 0, 'relationships_created': 0, 'entities_extracted': 0},
         'hybrid_success': False
     }
-    
+
     # Step 1: Store in Vector DB (using existing RAG component)
     try:
         from rag_component.vector_store_manager import VectorStoreManager
-        
+
         vector_store = VectorStoreManager()
-        
+
         # Convert chunks to LangChain documents
         from langchain_core.documents import Document
         lc_docs = []
@@ -890,48 +892,132 @@ def process_hybrid_mode(chunks: List[Dict], doc_id: str, filename: str, metadata
                     **metadata
                 }
             ))
-        
+
         # Add to vector store
         vector_store.add_documents(lc_docs)
         result['vector_store']['success'] = True
         result['vector_store']['chunks_stored'] = len(chunks)
         logger.info(f"[HYBRID] Stored {len(chunks)} chunks in Vector DB")
-        
+
     except Exception as e:
         logger.error(f"[HYBRID] Vector DB storage failed: {e}")
         result['vector_store']['error'] = str(e)
-    
-    # Step 2: Store in Neo4j Graph DB
+
+    # Step 2: Extract entities from chunks using LLM
+    entities_by_chunk = {}
+    try:
+        if llm is None:
+            # Create LLM instance if not provided
+            response_gen = ResponseGenerator()
+            llm = response_gen._get_llm_instance(
+                provider=RESPONSE_LLM_PROVIDER,
+                model=RESPONSE_LLM_MODEL
+            )
+        
+        # Entity extraction prompt
+        entity_extraction_prompt = """You are an expert entity extractor for Russian technical standards (GOST, ISO, IEC, RFC).
+Extract all named entities from the text and return them as JSON.
+
+## Entity Types to Extract:
+- STANDARD: GOST, ISO, IEC, RFC standards (e.g., "ГОСТ Р 34.10-2012", "ISO 27001")
+- ORGANIZATION: Companies, agencies, institutions (e.g., "ФСБ России", "Росстандарт")
+- TECHNOLOGY: Technical terms, algorithms, technologies (e.g., "электронная подпись", "шифрование")
+- LOCATION: Geographic locations (e.g., "Москва", "Россия")
+- DATE: Dates and time periods (e.g., "2024 год", "1 января 2025")
+- PERSON: People names (e.g., "Иванов И.И.")
+- CONCEPT: Important concepts and terms (e.g., "информационная безопасность", "криптографическая защита")
+
+## Output Format:
+Return ONLY valid JSON:
+{
+  "entities": [
+    {"name": "entity name", "type": "STANDARD|ORGANIZATION|TECHNOLOGY|LOCATION|DATE|PERSON|CONCEPT", "confidence": 0.9}
+  ]
+}
+
+## Text to Analyze:
+"""
+        
+        # Extract entities from each chunk
+        for chunk in chunks:
+            chunk_id = chunk.get('chunk_id', 0)
+            content = chunk.get('content', '')
+
+            if not content.strip():
+                continue
+
+            try:
+                # Call LLM for entity extraction
+                entity_prompt = f"{entity_extraction_prompt}\n{content[:8000]}"  # Limit content
+                llm_response = llm.invoke(entity_prompt)
+                response_content = llm_response.content if hasattr(llm_response, 'content') else str(llm_response)
+
+                # Parse JSON from response using robust parser
+                from .json_utils import parse_json_robust
+                entity_result = parse_json_robust(response_content, default_on_error={'entities': []})
+                entities = entity_result.get('entities', [])
+                
+                if entities:
+                    entities_by_chunk[chunk_id] = entities
+                    logger.info(f"[HYBRID] Extracted {len(entities)} entities from chunk {chunk_id}")
+                else:
+                    logger.warning(f"[HYBRID] No entities found in chunk {chunk_id}")
+                    entities_by_chunk[chunk_id] = []
+
+            except Exception as entity_error:
+                logger.error(f"[HYBRID] Entity extraction failed for chunk {chunk_id}: {entity_error}")
+                entities_by_chunk[chunk_id] = []
+
+        total_entities = sum(len(entities) for entities in entities_by_chunk.values())
+        result['graph_store']['entities_extracted'] = total_entities
+        logger.info(f"[HYBRID] Total entities extracted: {total_entities}")
+        
+    except Exception as e:
+        logger.error(f"[HYBRID] Entity extraction failed: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
+
+    # Step 3: Store in Neo4j Graph DB with extracted entities
     try:
         from .neo4j_integration import get_neo4j_connection
-        
+
         neo4j = get_neo4j_connection()
-        
+
         if neo4j.connected:
             # Store document metadata
             neo4j.store_document(doc_id, filename, metadata)
-            
+
+            # Add extracted entities to chunks before storing
+            chunks_with_entities = []
+            for chunk in chunks:
+                chunk_copy = chunk.copy()
+                chunk_id = chunk.get('chunk_id', 0)
+                chunk_copy['entities'] = entities_by_chunk.get(chunk_id, [])
+                chunks_with_entities.append(chunk_copy)
+
             # Store chunks with relationships
-            chunks_stored = neo4j.store_chunks_batch(doc_id, chunks)
-            
-            # Create knowledge graph from chunks
-            graph_stats = neo4j.create_knowledge_graph(chunks)
-            
+            chunks_stored = neo4j.store_chunks_batch(doc_id, chunks_with_entities)
+
+            # Create knowledge graph from chunks (will use pre-extracted entities)
+            graph_stats = neo4j.create_knowledge_graph(chunks_with_entities)
+
             result['graph_store']['success'] = True
             result['graph_store']['nodes_created'] = chunks_stored + graph_stats['entities']
             result['graph_store']['relationships_created'] = graph_stats['relationships']
-            logger.info(f"[HYBRID] Stored in Neo4j: {chunks_stored} chunks, {graph_stats['entities']} entities")
+            logger.info(f"[HYBRID] Stored in Neo4j: {chunks_stored} chunks, {graph_stats['entities']} entities, {graph_stats['relationships']} relationships")
         else:
             logger.warning("[HYBRID] Neo4j not connected - skipping graph storage")
             result['graph_store']['error'] = 'Neo4j connection failed'
-            
+
     except Exception as e:
         logger.error(f"[HYBRID] Neo4j storage failed: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
         result['graph_store']['error'] = str(e)
-    
+
     # Determine overall success
-    result['hybrid_success'] = result['vector_store']['success']
-    
+    result['hybrid_success'] = result['vector_store']['success'] and result['graph_store']['success']
+
     return result
 
 
