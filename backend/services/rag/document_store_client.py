@@ -132,7 +132,9 @@ class DocumentStoreClient:
             List of jobs with metadata
         """
         logger.info("Listing ingestion jobs from Document Store")
-        return self._call_tool("list_ingestion_jobs", {})
+        result = self._call_tool("list_ingestion_jobs", {})
+        logger.info(f"Document Store list_ingestion_jobs returned: {result}")
+        return result
 
     def list_documents(self, job_id: str) -> Dict[str, Any]:
         """

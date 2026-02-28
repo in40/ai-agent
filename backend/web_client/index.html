@@ -741,10 +741,54 @@
                                     <button id="load-docstore-btn" class="btn btn-primary mb-3">
                                         <i class="fas fa-sync-alt"></i> Load Available Documents
                                     </button>
-                                    
+
                                     <div id="docstore-results" style="display: none;">
-                                        <h6>Available Documents in Document Store:</h6>
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <h6 class="mb-0">Available Documents in Document Store:</h6>
+                                            <div>
+                                                <button id="docstore-select-all-btn" class="btn btn-sm btn-outline-primary me-2" disabled>
+                                                    <i class="fas fa-check-square"></i> Select All
+                                                </button>
+                                                <button id="docstore-deselect-all-btn" class="btn btn-sm btn-outline-secondary" disabled>
+                                                    <i class="fas fa-square"></i> Deselect All
+                                                </button>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Pagination Controls -->
+                                        <div class="d-flex justify-content-between align-items-center mb-2" id="docstore-pagination-top" style="display: none;">
+                                            <small class="text-muted" id="docstore-showing-info">Showing 0-0 of 0</small>
+                                            <div>
+                                                <button class="btn btn-sm btn-outline-secondary" id="docstore-prev-page" disabled>
+                                                    <i class="fas fa-chevron-left"></i> Previous
+                                                </button>
+                                                <select class="form-select form-select-sm d-inline-block" id="docstore-page-size" style="width: auto;">
+                                                    <option value="20">20/page</option>
+                                                    <option value="50" selected>50/page</option>
+                                                    <option value="100">100/page</option>
+                                                    <option value="9999">All</option>
+                                                </select>
+                                                <button class="btn btn-sm btn-outline-secondary" id="docstore-next-page" disabled>
+                                                    Next <i class="fas fa-chevron-right"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        
                                         <div id="docstore-doc-list" class="list-group"></div>
+                                        
+                                        <!-- Pagination Controls Bottom -->
+                                        <div class="d-flex justify-content-between align-items-center mt-2" id="docstore-pagination-bottom" style="display: none;">
+                                            <small class="text-muted" id="docstore-total-info">Total: 0 documents</small>
+                                            <div>
+                                                <button class="btn btn-sm btn-outline-secondary" id="docstore-prev-page-bottom" disabled>
+                                                    <i class="fas fa-chevron-left"></i> Previous
+                                                </button>
+                                                <span id="docstore-page-info" class="mx-2">Page 1 of 1</span>
+                                                <button class="btn btn-sm btn-outline-secondary" id="docstore-next-page-bottom" disabled>
+                                                    Next <i class="fas fa-chevron-right"></i>
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -3247,10 +3291,15 @@
             // Mode switching
             const modeRadios = document.querySelectorAll('input[name="ingestMode"]');
             const processModeRadios = document.querySelectorAll('input[name="processMode"]');
-            
+
             let smartSelectedFilesArray = [];
             let webpageDocuments = [];
             let docstoreDocuments = [];
+            
+            // Pagination state for Document Store
+            let docstoreCurrentPage = 1;
+            let docstorePageSize = 50;
+            let docstoreTotalPages = 1;
             
             // Mode radio button handlers
             modeRadios.forEach(radio => {
@@ -3312,6 +3361,44 @@
             const loadDocstoreBtn = document.getElementById('load-docstore-btn');
             if (loadDocstoreBtn) {
                 loadDocstoreBtn.addEventListener('click', loadDocumentStore);
+            }
+            
+            // Document Store pagination and selection event listeners
+            const docstoreSelectAllBtn = document.getElementById('docstore-select-all-btn');
+            if (docstoreSelectAllBtn) {
+                docstoreSelectAllBtn.addEventListener('click', () => toggleDocstoreAll(true));
+            }
+            
+            const docstoreDeselectAllBtn = document.getElementById('docstore-deselect-all-btn');
+            if (docstoreDeselectAllBtn) {
+                docstoreDeselectAllBtn.addEventListener('click', () => toggleDocstoreAll(false));
+            }
+            
+            const docstorePrevPageBtns = ['docstore-prev-page', 'docstore-prev-page-bottom'];
+            docstorePrevPageBtns.forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) {
+                    btn.addEventListener('click', () => goToDocstorePage(docstoreCurrentPage - 1));
+                }
+            });
+            
+            const docstoreNextPageBtns = ['docstore-next-page', 'docstore-next-page-bottom'];
+            docstoreNextPageBtns.forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) {
+                    btn.addEventListener('click', () => goToDocstorePage(docstoreCurrentPage + 1));
+                }
+            });
+            
+            const docstorePageSizeSelect = document.getElementById('docstore-page-size');
+            if (docstorePageSizeSelect) {
+                docstorePageSizeSelect.addEventListener('change', (e) => {
+                    docstorePageSize = parseInt(e.target.value);
+                    docstoreTotalPages = Math.ceil(docstoreDocuments.length / docstorePageSize) || 1;
+                    docstoreCurrentPage = 1;
+                    renderDocstoreDocuments();
+                    updateDocstorePagination();
+                });
             }
             
             // Smart ingest button
@@ -3596,24 +3683,24 @@
                         
                         console.log('[DocStore] Final docstoreDocuments:', docstoreDocuments);
 
-                        if (docstoreDocuments.length > 0) {
-                            items.push(...docstoreDocuments.map((doc, i) => {
-                                const sourceInfo = doc.source_website ? ` - <small class="text-primary">🌐 ${doc.source_website}</small>` : '';
-                                const sizeInfo = doc.size > 0 ? ` - <small class="text-muted">💾 ${formatFileSize(doc.size)}</small>` : '';
-                                return `<li class="list-group-item">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="docstore-${i}" onchange="toggleDocstoreDoc(${i}, this.checked)">
-                                        <label class="form-check-label" for="docstore-${i}">
-                                            <i class="fas fa-file-pdf text-danger"></i> ${doc.filename}
-                                            <br><small class="text-muted">(${doc.format}) - Job: ${doc.job_id}${sourceInfo}${sizeInfo}</small>
-                                        </label>
-                                    </div>
-                                </li>`
-                            }));
-                            docList.innerHTML = items.join('');
-                        } else {
-                            docList.innerHTML = '<li class="list-group-item text-muted">No documents found in Document Store. Please upload documents to Document Store first.</li>';
-                        }
+                        // Update pagination info
+                        docstoreTotalPages = Math.ceil(docstoreDocuments.length / docstorePageSize) || 1;
+                        docstoreCurrentPage = 1; // Reset to first page
+                        
+                        // Show/hide pagination controls
+                        const showPagination = docstoreDocuments.length > docstorePageSize;
+                        document.getElementById('docstore-pagination-top').style.display = showPagination ? 'flex' : 'none';
+                        document.getElementById('docstore-pagination-bottom').style.display = showPagination ? 'flex' : 'none';
+                        
+                        // Enable/disable select buttons
+                        document.getElementById('docstore-select-all-btn').disabled = docstoreDocuments.length === 0;
+                        document.getElementById('docstore-deselect-all-btn').disabled = docstoreDocuments.length === 0;
+                        
+                        // Render current page
+                        renderDocstoreDocuments();
+                        
+                        // Update pagination controls
+                        updateDocstorePagination();
                     } else {
                         const error = await response.json();
                         console.error('API Error:', error);
@@ -3630,7 +3717,84 @@
                 resultsDiv.style.display = 'block';
                 updateSmartIngestButton();
             }
+
+            // Document Store pagination functions
+            function renderDocstoreDocuments() {
+                const docList = document.getElementById('docstore-doc-list');
+                if (!docList) return;
+
+                const startIndex = (docstoreCurrentPage - 1) * docstorePageSize;
+                const endIndex = Math.min(startIndex + docstorePageSize, docstoreDocuments.length);
+                const pageDocs = docstoreDocuments.slice(startIndex, endIndex);
+
+                const items = pageDocs.map((doc, i) => {
+                    const globalIndex = startIndex + i;
+                    const sourceInfo = doc.source_website ? ` - <small class="text-primary">🌐 ${doc.source_website}</small>` : '';
+                    const sizeInfo = doc.size > 0 ? ` - <small class="text-muted">💾 ${formatFileSize(doc.size)}</small>` : '';
+                    const checked = doc.selected ? 'checked' : '';
+                    return `<li class="list-group-item">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="docstore-${globalIndex}" onchange="toggleDocstoreDoc(${globalIndex}, this.checked)" ${checked}>
+                            <label class="form-check-label" for="docstore-${globalIndex}">
+                                <i class="fas fa-file-pdf text-danger"></i> ${doc.filename}
+                                <br><small class="text-muted">(${doc.format}) - Job: ${doc.job_id}${sourceInfo}${sizeInfo}</small>
+                            </label>
+                        </div>
+                    </li>`;
+                });
+                
+                if (items.length > 0) {
+                    docList.innerHTML = items.join('');
+                    // Update showing info
+                    document.getElementById('docstore-showing-info').textContent = 
+                        `Showing ${startIndex + 1}-${endIndex} of ${docstoreDocuments.length}`;
+                } else {
+                    docList.innerHTML = '<li class="list-group-item text-muted">No documents found in Document Store. Please upload documents to Document Store first.</li>';
+                }
+            }
             
+            function updateDocstorePagination() {
+                const prevButtons = ['docstore-prev-page', 'docstore-prev-page-bottom'];
+                const nextButtons = ['docstore-next-page', 'docstore-next-page-bottom'];
+                
+                // Update page info
+                document.getElementById('docstore-page-info').textContent = `Page ${docstoreCurrentPage} of ${docstoreTotalPages}`;
+                document.getElementById('docstore-total-info').textContent = `Total: ${docstoreDocuments.length} documents`;
+                
+                // Enable/disable buttons
+                prevButtons.forEach(id => {
+                    const btn = document.getElementById(id);
+                    if (btn) btn.disabled = docstoreCurrentPage <= 1;
+                });
+                
+                nextButtons.forEach(id => {
+                    const btn = document.getElementById(id);
+                    if (btn) btn.disabled = docstoreCurrentPage >= docstoreTotalPages;
+                });
+            }
+            
+            function goToDocstorePage(page) {
+                if (page < 1 || page > docstoreTotalPages) return;
+                docstoreCurrentPage = page;
+                renderDocstoreDocuments();
+                updateDocstorePagination();
+            }
+            
+            // Select/Deselect all for Document Store
+            window.toggleDocstoreAll = function(selectAll) {
+                const startIndex = (docstoreCurrentPage - 1) * docstorePageSize;
+                const endIndex = Math.min(startIndex + docstorePageSize, docstoreDocuments.length);
+                
+                for (let i = startIndex; i < endIndex; i++) {
+                    if (docstoreDocuments[i]) {
+                        docstoreDocuments[i].selected = selectAll;
+                    }
+                }
+                
+                renderDocstoreDocuments();
+                updateSmartIngestButton();
+            };
+
             window.toggleDocstoreDoc = function(index, checked) {
                 if (docstoreDocuments[index]) {
                     docstoreDocuments[index].selected = checked;
