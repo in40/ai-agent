@@ -3129,12 +3129,12 @@ def get_entity(current_user_id, entity_name: str):
 def graph_visualize(current_user_id):
     """
     Get graph data for visualization.
-    
+
     Request body:
     {
         "entity_types": ["STANDARD", "ORGANIZATION", ...],  // optional filter
         "search_query": "search term",  // optional search in entity names
-        "limit": 100  // max nodes to return
+        "limit": 500  // max nodes to return (default increased from 100 to 500)
     }
     """
     try:
@@ -3143,7 +3143,7 @@ def graph_visualize(current_user_id):
         data = request.get_json() or {}
         entity_types = data.get('entity_types', [])
         search_query = data.get('search_query', '')
-        limit = data.get('limit', 100)
+        limit = data.get('limit', 500)  # Increased default from 100 to 500
 
         neo4j = get_neo4j_connection()
         if not neo4j or not neo4j.connected:
@@ -3153,31 +3153,31 @@ def graph_visualize(current_user_id):
             # Build query
             type_filter = ""
             params = {'limit': limit}
-            
+
             if entity_types:
                 type_filter = "AND e.type IN $entity_types"
                 params['entity_types'] = entity_types
-            
+
             search_filter = ""
             if search_query:
                 search_filter = "AND (e.name CONTAINS $search_query OR e.description CONTAINS $search_query)"
                 params['search_query'] = search_query
-            
+
             # Get entities
             entity_query = f"""
                 MATCH (e:Entity)
                 WHERE true {type_filter} {search_filter}
-                RETURN e.name as name, e.type as type, e.relevance as relevance, 
+                RETURN e.name as name, e.type as type, e.relevance as relevance,
                        e.updated_at as updated_at
                 ORDER BY e.relevance DESC
                 LIMIT $limit
             """
-            
+
             result = session.run(entity_query, **params)
             nodes = []
             node_names = set()
             entity_timestamps = {}  # Map entity name to timestamp for co-occurrence detection
-            
+
             for r in result:
                 nodes.append({
                     'id': r['name'],  # Use name as ID since we don't have elementId
@@ -3189,17 +3189,17 @@ def graph_visualize(current_user_id):
                 node_names.add(r['name'])
                 if r['updated_at']:
                     entity_timestamps[r['name']] = r['updated_at']
-            
+
             # Get relationships - including both direct and co-occurrence based
             links = []
-            
+
             if nodes:
                 # First: Get any existing Entity-Entity relationships
                 entity_rel_query = """
                     MATCH (source:Entity)-[r]-(target:Entity)
                     WHERE source.name IN $names AND target.name IN $names
                     RETURN source.name as source, target.name as target, type(r) as relationship
-                    LIMIT 500
+                    LIMIT 1000
                 """
                 rel_result = session.run(entity_rel_query, names=list(node_names))
                 for r in rel_result:
@@ -3208,7 +3208,7 @@ def graph_visualize(current_user_id):
                         'target': r['target'],
                         'relationship': r['relationship']
                     })
-                
+
                 # Second: Create co-occurrence relationships based on timestamp proximity
                 # Entities created within 2 seconds of each other likely came from same document
                 cooccur_query = """
@@ -3219,7 +3219,7 @@ def graph_visualize(current_user_id):
                     AND e1.updated_at IS NOT NULL AND e2.updated_at IS NOT NULL
                     AND abs(duration.between(e1.updated_at, e2.updated_at).seconds) < 2
                     RETURN e1.name as source, e2.name as target, 'CO_OCCUR' as relationship
-                    LIMIT 500
+                    LIMIT 1000
                 """
                 cooccur_result = session.run(cooccur_query, names=list(node_names))
                 for r in cooccur_result:
@@ -3235,14 +3235,14 @@ def graph_visualize(current_user_id):
                             'target': r['target'],
                             'relationship': r['relationship']
                         })
-            
+
             # Count by type
             type_counts = {}
             for node in nodes:
                 t = node['type']
                 type_counts[t] = type_counts.get(t, 0) + 1
             type_counts['total'] = len(nodes)
-            
+
             return jsonify({
                 'nodes': nodes,
                 'links': links,
