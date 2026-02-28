@@ -979,11 +979,56 @@
                                     <h6 class="mb-0"><i class="fas fa-tags"></i> Entity Extraction</h6>
                                 </div>
                                 <div class="card-body">
+                                    <!-- Input Source Selection -->
                                     <div class="mb-3">
+                                        <label class="form-label">Input Source</label>
+                                        <div class="btn-group w-100" role="group">
+                                            <button type="button" class="btn btn-outline-primary ds-input-source-btn" data-source="text" active>
+                                                <i class="fas fa-keyboard"></i> Text Input
+                                            </button>
+                                            <button type="button" class="btn btn-outline-primary ds-input-source-btn" data-source="upload">
+                                                <i class="fas fa-upload"></i> Upload File
+                                            </button>
+                                            <button type="button" class="btn btn-outline-primary ds-input-source-btn" data-source="docstore">
+                                                <i class="fas fa-folder-open"></i> From Document Store
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Text Input (default) -->
+                                    <div id="ds-text-input-container" class="ds-input-container mb-3">
                                         <label for="ds-text-input" class="form-label">Text to Analyze</label>
                                         <textarea class="form-control" id="ds-text-input" rows="4" placeholder="Enter text for entity extraction..."></textarea>
                                         <small class="text-muted">Extract entities like standards, organizations, dates, technical terms, etc.</small>
                                     </div>
+
+                                    <!-- File Upload Input -->
+                                    <div id="ds-upload-input-container" class="ds-input-container mb-3" style="display: none;">
+                                        <label for="ds-file-upload" class="form-label">Upload File</label>
+                                        <input class="form-control" type="file" id="ds-file-upload" accept=".pdf,.docx,.txt,.md">
+                                        <small class="text-muted">Supported formats: PDF, DOCX, TXT, MD</small>
+                                        <div id="ds-upload-progress" class="mt-2" style="display: none;">
+                                            <div class="progress">
+                                                <div id="ds-upload-progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                                            </div>
+                                            <small id="ds-upload-status" class="text-muted"></small>
+                                        </div>
+                                    </div>
+
+                                    <!-- Document Store Selection -->
+                                    <div id="ds-docstore-input-container" class="ds-input-container mb-3" style="display: none;">
+                                        <label class="form-label">Select from Document Store</label>
+                                        <button id="ds-load-docstore-btn" class="btn btn-sm btn-outline-primary mb-2">
+                                            <i class="fas fa-sync-alt"></i> Load Documents
+                                        </button>
+                                        <div id="ds-docstore-results" class="mt-2" style="display: none; max-height: 300px; overflow-y: auto;">
+                                            <div class="list-group" id="ds-docstore-list"></div>
+                                        </div>
+                                        <div id="ds-selected-doc-info" class="alert alert-info mt-2" style="display: none;">
+                                            <i class="fas fa-check-circle"></i> Selected: <strong id="ds-selected-doc-name"></strong>
+                                        </div>
+                                    </div>
+
                                     <div class="mb-3">
                                         <label class="form-label">Extraction Method</label>
                                         <div class="form-check">
@@ -1016,10 +1061,55 @@
                                     <h6 class="mb-0"><i class="fas fa-file-alt"></i> Document Analysis</h6>
                                 </div>
                                 <div class="card-body">
+                                    <!-- Input Source Selection -->
                                     <div class="mb-3">
+                                        <label class="form-label">Input Source</label>
+                                        <div class="btn-group w-100" role="group">
+                                            <button type="button" class="btn btn-outline-primary da-input-source-btn" data-source="text" active>
+                                                <i class="fas fa-keyboard"></i> Text Input
+                                            </button>
+                                            <button type="button" class="btn btn-outline-primary da-input-source-btn" data-source="upload">
+                                                <i class="fas fa-upload"></i> Upload File
+                                            </button>
+                                            <button type="button" class="btn btn-outline-primary da-input-source-btn" data-source="docstore">
+                                                <i class="fas fa-folder-open"></i> From Document Store
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Text Input (default) -->
+                                    <div id="da-text-input-container" class="da-input-container mb-3">
                                         <label for="ds-doc-input" class="form-label">Document Text</label>
                                         <textarea class="form-control" id="ds-doc-input" rows="4" placeholder="Paste document text for analysis..."></textarea>
                                     </div>
+
+                                    <!-- File Upload Input -->
+                                    <div id="da-upload-input-container" class="da-input-container mb-3" style="display: none;">
+                                        <label for="da-file-upload" class="form-label">Upload File</label>
+                                        <input class="form-control" type="file" id="da-file-upload" accept=".pdf,.docx,.txt,.md">
+                                        <small class="text-muted">Supported formats: PDF, DOCX, TXT, MD</small>
+                                        <div id="da-upload-progress" class="mt-2" style="display: none;">
+                                            <div class="progress">
+                                                <div id="da-upload-progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                                            </div>
+                                            <small id="da-upload-status" class="text-muted"></small>
+                                        </div>
+                                    </div>
+
+                                    <!-- Document Store Selection -->
+                                    <div id="da-docstore-input-container" class="da-input-container mb-3" style="display: none;">
+                                        <label class="form-label">Select from Document Store</label>
+                                        <button id="da-load-docstore-btn" class="btn btn-sm btn-outline-primary mb-2">
+                                            <i class="fas fa-sync-alt"></i> Load Documents
+                                        </button>
+                                        <div id="da-docstore-results" class="mt-2" style="display: none; max-height: 300px; overflow-y: auto;">
+                                            <div class="list-group" id="da-docstore-list"></div>
+                                        </div>
+                                        <div id="da-selected-doc-info" class="alert alert-info mt-2" style="display: none;">
+                                            <i class="fas fa-check-circle"></i> Selected: <strong id="da-selected-doc-name"></strong>
+                                        </div>
+                                    </div>
+
                                     <button id="ds-analyze-btn" class="btn btn-success btn-animated">
                                         <i class="fas fa-chart-bar"></i> Analyze Document
                                     </button>
@@ -1994,6 +2084,250 @@
         // ============================================
         // Data Scientist Functionality
         // ============================================
+        
+        // ============================================
+        // Data Scientist - Input Source Management
+        // ============================================
+        
+        // Entity Extraction - Input Source Switching
+        const dsInputSourceBtns = document.querySelectorAll('.ds-input-source-btn');
+        let dsSelectedFile = null;
+        let dsSelectedDocStoreDoc = null;
+        
+        dsInputSourceBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Update button states
+                dsInputSourceBtns.forEach(b => {
+                    b.classList.remove('active');
+                    b.classList.add('btn-outline-primary');
+                });
+                btn.classList.add('active');
+                btn.classList.remove('btn-outline-primary');
+                
+                // Show/hide input containers
+                const source = btn.dataset.source;
+                document.querySelectorAll('.ds-input-container').forEach(c => c.style.display = 'none');
+                document.getElementById(`ds-${source}-input-container`).style.display = 'block';
+            });
+        });
+        
+        // Document Analysis - Input Source Switching
+        const daInputSourceBtns = document.querySelectorAll('.da-input-source-btn');
+        let daSelectedFile = null;
+        let daSelectedDocStoreDoc = null;
+        
+        daInputSourceBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Update button states
+                daInputSourceBtns.forEach(b => {
+                    b.classList.remove('active');
+                    b.classList.add('btn-outline-primary');
+                });
+                btn.classList.add('active');
+                btn.classList.remove('btn-outline-primary');
+                
+                // Show/hide input containers
+                const source = btn.dataset.source;
+                document.querySelectorAll('.da-input-container').forEach(c => c.style.display = 'none');
+                document.getElementById(`da-${source}-input-container`).style.display = 'block';
+            });
+        });
+        
+        // Helper: Upload file and extract text
+        async function uploadAndExtractText(fileInput, progressContainer, progressBar, progressStatus) {
+            const file = fileInput.files[0];
+            if (!file) {
+                alert('Please select a file');
+                return null;
+            }
+            
+            progressContainer.style.display = 'block';
+            progressBar.style.width = '0%';
+            progressStatus.textContent = 'Uploading file...';
+            
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                // Upload file
+                const uploadResponse = await fetch(API_BASE_URL + '/api/rag/upload', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${AUTH_TOKEN}`
+                    },
+                    body: formData
+                });
+                
+                if (!uploadResponse.ok) {
+                    throw new Error('Upload failed');
+                }
+                
+                const uploadResult = await uploadResponse.json();
+                progressStatus.textContent = 'Extracting text...';
+                progressBar.style.width = '50%';
+                
+                // Get document text
+                const textResponse = await fetch(API_BASE_URL + `/api/rag/download/${uploadResult.file_id}/${encodeURIComponent(file.name)}`, {
+                    headers: {
+                        'Authorization': `Bearer ${AUTH_TOKEN}`
+                    }
+                });
+                
+                if (!textResponse.ok) {
+                    throw new Error('Failed to get document text');
+                }
+                
+                const text = await textResponse.text();
+                progressBar.style.width = '100%';
+                progressStatus.textContent = '✓ Text extracted successfully';
+                
+                setTimeout(() => {
+                    progressContainer.style.display = 'none';
+                }, 2000);
+                
+                return text;
+            } catch (error) {
+                console.error('Upload error:', error);
+                progressStatus.textContent = '✗ Upload failed: ' + error.message;
+                progressBar.classList.remove('progress-bar-animated');
+                progressBar.classList.add('bg-danger');
+                return null;
+            }
+        }
+        
+        // Helper: Load Document Store documents
+        async function loadDocstoreDocuments(resultContainer, listElement, onSelectCallback) {
+            try {
+                const response = await fetch(API_BASE_URL + '/api/rag/document_store/jobs', {
+                    headers: {
+                        'Authorization': `Bearer ${AUTH_TOKEN}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to load Document Store');
+                }
+                
+                const data = await response.json();
+                const jobs = data.jobs || [];
+                
+                listElement.innerHTML = '';
+                
+                if (jobs.length === 0) {
+                    listElement.innerHTML = '<div class="list-group-item text-muted">No documents in Document Store</div>';
+                } else {
+                    jobs.forEach(job => {
+                        const documents = job.documents || [];
+                        documents.forEach((doc, idx) => {
+                            const item = document.createElement('div');
+                            item.className = 'list-group-item list-group-item-action';
+                            item.innerHTML = `
+                                <div class="d-flex w-100 justify-content-between align-items-center">
+                                    <div>
+                                        <i class="fas fa-file-pdf text-danger"></i>
+                                        <strong>${doc.filename}</strong>
+                                        <br><small class="text-muted">${doc.format.toUpperCase()} • ${formatFileSize(doc.size)}</small>
+                                    </div>
+                                    <button class="btn btn-sm btn-outline-primary select-doc-btn">
+                                        <i class="fas fa-check"></i> Select
+                                    </button>
+                                </div>
+                            `;
+                            
+                            item.querySelector('.select-doc-btn').addEventListener('click', () => {
+                                // Clear previous selections
+                                listElement.querySelectorAll('.list-group-item').forEach(i => {
+                                    i.classList.remove('active');
+                                });
+                                item.classList.add('active');
+                                
+                                onSelectCallback(doc, job.job_id);
+                            });
+                            
+                            listElement.appendChild(item);
+                        });
+                    });
+                }
+                
+                resultContainer.style.display = 'block';
+            } catch (error) {
+                console.error('Load Document Store error:', error);
+                alert('Failed to load Document Store: ' + error.message);
+            }
+        }
+        
+        // Entity Extraction - File Upload Handler
+        const dsFileUpload = document.getElementById('ds-file-upload');
+        if (dsFileUpload) {
+            dsFileUpload.addEventListener('change', async () => {
+                const file = dsFileUpload.files[0];
+                if (file) {
+                    dsSelectedFile = file;
+                    const text = await uploadAndExtractText(
+                        dsFileUpload,
+                        document.getElementById('ds-upload-progress'),
+                        document.getElementById('ds-upload-progress-bar'),
+                        document.getElementById('ds-upload-status')
+                    );
+                    if (text) {
+                        document.getElementById('ds-text-input').value = text;
+                    }
+                }
+            });
+        }
+        
+        // Entity Extraction - Document Store Handler
+        const dsLoadDocstoreBtn = document.getElementById('ds-load-docstore-btn');
+        if (dsLoadDocstoreBtn) {
+            dsLoadDocstoreBtn.addEventListener('click', () => {
+                loadDocstoreDocuments(
+                    document.getElementById('ds-docstore-results'),
+                    document.getElementById('ds-docstore-list'),
+                    (doc, jobId) => {
+                        dsSelectedDocStoreDoc = { doc, jobId };
+                        document.getElementById('ds-selected-doc-name').textContent = `${doc.filename} (${jobId})`;
+                        document.getElementById('ds-selected-doc-info').style.display = 'block';
+                    }
+                );
+            });
+        }
+        
+        // Document Analysis - File Upload Handler
+        const daFileUpload = document.getElementById('da-file-upload');
+        if (daFileUpload) {
+            daFileUpload.addEventListener('change', async () => {
+                const file = daFileUpload.files[0];
+                if (file) {
+                    daSelectedFile = file;
+                    const text = await uploadAndExtractText(
+                        daFileUpload,
+                        document.getElementById('da-upload-progress'),
+                        document.getElementById('da-upload-progress-bar'),
+                        document.getElementById('da-upload-status')
+                    );
+                    if (text) {
+                        document.getElementById('ds-doc-input').value = text;
+                    }
+                }
+            });
+        }
+        
+        // Document Analysis - Document Store Handler
+        const daLoadDocstoreBtn = document.getElementById('da-load-docstore-btn');
+        if (daLoadDocstoreBtn) {
+            daLoadDocstoreBtn.addEventListener('click', () => {
+                loadDocstoreDocuments(
+                    document.getElementById('da-docstore-results'),
+                    document.getElementById('da-docstore-list'),
+                    (doc, jobId) => {
+                        daSelectedDocStoreDoc = { doc, jobId };
+                        document.getElementById('da-selected-doc-name').textContent = `${doc.filename} (${jobId})`;
+                        document.getElementById('da-selected-doc-info').style.display = 'block';
+                    }
+                );
+            });
+        }
+        
         const dsExtractBtn = document.getElementById('ds-extract-btn');
         const dsAnalyzeBtn = document.getElementById('ds-analyze-btn');
         const dsStandardsBtn = document.getElementById('ds-standards-btn');
@@ -2001,87 +2335,163 @@
         // Entity Extraction
         if (dsExtractBtn) {
             dsExtractBtn.addEventListener('click', async () => {
-                const textInput = document.getElementById('ds-text-input');
-                const text = textInput.value.trim();
+                // Check if Document Store document is selected
+                if (dsSelectedDocStoreDoc) {
+                    // Fetch document content from Document Store
+                    try {
+                        const response = await fetch(API_BASE_URL + `/api/rag/document_store/get_document`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${AUTH_TOKEN}`
+                            },
+                            body: JSON.stringify({
+                                job_id: dsSelectedDocStoreDoc.jobId,
+                                doc_id: dsSelectedDocStoreDoc.doc.doc_id
+                            })
+                        });
+                        
+                        if (response.ok) {
+                            const result = await response.json();
+                            const text = result.content || result.text || '';
+                            if (text) {
+                                await performEntityExtraction(text);
+                                return;
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Document Store fetch error:', error);
+                    }
+                }
+                
+                // Get text from input or uploaded file
+                let text = document.getElementById('ds-text-input').value.trim();
+                if (!text && dsSelectedFile) {
+                    alert('Please wait for file upload to complete');
+                    return;
+                }
                 if (!text) {
                     alert('Please enter text to analyze');
                     return;
                 }
-
-                const method = document.querySelector('input[name="dsMethod"]:checked').value;
                 
-                dsExtractBtn.disabled = true;
-                dsExtractBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Extracting...';
-
-                try {
-                    const endpoint = method === 'llm' 
-                        ? '/api/rag/nlp/extract_entities_llm' 
-                        : '/api/rag/nlp/extract_entities';
-
-                    const response = await fetch(API_BASE_URL + endpoint, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${AUTH_TOKEN}`
-                        },
-                        body: JSON.stringify({ text: text })
-                    });
-
-                    const result = await response.json();
-                    
-                    if (response.ok && result.entities) {
-                        displayEntityExtractionResults(result);
-                    } else {
-                        alert('Entity extraction failed: ' + (result.error || 'Unknown error'));
-                    }
-                } catch (error) {
-                    console.error('Entity extraction error:', error);
-                    alert('Entity extraction failed: ' + error.message);
-                } finally {
-                    dsExtractBtn.disabled = false;
-                    dsExtractBtn.innerHTML = '<i class="fas fa-magic"></i> Extract Entities';
-                }
+                await performEntityExtraction(text);
             });
+        }
+        
+        async function performEntityExtraction(text) {
+            const method = document.querySelector('input[name="dsMethod"]:checked').value;
+            const dsExtractBtn = document.getElementById('ds-extract-btn');
+            
+            dsExtractBtn.disabled = true;
+            dsExtractBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Extracting...';
+            
+            try {
+                const endpoint = method === 'llm'
+                    ? '/api/rag/nlp/extract_entities_llm'
+                    : '/api/rag/nlp/extract_entities';
+                
+                const response = await fetch(API_BASE_URL + endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${AUTH_TOKEN}`
+                    },
+                    body: JSON.stringify({ text: text })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok && result.entities) {
+                    displayEntityExtractionResults(result);
+                } else {
+                    alert('Entity extraction failed: ' + (result.error || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Entity extraction error:', error);
+                alert('Entity extraction failed: ' + error.message);
+            } finally {
+                dsExtractBtn.disabled = false;
+                dsExtractBtn.innerHTML = '<i class="fas fa-magic"></i> Extract Entities';
+            }
         }
 
         // Document Analysis
         if (dsAnalyzeBtn) {
             dsAnalyzeBtn.addEventListener('click', async () => {
-                const docInput = document.getElementById('ds-doc-input');
-                const text = docInput.value.trim();
+                // Check if Document Store document is selected
+                if (daSelectedDocStoreDoc) {
+                    try {
+                        const response = await fetch(API_BASE_URL + `/api/rag/document_store/get_document`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${AUTH_TOKEN}`
+                            },
+                            body: JSON.stringify({
+                                job_id: daSelectedDocStoreDoc.jobId,
+                                doc_id: daSelectedDocStoreDoc.doc.doc_id
+                            })
+                        });
+                        
+                        if (response.ok) {
+                            const result = await response.json();
+                            const text = result.content || result.text || '';
+                            if (text) {
+                                await performDocumentAnalysis(text);
+                                return;
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Document Store fetch error:', error);
+                    }
+                }
+                
+                // Get text from input or uploaded file
+                let text = document.getElementById('ds-doc-input').value.trim();
+                if (!text && daSelectedFile) {
+                    alert('Please wait for file upload to complete');
+                    return;
+                }
                 if (!text) {
                     alert('Please enter document text');
                     return;
                 }
-
-                dsAnalyzeBtn.disabled = true;
-                dsAnalyzeBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Analyzing...';
-
-                try {
-                    const response = await fetch(API_BASE_URL + '/api/rag/nlp/analyze_document', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${AUTH_TOKEN}`
-                        },
-                        body: JSON.stringify({ text: text })
-                    });
-
-                    const result = await response.json();
-                    
-                    if (response.ok) {
-                        displayDocumentAnalysis(result);
-                    } else {
-                        alert('Document analysis failed: ' + (result.error || 'Unknown error'));
-                    }
-                } catch (error) {
-                    console.error('Document analysis error:', error);
-                    alert('Document analysis failed: ' + error.message);
-                } finally {
-                    dsAnalyzeBtn.disabled = false;
-                    dsAnalyzeBtn.innerHTML = '<i class="fas fa-chart-bar"></i> Analyze Document';
-                }
+                
+                await performDocumentAnalysis(text);
             });
+        }
+        
+        async function performDocumentAnalysis(text) {
+            const dsAnalyzeBtn = document.getElementById('ds-analyze-btn');
+            
+            dsAnalyzeBtn.disabled = true;
+            dsAnalyzeBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Analyzing...';
+            
+            try {
+                const response = await fetch(API_BASE_URL + '/api/rag/nlp/analyze_document', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${AUTH_TOKEN}`
+                    },
+                    body: JSON.stringify({ text: text })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    displayDocumentAnalysis(result);
+                } else {
+                    alert('Document analysis failed: ' + (result.error || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Document analysis error:', error);
+                alert('Document analysis failed: ' + error.message);
+            } finally {
+                dsAnalyzeBtn.disabled = false;
+                dsAnalyzeBtn.innerHTML = '<i class="fas fa-chart-bar"></i> Analyze Document';
+            }
         }
 
         // Standards Extraction

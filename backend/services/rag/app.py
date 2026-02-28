@@ -1247,10 +1247,10 @@ def list_document_store_jobs(current_user_id):
     """List all ingestion jobs from Document Store MCP Server with documents"""
     try:
         from .document_store_client import document_store_client
-        
+
         # Get list of jobs
         jobs_result = document_store_client.list_ingestion_jobs()
-        
+
         # Handle nested response structure
         if jobs_result.get('success'):
             result = jobs_result.get('result', {})
@@ -1259,7 +1259,7 @@ def list_document_store_jobs(current_user_id):
                 jobs = result.get('jobs', [])
             else:
                 jobs = result.get('jobs', [])
-            
+
             # For each job, get the list of documents
             for job in jobs:
                 job_id = job.get('job_id')
@@ -1267,11 +1267,11 @@ def list_document_store_jobs(current_user_id):
                     # Call list_documents for this job
                     docs_result = document_store_client.list_documents(job_id)
                     logger.info(f"[DocStore API] list_documents result for {job_id}: {docs_result}")
-                    
+
                     if docs_result.get('success'):
                         docs_data = docs_result.get('result', {})
                         logger.info(f"[DocStore API] docs_data: {docs_data}")
-                        
+
                         if isinstance(docs_data, dict) and docs_data.get('success'):
                             job['documents'] = docs_data.get('documents', [])
                             logger.info(f"[DocStore API] Set job['documents'] from nested success: {job['documents'][:2] if job['documents'] else []}")
@@ -1283,13 +1283,55 @@ def list_document_store_jobs(current_user_id):
                         logger.warning(f"[DocStore API] list_documents failed: {docs_result}")
                 else:
                     job['documents'] = []
-            
+
             return jsonify({'jobs': jobs}), 200
         else:
             return jsonify({'error': jobs_result.get('error', 'Unknown error')}), 500
-            
+
     except Exception as e:
         logger.error(f"Error listing Document Store jobs: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/rag/document_store/get_document', methods=['POST'])
+@require_permission(Permission.READ_RAG)
+def get_document_from_store(current_user_id):
+    """Get a specific document from Document Store by job_id and doc_id"""
+    try:
+        data = request.get_json() or {}
+        job_id = data.get('job_id')
+        doc_id = data.get('doc_id')
+
+        if not job_id or not doc_id:
+            return jsonify({'error': 'job_id and doc_id are required'}), 400
+
+        from .document_store_client import document_store_client
+
+        # Get the document
+        doc_result = document_store_client.get_document(job_id, doc_id, format='txt')
+
+        if not doc_result.get('success'):
+            return jsonify({'error': doc_result.get('error', 'Failed to get document')}), 500
+
+        # Extract content from result
+        result_data = doc_result.get('result', {})
+        content = result_data.get('content', '')
+        
+        # If content is in nested structure
+        if not content and isinstance(result_data, dict):
+            content = result_data.get('text', '')
+
+        return jsonify({
+            'job_id': job_id,
+            'doc_id': doc_id,
+            'content': content,
+            'text': content
+        }), 200
+
+    except Exception as e:
+        logger.error(f"Error getting document from Document Store: {e}")
         import traceback
         logger.error(traceback.format_exc())
         return jsonify({'error': str(e)}), 500
