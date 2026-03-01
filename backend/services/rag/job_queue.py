@@ -152,15 +152,23 @@ class JobQueue:
                 return self.jobs.get(job_id)
     
     def update_job(self, job: SmartIngestionJob):
-        """Update job status"""
+        """Update job status (Redis + PostgreSQL for long-term storage)"""
         job.updated_at = datetime.utcnow().isoformat()
 
+        # Update in Redis
         if REDIS_AVAILABLE and redis_client:
             key = f"smart_ingestion_job:{job.job_id}"
             redis_client.setex(key, timedelta(hours=24), json.dumps(job.to_dict()))
         else:
             with self.lock:
                 self.jobs[job.job_id] = job
+        
+        # Also save to PostgreSQL for long-term storage
+        try:
+            from .hybrid_job_storage import hybrid_storage
+            hybrid_storage.save_job(job, save_to_db=True)
+        except ImportError:
+            logger.debug("Hybrid storage not available, using Redis only")
     
     def get_user_jobs(self, user_id: str, limit: int = 20) -> List[SmartIngestionJob]:
         """Get all jobs for a user"""
@@ -297,70 +305,133 @@ def create_job():
 
 @jobs_bp.route('/jobs', methods=['GET'])
 def list_jobs():
-    """List all jobs"""
+    """List all jobs (with optional historical jobs from database)"""
     try:
-        jobs = job_queue.list_jobs()
-        return jsonify({'jobs': jobs}), 200
+        # Check if user wants historical jobs
+        include_historical = request.args.get('historical', 'true').lower() == 'true'
+        limit = request.args.get('limit', 100, type=int)
+        
+        # Use hybrid storage if available
+        try:
+            from .hybrid_job_storage import hybrid_storage
+            jobs = hybrid_storage.get_all_jobs(limit=limit, include_historical=include_historical)
+            return jsonify({'jobs': [job.to_dict() for job in jobs], 'count': len(jobs)}), 200
+        except ImportError:
+            # Fallback to Redis-only
+            jobs = job_queue.list_jobs(limit=limit)
+            return jsonify({'jobs': jobs, 'count': len(jobs)}), 200
+            
     except Exception as e:
         logger.error(f"Error listing jobs: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
 
-@jobs_bp.route('/jobs/<job_id>', methods=['GET'])
-def get_job_status(job_id):
-    """Get job status and progress"""
-    job = job_queue.get_job(job_id)
-
-    if not job:
-        return jsonify({'error': 'Job not found'}), 404
-
-    return jsonify({
-        'job_id': job.job_id,
-        'job_type': job.job_type,
-        'ingestion_mode': job.ingestion_mode,
-        'processing_mode': job.processing_mode,
-        'chunking_strategy': job.chunking_strategy,
-        'source_url': job.source_url,
-        'status': job.status,
-        'progress': job.progress,
-        'current_stage': job.current_stage,
-        'created_at': job.created_at,
-        'updated_at': job.updated_at,
-        'documents_total': job.documents_total,
-        'documents_processed': job.documents_processed,
-        'chunks_generated': job.chunks_generated,
-        'result': job.result,
-        'error': job.error
-    }), 200
-
-
 @jobs_bp.route('/jobs/user/<user_id>', methods=['GET'])
 def get_user_jobs(user_id):
-    """Get all jobs for a user"""
-    limit = request.args.get('limit', 20, type=int)
-    jobs = job_queue.get_user_jobs(user_id, limit)
+    """Get all jobs for a user (including historical from database)"""
+    try:
+        # Check if user wants historical jobs
+        include_historical = request.args.get('historical', 'true').lower() == 'true'
+        limit = request.args.get('limit', 50, type=int)
+        
+        # Use hybrid storage if available
+        try:
+            from .hybrid_job_storage import hybrid_storage
+            jobs = hybrid_storage.get_user_jobs(
+                user_id=user_id, 
+                limit=limit, 
+                include_historical=include_historical
+            )
+            return jsonify({'jobs': [job.to_dict() for job in jobs], 'count': len(jobs)}), 200
+        except ImportError:
+            # Fallback to Redis-only
+            jobs = job_queue.get_user_jobs(user_id, limit)
+            return jsonify({'jobs': [job.to_dict() for job in jobs], 'count': len(jobs)}), 200
+            
+    except Exception as e:
+        logger.error(f"Error getting user jobs: {str(e)}")
+        return jsonify({'error': str(e)}), 500
 
-    return jsonify({
-        'jobs': [
-            {
-                'job_id': j.job_id,
-                'job_type': j.job_type,
-                'ingestion_mode': j.ingestion_mode,
-                'processing_mode': j.processing_mode,
-                'chunking_strategy': j.chunking_strategy,
-                'source_url': j.source_url,
-                'status': j.status,
-                'progress': j.progress,
-                'current_stage': j.current_stage,
-                'created_at': j.created_at,
-                'updated_at': j.updated_at,
-                'documents_processed': j.documents_processed,
-                'chunks_generated': j.chunks_generated
-            }
-            for j in jobs
-        ],
-        'total': len(jobs)
-    }), 200
+
+@jobs_bp.route('/jobs/<job_id>', methods=['GET'])
+def get_job_status(job_id):
+    """Get job status and progress (including processed files if available)"""
+    try:
+        # Try to get from hybrid storage
+        try:
+            from .hybrid_job_storage import hybrid_storage
+            job = hybrid_storage.get_job(job_id)
+        except ImportError:
+            job = job_queue.get_job(job_id)
+
+        if not job:
+            return jsonify({'error': 'Job not found'}), 404
+
+        response_data = {
+            'job_id': job.job_id,
+            'job_type': job.job_type,
+            'ingestion_mode': job.ingestion_mode,
+            'processing_mode': job.processing_mode,
+            'chunking_strategy': job.chunking_strategy,
+            'source_url': job.source_url,
+            'status': job.status,
+            'progress': job.progress,
+            'current_stage': job.current_stage,
+            'created_at': job.created_at,
+            'updated_at': job.updated_at,
+            'documents_total': job.documents_total,
+            'documents_processed': job.documents_processed,
+            'chunks_generated': job.chunks_generated,
+            'result': job.result,
+            'error': job.error
+        }
+
+        # Try to get processed files from database
+        try:
+            from database.utils.database import get_db_connection
+            conn = get_db_connection()
+            if conn:
+                with conn.cursor() as cur:
+                    cur.execute("""
+                        SELECT 
+                            id, original_filename, file_format, file_size_bytes,
+                            status, extraction_method, extraction_time_seconds,
+                            text_length, cyrillic_ratio, encoding_was_fixed,
+                            chunks_created, error_message
+                        FROM ingestion_job_files
+                        WHERE job_id = %s
+                        ORDER BY id
+                    """, (job_id,))
+                    
+                    files = []
+                    for row in cur.fetchall():
+                        files.append({
+                            'id': row[0],
+                            'filename': row[1],
+                            'format': row[3],
+                            'size_bytes': row[4],
+                            'status': row[5],
+                            'extraction_method': row[6],
+                            'extraction_time': row[7],
+                            'text_length': row[8],
+                            'cyrillic_ratio': row[9],
+                            'encoding_fixed': row[10],
+                            'chunks_created': row[11],
+                            'error': row[12]
+                        })
+                    
+                    response_data['files'] = files
+                    response_data['files_count'] = len(files)
+        except Exception as e:
+            logger.debug(f"Could not load job files: {e}")
+            response_data['files'] = []
+            response_data['files_count'] = 0
+
+        return jsonify(response_data), 200
+        
+    except Exception as e:
+        logger.error(f"Error getting job status: {str(e)}")
+        return jsonify({'error': str(e)}), 500
 
 
 @jobs_bp.route('/jobs/<job_id>/cancel', methods=['POST'])
@@ -379,6 +450,176 @@ def cancel_job(job_id):
     job_queue.update_job(job)
     
     return jsonify({'message': 'Job cancelled successfully'}), 200
+
+
+@jobs_bp.route('/jobs/cleanup', methods=['POST'])
+def cleanup_old_jobs():
+    """
+    Clean up old jobs from Redis (PostgreSQL keeps permanent record)
+    
+    Request JSON (optional):
+    {
+        "days_to_keep": 7,  // Keep jobs newer than this (default: 7 days)
+        "dry_run": true     // Don't actually delete, just report (default: false)
+    }
+    
+    Response:
+    {
+        "jobs_scanned": 100,
+        "jobs_deleted": 25,
+        "jobs_older_than": "2026-02-22"
+    }
+    """
+    try:
+        from datetime import datetime, timedelta
+        
+        data = request.get_json() or {}
+        days_to_keep = data.get('days_to_keep', 7)
+        dry_run = data.get('dry_run', False)
+        
+        cutoff_date = datetime.utcnow() - timedelta(days=days_to_keep)
+        cutoff_str = cutoff_date.isoformat()
+        
+        jobs_scanned = 0
+        jobs_deleted = 0
+        
+        if REDIS_AVAILABLE and redis_client:
+            # Get all job keys
+            job_keys = redis_client.keys("smart_ingestion_job:*")
+            
+            for key in job_keys:
+                jobs_scanned += 1
+                job_json = redis_client.get(key)
+                
+                if job_json:
+                    try:
+                        job_data = json.loads(job_json)
+                        created_at = job_data.get('created_at', '')
+                        
+                        # Compare dates (ISO format strings can be compared lexicographically)
+                        if created_at < cutoff_str:
+                            if not dry_run:
+                                redis_client.delete(key)
+                            jobs_deleted += 1
+                    except Exception as e:
+                        logger.warning(f"Failed to parse job: {e}")
+        
+        return jsonify({
+            'success': True,
+            'jobs_scanned': jobs_scanned,
+            'jobs_deleted': jobs_deleted,
+            'cutoff_date': cutoff_str,
+            'days_to_keep': days_to_keep,
+            'dry_run': dry_run,
+            'message': f"Would delete {jobs_deleted} jobs older than {cutoff_str}" if dry_run else f"Deleted {jobs_deleted} old jobs"
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"Error cleaning up jobs: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+
+@jobs_bp.route('/jobs/stats', methods=['GET'])
+def get_jobs_stats():
+    """
+    Get job statistics
+    
+    Response:
+    {
+        "total_jobs": 100,
+        "by_status": {"completed": 80, "failed": 10, ...},
+        "by_type": {"file_upload": 60, "web_page": 40},
+        "recent_jobs": [...],
+        "oldest_job_date": "2026-01-01",
+        "postgres_jobs": 500  // Total in PostgreSQL
+    }
+    """
+    try:
+        from sqlalchemy import text, func
+        from database.utils.database import get_db_manager
+        
+        stats = {
+            'total_jobs': 0,
+            'by_status': {},
+            'by_type': {},
+            'recent_jobs': [],
+            'oldest_job_date': None,
+            'redis_jobs': 0,
+            'postgres_jobs': 0
+        }
+        
+        # Get Redis stats
+        if REDIS_AVAILABLE and redis_client:
+            job_keys = redis_client.keys("smart_ingestion_job:*")
+            stats['redis_jobs'] = len(job_keys)
+            
+            for key in job_keys:
+                job_json = redis_client.get(key)
+                if job_json:
+                    try:
+                        job_data = json.loads(job_json)
+                        status = job_data.get('status', 'unknown')
+                        job_type = job_data.get('job_type', 'unknown')
+                        created_at = job_data.get('created_at')
+                        
+                        stats['by_status'][status] = stats['by_status'].get(status, 0) + 1
+                        stats['by_type'][job_type] = stats['by_type'].get(job_type, 0) + 1
+                        stats['total_jobs'] += 1
+                        
+                        if created_at:
+                            if not stats['oldest_job_date'] or created_at < stats['oldest_job_date']:
+                                stats['oldest_job_date'] = created_at
+                        
+                        # Add to recent jobs (last 10)
+                        if len(stats['recent_jobs']) < 10:
+                            stats['recent_jobs'].append({
+                                'job_id': job_data.get('job_id'),
+                                'status': status,
+                                'created_at': created_at
+                            })
+                    except Exception as e:
+                        logger.warning(f"Failed to parse job: {e}")
+        
+        # Get PostgreSQL stats
+        db_manager = get_db_manager()
+        if db_manager:
+            try:
+                with db_manager.engine.connect() as conn:
+                    # Total jobs
+                    result = conn.execute(text("SELECT COUNT(*) FROM ingestion_jobs"))
+                    stats['postgres_jobs'] = result.fetchone()[0]
+                    
+                    # By status
+                    result = conn.execute(text("""
+                        SELECT status, COUNT(*) 
+                        FROM ingestion_jobs 
+                        GROUP BY status
+                    """))
+                    for row in result.fetchall():
+                        stats['by_status'][row[0]] = stats['by_status'].get(row[0], 0) + row[1]
+                    
+                    # By type
+                    result = conn.execute(text("""
+                        SELECT job_type, COUNT(*) 
+                        FROM ingestion_jobs 
+                        GROUP BY job_type
+                    """))
+                    for row in result.fetchall():
+                        stats['by_type'][row[0]] = stats['by_type'].get(row[0], 0) + row[1]
+                    
+                    # Oldest job
+                    result = conn.execute(text("SELECT MIN(created_at) FROM ingestion_jobs"))
+                    oldest = result.fetchone()[0]
+                    if oldest and (not stats['oldest_job_date'] or str(oldest) < stats['oldest_job_date']):
+                        stats['oldest_job_date'] = str(oldest)
+            except Exception as e:
+                logger.debug(f"Could not get PostgreSQL stats: {e}")
+        
+        return jsonify(stats), 200
+        
+    except Exception as e:
+        logger.error(f"Error getting job stats: {str(e)}")
+        return jsonify({'error': str(e)}), 500
 
 
 if __name__ == '__main__':
@@ -554,6 +795,96 @@ def delete_job(job_id):
         'deleted_status': job_status,
         'chunks_removed': chunks_generated
     }), 200
+
+
+@jobs_bp.route('/jobs/<job_id>/restart', methods=['POST'])
+def restart_job(job_id):
+    """
+    Restart a job (cancel current and create new with same parameters)
+    
+    This deletes the current job and creates a new one with identical parameters.
+    Useful when a job is stuck or you want to reprocess with current settings.
+    """
+    old_job = job_queue.get_job(job_id)
+
+    if not old_job:
+        return jsonify({'error': 'Job not found'}), 404
+
+    # Can only restart completed, failed, or cancelled jobs
+    if old_job.status not in [JobStatus.COMPLETED.value, JobStatus.FAILED.value, JobStatus.CANCELLED.value]:
+        return jsonify({'error': 'Can only restart completed/failed/cancelled jobs'}), 400
+
+    # Create new job with same parameters
+    try:
+        new_job = job_queue.create_job(
+            user_id=old_job.user_id,
+            job_type=old_job.job_type,
+            parameters=old_job.parameters,
+            ingestion_mode=old_job.ingestion_mode,
+            processing_mode=old_job.processing_mode,
+            chunking_strategy=old_job.chunking_strategy,
+            source_url=old_job.source_url,
+            document_urls=old_job.document_urls
+        )
+
+        logger.info(f"Job {job_id} restarted as {new_job.job_id}")
+
+        # Start processing the new job
+        _start_job_processing(new_job)
+
+        return jsonify({
+            'message': 'Job restarted successfully',
+            'old_job_id': job_id,
+            'new_job_id': new_job.job_id,
+            'new_status': new_job.status
+        }), 202
+
+    except Exception as e:
+        logger.error(f"Failed to restart job {job_id}: {e}")
+        return jsonify({'error': f'Failed to restart job: {str(e)}'}), 500
+
+
+def _start_job_processing(job):
+    """Helper function to start job processing based on job type"""
+    from .smart_ingestion_enhanced import _process_documents_internal
+    import os
+
+    if job.job_type == 'file_upload':
+        # Define the processing function for file upload jobs
+        def process_files_background(job):
+            local_dir = job.parameters.get('local_file_dir', '/root/qwen/ai_agent/downloads')
+            if os.path.exists(local_dir):
+                pdf_files = [f for f in os.listdir(local_dir) if f.endswith('.pdf')]
+                doc_urls = [f"file://{os.path.join(local_dir, f)}" for f in pdf_files[:116]]
+            else:
+                doc_urls = job.parameters.get('document_urls', [])
+
+            return _process_documents_internal(
+                document_urls=doc_urls,
+                prompt=job.parameters.get('prompt', ''),
+                ingest_chunks_flag=job.parameters.get('ingest_chunks', True),
+                job=job
+            )
+
+        job_queue.start_worker(job.job_id, process_files_background)
+
+    elif job.job_type == 'webpage_scan':
+        # Define the processing function for web page jobs
+        def process_webpage_background(job):
+            source_url = job.source_url
+            return _process_documents_internal(
+                document_urls=[source_url] if source_url else [],
+                prompt=job.parameters.get('prompt', ''),
+                ingest_chunks_flag=job.parameters.get('ingest_chunks', True),
+                job=job
+            )
+
+        job_queue.start_worker(job.job_id, process_webpage_background)
+
+    elif job.job_type == 'smart_ingest_docstore':
+        # Import and use the docstore processing function
+        from .app import _process_smart_ingest_docstore
+        job_queue.start_worker(job.job_id, _process_smart_ingest_docstore)
 
 
 @jobs_bp.route('/jobs/<job_id>/start_processing', methods=['POST'])

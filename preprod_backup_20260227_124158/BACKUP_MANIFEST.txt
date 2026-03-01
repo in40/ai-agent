@@ -1,0 +1,23 @@
+═══════════════════════════════════════════════════════════════
+PRE-PRODUCTION BACKUP MANIFEST
+═══════════════════════════════════════════════════════════════
+Backup Date: 2026-02-27 12:41:58
+Backup Location: /root/qwen/ai_agent/preprod_backup_20260227_124158
+Created By: root
+Host: debian
+
+PURPOSE:
+This backup was created before running pre-production tests.
+Files were moved (not copied) to preserve disk space.
+
+TO RECOVER:
+Run the recovery script: bash /root/qwen/ai_agent/preprod_backup_20260227_124158/RECOVER_FILES.sh
+
+OR manually move files back from:
+  Downloads:      /root/qwen/ai_agent/preprod_backup_20260227_124158/downloads/
+  Document Store: /root/qwen/ai_agent/preprod_backup_20260227_124158/document_store/
+
+═══════════════════════════════════════════════════════════════
+BACKED UP FILES:
+═══════════════════════════════════════════════════════════════
+

@@ -1,0 +1,3610 @@
+═══════════════════════════════════════════════════════════════
+PRE-PRODUCTION BACKUP MANIFEST
+═══════════════════════════════════════════════════════════════
+Backup Date: 2026-02-27 12:42:57
+Backup Location: /root/qwen/ai_agent/preprod_backup_20260227_124257
+Created By: root
+Host: debian
+
+PURPOSE:
+This backup was created before running pre-production tests.
+Files were moved (not copied) to preserve disk space.
+
+TO RECOVER:
+Run the recovery script: bash /root/qwen/ai_agent/preprod_backup_20260227_124257/RECOVER_FILES.sh
+
+OR manually move files back from:
+  Downloads:      /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/
+  Document Store: /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store/
+
+═══════════════════════════════════════════════════════════════
+BACKED UP FILES:
+═══════════════════════════════════════════════════════════════
+
+[Downloads] 230728-56-1_1.pdf
+  Original: /root/qwen/ai_agent/downloads/230728-56-1_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/230728-56-1_1.pdf
+  Size:     816K
+  MD5:      5e5d27fff01424306d3fe35dec3c7c00
+
+[Downloads] 230728-56-1_2.pdf
+  Original: /root/qwen/ai_agent/downloads/230728-56-1_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/230728-56-1_2.pdf
+  Size:     816K
+  MD5:      5e5d27fff01424306d3fe35dec3c7c00
+
+[Downloads] 230728-56-1_3.pdf
+  Original: /root/qwen/ai_agent/downloads/230728-56-1_3.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/230728-56-1_3.pdf
+  Size:     816K
+  MD5:      5e5d27fff01424306d3fe35dec3c7c00
+
+[Downloads] 230728-56-1.pdf
+  Original: /root/qwen/ai_agent/downloads/230728-56-1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/230728-56-1.pdf
+  Size:     816K
+  MD5:      5e5d27fff01424306d3fe35dec3c7c00
+
+[Downloads] 4294852100.pdf
+  Original: /root/qwen/ai_agent/downloads/4294852100.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/4294852100.pdf
+  Size:     596K
+  MD5:      6ed3048373141356e394761089172835
+
+[Downloads] gost1759_0-87.pdf
+  Original: /root/qwen/ai_agent/downloads/gost1759_0-87.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost1759_0-87.pdf
+  Size:     660K
+  MD5:      1a25148acecc344c7f9a409fdbfca857
+
+[Downloads] gost_2.105_95.pdf
+  Original: /root/qwen/ai_agent/downloads/gost_2.105_95.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost_2.105_95.pdf
+  Size:     492K
+  MD5:      cb764d3d3dc94dbdd021304a3ac7289b
+
+[Downloads] gost_25346-89.pdf
+  Original: /root/qwen/ai_agent/downloads/gost_25346-89.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost_25346-89.pdf
+  Size:     836K
+  MD5:      a6af67258dc3cc6fa0db8c749aafdebb
+
+[Downloads] gost_25347-82.pdf
+  Original: /root/qwen/ai_agent/downloads/gost_25347-82.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost_25347-82.pdf
+  Size:     5.7M
+  MD5:      0d22123d9cc4ea5cbf23dcd917610f82
+
+[Downloads] gost-34_10.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-34_10.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-34_10.pdf
+  Size:     1.7M
+  MD5:      43eea6c28c0a723183d7a0f3a08c4f19
+
+[Downloads] gost-34_1.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-34_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-34_1.pdf
+  Size:     1.7M
+  MD5:      43eea6c28c0a723183d7a0f3a08c4f19
+
+[Downloads] gost-34_2.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-34_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-34_2.pdf
+  Size:     964K
+  MD5:      d0aa59f7391d5193306d40a130346940
+
+[Downloads] gost-34_3.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-34_3.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-34_3.pdf
+  Size:     1.7M
+  MD5:      a32b9e2f242a5c7357a68a6822711cfd
+
+[Downloads] gost-34_4.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-34_4.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-34_4.pdf
+  Size:     1.7M
+  MD5:      a32b9e2f242a5c7357a68a6822711cfd
+
+[Downloads] gost-34_5.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-34_5.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-34_5.pdf
+  Size:     592K
+  MD5:      ef45aa99cd583f7fe418f4c69f217612
+
+[Downloads] gost-34_6.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-34_6.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-34_6.pdf
+  Size:     1.7M
+  MD5:      1bd2e221172051f5554a55ea6f1442d7
+
+[Downloads] gost-34_7.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-34_7.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-34_7.pdf
+  Size:     592K
+  MD5:      ef45aa99cd583f7fe418f4c69f217612
+
+[Downloads] gost-34_8.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-34_8.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-34_8.pdf
+  Size:     1.7M
+  MD5:      a32b9e2f242a5c7357a68a6822711cfd
+
+[Downloads] gost-34_9.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-34_9.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-34_9.pdf
+  Size:     964K
+  MD5:      d0aa59f7391d5193306d40a130346940
+
+[Downloads] gost-34.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-34.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-34.pdf
+  Size:     592K
+  MD5:      ef45aa99cd583f7fe418f4c69f217612
+
+[Downloads] GOST_7.0.97-2016.pdf
+  Original: /root/qwen/ai_agent/downloads/GOST_7.0.97-2016.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/GOST_7.0.97-2016.pdf
+  Size:     512K
+  MD5:      356292e8601a913a0359a0b4be032a97
+
+[Downloads] GOST_R_2.105-2019.pdf
+  Original: /root/qwen/ai_agent/downloads/GOST_R_2.105-2019.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/GOST_R_2.105-2019.pdf
+  Size:     1.1M
+  MD5:      958af34faadcfa5c4bfa73bc335dc167
+
+[Downloads] gost-r-34_10.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-34_10.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-34_10.pdf
+  Size:     544K
+  MD5:      90a8ecbd17ade0059c4b546b6306611d
+
+[Downloads] gost-r-34_11.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-34_11.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-34_11.pdf
+  Size:     656K
+  MD5:      2b4e5266010a53382b14d42cf116e84e
+
+[Downloads] gost-r-34_12.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-34_12.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-34_12.pdf
+  Size:     732K
+  MD5:      df47c25deed279ed5bfef053321c7f92
+
+[Downloads] gost-r-34_1.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-34_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-34_1.pdf
+  Size:     352K
+  MD5:      45f20af0ecf5af8fa3027d69c01da1d3
+
+[Downloads] gost-r-34_2.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-34_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-34_2.pdf
+  Size:     732K
+  MD5:      df47c25deed279ed5bfef053321c7f92
+
+[Downloads] gost-r-34_3.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-34_3.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-34_3.pdf
+  Size:     656K
+  MD5:      2b4e5266010a53382b14d42cf116e84e
+
+[Downloads] gost-r-34_4.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-34_4.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-34_4.pdf
+  Size:     544K
+  MD5:      90a8ecbd17ade0059c4b546b6306611d
+
+[Downloads] gost-r-34_5.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-34_5.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-34_5.pdf
+  Size:     352K
+  MD5:      45f20af0ecf5af8fa3027d69c01da1d3
+
+[Downloads] gost-r-34_6.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-34_6.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-34_6.pdf
+  Size:     536K
+  MD5:      815e9db1ea9d23698a93adf82a0017d8
+
+[Downloads] gost-r-34_7.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-34_7.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-34_7.pdf
+  Size:     656K
+  MD5:      2b4e5266010a53382b14d42cf116e84e
+
+[Downloads] gost-r-34_8.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-34_8.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-34_8.pdf
+  Size:     732K
+  MD5:      df47c25deed279ed5bfef053321c7f92
+
+[Downloads] gost-r-34_9.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-34_9.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-34_9.pdf
+  Size:     536K
+  MD5:      815e9db1ea9d23698a93adf82a0017d8
+
+[Downloads] gost-r-34.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-34.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-34.pdf
+  Size:     536K
+  MD5:      815e9db1ea9d23698a93adf82a0017d8
+
+[Downloads] gost-r-50739-1995=edt2006_1.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-50739-1995=edt2006_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-50739-1995=edt2006_1.pdf
+  Size:     176K
+  MD5:      b98188ebd9b77bd31702f0ad1ca5ca5d
+
+[Downloads] gost-r-50739-1995=edt2006_2.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-50739-1995=edt2006_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-50739-1995=edt2006_2.pdf
+  Size:     176K
+  MD5:      b98188ebd9b77bd31702f0ad1ca5ca5d
+
+[Downloads] gost-r-50739-1995=edt2006.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-50739-1995=edt2006.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-50739-1995=edt2006.pdf
+  Size:     176K
+  MD5:      b98188ebd9b77bd31702f0ad1ca5ca5d
+
+[Downloads] gost-r-50922-2006_1.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-50922-2006_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-50922-2006_1.pdf
+  Size:     168K
+  MD5:      51490c758971f41075789579ada41303
+
+[Downloads] gost-r-50922-2006_2.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-50922-2006_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-50922-2006_2.pdf
+  Size:     168K
+  MD5:      51490c758971f41075789579ada41303
+
+[Downloads] gost-r-50922-2006.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-50922-2006.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-50922-2006.pdf
+  Size:     168K
+  MD5:      51490c758971f41075789579ada41303
+
+[Downloads] gost-r-51275-2006=edt2018_1.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-51275-2006=edt2018_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-51275-2006=edt2018_1.pdf
+  Size:     316K
+  MD5:      136aaf6e33113e4876374309bb9f39b7
+
+[Downloads] gost-r-51275-2006=edt2018_2.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-51275-2006=edt2018_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-51275-2006=edt2018_2.pdf
+  Size:     316K
+  MD5:      136aaf6e33113e4876374309bb9f39b7
+
+[Downloads] gost-r-51275-2006=edt2018.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-51275-2006=edt2018.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-51275-2006=edt2018.pdf
+  Size:     316K
+  MD5:      136aaf6e33113e4876374309bb9f39b7
+
+[Downloads] gost-r-51583-2014=edt2018_1.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-51583-2014=edt2018_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-51583-2014=edt2018_1.pdf
+  Size:     436K
+  MD5:      d7e7f71ee25fce647cf983f95f2cb0ce
+
+[Downloads] gost-r-51583-2014=edt2018_2.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-51583-2014=edt2018_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-51583-2014=edt2018_2.pdf
+  Size:     436K
+  MD5:      d7e7f71ee25fce647cf983f95f2cb0ce
+
+[Downloads] gost-r-51583-2014=edt2018.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-51583-2014=edt2018.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-51583-2014=edt2018.pdf
+  Size:     436K
+  MD5:      d7e7f71ee25fce647cf983f95f2cb0ce
+
+[Downloads] gost-r-52069_1.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-52069_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-52069_1.pdf
+  Size:     1.3M
+  MD5:      8b957ec2e714b7e0c5247fa3faea3ce0
+
+[Downloads] gost-r-52069_2.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-52069_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-52069_2.pdf
+  Size:     1.3M
+  MD5:      8b957ec2e714b7e0c5247fa3faea3ce0
+
+[Downloads] gost-r-52069.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-52069.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-52069.pdf
+  Size:     1.3M
+  MD5:      8b957ec2e714b7e0c5247fa3faea3ce0
+
+[Downloads] gost-r-52447-2005=edt2020_1.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-52447-2005=edt2020_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-52447-2005=edt2020_1.pdf
+  Size:     1.1M
+  MD5:      fd85f35d85fb643faefeb9f2229d0719
+
+[Downloads] gost-r-52447-2005=edt2020_2.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-52447-2005=edt2020_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-52447-2005=edt2020_2.pdf
+  Size:     1.1M
+  MD5:      fd85f35d85fb643faefeb9f2229d0719
+
+[Downloads] gost-r-52447-2005=edt2020.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-52447-2005=edt2020.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-52447-2005=edt2020.pdf
+  Size:     1.1M
+  MD5:      fd85f35d85fb643faefeb9f2229d0719
+
+[Downloads] gost-r-52448-2005=edt2018_1.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-52448-2005=edt2018_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-52448-2005=edt2018_1.pdf
+  Size:     716K
+  MD5:      a0d3b126b01971f44bb416153f6cf4bf
+
+[Downloads] gost-r-52448-2005=edt2018_2.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-52448-2005=edt2018_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-52448-2005=edt2018_2.pdf
+  Size:     716K
+  MD5:      a0d3b126b01971f44bb416153f6cf4bf
+
+[Downloads] gost-r-52448-2005=edt2018.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-52448-2005=edt2018.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-52448-2005=edt2018.pdf
+  Size:     716K
+  MD5:      a0d3b126b01971f44bb416153f6cf4bf
+
+[Downloads] gost-r-52633_10.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-52633_10.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-52633_10.pdf
+  Size:     608K
+  MD5:      87c052516f07b9819a264dbd744ed14c
+
+[Downloads] gost-r-52633_11.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-52633_11.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-52633_11.pdf
+  Size:     1.1M
+  MD5:      dec15b27a1f60bcdd28d59c29ca4c2ae
+
+[Downloads] gost-r-52633_12.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-52633_12.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-52633_12.pdf
+  Size:     612K
+  MD5:      9fa7688f0d9ed0ca0efa573a5a6d4add
+
+[Downloads] gost-r-52633_13.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-52633_13.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-52633_13.pdf
+  Size:     696K
+  MD5:      b2784406fca8583dc53a352a304128e0
+
+[Downloads] gost-r-52633_14.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-52633_14.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-52633_14.pdf
+  Size:     1.4M
+  MD5:      1a1a46a4e806a2c2bec3b0278501d341
+
+[Downloads] gost-r-52633_15.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-52633_15.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-52633_15.pdf
+  Size:     932K
+  MD5:      69c32ba4733b7a97f8c1ddd63ec346e4
+
+[Downloads] gost-r-52633_16.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-52633_16.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-52633_16.pdf
+  Size:     608K
+  MD5:      87c052516f07b9819a264dbd744ed14c
+
+[Downloads] gost-r-52633_1.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-52633_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-52633_1.pdf
+  Size:     1.3M
+  MD5:      b845b87e53a9a1fc1a8997977e972f92
+
+[Downloads] gost-r-52633_2.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-52633_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-52633_2.pdf
+  Size:     1.4M
+  MD5:      1a1a46a4e806a2c2bec3b0278501d341
+
+[Downloads] gost-r-52633_3.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-52633_3.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-52633_3.pdf
+  Size:     1.1M
+  MD5:      dec15b27a1f60bcdd28d59c29ca4c2ae
+
+[Downloads] gost-r-52633_4.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-52633_4.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-52633_4.pdf
+  Size:     868K
+  MD5:      8e4da116c97ee1f06bc6c65ad821db6f
+
+[Downloads] gost-r-52633_5.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-52633_5.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-52633_5.pdf
+  Size:     1.1M
+  MD5:      dec15b27a1f60bcdd28d59c29ca4c2ae
+
+[Downloads] gost-r-52633_6.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-52633_6.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-52633_6.pdf
+  Size:     696K
+  MD5:      b2784406fca8583dc53a352a304128e0
+
+[Downloads] gost-r-52633_7.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-52633_7.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-52633_7.pdf
+  Size:     1.4M
+  MD5:      1a1a46a4e806a2c2bec3b0278501d341
+
+[Downloads] gost-r-52633_8.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-52633_8.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-52633_8.pdf
+  Size:     612K
+  MD5:      9fa7688f0d9ed0ca0efa573a5a6d4add
+
+[Downloads] gost-r-52633_9.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-52633_9.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-52633_9.pdf
+  Size:     1.3M
+  MD5:      043936168d1d3e97fe8ced73f9fc598e
+
+[Downloads] gost-r-52633.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-52633.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-52633.pdf
+  Size:     612K
+  MD5:      9fa7688f0d9ed0ca0efa573a5a6d4add
+
+[Downloads] gost-r-52863-2007=edt2020_1.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-52863-2007=edt2020_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-52863-2007=edt2020_1.pdf
+  Size:     904K
+  MD5:      763310541f1725e86444f3531462b6c7
+
+[Downloads] gost-r-52863-2007=edt2020_2.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-52863-2007=edt2020_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-52863-2007=edt2020_2.pdf
+  Size:     904K
+  MD5:      763310541f1725e86444f3531462b6c7
+
+[Downloads] gost-r-52863-2007=edt2020.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-52863-2007=edt2020.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-52863-2007=edt2020.pdf
+  Size:     904K
+  MD5:      763310541f1725e86444f3531462b6c7
+
+[Downloads] gost-r-53109-2008=edt2018_1.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-53109-2008=edt2018_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-53109-2008=edt2018_1.pdf
+  Size:     456K
+  MD5:      57cf2cd600dea6ff45bdb404f9e59ae2
+
+[Downloads] gost-r-53109-2008=edt2018_2.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-53109-2008=edt2018_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-53109-2008=edt2018_2.pdf
+  Size:     456K
+  MD5:      57cf2cd600dea6ff45bdb404f9e59ae2
+
+[Downloads] gost-r-53109-2008=edt2018.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-53109-2008=edt2018.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-53109-2008=edt2018.pdf
+  Size:     456K
+  MD5:      57cf2cd600dea6ff45bdb404f9e59ae2
+
+[Downloads] gost-r-53110-2008=edt2020_1.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-53110-2008=edt2020_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-53110-2008=edt2020_1.pdf
+  Size:     900K
+  MD5:      ae16779541026dfc98f2f4da723afc7d
+
+[Downloads] gost-r-53110-2008=edt2020_2.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-53110-2008=edt2020_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-53110-2008=edt2020_2.pdf
+  Size:     900K
+  MD5:      ae16779541026dfc98f2f4da723afc7d
+
+[Downloads] gost-r-53110-2008=edt2020.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-53110-2008=edt2020.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-53110-2008=edt2020.pdf
+  Size:     900K
+  MD5:      ae16779541026dfc98f2f4da723afc7d
+
+[Downloads] gost-r-53111-2008=edt2018_1.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-53111-2008=edt2018_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-53111-2008=edt2018_1.pdf
+  Size:     552K
+  MD5:      55ef4f00680c3d44f8de66ab16f85a7a
+
+[Downloads] gost-r-53111-2008=edt2018_2.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-53111-2008=edt2018_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-53111-2008=edt2018_2.pdf
+  Size:     552K
+  MD5:      55ef4f00680c3d44f8de66ab16f85a7a
+
+[Downloads] gost-r-53111-2008=edt2018.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-53111-2008=edt2018.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-53111-2008=edt2018.pdf
+  Size:     552K
+  MD5:      55ef4f00680c3d44f8de66ab16f85a7a
+
+[Downloads] gost-r-53112-2008=edt2018_1.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-53112-2008=edt2018_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-53112-2008=edt2018_1.pdf
+  Size:     560K
+  MD5:      6598f5a1edaf4d4452d41986b96cf17a
+
+[Downloads] gost-r-53112-2008=edt2018_2.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-53112-2008=edt2018_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-53112-2008=edt2018_2.pdf
+  Size:     560K
+  MD5:      6598f5a1edaf4d4452d41986b96cf17a
+
+[Downloads] gost-r-53112-2008=edt2018.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-53112-2008=edt2018.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-53112-2008=edt2018.pdf
+  Size:     560K
+  MD5:      6598f5a1edaf4d4452d41986b96cf17a
+
+[Downloads] gost-r-53113_1.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-53113_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-53113_1.pdf
+  Size:     520K
+  MD5:      cfd87b338c781e49f71e79c6af314da0
+
+[Downloads] gost-r-53113_2.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-53113_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-53113_2.pdf
+  Size:     368K
+  MD5:      57031073bc89333e89a17c624270c746
+
+[Downloads] gost-r-53113_3.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-53113_3.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-53113_3.pdf
+  Size:     520K
+  MD5:      cfd87b338c781e49f71e79c6af314da0
+
+[Downloads] gost-r-53113_4.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-53113_4.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-53113_4.pdf
+  Size:     520K
+  MD5:      cfd87b338c781e49f71e79c6af314da0
+
+[Downloads] gost-r-53113_5.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-53113_5.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-53113_5.pdf
+  Size:     368K
+  MD5:      57031073bc89333e89a17c624270c746
+
+[Downloads] gost-r-53113.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-53113.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-53113.pdf
+  Size:     368K
+  MD5:      57031073bc89333e89a17c624270c746
+
+[Downloads] gost-r-53114-2008=edt2018_1.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-53114-2008=edt2018_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-53114-2008=edt2018_1.pdf
+  Size:     476K
+  MD5:      4013a6b3fa34defae7cedefb7a423e14
+
+[Downloads] gost-r-53114-2008=edt2018_2.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-53114-2008=edt2018_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-53114-2008=edt2018_2.pdf
+  Size:     476K
+  MD5:      4013a6b3fa34defae7cedefb7a423e14
+
+[Downloads] gost-r-53114-2008=edt2018.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-53114-2008=edt2018.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-53114-2008=edt2018.pdf
+  Size:     476K
+  MD5:      4013a6b3fa34defae7cedefb7a423e14
+
+[Downloads] gost-r-53115-2008=edt2018_1.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-53115-2008=edt2018_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-53115-2008=edt2018_1.pdf
+  Size:     1.3M
+  MD5:      b9c983b25950a0421ed026012f33d276
+
+[Downloads] gost-r-53115-2008=edt2018_2.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-53115-2008=edt2018_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-53115-2008=edt2018_2.pdf
+  Size:     1.3M
+  MD5:      b9c983b25950a0421ed026012f33d276
+
+[Downloads] gost-r-53115-2008=edt2018.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-53115-2008=edt2018.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-53115-2008=edt2018.pdf
+  Size:     1.3M
+  MD5:      b9c983b25950a0421ed026012f33d276
+
+[Downloads] gost-r-53131-2008_1.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-53131-2008_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-53131-2008_1.pdf
+  Size:     744K
+  MD5:      6500e9e27c2cd924fcd40ce10491c7fe
+
+[Downloads] gost-r-53131-2008_2.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-53131-2008_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-53131-2008_2.pdf
+  Size:     744K
+  MD5:      6500e9e27c2cd924fcd40ce10491c7fe
+
+[Downloads] gost-r-53131-2008.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-53131-2008.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-53131-2008.pdf
+  Size:     744K
+  MD5:      6500e9e27c2cd924fcd40ce10491c7fe
+
+[Downloads] gost-r-54581-2011=edt2018_1.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-54581-2011=edt2018_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-54581-2011=edt2018_1.pdf
+  Size:     432K
+  MD5:      7953db110f9e37aa83667c822c69a027
+
+[Downloads] gost-r-54581-2011=edt2018_2.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-54581-2011=edt2018_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-54581-2011=edt2018_2.pdf
+  Size:     432K
+  MD5:      7953db110f9e37aa83667c822c69a027
+
+[Downloads] gost-r-54581-2011=edt2018.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-54581-2011=edt2018.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-54581-2011=edt2018.pdf
+  Size:     432K
+  MD5:      7953db110f9e37aa83667c822c69a027
+
+[Downloads] gost-r-54582-2011=edt2019_1.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-54582-2011=edt2019_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-54582-2011=edt2019_1.pdf
+  Size:     776K
+  MD5:      148137b3c1952966006a68237ffb949a
+
+[Downloads] gost-r-54582-2011=edt2019_2.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-54582-2011=edt2019_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-54582-2011=edt2019_2.pdf
+  Size:     776K
+  MD5:      148137b3c1952966006a68237ffb949a
+
+[Downloads] gost-r-54582-2011=edt2019.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-54582-2011=edt2019.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-54582-2011=edt2019.pdf
+  Size:     776K
+  MD5:      148137b3c1952966006a68237ffb949a
+
+[Downloads] gost-r-54583-2011_1.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-54583-2011_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-54583-2011_1.pdf
+  Size:     656K
+  MD5:      2941222048b685bd5a9337d53fad4fe3
+
+[Downloads] gost-r-54583-2011_2.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-54583-2011_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-54583-2011_2.pdf
+  Size:     656K
+  MD5:      2941222048b685bd5a9337d53fad4fe3
+
+[Downloads] gost-r-54583-2011.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-54583-2011.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-54583-2011.pdf
+  Size:     656K
+  MD5:      2941222048b685bd5a9337d53fad4fe3
+
+[Downloads] gost-r-56093-2014=edt2018_1.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-56093-2014=edt2018_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-56093-2014=edt2018_1.pdf
+  Size:     916K
+  MD5:      1cec43f85eedc3383215ac8a6daa7c1e
+
+[Downloads] gost-r-56093-2014=edt2018_2.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-56093-2014=edt2018_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-56093-2014=edt2018_2.pdf
+  Size:     916K
+  MD5:      1cec43f85eedc3383215ac8a6daa7c1e
+
+[Downloads] gost-r-56093-2014=edt2018.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-56093-2014=edt2018.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-56093-2014=edt2018.pdf
+  Size:     916K
+  MD5:      1cec43f85eedc3383215ac8a6daa7c1e
+
+[Downloads] gost-r-56103-2014=edt2018_1.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-56103-2014=edt2018_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-56103-2014=edt2018_1.pdf
+  Size:     532K
+  MD5:      cc9a6d8a345aa55ccb215470f807c920
+
+[Downloads] gost-r-56103-2014=edt2018_2.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-56103-2014=edt2018_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-56103-2014=edt2018_2.pdf
+  Size:     532K
+  MD5:      cc9a6d8a345aa55ccb215470f807c920
+
+[Downloads] gost-r-56103-2014=edt2018.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-56103-2014=edt2018.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-56103-2014=edt2018.pdf
+  Size:     532K
+  MD5:      cc9a6d8a345aa55ccb215470f807c920
+
+[Downloads] gost-r-56115-2014_1.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-56115-2014_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-56115-2014_1.pdf
+  Size:     800K
+  MD5:      cf5f2c9702313d90b88891dcf7b79547
+
+[Downloads] gost-r-56115-2014_2.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-56115-2014_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-56115-2014_2.pdf
+  Size:     800K
+  MD5:      cf5f2c9702313d90b88891dcf7b79547
+
+[Downloads] gost-r-56115-2014.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-56115-2014.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-56115-2014.pdf
+  Size:     800K
+  MD5:      cf5f2c9702313d90b88891dcf7b79547
+
+[Downloads] gost-r-56545-2015=edt2018_1.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-56545-2015=edt2018_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-56545-2015=edt2018_1.pdf
+  Size:     432K
+  MD5:      5cba217e7b47e84d85c06e3d106f4072
+
+[Downloads] gost-r-56545-2015=edt2018_2.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-56545-2015=edt2018_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-56545-2015=edt2018_2.pdf
+  Size:     432K
+  MD5:      5cba217e7b47e84d85c06e3d106f4072
+
+[Downloads] gost-r-56545-2015=edt2018.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-56545-2015=edt2018.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-56545-2015=edt2018.pdf
+  Size:     432K
+  MD5:      5cba217e7b47e84d85c06e3d106f4072
+
+[Downloads] gost-r-56546-2015=edt2018_1.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-56546-2015=edt2018_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-56546-2015=edt2018_1.pdf
+  Size:     304K
+  MD5:      adfe3ebbf5969db240b02ad365d1e0f8
+
+[Downloads] gost-r-56546-2015=edt2018.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-56546-2015=edt2018.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-56546-2015=edt2018.pdf
+  Size:     304K
+  MD5:      adfe3ebbf5969db240b02ad365d1e0f8
+
+[Downloads] gost-r-56938-2016=edt2018_1.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-56938-2016=edt2018_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-56938-2016=edt2018_1.pdf
+  Size:     812K
+  MD5:      26cac6772d5dadefd0f1d6c11a1ba19e
+
+[Downloads] gost-r-56938-2016=edt2018_2.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-56938-2016=edt2018_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-56938-2016=edt2018_2.pdf
+  Size:     812K
+  MD5:      26cac6772d5dadefd0f1d6c11a1ba19e
+
+[Downloads] gost-r-56938-2016=edt2018.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-56938-2016=edt2018.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-56938-2016=edt2018.pdf
+  Size:     812K
+  MD5:      26cac6772d5dadefd0f1d6c11a1ba19e
+
+[Downloads] gost-r-56939-2016=edt2018_1.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-56939-2016=edt2018_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-56939-2016=edt2018_1.pdf
+  Size:     592K
+  MD5:      8661fc9f943621a114b75753f3297082
+
+[Downloads] gost-r-56939-2016=edt2018_2.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-56939-2016=edt2018_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-56939-2016=edt2018_2.pdf
+  Size:     592K
+  MD5:      8661fc9f943621a114b75753f3297082
+
+[Downloads] gost-r-56939-2016=edt2018.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-56939-2016=edt2018.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-56939-2016=edt2018.pdf
+  Size:     592K
+  MD5:      8661fc9f943621a114b75753f3297082
+
+[Downloads] gost-r-57628-2017_1.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-57628-2017_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-57628-2017_1.pdf
+  Size:     808K
+  MD5:      318bb58374742325ed65dc9e38b714b6
+
+[Downloads] gost-r-57628-2017_2.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-57628-2017_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-57628-2017_2.pdf
+  Size:     808K
+  MD5:      318bb58374742325ed65dc9e38b714b6
+
+[Downloads] gost-r-57628-2017.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-57628-2017.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-57628-2017.pdf
+  Size:     808K
+  MD5:      318bb58374742325ed65dc9e38b714b6
+
+[Downloads] gost-r-58142-2018_1.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-58142-2018_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-58142-2018_1.pdf
+  Size:     364K
+  MD5:      6b68ee6e9c5b811a61dde1c028824ea8
+
+[Downloads] gost-r-58142-2018_2.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-58142-2018_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-58142-2018_2.pdf
+  Size:     364K
+  MD5:      6b68ee6e9c5b811a61dde1c028824ea8
+
+[Downloads] gost-r-58142-2018.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-58142-2018.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-58142-2018.pdf
+  Size:     364K
+  MD5:      6b68ee6e9c5b811a61dde1c028824ea8
+
+[Downloads] gost-r-58143-2018_1.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-58143-2018_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-58143-2018_1.pdf
+  Size:     648K
+  MD5:      1cc1106927c7592250d2c2db9ca52852
+
+[Downloads] gost-r-58143-2018_2.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-58143-2018_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-58143-2018_2.pdf
+  Size:     648K
+  MD5:      1cc1106927c7592250d2c2db9ca52852
+
+[Downloads] gost-r-58143-2018.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-58143-2018.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-58143-2018.pdf
+  Size:     648K
+  MD5:      1cc1106927c7592250d2c2db9ca52852
+
+[Downloads] gost-r-58256-2018_1.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-58256-2018_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-58256-2018_1.pdf
+  Size:     408K
+  MD5:      d9bccbe28a93c5bbfc2b22e792d8c8ec
+
+[Downloads] gost-r-58256-2018_2.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-58256-2018_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-58256-2018_2.pdf
+  Size:     408K
+  MD5:      d9bccbe28a93c5bbfc2b22e792d8c8ec
+
+[Downloads] gost-r-58256-2018.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-58256-2018.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-58256-2018.pdf
+  Size:     408K
+  MD5:      d9bccbe28a93c5bbfc2b22e792d8c8ec
+
+[Downloads] gost-r-58412-2019_1.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-58412-2019_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-58412-2019_1.pdf
+  Size:     660K
+  MD5:      168cfd2c764fdbeadbf06688c156edcb
+
+[Downloads] gost-r-58412-2019_2.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-58412-2019_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-58412-2019_2.pdf
+  Size:     660K
+  MD5:      168cfd2c764fdbeadbf06688c156edcb
+
+[Downloads] gost-r-58412-2019.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-58412-2019.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-58412-2019.pdf
+  Size:     660K
+  MD5:      168cfd2c764fdbeadbf06688c156edcb
+
+[Downloads] gost-r-58833-2020_1.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-58833-2020_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-58833-2020_1.pdf
+  Size:     2.0M
+  MD5:      bacfe1e016bb795a8871d58174e13a66
+
+[Downloads] gost-r-58833-2020_2.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-58833-2020_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-58833-2020_2.pdf
+  Size:     2.0M
+  MD5:      bacfe1e016bb795a8871d58174e13a66
+
+[Downloads] gost-r-58833-2020.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-58833-2020.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-58833-2020.pdf
+  Size:     2.0M
+  MD5:      bacfe1e016bb795a8871d58174e13a66
+
+[Downloads] gost-r-59162-2020_1.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-59162-2020_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-59162-2020_1.pdf
+  Size:     736K
+  MD5:      31abb9affdb6989203d089533ff75d31
+
+[Downloads] gost-r-59162-2020_2.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-59162-2020_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-59162-2020_2.pdf
+  Size:     736K
+  MD5:      31abb9affdb6989203d089533ff75d31
+
+[Downloads] gost-r-59162-2020.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-59162-2020.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-59162-2020.pdf
+  Size:     736K
+  MD5:      31abb9affdb6989203d089533ff75d31
+
+[Downloads] gost-r-59453_10.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-59453_10.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-59453_10.pdf
+  Size:     872K
+  MD5:      0c5402dce39d0a498dd63d2d6eb61f01
+
+[Downloads] gost-r-59453_1.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-59453_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-59453_1.pdf
+  Size:     496K
+  MD5:      f058481e30bf13f19f68ed9fd2bc2222
+
+[Downloads] gost-r-59453_2.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-59453_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-59453_2.pdf
+  Size:     356K
+  MD5:      8d7c62330cfcfa2af2d9fbabd95f6d7b
+
+[Downloads] gost-r-59453_3.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-59453_3.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-59453_3.pdf
+  Size:     824K
+  MD5:      f075000336f806b924fe8392c7e212f6
+
+[Downloads] gost-r-59453_4.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-59453_4.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-59453_4.pdf
+  Size:     824K
+  MD5:      f075000336f806b924fe8392c7e212f6
+
+[Downloads] gost-r-59453_5.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-59453_5.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-59453_5.pdf
+  Size:     356K
+  MD5:      8d7c62330cfcfa2af2d9fbabd95f6d7b
+
+[Downloads] gost-r-59453_6.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-59453_6.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-59453_6.pdf
+  Size:     872K
+  MD5:      0c5402dce39d0a498dd63d2d6eb61f01
+
+[Downloads] gost-r-59453_7.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-59453_7.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-59453_7.pdf
+  Size:     496K
+  MD5:      f058481e30bf13f19f68ed9fd2bc2222
+
+[Downloads] gost-r-59453_8.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-59453_8.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-59453_8.pdf
+  Size:     824K
+  MD5:      f075000336f806b924fe8392c7e212f6
+
+[Downloads] gost-r-59453_9.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-59453_9.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-59453_9.pdf
+  Size:     356K
+  MD5:      8d7c62330cfcfa2af2d9fbabd95f6d7b
+
+[Downloads] gost-r-59453.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-59453.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-59453.pdf
+  Size:     872K
+  MD5:      0c5402dce39d0a498dd63d2d6eb61f01
+
+[Downloads] gost-r-59547-2021_1.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-59547-2021_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-59547-2021_1.pdf
+  Size:     1.1M
+  MD5:      bdd5b93e8358084783d9f9ac22cd4293
+
+[Downloads] gost-r-59547-2021_2.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-59547-2021_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-59547-2021_2.pdf
+  Size:     1.1M
+  MD5:      bdd5b93e8358084783d9f9ac22cd4293
+
+[Downloads] gost-r-59547-2021.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-59547-2021.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-59547-2021.pdf
+  Size:     1.1M
+  MD5:      bdd5b93e8358084783d9f9ac22cd4293
+
+[Downloads] gost-r-59548-2022_1.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-59548-2022_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-59548-2022_1.pdf
+  Size:     1.1M
+  MD5:      0c282b9dc1f9b62d60a6cc7662627f1d
+
+[Downloads] gost-r-59548-2022_2.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-59548-2022_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-59548-2022_2.pdf
+  Size:     1.1M
+  MD5:      0c282b9dc1f9b62d60a6cc7662627f1d
+
+[Downloads] gost-r-59548-2022.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-59548-2022.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-59548-2022.pdf
+  Size:     1.1M
+  MD5:      0c282b9dc1f9b62d60a6cc7662627f1d
+
+[Downloads] gost-r-59709-2022_1.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-59709-2022_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-59709-2022_1.pdf
+  Size:     1.3M
+  MD5:      316deffb64c56758e54fa964a0b6bdd4
+
+[Downloads] gost-r-59709-2022_2.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-59709-2022_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-59709-2022_2.pdf
+  Size:     1.3M
+  MD5:      316deffb64c56758e54fa964a0b6bdd4
+
+[Downloads] gost-r-59709-2022.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-59709-2022.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-59709-2022.pdf
+  Size:     1.3M
+  MD5:      316deffb64c56758e54fa964a0b6bdd4
+
+[Downloads] gost-r-59710-2022_1.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-59710-2022_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-59710-2022_1.pdf
+  Size:     772K
+  MD5:      1c7400803f3a963b9c3a9e2c61d96642
+
+[Downloads] gost-r-59710-2022_2.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-59710-2022_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-59710-2022_2.pdf
+  Size:     772K
+  MD5:      1c7400803f3a963b9c3a9e2c61d96642
+
+[Downloads] gost-r-59710-2022.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-59710-2022.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-59710-2022.pdf
+  Size:     772K
+  MD5:      1c7400803f3a963b9c3a9e2c61d96642
+
+[Downloads] gost-r-59711-2022_1.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-59711-2022_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-59711-2022_1.pdf
+  Size:     720K
+  MD5:      0b88afbbc951b04cabeaecdf58bf0b09
+
+[Downloads] gost-r-59711-2022_2.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-59711-2022_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-59711-2022_2.pdf
+  Size:     720K
+  MD5:      0b88afbbc951b04cabeaecdf58bf0b09
+
+[Downloads] gost-r-59711-2022.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-59711-2022.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-59711-2022.pdf
+  Size:     720K
+  MD5:      0b88afbbc951b04cabeaecdf58bf0b09
+
+[Downloads] gost-r-59712-2022_1.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-59712-2022_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-59712-2022_1.pdf
+  Size:     1.1M
+  MD5:      d24bbb5ba800e75ae484ed13b773a822
+
+[Downloads] gost-r-59712-2022_2.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-59712-2022_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-59712-2022_2.pdf
+  Size:     1.1M
+  MD5:      d24bbb5ba800e75ae484ed13b773a822
+
+[Downloads] gost-r-59712-2022.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-59712-2022.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-59712-2022.pdf
+  Size:     1.1M
+  MD5:      d24bbb5ba800e75ae484ed13b773a822
+
+[Downloads] gost-r-70262_1.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-70262_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-70262_1.pdf
+  Size:     676K
+  MD5:      8dcb2aca65cfe4510d54992fb54489ad
+
+[Downloads] gost-r-70262_2.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-70262_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-70262_2.pdf
+  Size:     676K
+  MD5:      8dcb2aca65cfe4510d54992fb54489ad
+
+[Downloads] gost-r-70262_3.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-70262_3.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-70262_3.pdf
+  Size:     592K
+  MD5:      58cbad61d63abe0231f5b486b0c5c636
+
+[Downloads] gost-r-70262_4.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-70262_4.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-70262_4.pdf
+  Size:     592K
+  MD5:      58cbad61d63abe0231f5b486b0c5c636
+
+[Downloads] gost-r-70262_5.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-70262_5.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-70262_5.pdf
+  Size:     676K
+  MD5:      8dcb2aca65cfe4510d54992fb54489ad
+
+[Downloads] gost-r-70262.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-70262.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-70262.pdf
+  Size:     592K
+  MD5:      58cbad61d63abe0231f5b486b0c5c636
+
+[Downloads] gost-r-71206-2024_1.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-71206-2024_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-71206-2024_1.pdf
+  Size:     316K
+  MD5:      6fcd63dc91a19fa7b9e318e1bf38b368
+
+[Downloads] gost-r-71206-2024_2.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-71206-2024_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-71206-2024_2.pdf
+  Size:     316K
+  MD5:      6fcd63dc91a19fa7b9e318e1bf38b368
+
+[Downloads] gost-r-71206-2024.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-71206-2024.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-71206-2024.pdf
+  Size:     316K
+  MD5:      6fcd63dc91a19fa7b9e318e1bf38b368
+
+[Downloads] gost-r-71207-2024_1.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-71207-2024_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-71207-2024_1.pdf
+  Size:     528K
+  MD5:      6383ebf9bb148343648528c47b4afadd
+
+[Downloads] gost-r-71207-2024_2.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-71207-2024_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-71207-2024_2.pdf
+  Size:     528K
+  MD5:      6383ebf9bb148343648528c47b4afadd
+
+[Downloads] gost-r-71207-2024.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-71207-2024.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-71207-2024.pdf
+  Size:     528K
+  MD5:      6383ebf9bb148343648528c47b4afadd
+
+[Downloads] gost-r-71252-2024_1.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-71252-2024_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-71252-2024_1.pdf
+  Size:     400K
+  MD5:      661a9505caa42f6b06abdd048ae33459
+
+[Downloads] gost-r-71252-2024_2.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-71252-2024_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-71252-2024_2.pdf
+  Size:     400K
+  MD5:      661a9505caa42f6b06abdd048ae33459
+
+[Downloads] gost-r-71252-2024.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-71252-2024.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-71252-2024.pdf
+  Size:     400K
+  MD5:      661a9505caa42f6b06abdd048ae33459
+
+[Downloads] gost-r-71753-2024_1.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-71753-2024_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-71753-2024_1.pdf
+  Size:     780K
+  MD5:      8890634a504ec0564a8e26fce920dd16
+
+[Downloads] gost-r-71753-2024_2.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-71753-2024_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-71753-2024_2.pdf
+  Size:     780K
+  MD5:      8890634a504ec0564a8e26fce920dd16
+
+[Downloads] gost-r-71753-2024.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-71753-2024.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-71753-2024.pdf
+  Size:     780K
+  MD5:      8890634a504ec0564a8e26fce920dd16
+
+[Downloads] gost-r-72118-2025_1.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-72118-2025_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-72118-2025_1.pdf
+  Size:     1.5M
+  MD5:      1b3f1e4f2cc49661216c8498182ee173
+
+[Downloads] gost-r-72118-2025_2.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-72118-2025_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-72118-2025_2.pdf
+  Size:     1.5M
+  MD5:      1b3f1e4f2cc49661216c8498182ee173
+
+[Downloads] gost-r-72118-2025.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-72118-2025.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-72118-2025.pdf
+  Size:     1.5M
+  MD5:      1b3f1e4f2cc49661216c8498182ee173
+
+[Downloads] gost-r-iso-iec-27002-2021_1.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-iso-iec-27002-2021_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-iso-iec-27002-2021_1.pdf
+  Size:     2.5M
+  MD5:      e3a5504987c970b5397005e8015c4bc5
+
+[Downloads] gost-r-iso-iec-27002-2021_2.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-iso-iec-27002-2021_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-iso-iec-27002-2021_2.pdf
+  Size:     2.5M
+  MD5:      e3a5504987c970b5397005e8015c4bc5
+
+[Downloads] gost-r-iso-iec-27002-2021.pdf
+  Original: /root/qwen/ai_agent/downloads/gost-r-iso-iec-27002-2021.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/gost-r-iso-iec-27002-2021.pdf
+  Size:     2.5M
+  MD5:      e3a5504987c970b5397005e8015c4bc5
+
+[Downloads] Metodicheskie_rekomendatsii_TSB_RF_1.pdf
+  Original: /root/qwen/ai_agent/downloads/Metodicheskie_rekomendatsii_TSB_RF_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/Metodicheskie_rekomendatsii_TSB_RF_1.pdf
+  Size:     452K
+  MD5:      37613d1d588afbd1b5c35d584f0f5405
+
+[Downloads] Metodicheskie_rekomendatsii_TSB_RF.pdf
+  Original: /root/qwen/ai_agent/downloads/Metodicheskie_rekomendatsii_TSB_RF.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/Metodicheskie_rekomendatsii_TSB_RF.pdf
+  Size:     452K
+  MD5:      37613d1d588afbd1b5c35d584f0f5405
+
+[Downloads] PCI_Mobile_Payment_Acceptance_Security_Guidelines_for_Developers_v2_0_1.pdf
+  Original: /root/qwen/ai_agent/downloads/PCI_Mobile_Payment_Acceptance_Security_Guidelines_for_Developers_v2_0_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/PCI_Mobile_Payment_Acceptance_Security_Guidelines_for_Developers_v2_0_1.pdf
+  Size:     532K
+  MD5:      eda9abe32a4ef86ddd5e91080b2e3d88
+
+[Downloads] PCI_Mobile_Payment_Acceptance_Security_Guidelines_for_Developers_v2_0_2.pdf
+  Original: /root/qwen/ai_agent/downloads/PCI_Mobile_Payment_Acceptance_Security_Guidelines_for_Developers_v2_0_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/PCI_Mobile_Payment_Acceptance_Security_Guidelines_for_Developers_v2_0_2.pdf
+  Size:     532K
+  MD5:      eda9abe32a4ef86ddd5e91080b2e3d88
+
+[Downloads] PCI_Mobile_Payment_Acceptance_Security_Guidelines_for_Developers_v2_0_3.pdf
+  Original: /root/qwen/ai_agent/downloads/PCI_Mobile_Payment_Acceptance_Security_Guidelines_for_Developers_v2_0_3.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/PCI_Mobile_Payment_Acceptance_Security_Guidelines_for_Developers_v2_0_3.pdf
+  Size:     532K
+  MD5:      eda9abe32a4ef86ddd5e91080b2e3d88
+
+[Downloads] PCI_Mobile_Payment_Acceptance_Security_Guidelines_for_Developers_v2_0.pdf
+  Original: /root/qwen/ai_agent/downloads/PCI_Mobile_Payment_Acceptance_Security_Guidelines_for_Developers_v2_0.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/PCI_Mobile_Payment_Acceptance_Security_Guidelines_for_Developers_v2_0.pdf
+  Size:     532K
+  MD5:      eda9abe32a4ef86ddd5e91080b2e3d88
+
+[Downloads] politika-informatsionnoy-bezopasnosti_1.pdf
+  Original: /root/qwen/ai_agent/downloads/politika-informatsionnoy-bezopasnosti_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/politika-informatsionnoy-bezopasnosti_1.pdf
+  Size:     700K
+  MD5:      9ab68097f2c2027a9bf809eb8efe47e5
+
+[Downloads] politika-informatsionnoy-bezopasnosti_2.pdf
+  Original: /root/qwen/ai_agent/downloads/politika-informatsionnoy-bezopasnosti_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/politika-informatsionnoy-bezopasnosti_2.pdf
+  Size:     700K
+  MD5:      9ab68097f2c2027a9bf809eb8efe47e5
+
+[Downloads] politika-informatsionnoy-bezopasnosti.pdf
+  Original: /root/qwen/ai_agent/downloads/politika-informatsionnoy-bezopasnosti.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/politika-informatsionnoy-bezopasnosti.pdf
+  Size:     700K
+  MD5:      9ab68097f2c2027a9bf809eb8efe47e5
+
+[Downloads] r-1-1323565.1_1.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1-1323565.1_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1-1323565.1_1.pdf
+  Size:     660K
+  MD5:      fbc0bf864e528cdca0a061a03918321a
+
+[Downloads] r-1-1323565.1_2.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1-1323565.1_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1-1323565.1_2.pdf
+  Size:     660K
+  MD5:      fbc0bf864e528cdca0a061a03918321a
+
+[Downloads] r-1-1323565.1.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1-1323565.1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1-1323565.1.pdf
+  Size:     660K
+  MD5:      fbc0bf864e528cdca0a061a03918321a
+
+[Downloads] r-1323565.1_10.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_10.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_10.pdf
+  Size:     620K
+  MD5:      7aafbaefb7996a6a9ed42d00bc2ae14f
+
+[Downloads] r-1323565.1_11.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_11.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_11.pdf
+  Size:     352K
+  MD5:      069b894ff89a745bebc1299344217bd2
+
+[Downloads] r-1323565.1_12.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_12.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_12.pdf
+  Size:     1.1M
+  MD5:      fcaf1b6deea107e699396dc338b52b4e
+
+[Downloads] r-1323565.1_13.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_13.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_13.pdf
+  Size:     588K
+  MD5:      3b95209e461eabad7149dc95efafa762
+
+[Downloads] r-1323565.1_14.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_14.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_14.pdf
+  Size:     1.1M
+  MD5:      e2ee9fa7b7521277687de8678f276086
+
+[Downloads] r-1323565.1_15.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_15.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_15.pdf
+  Size:     436K
+  MD5:      02a99d4b2688681f203d3b151fce1e8f
+
+[Downloads] r-1323565.1_16.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_16.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_16.pdf
+  Size:     588K
+  MD5:      7b005bdf2988f63510377c8581f23c5a
+
+[Downloads] r-1323565.1_17.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_17.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_17.pdf
+  Size:     3.0M
+  MD5:      f118c3c2e91f3a5f99aa599f18d6c8d3
+
+[Downloads] r-1323565.1_18.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_18.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_18.pdf
+  Size:     580K
+  MD5:      ff9def3dfd64f69a6a7111a148c93356
+
+[Downloads] r-1323565.1_19.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_19.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_19.pdf
+  Size:     624K
+  MD5:      976c53ca724a85c7fca0331060255af2
+
+[Downloads] r-1323565.1_1.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_1.pdf
+  Size:     540K
+  MD5:      4e70b371d9a27f2e4238678e40c993d8
+
+[Downloads] r-1323565.1_20.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_20.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_20.pdf
+  Size:     604K
+  MD5:      d3a4d3f3ac2af971574e9ca38761c821
+
+[Downloads] r-1323565.1_21.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_21.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_21.pdf
+  Size:     1.1M
+  MD5:      e2ee9fa7b7521277687de8678f276086
+
+[Downloads] r-1323565.1_22.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_22.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_22.pdf
+  Size:     1.3M
+  MD5:      bd1c56c614a2ff9848ad6af31e54805c
+
+[Downloads] r-1323565.1_23.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_23.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_23.pdf
+  Size:     1.3M
+  MD5:      930326b448c104d795a914550571c06d
+
+[Downloads] r-1323565.1_24.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_24.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_24.pdf
+  Size:     392K
+  MD5:      8b478a66f3e44f65786cf04e7706274e
+
+[Downloads] r-1323565.1_25.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_25.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_25.pdf
+  Size:     320K
+  MD5:      44a68b1b538350bb8625a2aac7b201b7
+
+[Downloads] r-1323565.1_26.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_26.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_26.pdf
+  Size:     620K
+  MD5:      31cffdeca8781346a8cf9ee086a17f05
+
+[Downloads] r-1323565.1_27.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_27.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_27.pdf
+  Size:     308K
+  MD5:      939b709ca85c43e6e3ef1b7d84eeb795
+
+[Downloads] r-1323565.1_28.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_28.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_28.pdf
+  Size:     1.0M
+  MD5:      e6f5de131cdf1f546ad4ed63d38db3f6
+
+[Downloads] r-1323565.1_29.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_29.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_29.pdf
+  Size:     488K
+  MD5:      6778d35f35ab46a3d6730b00907fc1b0
+
+[Downloads] r-1323565.1_2.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_2.pdf
+  Size:     364K
+  MD5:      7da971d43d054fdb6f547936743ed17c
+
+[Downloads] r-1323565.1_30.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_30.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_30.pdf
+  Size:     540K
+  MD5:      72e1d96bceecc8f96328f634697ef0fa
+
+[Downloads] r-1323565.1_31.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_31.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_31.pdf
+  Size:     1.4M
+  MD5:      cd9eb96b5a84a49eea7e7aa6e69dbd94
+
+[Downloads] r-1323565.1_32.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_32.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_32.pdf
+  Size:     364K
+  MD5:      3a955a5673671a908b03a7cfa5b85f4d
+
+[Downloads] r-1323565.1_33.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_33.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_33.pdf
+  Size:     580K
+  MD5:      ff9def3dfd64f69a6a7111a148c93356
+
+[Downloads] r-1323565.1_34.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_34.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_34.pdf
+  Size:     1.3M
+  MD5:      b6c620899c7e658438a502290be04a90
+
+[Downloads] r-1323565.1_35.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_35.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_35.pdf
+  Size:     360K
+  MD5:      4a27dca9060fc4d5d32f6b6d482f6590
+
+[Downloads] r-1323565.1_36.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_36.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_36.pdf
+  Size:     3.0M
+  MD5:      38bc13ecd9a4ce24319397cf2428eea3
+
+[Downloads] r-1323565.1_37.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_37.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_37.pdf
+  Size:     912K
+  MD5:      acf2ab8fe69bc7bbdf2a46e116711036
+
+[Downloads] r-1323565.1_38.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_38.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_38.pdf
+  Size:     624K
+  MD5:      3af6e13829bc197c7e3abdd77955b161
+
+[Downloads] r-1323565.1_39.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_39.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_39.pdf
+  Size:     568K
+  MD5:      9b5d25774ee7e2b4ddaf433f9c4bb83f
+
+[Downloads] r-1323565.1_3.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_3.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_3.pdf
+  Size:     1.0M
+  MD5:      73b11b3129d1665bbf576b9e31a77602
+
+[Downloads] r-1323565.1_40.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_40.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_40.pdf
+  Size:     364K
+  MD5:      7da971d43d054fdb6f547936743ed17c
+
+[Downloads] r-1323565.1_41.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_41.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_41.pdf
+  Size:     296K
+  MD5:      bb1008babdfa429a180bf39fb069a4d9
+
+[Downloads] r-1323565.1_42.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_42.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_42.pdf
+  Size:     392K
+  MD5:      8b478a66f3e44f65786cf04e7706274e
+
+[Downloads] r-1323565.1_43.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_43.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_43.pdf
+  Size:     1.1M
+  MD5:      2115881671eecae6574d188887e45c33
+
+[Downloads] r-1323565.1_44.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_44.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_44.pdf
+  Size:     320K
+  MD5:      44a68b1b538350bb8625a2aac7b201b7
+
+[Downloads] r-1323565.1_45.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_45.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_45.pdf
+  Size:     396K
+  MD5:      2337135327d5eac43387d7ca70deda5f
+
+[Downloads] r-1323565.1_46.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_46.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_46.pdf
+  Size:     332K
+  MD5:      f9544accd2f2b1afe72c1ed45e944c70
+
+[Downloads] r-1323565.1_47.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_47.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_47.pdf
+  Size:     1.1M
+  MD5:      fcaf1b6deea107e699396dc338b52b4e
+
+[Downloads] r-1323565.1_48.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_48.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_48.pdf
+  Size:     912K
+  MD5:      0f71e3ea4b7a59c36e1861b230e8cd03
+
+[Downloads] r-1323565.1_49.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_49.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_49.pdf
+  Size:     308K
+  MD5:      939b709ca85c43e6e3ef1b7d84eeb795
+
+[Downloads] r-1323565.1_4.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_4.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_4.pdf
+  Size:     1.5M
+  MD5:      fa85d6f75fa7d0feeaa4aef0cd1db226
+
+[Downloads] r-1323565.1_50.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_50.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_50.pdf
+  Size:     484K
+  MD5:      5c7ebcbecd27fbc2d667702ddb9c4d0d
+
+[Downloads] r-1323565.1_51.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_51.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_51.pdf
+  Size:     3.3M
+  MD5:      ad4f5d60d24a97e348d3621d091bfe77
+
+[Downloads] r-1323565.1_52.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_52.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_52.pdf
+  Size:     436K
+  MD5:      affe10d3c75bcbca21a9fdfeb3ba4c30
+
+[Downloads] r-1323565.1_53.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_53.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_53.pdf
+  Size:     1.3M
+  MD5:      ba5a237c5adcd4c199613754c4dee38b
+
+[Downloads] r-1323565.1_54.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_54.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_54.pdf
+  Size:     1.4M
+  MD5:      cd9eb96b5a84a49eea7e7aa6e69dbd94
+
+[Downloads] r-1323565.1_55.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_55.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_55.pdf
+  Size:     1.3M
+  MD5:      b6c620899c7e658438a502290be04a90
+
+[Downloads] r-1323565.1_56.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_56.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_56.pdf
+  Size:     1.5M
+  MD5:      fa85d6f75fa7d0feeaa4aef0cd1db226
+
+[Downloads] r-1323565.1_57.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_57.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_57.pdf
+  Size:     588K
+  MD5:      7b005bdf2988f63510377c8581f23c5a
+
+[Downloads] r-1323565.1_58.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_58.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_58.pdf
+  Size:     448K
+  MD5:      d48868f27c4a83d8e7fa727357fb177c
+
+[Downloads] r-1323565.1_5.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_5.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_5.pdf
+  Size:     624K
+  MD5:      976c53ca724a85c7fca0331060255af2
+
+[Downloads] r-1323565.1_6.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_6.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_6.pdf
+  Size:     1.4M
+  MD5:      cd9eb96b5a84a49eea7e7aa6e69dbd94
+
+[Downloads] r-1323565.1_7.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_7.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_7.pdf
+  Size:     488K
+  MD5:      6778d35f35ab46a3d6730b00907fc1b0
+
+[Downloads] r-1323565.1_8.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_8.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_8.pdf
+  Size:     436K
+  MD5:      affe10d3c75bcbca21a9fdfeb3ba4c30
+
+[Downloads] r-1323565.1_9.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1_9.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1_9.pdf
+  Size:     508K
+  MD5:      d4c55955b23f2e1174fbb0c00971b14d
+
+[Downloads] r-1323565.1.pdf
+  Original: /root/qwen/ai_agent/downloads/r-1323565.1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-1323565.1.pdf
+  Size:     640K
+  MD5:      36e71f85ef18e03727047b03a88da597
+
+[Downloads] r-50.1_10.pdf
+  Original: /root/qwen/ai_agent/downloads/r-50.1_10.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-50.1_10.pdf
+  Size:     1.3M
+  MD5:      5068c718d0968e2b47331afa3b8638b6
+
+[Downloads] r-50.1_11.pdf
+  Original: /root/qwen/ai_agent/downloads/r-50.1_11.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-50.1_11.pdf
+  Size:     1.3M
+  MD5:      5068c718d0968e2b47331afa3b8638b6
+
+[Downloads] r-50.1_12.pdf
+  Original: /root/qwen/ai_agent/downloads/r-50.1_12.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-50.1_12.pdf
+  Size:     684K
+  MD5:      2d648db48ea80bd6c07a083357a3a423
+
+[Downloads] r-50.1_13.pdf
+  Original: /root/qwen/ai_agent/downloads/r-50.1_13.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-50.1_13.pdf
+  Size:     280K
+  MD5:      63b672ec40bcaf96d67ae8189ac89f90
+
+[Downloads] r-50.1_14.pdf
+  Original: /root/qwen/ai_agent/downloads/r-50.1_14.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-50.1_14.pdf
+  Size:     444K
+  MD5:      d329ecb7b301f2340d06629ea5e0c409
+
+[Downloads] r-50.1_15.pdf
+  Original: /root/qwen/ai_agent/downloads/r-50.1_15.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-50.1_15.pdf
+  Size:     1.2M
+  MD5:      b8a3280bccfeffde3c743d9d8348dede
+
+[Downloads] r-50.1_1.pdf
+  Original: /root/qwen/ai_agent/downloads/r-50.1_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-50.1_1.pdf
+  Size:     416K
+  MD5:      8930eaeeb0e4e63f0cb92150d2ed389c
+
+[Downloads] r-50.1_2.pdf
+  Original: /root/qwen/ai_agent/downloads/r-50.1_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-50.1_2.pdf
+  Size:     444K
+  MD5:      d329ecb7b301f2340d06629ea5e0c409
+
+[Downloads] r-50.1_3.pdf
+  Original: /root/qwen/ai_agent/downloads/r-50.1_3.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-50.1_3.pdf
+  Size:     512K
+  MD5:      22913d55aed53577dec0d611c7885a2c
+
+[Downloads] r-50.1_4.pdf
+  Original: /root/qwen/ai_agent/downloads/r-50.1_4.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-50.1_4.pdf
+  Size:     684K
+  MD5:      2d648db48ea80bd6c07a083357a3a423
+
+[Downloads] r-50.1_5.pdf
+  Original: /root/qwen/ai_agent/downloads/r-50.1_5.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-50.1_5.pdf
+  Size:     1.2M
+  MD5:      b8a3280bccfeffde3c743d9d8348dede
+
+[Downloads] r-50.1_6.pdf
+  Original: /root/qwen/ai_agent/downloads/r-50.1_6.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-50.1_6.pdf
+  Size:     416K
+  MD5:      8930eaeeb0e4e63f0cb92150d2ed389c
+
+[Downloads] r-50.1_7.pdf
+  Original: /root/qwen/ai_agent/downloads/r-50.1_7.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-50.1_7.pdf
+  Size:     512K
+  MD5:      4d1867965b0d98924abddd00959f94e0
+
+[Downloads] r-50.1_8.pdf
+  Original: /root/qwen/ai_agent/downloads/r-50.1_8.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-50.1_8.pdf
+  Size:     1.2M
+  MD5:      b8a3280bccfeffde3c743d9d8348dede
+
+[Downloads] r-50.1_9.pdf
+  Original: /root/qwen/ai_agent/downloads/r-50.1_9.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-50.1_9.pdf
+  Size:     684K
+  MD5:      2d648db48ea80bd6c07a083357a3a423
+
+[Downloads] r-50.1.pdf
+  Original: /root/qwen/ai_agent/downloads/r-50.1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/r-50.1.pdf
+  Size:     280K
+  MD5:      63b672ec40bcaf96d67ae8189ac89f90
+
+[Downloads] Securing-Mobile-Applications-and-Devices-%5BCIO-IT-Security-12-67-Rev-7%5D-10-01-2024_1.pdf
+  Original: /root/qwen/ai_agent/downloads/Securing-Mobile-Applications-and-Devices-%5BCIO-IT-Security-12-67-Rev-7%5D-10-01-2024_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/Securing-Mobile-Applications-and-Devices-%5BCIO-IT-Security-12-67-Rev-7%5D-10-01-2024_1.pdf
+  Size:     608K
+  MD5:      4fd44a6b6c14bf243e017a08c53852c0
+
+[Downloads] Securing-Mobile-Applications-and-Devices-%5BCIO-IT-Security-12-67-Rev-7%5D-10-01-2024.pdf
+  Original: /root/qwen/ai_agent/downloads/Securing-Mobile-Applications-and-Devices-%5BCIO-IT-Security-12-67-Rev-7%5D-10-01-2024.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/Securing-Mobile-Applications-and-Devices-%5BCIO-IT-Security-12-67-Rev-7%5D-10-01-2024.pdf
+  Size:     608K
+  MD5:      4fd44a6b6c14bf243e017a08c53852c0
+
+[Downloads] T10-p15_1.pdf
+  Original: /root/qwen/ai_agent/downloads/T10-p15_1.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/T10-p15_1.pdf
+  Size:     196K
+  MD5:      82d9ba213bada1dac722d949bf6814f0
+
+[Downloads] T10-p15_2.pdf
+  Original: /root/qwen/ai_agent/downloads/T10-p15_2.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/T10-p15_2.pdf
+  Size:     196K
+  MD5:      82d9ba213bada1dac722d949bf6814f0
+
+[Downloads] T10-p15.pdf
+  Original: /root/qwen/ai_agent/downloads/T10-p15.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/downloads/T10-p15.pdf
+  Size:     196K
+  MD5:      82d9ba213bada1dac722d949bf6814f0
+
+[Document Store MCP] doc_216.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_216.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_216.pdf
+  Size:     400K
+  MD5:      661a9505caa42f6b06abdd048ae33459
+
+[Document Store MCP] doc_248.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_248.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_248.pdf
+  Size:     1.4M
+  MD5:      cd9eb96b5a84a49eea7e7aa6e69dbd94
+
+[Document Store MCP] doc_094.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_094.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_094.pdf
+  Size:     488K
+  MD5:      6778d35f35ab46a3d6730b00907fc1b0
+
+[Document Store MCP] doc_045.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_045.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_045.pdf
+  Size:     592K
+  MD5:      58cbad61d63abe0231f5b486b0c5c636
+
+[Document Store MCP] doc_055.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_055.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_055.pdf
+  Size:     304K
+  MD5:      adfe3ebbf5969db240b02ad365d1e0f8
+
+[Document Store MCP] doc_048.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_048.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_048.pdf
+  Size:     676K
+  MD5:      8dcb2aca65cfe4510d54992fb54489ad
+
+[Document Store MCP] doc_005.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_005.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_005.pdf
+  Size:     452K
+  MD5:      37613d1d588afbd1b5c35d584f0f5405
+
+[Document Store MCP] doc_181.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_181.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_181.pdf
+  Size:     304K
+  MD5:      adfe3ebbf5969db240b02ad365d1e0f8
+
+[Document Store MCP] doc_240.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_240.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_240.pdf
+  Size:     176K
+  MD5:      b98188ebd9b77bd31702f0ad1ca5ca5d
+
+[Document Store MCP] doc_036.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_036.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_036.pdf
+  Size:     1.3M
+  MD5:      043936168d1d3e97fe8ced73f9fc598e
+
+[Document Store MCP] doc_114.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_114.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_114.pdf
+  Size:     736K
+  MD5:      31abb9affdb6989203d089533ff75d31
+
+[Document Store MCP] doc_119.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_119.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_119.pdf
+  Size:     1.1M
+  MD5:      2115881671eecae6574d188887e45c33
+
+[Document Store MCP] doc_291.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_291.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_291.pdf
+  Size:     1.1M
+  MD5:      dec15b27a1f60bcdd28d59c29ca4c2ae
+
+[Document Store MCP] doc_191.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_191.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_191.pdf
+  Size:     364K
+  MD5:      6b68ee6e9c5b811a61dde1c028824ea8
+
+[Document Store MCP] doc_178.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_178.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_178.pdf
+  Size:     720K
+  MD5:      0b88afbbc951b04cabeaecdf58bf0b09
+
+[Document Store MCP] doc_225.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_225.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_225.pdf
+  Size:     780K
+  MD5:      8890634a504ec0564a8e26fce920dd16
+
+[Document Store MCP] doc_233.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_233.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_233.pdf
+  Size:     532K
+  MD5:      eda9abe32a4ef86ddd5e91080b2e3d88
+
+[Document Store MCP] doc_081.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_081.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_081.pdf
+  Size:     456K
+  MD5:      57cf2cd600dea6ff45bdb404f9e59ae2
+
+[Document Store MCP] doc_064.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_064.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_064.pdf
+  Size:     476K
+  MD5:      4013a6b3fa34defae7cedefb7a423e14
+
+[Document Store MCP] doc_176.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_176.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_176.pdf
+  Size:     1.5M
+  MD5:      1b3f1e4f2cc49661216c8498182ee173
+
+[Document Store MCP] doc_261.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_261.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_261.pdf
+  Size:     904K
+  MD5:      763310541f1725e86444f3531462b6c7
+
+[Document Store MCP] doc_273.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_273.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_273.pdf
+  Size:     1.3M
+  MD5:      316deffb64c56758e54fa964a0b6bdd4
+
+[Document Store MCP] doc_220.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_220.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_220.pdf
+  Size:     660K
+  MD5:      1a25148acecc344c7f9a409fdbfca857
+
+[Document Store MCP] doc_006.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_006.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_006.pdf
+  Size:     320K
+  MD5:      44a68b1b538350bb8625a2aac7b201b7
+
+[Document Store MCP] doc_208.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_208.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_208.pdf
+  Size:     5.7M
+  MD5:      0d22123d9cc4ea5cbf23dcd917610f82
+
+[Document Store MCP] doc_185.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_185.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_185.pdf
+  Size:     1.3M
+  MD5:      ba5a237c5adcd4c199613754c4dee38b
+
+[Document Store MCP] doc_172.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_172.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_172.pdf
+  Size:     588K
+  MD5:      7b005bdf2988f63510377c8581f23c5a
+
+[Document Store MCP] doc_179.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_179.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_179.pdf
+  Size:     1.1M
+  MD5:      d24bbb5ba800e75ae484ed13b773a822
+
+[Document Store MCP] doc_245.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_245.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_245.pdf
+  Size:     396K
+  MD5:      2337135327d5eac43387d7ca70deda5f
+
+[Document Store MCP] doc_260.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_260.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_260.pdf
+  Size:     436K
+  MD5:      affe10d3c75bcbca21a9fdfeb3ba4c30
+
+[Document Store MCP] doc_138.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_138.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_138.pdf
+  Size:     408K
+  MD5:      d9bccbe28a93c5bbfc2b22e792d8c8ec
+
+[Document Store MCP] doc_168.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_168.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_168.pdf
+  Size:     400K
+  MD5:      661a9505caa42f6b06abdd048ae33459
+
+[Document Store MCP] doc_128.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_128.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_128.pdf
+  Size:     2.5M
+  MD5:      e3a5504987c970b5397005e8015c4bc5
+
+[Document Store MCP] doc_160.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_160.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_160.pdf
+  Size:     540K
+  MD5:      4e70b371d9a27f2e4238678e40c993d8
+
+[Document Store MCP] doc_091.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_091.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_091.pdf
+  Size:     772K
+  MD5:      1c7400803f3a963b9c3a9e2c61d96642
+
+[Document Store MCP] doc_037.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_037.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_037.pdf
+  Size:     1.5M
+  MD5:      1b3f1e4f2cc49661216c8498182ee173
+
+[Document Store MCP] doc_157.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_157.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_157.pdf
+  Size:     168K
+  MD5:      51490c758971f41075789579ada41303
+
+[Document Store MCP] doc_129.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_129.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_129.pdf
+  Size:     676K
+  MD5:      8dcb2aca65cfe4510d54992fb54489ad
+
+[Document Store MCP] doc_192.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_192.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_192.pdf
+  Size:     772K
+  MD5:      1c7400803f3a963b9c3a9e2c61d96642
+
+[Document Store MCP] doc_140.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_140.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_140.pdf
+  Size:     280K
+  MD5:      63b672ec40bcaf96d67ae8189ac89f90
+
+[Document Store MCP] doc_218.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_218.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_218.pdf
+  Size:     932K
+  MD5:      8e4da116c97ee1f06bc6c65ad821db6f
+
+[Document Store MCP] doc_213.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_213.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_213.pdf
+  Size:     656K
+  MD5:      2b4e5266010a53382b14d42cf116e84e
+
+[Document Store MCP] doc_002.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_002.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_002.pdf
+  Size:     320K
+  MD5:      44a68b1b538350bb8625a2aac7b201b7
+
+[Document Store MCP] doc_252.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_252.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_252.pdf
+  Size:     684K
+  MD5:      2d648db48ea80bd6c07a083357a3a423
+
+[Document Store MCP] doc_230.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_230.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_230.pdf
+  Size:     1.7M
+  MD5:      1bd2e221172051f5554a55ea6f1442d7
+
+[Document Store MCP] doc_212.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_212.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_212.pdf
+  Size:     1.0M
+  MD5:      73b11b3129d1665bbf576b9e31a77602
+
+[Document Store MCP] doc_082.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_082.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_082.pdf
+  Size:     436K
+  MD5:      d7e7f71ee25fce647cf983f95f2cb0ce
+
+[Document Store MCP] doc_271.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_271.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_271.pdf
+  Size:     964K
+  MD5:      d0aa59f7391d5193306d40a130346940
+
+[Document Store MCP] doc_079.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_079.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_079.pdf
+  Size:     552K
+  MD5:      55ef4f00680c3d44f8de66ab16f85a7a
+
+[Document Store MCP] doc_030.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_030.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_030.pdf
+  Size:     660K
+  MD5:      168cfd2c764fdbeadbf06688c156edcb
+
+[Document Store MCP] doc_175.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_175.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_175.pdf
+  Size:     436K
+  MD5:      d7e7f71ee25fce647cf983f95f2cb0ce
+
+[Document Store MCP] doc_050.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_050.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_050.pdf
+  Size:     904K
+  MD5:      763310541f1725e86444f3531462b6c7
+
+[Document Store MCP] doc_244.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_244.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_244.pdf
+  Size:     604K
+  MD5:      d3a4d3f3ac2af971574e9ca38761c821
+
+[Document Store MCP] doc_295.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_295.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_295.pdf
+  Size:     416K
+  MD5:      8930eaeeb0e4e63f0cb92150d2ed389c
+
+[Document Store MCP] doc_201.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_201.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_201.pdf
+  Size:     1.5M
+  MD5:      1b3f1e4f2cc49661216c8498182ee173
+
+[Document Store MCP] doc_083.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_083.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_083.pdf
+  Size:     1.3M
+  MD5:      5068c718d0968e2b47331afa3b8638b6
+
+[Document Store MCP] doc_293.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_293.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_293.pdf
+  Size:     1.3M
+  MD5:      b9c983b25950a0421ed026012f33d276
+
+[Document Store MCP] doc_078.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_078.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_078.pdf
+  Size:     1.4M
+  MD5:      1a1a46a4e806a2c2bec3b0278501d341
+
+[Document Store MCP] doc_117.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_117.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_117.pdf
+  Size:     812K
+  MD5:      26cac6772d5dadefd0f1d6c11a1ba19e
+
+[Document Store MCP] doc_136.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_136.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_136.pdf
+  Size:     744K
+  MD5:      6500e9e27c2cd924fcd40ce10491c7fe
+
+[Document Store MCP] doc_015.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_015.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_015.pdf
+  Size:     532K
+  MD5:      eda9abe32a4ef86ddd5e91080b2e3d88
+
+[Document Store MCP] doc_106.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_106.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_106.pdf
+  Size:     308K
+  MD5:      939b709ca85c43e6e3ef1b7d84eeb795
+
+[Document Store MCP] doc_113.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_113.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_113.pdf
+  Size:     408K
+  MD5:      d9bccbe28a93c5bbfc2b22e792d8c8ec
+
+[Document Store MCP] doc_070.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_070.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_070.pdf
+  Size:     824K
+  MD5:      f075000336f806b924fe8392c7e212f6
+
+[Document Store MCP] doc_278.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_278.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_278.pdf
+  Size:     620K
+  MD5:      31cffdeca8781346a8cf9ee086a17f05
+
+[Document Store MCP] doc_116.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_116.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_116.pdf
+  Size:     608K
+  MD5:      87c052516f07b9819a264dbd744ed14c
+
+[Document Store MCP] doc_024.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_024.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_024.pdf
+  Size:     592K
+  MD5:      8661fc9f943621a114b75753f3297082
+
+[Document Store MCP] doc_209.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_209.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_209.pdf
+  Size:     592K
+  MD5:      58cbad61d63abe0231f5b486b0c5c636
+
+[Document Store MCP] doc_111.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_111.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_111.pdf
+  Size:     552K
+  MD5:      55ef4f00680c3d44f8de66ab16f85a7a
+
+[Document Store MCP] doc_217.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_217.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_217.pdf
+  Size:     2.5M
+  MD5:      e3a5504987c970b5397005e8015c4bc5
+
+[Document Store MCP] doc_022.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_022.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_022.pdf
+  Size:     592K
+  MD5:      ef45aa99cd583f7fe418f4c69f217612
+
+[Document Store MCP] doc_257.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_257.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_257.pdf
+  Size:     560K
+  MD5:      6598f5a1edaf4d4452d41986b96cf17a
+
+[Document Store MCP] doc_067.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_067.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_067.pdf
+  Size:     900K
+  MD5:      ae16779541026dfc98f2f4da723afc7d
+
+[Document Store MCP] doc_011.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_011.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_011.pdf
+  Size:     356K
+  MD5:      8d7c62330cfcfa2af2d9fbabd95f6d7b
+
+[Document Store MCP] doc_072.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_072.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_072.pdf
+  Size:     168K
+  MD5:      51490c758971f41075789579ada41303
+
+[Document Store MCP] doc_242.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_242.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_242.pdf
+  Size:     528K
+  MD5:      6383ebf9bb148343648528c47b4afadd
+
+[Document Store MCP] doc_032.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_032.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_032.pdf
+  Size:     732K
+  MD5:      df47c25deed279ed5bfef053321c7f92
+
+[Document Store MCP] doc_017.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_017.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_017.pdf
+  Size:     660K
+  MD5:      fbc0bf864e528cdca0a061a03918321a
+
+[Document Store MCP] doc_044.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_044.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_044.pdf
+  Size:     364K
+  MD5:      3a955a5673671a908b03a7cfa5b85f4d
+
+[Document Store MCP] doc_039.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_039.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_039.pdf
+  Size:     1.1M
+  MD5:      bdd5b93e8358084783d9f9ac22cd4293
+
+[Document Store MCP] doc_276.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_276.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_276.pdf
+  Size:     1.7M
+  MD5:      a32b9e2f242a5c7357a68a6822711cfd
+
+[Document Store MCP] doc_061.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_061.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_061.pdf
+  Size:     1.1M
+  MD5:      d24bbb5ba800e75ae484ed13b773a822
+
+[Document Store MCP] doc_101.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_101.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_101.pdf
+  Size:     648K
+  MD5:      1cc1106927c7592250d2c2db9ca52852
+
+[Document Store MCP] doc_234.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_234.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_234.pdf
+  Size:     780K
+  MD5:      8890634a504ec0564a8e26fce920dd16
+
+[Document Store MCP] doc_269.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_269.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_269.pdf
+  Size:     436K
+  MD5:      affe10d3c75bcbca21a9fdfeb3ba4c30
+
+[Document Store MCP] doc_274.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_274.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_274.pdf
+  Size:     316K
+  MD5:      6fcd63dc91a19fa7b9e318e1bf38b368
+
+[Document Store MCP] doc_141.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_141.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_141.pdf
+  Size:     332K
+  MD5:      f9544accd2f2b1afe72c1ed45e944c70
+
+[Document Store MCP] doc_275.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_275.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_275.pdf
+  Size:     592K
+  MD5:      ef45aa99cd583f7fe418f4c69f217612
+
+[Document Store MCP] doc_251.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_251.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_251.pdf
+  Size:     800K
+  MD5:      cf5f2c9702313d90b88891dcf7b79547
+
+[Document Store MCP] doc_170.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_170.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_170.pdf
+  Size:     592K
+  MD5:      8661fc9f943621a114b75753f3297082
+
+[Document Store MCP] doc_193.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_193.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_193.pdf
+  Size:     732K
+  MD5:      df47c25deed279ed5bfef053321c7f92
+
+[Document Store MCP] doc_099.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_099.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_099.pdf
+  Size:     592K
+  MD5:      8661fc9f943621a114b75753f3297082
+
+[Document Store MCP] doc_010.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_010.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_010.pdf
+  Size:     432K
+  MD5:      5cba217e7b47e84d85c06e3d106f4072
+
+[Document Store MCP] doc_239.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_239.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_239.pdf
+  Size:     432K
+  MD5:      5cba217e7b47e84d85c06e3d106f4072
+
+[Document Store MCP] doc_155.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_155.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_155.pdf
+  Size:     1.3M
+  MD5:      b9c983b25950a0421ed026012f33d276
+
+[Document Store MCP] doc_164.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_164.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_164.pdf
+  Size:     452K
+  MD5:      37613d1d588afbd1b5c35d584f0f5405
+
+[Document Store MCP] doc_264.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_264.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_264.pdf
+  Size:     528K
+  MD5:      6383ebf9bb148343648528c47b4afadd
+
+[Document Store MCP] doc_018.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_018.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_018.pdf
+  Size:     1.3M
+  MD5:      b6c620899c7e658438a502290be04a90
+
+[Document Store MCP] doc_146.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_146.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_146.pdf
+  Size:     744K
+  MD5:      6500e9e27c2cd924fcd40ce10491c7fe
+
+[Document Store MCP] doc_125.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_125.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_125.pdf
+  Size:     1.1M
+  MD5:      fd85f35d85fb643faefeb9f2229d0719
+
+[Document Store MCP] doc_241.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_241.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_241.pdf
+  Size:     316K
+  MD5:      136aaf6e33113e4876374309bb9f39b7
+
+[Document Store MCP] doc_063.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_063.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_063.pdf
+  Size:     1.3M
+  MD5:      b9c983b25950a0421ed026012f33d276
+
+[Document Store MCP] doc_202.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_202.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_202.pdf
+  Size:     780K
+  MD5:      8890634a504ec0564a8e26fce920dd16
+
+[Document Store MCP] doc_135.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_135.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_135.pdf
+  Size:     364K
+  MD5:      7da971d43d054fdb6f547936743ed17c
+
+[Document Store MCP] doc_154.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_154.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_154.pdf
+  Size:     528K
+  MD5:      6383ebf9bb148343648528c47b4afadd
+
+[Document Store MCP] doc_144.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_144.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_144.pdf
+  Size:     736K
+  MD5:      31abb9affdb6989203d089533ff75d31
+
+[Document Store MCP] doc_292.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_292.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_292.pdf
+  Size:     916K
+  MD5:      1cec43f85eedc3383215ac8a6daa7c1e
+
+[Document Store MCP] doc_143.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_143.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_143.pdf
+  Size:     484K
+  MD5:      5c7ebcbecd27fbc2d667702ddb9c4d0d
+
+[Document Store MCP] doc_156.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_156.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_156.pdf
+  Size:     368K
+  MD5:      57031073bc89333e89a17c624270c746
+
+[Document Store MCP] doc_222.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_222.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_222.pdf
+  Size:     1.3M
+  MD5:      b6c620899c7e658438a502290be04a90
+
+[Document Store MCP] doc_279.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_279.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_279.pdf
+  Size:     316K
+  MD5:      6fcd63dc91a19fa7b9e318e1bf38b368
+
+[Document Store MCP] doc_060.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_060.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_060.pdf
+  Size:     168K
+  MD5:      51490c758971f41075789579ada41303
+
+[Document Store MCP] doc_054.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_054.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_054.pdf
+  Size:     808K
+  MD5:      318bb58374742325ed65dc9e38b714b6
+
+[Document Store MCP] doc_028.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_028.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_028.pdf
+  Size:     900K
+  MD5:      ae16779541026dfc98f2f4da723afc7d
+
+[Document Store MCP] doc_026.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_026.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_026.pdf
+  Size:     744K
+  MD5:      6500e9e27c2cd924fcd40ce10491c7fe
+
+[Document Store MCP] doc_215.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_215.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_215.pdf
+  Size:     532K
+  MD5:      eda9abe32a4ef86ddd5e91080b2e3d88
+
+[Document Store MCP] doc_221.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_221.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_221.pdf
+  Size:     656K
+  MD5:      2b4e5266010a53382b14d42cf116e84e
+
+[Document Store MCP] doc_133.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_133.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_133.pdf
+  Size:     916K
+  MD5:      1cec43f85eedc3383215ac8a6daa7c1e
+
+[Document Store MCP] doc_149.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_149.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_149.pdf
+  Size:     1.7M
+  MD5:      a32b9e2f242a5c7357a68a6822711cfd
+
+[Document Store MCP] doc_052.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_052.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_052.pdf
+  Size:     432K
+  MD5:      7953db110f9e37aa83667c822c69a027
+
+[Document Store MCP] doc_092.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_092.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_092.pdf
+  Size:     872K
+  MD5:      0c5402dce39d0a498dd63d2d6eb61f01
+
+[Document Store MCP] doc_180.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_180.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_180.pdf
+  Size:     456K
+  MD5:      57cf2cd600dea6ff45bdb404f9e59ae2
+
+[Document Store MCP] doc_167.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_167.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_167.pdf
+  Size:     872K
+  MD5:      0c5402dce39d0a498dd63d2d6eb61f01
+
+[Document Store MCP] doc_112.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_112.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_112.pdf
+  Size:     1.7M
+  MD5:      a32b9e2f242a5c7357a68a6822711cfd
+
+[Document Store MCP] doc_151.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_151.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_151.pdf
+  Size:     512K
+  MD5:      4d1867965b0d98924abddd00959f94e0
+
+[Document Store MCP] doc_250.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_250.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_250.pdf
+  Size:     432K
+  MD5:      7953db110f9e37aa83667c822c69a027
+
+[Document Store MCP] doc_159.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_159.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_159.pdf
+  Size:     368K
+  MD5:      57031073bc89333e89a17c624270c746
+
+[Document Store MCP] doc_137.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_137.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_137.pdf
+  Size:     308K
+  MD5:      939b709ca85c43e6e3ef1b7d84eeb795
+
+[Document Store MCP] doc_285.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_285.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_285.pdf
+  Size:     716K
+  MD5:      a0d3b126b01971f44bb416153f6cf4bf
+
+[Document Store MCP] doc_283.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_283.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_283.pdf
+  Size:     1.3M
+  MD5:      b845b87e53a9a1fc1a8997977e972f92
+
+[Document Store MCP] doc_108.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_108.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_108.pdf
+  Size:     776K
+  MD5:      148137b3c1952966006a68237ffb949a
+
+[Document Store MCP] doc_097.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_097.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_097.pdf
+  Size:     560K
+  MD5:      6598f5a1edaf4d4452d41986b96cf17a
+
+[Document Store MCP] doc_189.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_189.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_189.pdf
+  Size:     720K
+  MD5:      0b88afbbc951b04cabeaecdf58bf0b09
+
+[Document Store MCP] doc_110.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_110.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_110.pdf
+  Size:     296K
+  MD5:      bb1008babdfa429a180bf39fb069a4d9
+
+[Document Store MCP] doc_004.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_004.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_004.pdf
+  Size:     624K
+  MD5:      976c53ca724a85c7fca0331060255af2
+
+[Document Store MCP] doc_031.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_031.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_031.pdf
+  Size:     512K
+  MD5:      22913d55aed53577dec0d611c7885a2c
+
+[Document Store MCP] doc_056.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_056.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_056.pdf
+  Size:     700K
+  MD5:      9ab68097f2c2027a9bf809eb8efe47e5
+
+[Document Store MCP] doc_109.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_109.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_109.pdf
+  Size:     816K
+  MD5:      5e5d27fff01424306d3fe35dec3c7c00
+
+[Document Store MCP] doc_265.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_265.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_265.pdf
+  Size:     536K
+  MD5:      815e9db1ea9d23698a93adf82a0017d8
+
+[Document Store MCP] doc_277.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_277.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_277.pdf
+  Size:     624K
+  MD5:      3af6e13829bc197c7e3abdd77955b161
+
+[Document Store MCP] doc_033.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_033.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_033.pdf
+  Size:     700K
+  MD5:      9ab68097f2c2027a9bf809eb8efe47e5
+
+[Document Store MCP] doc_088.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_088.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_088.pdf
+  Size:     812K
+  MD5:      26cac6772d5dadefd0f1d6c11a1ba19e
+
+[Document Store MCP] doc_105.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_105.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_105.pdf
+  Size:     1.2M
+  MD5:      b8a3280bccfeffde3c743d9d8348dede
+
+[Document Store MCP] doc_165.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_165.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_165.pdf
+  Size:     1.2M
+  MD5:      b8a3280bccfeffde3c743d9d8348dede
+
+[Document Store MCP] doc_089.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_089.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_089.pdf
+  Size:     1.1M
+  MD5:      0c282b9dc1f9b62d60a6cc7662627f1d
+
+[Document Store MCP] doc_237.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_237.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_237.pdf
+  Size:     776K
+  MD5:      148137b3c1952966006a68237ffb949a
+
+[Document Store MCP] doc_259.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_259.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_259.pdf
+  Size:     824K
+  MD5:      f075000336f806b924fe8392c7e212f6
+
+[Document Store MCP] doc_258.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_258.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_258.pdf
+  Size:     816K
+  MD5:      5e5d27fff01424306d3fe35dec3c7c00
+
+[Document Store MCP] doc_069.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_069.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_069.pdf
+  Size:     1.3M
+  MD5:      8b957ec2e714b7e0c5247fa3faea3ce0
+
+[Document Store MCP] doc_122.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_122.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_122.pdf
+  Size:     448K
+  MD5:      d48868f27c4a83d8e7fa727357fb177c
+
+[Document Store MCP] doc_195.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_195.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_195.pdf
+  Size:     392K
+  MD5:      8b478a66f3e44f65786cf04e7706274e
+
+[Document Store MCP] doc_177.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_177.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_177.pdf
+  Size:     608K
+  MD5:      87c052516f07b9819a264dbd744ed14c
+
+[Document Store MCP] doc_051.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_051.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_051.pdf
+  Size:     1.3M
+  MD5:      930326b448c104d795a914550571c06d
+
+[Document Store MCP] doc_073.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_073.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_073.pdf
+  Size:     316K
+  MD5:      136aaf6e33113e4876374309bb9f39b7
+
+[Document Store MCP] doc_003.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_003.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_003.pdf
+  Size:     1.3M
+  MD5:      8b957ec2e714b7e0c5247fa3faea3ce0
+
+[Document Store MCP] doc_059.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_059.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_059.pdf
+  Size:     816K
+  MD5:      5e5d27fff01424306d3fe35dec3c7c00
+
+[Document Store MCP] doc_194.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_194.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_194.pdf
+  Size:     444K
+  MD5:      d329ecb7b301f2340d06629ea5e0c409
+
+[Document Store MCP] doc_077.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_077.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_077.pdf
+  Size:     1.1M
+  MD5:      bdd5b93e8358084783d9f9ac22cd4293
+
+[Document Store MCP] doc_087.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_087.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_087.pdf
+  Size:     1.1M
+  MD5:      fd85f35d85fb643faefeb9f2229d0719
+
+[Document Store MCP] doc_153.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_153.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_153.pdf
+  Size:     800K
+  MD5:      cf5f2c9702313d90b88891dcf7b79547
+
+[Document Store MCP] doc_000.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_000.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_000.pdf
+  Size:     580K
+  MD5:      ff9def3dfd64f69a6a7111a148c93356
+
+[Document Store MCP] doc_103.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_103.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_103.pdf
+  Size:     352K
+  MD5:      45f20af0ecf5af8fa3027d69c01da1d3
+
+[Document Store MCP] doc_127.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_127.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_127.pdf
+  Size:     532K
+  MD5:      cc9a6d8a345aa55ccb215470f807c920
+
+[Document Store MCP] doc_008.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_008.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_008.pdf
+  Size:     612K
+  MD5:      9fa7688f0d9ed0ca0efa573a5a6d4add
+
+[Document Store MCP] doc_227.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_227.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_227.pdf
+  Size:     648K
+  MD5:      1cc1106927c7592250d2c2db9ca52852
+
+[Document Store MCP] doc_211.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_211.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_211.pdf
+  Size:     612K
+  MD5:      9fa7688f0d9ed0ca0efa573a5a6d4add
+
+[Document Store MCP] doc_147.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_147.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_147.pdf
+  Size:     1.1M
+  MD5:      d24bbb5ba800e75ae484ed13b773a822
+
+[Document Store MCP] doc_210.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_210.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_210.pdf
+  Size:     560K
+  MD5:      6598f5a1edaf4d4452d41986b96cf17a
+
+[Document Store MCP] doc_267.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_267.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_267.pdf
+  Size:     364K
+  MD5:      6b68ee6e9c5b811a61dde1c028824ea8
+
+[Document Store MCP] doc_093.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_093.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_093.pdf
+  Size:     700K
+  MD5:      9ab68097f2c2027a9bf809eb8efe47e5
+
+[Document Store MCP] doc_023.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_023.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_023.pdf
+  Size:     1.1M
+  MD5:      fcaf1b6deea107e699396dc338b52b4e
+
+[Document Store MCP] doc_148.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_148.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_148.pdf
+  Size:     1.4M
+  MD5:      1a1a46a4e806a2c2bec3b0278501d341
+
+[Document Store MCP] doc_021.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_021.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_021.pdf
+  Size:     684K
+  MD5:      2d648db48ea80bd6c07a083357a3a423
+
+[Document Store MCP] doc_171.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_171.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_171.pdf
+  Size:     512K
+  MD5:      356292e8601a913a0359a0b4be032a97
+
+[Document Store MCP] doc_047.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_047.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_047.pdf
+  Size:     1.2M
+  MD5:      b8a3280bccfeffde3c743d9d8348dede
+
+[Document Store MCP] doc_297.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_297.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_297.pdf
+  Size:     624K
+  MD5:      976c53ca724a85c7fca0331060255af2
+
+[Document Store MCP] doc_016.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_016.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_016.pdf
+  Size:     364K
+  MD5:      6b68ee6e9c5b811a61dde1c028824ea8
+
+[Document Store MCP] doc_231.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_231.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_231.pdf
+  Size:     660K
+  MD5:      168cfd2c764fdbeadbf06688c156edcb
+
+[Document Store MCP] doc_280.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_280.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_280.pdf
+  Size:     592K
+  MD5:      58cbad61d63abe0231f5b486b0c5c636
+
+[Document Store MCP] doc_214.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_214.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_214.pdf
+  Size:     176K
+  MD5:      b98188ebd9b77bd31702f0ad1ca5ca5d
+
+[Document Store MCP] doc_049.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_049.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_049.pdf
+  Size:     540K
+  MD5:      72e1d96bceecc8f96328f634697ef0fa
+
+[Document Store MCP] doc_085.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_085.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_085.pdf
+  Size:     588K
+  MD5:      7b005bdf2988f63510377c8581f23c5a
+
+[Document Store MCP] doc_132.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_132.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_132.pdf
+  Size:     1.1M
+  MD5:      0c282b9dc1f9b62d60a6cc7662627f1d
+
+[Document Store MCP] doc_254.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_254.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_254.pdf
+  Size:     772K
+  MD5:      1c7400803f3a963b9c3a9e2c61d96642
+
+[Document Store MCP] doc_095.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_095.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_095.pdf
+  Size:     588K
+  MD5:      3b95209e461eabad7149dc95efafa762
+
+[Document Store MCP] doc_173.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_173.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_173.pdf
+  Size:     696K
+  MD5:      b2784406fca8583dc53a352a304128e0
+
+[Document Store MCP] doc_246.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_246.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_246.pdf
+  Size:     1.3M
+  MD5:      9b5d25774ee7e2b4ddaf433f9c4bb83f
+
+[Document Store MCP] doc_190.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_190.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_190.pdf
+  Size:     808K
+  MD5:      318bb58374742325ed65dc9e38b714b6
+
+[Document Store MCP] doc_268.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_268.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_268.pdf
+  Size:     1.1M
+  MD5:      fd85f35d85fb643faefeb9f2229d0719
+
+[Document Store MCP] doc_286.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_286.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_286.pdf
+  Size:     2.0M
+  MD5:      bacfe1e016bb795a8871d58174e13a66
+
+[Document Store MCP] doc_139.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_139.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_139.pdf
+  Size:     720K
+  MD5:      0b88afbbc951b04cabeaecdf58bf0b09
+
+[Document Store MCP] doc_152.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_152.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_152.pdf
+  Size:     1.1M
+  MD5:      e2ee9fa7b7521277687de8678f276086
+
+[Document Store MCP] doc_290.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_290.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_290.pdf
+  Size:     1.1M
+  MD5:      e2ee9fa7b7521277687de8678f276086
+
+[Document Store MCP] doc_228.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_228.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_228.pdf
+  Size:     360K
+  MD5:      4a27dca9060fc4d5d32f6b6d482f6590
+
+[Document Store MCP] doc_204.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_204.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_204.pdf
+  Size:     544K
+  MD5:      90a8ecbd17ade0059c4b546b6306611d
+
+[Document Store MCP] doc_196.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_196.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_196.pdf
+  Size:     904K
+  MD5:      763310541f1725e86444f3531462b6c7
+
+[Document Store MCP] doc_243.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_243.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_243.pdf
+  Size:     3.3M
+  MD5:      ad4f5d60d24a97e348d3621d091bfe77
+
+[Document Store MCP] doc_038.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_038.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_038.pdf
+  Size:     812K
+  MD5:      26cac6772d5dadefd0f1d6c11a1ba19e
+
+[Document Store MCP] doc_084.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_084.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_084.pdf
+  Size:     1.5M
+  MD5:      fa85d6f75fa7d0feeaa4aef0cd1db226
+
+[Document Store MCP] doc_270.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_270.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_270.pdf
+  Size:     648K
+  MD5:      1cc1106927c7592250d2c2db9ca52852
+
+[Document Store MCP] doc_263.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_263.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_263.pdf
+  Size:     608K
+  MD5:      4fd44a6b6c14bf243e017a08c53852c0
+
+[Document Store MCP] doc_014.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_014.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_014.pdf
+  Size:     400K
+  MD5:      661a9505caa42f6b06abdd048ae33459
+
+[Document Store MCP] doc_027.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_027.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_027.pdf
+  Size:     1.4M
+  MD5:      1a1a46a4e806a2c2bec3b0278501d341
+
+[Document Store MCP] doc_224.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_224.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_224.pdf
+  Size:     536K
+  MD5:      815e9db1ea9d23698a93adf82a0017d8
+
+[Document Store MCP] doc_080.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_080.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_080.pdf
+  Size:     1.4M
+  MD5:      cd9eb96b5a84a49eea7e7aa6e69dbd94
+
+[Document Store MCP] doc_118.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_118.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_118.pdf
+  Size:     1.3M
+  MD5:      bd1c56c614a2ff9848ad6af31e54805c
+
+[Document Store MCP] doc_166.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_166.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_166.pdf
+  Size:     520K
+  MD5:      cfd87b338c781e49f71e79c6af314da0
+
+[Document Store MCP] doc_282.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_282.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_282.pdf
+  Size:     316K
+  MD5:      136aaf6e33113e4876374309bb9f39b7
+
+[Document Store MCP] doc_223.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_223.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_223.pdf
+  Size:     656K
+  MD5:      2941222048b685bd5a9337d53fad4fe3
+
+[Document Store MCP] doc_182.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_182.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_182.pdf
+  Size:     444K
+  MD5:      d329ecb7b301f2340d06629ea5e0c409
+
+[Document Store MCP] doc_012.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_012.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_012.pdf
+  Size:     1.0M
+  MD5:      e6f5de131cdf1f546ad4ed63d38db3f6
+
+[Document Store MCP] doc_046.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_046.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_046.pdf
+  Size:     1.3M
+  MD5:      316deffb64c56758e54fa964a0b6bdd4
+
+[Document Store MCP] doc_272.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_272.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_272.pdf
+  Size:     1.1M
+  MD5:      dec15b27a1f60bcdd28d59c29ca4c2ae
+
+[Document Store MCP] doc_253.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_253.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_253.pdf
+  Size:     316K
+  MD5:      6fcd63dc91a19fa7b9e318e1bf38b368
+
+[Document Store MCP] doc_120.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_120.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_120.pdf
+  Size:     408K
+  MD5:      d9bccbe28a93c5bbfc2b22e792d8c8ec
+
+[Document Store MCP] doc_041.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_041.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_041.pdf
+  Size:     356K
+  MD5:      8d7c62330cfcfa2af2d9fbabd95f6d7b
+
+[Document Store MCP] doc_104.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_104.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_104.pdf
+  Size:     2.0M
+  MD5:      bacfe1e016bb795a8871d58174e13a66
+
+[Document Store MCP] doc_262.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_262.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_262.pdf
+  Size:     816K
+  MD5:      5e5d27fff01424306d3fe35dec3c7c00
+
+[Document Store MCP] doc_001.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_001.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_001.pdf
+  Size:     196K
+  MD5:      82d9ba213bada1dac722d949bf6814f0
+
+[Document Store MCP] doc_203.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_203.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_203.pdf
+  Size:     684K
+  MD5:      2d648db48ea80bd6c07a083357a3a423
+
+[Document Store MCP] doc_288.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_288.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_288.pdf
+  Size:     640K
+  MD5:      36e71f85ef18e03727047b03a88da597
+
+[Document Store MCP] doc_287.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_287.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_287.pdf
+  Size:     660K
+  MD5:      168cfd2c764fdbeadbf06688c156edcb
+
+[Document Store MCP] doc_076.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_076.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_076.pdf
+  Size:     580K
+  MD5:      ff9def3dfd64f69a6a7111a148c93356
+
+[Document Store MCP] doc_145.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_145.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_145.pdf
+  Size:     1.1M
+  MD5:      dec15b27a1f60bcdd28d59c29ca4c2ae
+
+[Document Store MCP] doc_207.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_207.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_207.pdf
+  Size:     356K
+  MD5:      8d7c62330cfcfa2af2d9fbabd95f6d7b
+
+[Document Store MCP] doc_256.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_256.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_256.pdf
+  Size:     476K
+  MD5:      4013a6b3fa34defae7cedefb7a423e14
+
+[Document Store MCP] doc_040.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_040.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_040.pdf
+  Size:     492K
+  MD5:      cb764d3d3dc94dbdd021304a3ac7289b
+
+[Document Store MCP] doc_266.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_266.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_266.pdf
+  Size:     2.0M
+  MD5:      bacfe1e016bb795a8871d58174e13a66
+
+[Document Store MCP] doc_035.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_035.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_035.pdf
+  Size:     1.1M
+  MD5:      0c282b9dc1f9b62d60a6cc7662627f1d
+
+[Document Store MCP] doc_294.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_294.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_294.pdf
+  Size:     716K
+  MD5:      a0d3b126b01971f44bb416153f6cf4bf
+
+[Document Store MCP] doc_123.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_123.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_123.pdf
+  Size:     964K
+  MD5:      d0aa59f7391d5193306d40a130346940
+
+[Document Store MCP] doc_007.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_007.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_007.pdf
+  Size:     676K
+  MD5:      8dcb2aca65cfe4510d54992fb54489ad
+
+[Document Store MCP] doc_068.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_068.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_068.pdf
+  Size:     436K
+  MD5:      02a99d4b2688681f203d3b151fce1e8f
+
+[Document Store MCP] doc_100.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_100.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_100.pdf
+  Size:     1.7M
+  MD5:      43eea6c28c0a723183d7a0f3a08c4f19
+
+[Document Store MCP] doc_249.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_249.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_249.pdf
+  Size:     536K
+  MD5:      815e9db1ea9d23698a93adf82a0017d8
+
+[Document Store MCP] doc_043.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_043.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_043.pdf
+  Size:     552K
+  MD5:      55ef4f00680c3d44f8de66ab16f85a7a
+
+[Document Store MCP] doc_042.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_042.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_042.pdf
+  Size:     496K
+  MD5:      f058481e30bf13f19f68ed9fd2bc2222
+
+[Document Store MCP] doc_187.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_187.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_187.pdf
+  Size:     656K
+  MD5:      2941222048b685bd5a9337d53fad4fe3
+
+[Document Store MCP] doc_029.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_029.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_029.pdf
+  Size:     280K
+  MD5:      63b672ec40bcaf96d67ae8189ac89f90
+
+[Document Store MCP] doc_020.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_020.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_020.pdf
+  Size:     732K
+  MD5:      df47c25deed279ed5bfef053321c7f92
+
+[Document Store MCP] doc_247.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_247.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_247.pdf
+  Size:     496K
+  MD5:      f058481e30bf13f19f68ed9fd2bc2222
+
+[Document Store MCP] doc_226.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_226.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_226.pdf
+  Size:     612K
+  MD5:      9fa7688f0d9ed0ca0efa573a5a6d4add
+
+[Document Store MCP] doc_183.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_183.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_183.pdf
+  Size:     1.3M
+  MD5:      316deffb64c56758e54fa964a0b6bdd4
+
+[Document Store MCP] doc_057.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_057.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_057.pdf
+  Size:     392K
+  MD5:      8b478a66f3e44f65786cf04e7706274e
+
+[Document Store MCP] doc_186.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_186.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_186.pdf
+  Size:     3.3M
+  MD5:      38bc13ecd9a4ce24319397cf2428eea3
+
+[Document Store MCP] doc_131.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_131.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_131.pdf
+  Size:     872K
+  MD5:      0c5402dce39d0a498dd63d2d6eb61f01
+
+[Document Store MCP] doc_169.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_169.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_169.pdf
+  Size:     1.1M
+  MD5:      bdd5b93e8358084783d9f9ac22cd4293
+
+[Document Store MCP] doc_096.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_096.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_096.pdf
+  Size:     660K
+  MD5:      fbc0bf864e528cdca0a061a03918321a
+
+[Document Store MCP] doc_074.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_074.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_074.pdf
+  Size:     432K
+  MD5:      7953db110f9e37aa83667c822c69a027
+
+[Document Store MCP] doc_289.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_289.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_289.pdf
+  Size:     1.1M
+  MD5:      958af34faadcfa5c4bfa73bc335dc167
+
+[Document Store MCP] doc_235.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_235.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_235.pdf
+  Size:     532K
+  MD5:      cc9a6d8a345aa55ccb215470f807c920
+
+[Document Store MCP] doc_086.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_086.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_086.pdf
+  Size:     800K
+  MD5:      cf5f2c9702313d90b88891dcf7b79547
+
+[Document Store MCP] doc_232.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_232.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_232.pdf
+  Size:     456K
+  MD5:      57cf2cd600dea6ff45bdb404f9e59ae2
+
+[Document Store MCP] doc_124.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_124.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_124.pdf
+  Size:     1.3M
+  MD5:      8b957ec2e714b7e0c5247fa3faea3ce0
+
+[Document Store MCP] doc_058.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_058.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_058.pdf
+  Size:     608K
+  MD5:      4fd44a6b6c14bf243e017a08c53852c0
+
+[Document Store MCP] doc_142.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_142.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_142.pdf
+  Size:     196K
+  MD5:      82d9ba213bada1dac722d949bf6814f0
+
+[Document Store MCP] doc_255.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_255.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_255.pdf
+  Size:     736K
+  MD5:      31abb9affdb6989203d089533ff75d31
+
+[Document Store MCP] doc_107.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_107.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_107.pdf
+  Size:     660K
+  MD5:      fbc0bf864e528cdca0a061a03918321a
+
+[Document Store MCP] doc_013.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_013.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_013.pdf
+  Size:     620K
+  MD5:      7aafbaefb7996a6a9ed42d00bc2ae14f
+
+[Document Store MCP] doc_238.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_238.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_238.pdf
+  Size:     432K
+  MD5:      5cba217e7b47e84d85c06e3d106f4072
+
+[Document Store MCP] doc_150.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_150.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_150.pdf
+  Size:     1.4M
+  MD5:      cd9eb96b5a84a49eea7e7aa6e69dbd94
+
+[Document Store MCP] doc_197.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_197.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_197.pdf
+  Size:     364K
+  MD5:      7da971d43d054fdb6f547936743ed17c
+
+[Document Store MCP] doc_090.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_090.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_090.pdf
+  Size:     912K
+  MD5:      acf2ab8fe69bc7bbdf2a46e116711036
+
+[Document Store MCP] doc_066.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_066.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_066.pdf
+  Size:     416K
+  MD5:      8930eaeeb0e4e63f0cb92150d2ed389c
+
+[Document Store MCP] doc_162.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_162.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_162.pdf
+  Size:     532K
+  MD5:      cc9a6d8a345aa55ccb215470f807c920
+
+[Document Store MCP] doc_161.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_161.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_161.pdf
+  Size:     2.5M
+  MD5:      e3a5504987c970b5397005e8015c4bc5
+
+[Document Store MCP] doc_075.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_075.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_075.pdf
+  Size:     912K
+  MD5:      0f71e3ea4b7a59c36e1861b230e8cd03
+
+[Document Store MCP] doc_296.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_296.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_296.pdf
+  Size:     596K
+  MD5:      6ed3048373141356e394761089172835
+
+[Document Store MCP] doc_034.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_034.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_034.pdf
+  Size:     656K
+  MD5:      2b4e5266010a53382b14d42cf116e84e
+
+[Document Store MCP] doc_229.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_229.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_229.pdf
+  Size:     520K
+  MD5:      cfd87b338c781e49f71e79c6af314da0
+
+[Document Store MCP] doc_126.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_126.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_126.pdf
+  Size:     544K
+  MD5:      90a8ecbd17ade0059c4b546b6306611d
+
+[Document Store MCP] doc_121.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_121.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_121.pdf
+  Size:     808K
+  MD5:      318bb58374742325ed65dc9e38b714b6
+
+[Document Store MCP] doc_098.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_098.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_098.pdf
+  Size:     368K
+  MD5:      57031073bc89333e89a17c624270c746
+
+[Document Store MCP] doc_188.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_188.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_188.pdf
+  Size:     916K
+  MD5:      1cec43f85eedc3383215ac8a6daa7c1e
+
+[Document Store MCP] doc_158.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_158.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_158.pdf
+  Size:     836K
+  MD5:      a6af67258dc3cc6fa0db8c749aafdebb
+
+[Document Store MCP] doc_284.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_284.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_284.pdf
+  Size:     508K
+  MD5:      d4c55955b23f2e1174fbb0c00971b14d
+
+[Document Store MCP] doc_019.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_019.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_019.pdf
+  Size:     352K
+  MD5:      45f20af0ecf5af8fa3027d69c01da1d3
+
+[Document Store MCP] doc_025.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_025.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_025.pdf
+  Size:     776K
+  MD5:      148137b3c1952966006a68237ffb949a
+
+[Document Store MCP] doc_009.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_009.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_009.pdf
+  Size:     1.1M
+  MD5:      fcaf1b6deea107e699396dc338b52b4e
+
+[Document Store MCP] doc_199.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_199.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_199.pdf
+  Size:     900K
+  MD5:      ae16779541026dfc98f2f4da723afc7d
+
+[Document Store MCP] doc_281.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_281.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_281.pdf
+  Size:     592K
+  MD5:      ef45aa99cd583f7fe418f4c69f217612
+
+[Document Store MCP] doc_062.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_062.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_062.pdf
+  Size:     716K
+  MD5:      a0d3b126b01971f44bb416153f6cf4bf
+
+[Document Store MCP] doc_163.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_163.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_163.pdf
+  Size:     196K
+  MD5:      82d9ba213bada1dac722d949bf6814f0
+
+[Document Store MCP] doc_205.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_205.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_205.pdf
+  Size:     360K
+  MD5:      069b894ff89a745bebc1299344217bd2
+
+[Document Store MCP] doc_236.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_236.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_236.pdf
+  Size:     932K
+  MD5:      69c32ba4733b7a97f8c1ddd63ec346e4
+
+[Document Store MCP] doc_065.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_065.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_065.pdf
+  Size:     696K
+  MD5:      b2784406fca8583dc53a352a304128e0
+
+[Document Store MCP] doc_130.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_130.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_130.pdf
+  Size:     1.3M
+  MD5:      5068c718d0968e2b47331afa3b8638b6
+
+[Document Store MCP] doc_134.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_134.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_134.pdf
+  Size:     436K
+  MD5:      d7e7f71ee25fce647cf983f95f2cb0ce
+
+[Document Store MCP] doc_206.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_206.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_206.pdf
+  Size:     1.5M
+  MD5:      fa85d6f75fa7d0feeaa4aef0cd1db226
+
+[Document Store MCP] doc_184.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_184.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_184.pdf
+  Size:     476K
+  MD5:      4013a6b3fa34defae7cedefb7a423e14
+
+[Document Store MCP] doc_115.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_115.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_115.pdf
+  Size:     488K
+  MD5:      6778d35f35ab46a3d6730b00907fc1b0
+
+[Document Store MCP] doc_174.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_174.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_174.pdf
+  Size:     520K
+  MD5:      cfd87b338c781e49f71e79c6af314da0
+
+[Document Store MCP] doc_102.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_102.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_102.pdf
+  Size:     1.7M
+  MD5:      43eea6c28c0a723183d7a0f3a08c4f19
+
+[Document Store MCP] doc_071.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_071.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_071.pdf
+  Size:     532K
+  MD5:      eda9abe32a4ef86ddd5e91080b2e3d88
+
+[Document Store MCP] doc_053.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_053.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_053.pdf
+  Size:     824K
+  MD5:      f075000336f806b924fe8392c7e212f6
+
+[Document Store MCP] doc_198.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_198.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_198.pdf
+  Size:     176K
+  MD5:      b98188ebd9b77bd31702f0ad1ca5ca5d
+
+[Document Store MCP] doc_219.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_219.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_219.pdf
+  Size:     3.3M
+  MD5:      f118c3c2e91f3a5f99aa599f18d6c8d3
+
+[Document Store MCP] doc_200.pdf
+  Original: /root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_downloads_20260225_095212/documents/doc_200.pdf
+  Backup:   /root/qwen/ai_agent/preprod_backup_20260227_124257/document_store_mcp/doc_200.pdf
+  Size:     656K
+  MD5:      2941222048b685bd5a9337d53fad4fe3
+
+
+═══════════════════════════════════════════════════════════════
+SUMMARY:
+═══════════════════════════════════════════════════════════════
+Downloads backed up:     298 files
+Document Store backed up: 298 files
+Total files:             596
+Total size:              462MiB
+
+Backup completed: 2026-02-27 12:43:17
+═══════════════════════════════════════════════════════════════

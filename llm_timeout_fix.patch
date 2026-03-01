@@ -1,0 +1,25 @@
+--- a/backend/services/rag/app.py
++++ b/backend/services/rag/app.py
+@@ -3267,6 +3267,20 @@ def _process_smart_ingest_docstore(job):
+                             model=RESPONSE_LLM_MODEL
+                         )
+ 
++                        # Test LLM connection with timeout
++                        logger.info(f"[Job {job_id}] Testing LLM connection...")
++                        try:
++                            test_response = llm.invoke("Test", config={'timeout': 10})
++                            logger.info(f"[Job {job_id}] LLM connection OK")
++                        except Exception as llm_test_error:
++                            logger.warning(f"[Job {job_id}] LLM not available: {llm_test_error}. Falling back to naive chunking.")
++                            chunking_strategy = 'naive_chunking'
++                            llm = None
++                    except Exception as e:
++                        logger.warning(f"[Job {job_id}] Failed to initialize LLM: {e}. Using naive chunking.")
++                        chunking_strategy = 'naive_chunking'
++                        llm = None
++
++                # Continue with chunking (either smart or naive)
++                if chunking_strategy == 'smart_chunking' and llm:
+                         # Qwen 3.5 35B has 262k context window - can handle most docs in single call
+                         # Threshold: 800k chars ≈ 200k tokens (leaves room for prompt + output)
+                         MAX_SINGLE_CALL = 800000  # chars

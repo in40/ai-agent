@@ -8,6 +8,31 @@ import time
 
 logger = logging.getLogger(__name__)
 
+# Global database manager instance
+_db_manager = None
+
+def get_db_manager():
+    """Get or create the global database manager instance"""
+    global _db_manager
+    if _db_manager is None:
+        _db_manager = DatabaseManager()
+    return _db_manager
+
+def get_db_connection():
+    """
+    Get a database connection for direct SQL operations
+    
+    Returns:
+        SQLAlchemy connection object or None if connection fails
+    """
+    try:
+        db_manager = get_db_manager()
+        return db_manager.engine.connect()
+    except Exception as e:
+        logger.error(f"Failed to get database connection: {e}")
+        return None
+
+
 class DatabaseManager:
     def __init__(self, database_url=None):
         self.database_url = database_url or DATABASE_URL

@@ -3268,11 +3268,36 @@ def _process_smart_ingest_docstore(job):
                             model=RESPONSE_LLM_MODEL
                         )
 
+                        # Test LLM connection
+                        logger.info(f"[Job {job_id}] Testing LLM connection...")
+                        try:
+                            test_response = llm.invoke("Test", config={'timeout': 10})
+                            logger.info(f"[Job {job_id}] LLM connection OK")
+                        except Exception as llm_err:
+                            logger.warning(f"[Job {job_id}] LLM test failed: {llm_err}. Using naive chunking.")
+                            chunking_strategy = 'naive'  # Fall back to naive chunking
+
                         # Qwen 3.5 35B has 262k context window - can handle most docs in single call
                         # Threshold: 800k chars ≈ 200k tokens (leaves room for prompt + output)
                         MAX_SINGLE_CALL = 800000  # chars
-                        
-                        if len(document_content) > MAX_SINGLE_CALL:
+
+                        # If LLM is unavailable, use naive chunking
+                        if chunking_strategy == 'naive':
+                            # Simple paragraph-based chunking
+                            paragraphs = [p.strip() for p in document_content.split('\n\n') if p.strip()]
+                            chunks = []
+                            current_chunk = ""
+                            for para in paragraphs:
+                                if len(current_chunk) + len(para) < 3000:
+                                    current_chunk += para + "\n\n"
+                                else:
+                                    if current_chunk:
+                                        chunks.append(current_chunk.strip())
+                                    current_chunk = para + "\n\n"
+                            if current_chunk:
+                                chunks.append(current_chunk.strip())
+                            logger.info(f"[Job {job_id}] Naive chunking: created {len(chunks)} chunks")
+                        elif len(document_content) > MAX_SINGLE_CALL:
                             # VERY LARGE DOCUMENT (> 800k chars, ~200k tokens)
                             # Split into sections with Context Summary for coherence
                             logger.info(f"[Job {job_id}] Large document ({len(document_content)} chars), splitting into sections")
