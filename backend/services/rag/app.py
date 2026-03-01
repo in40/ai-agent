@@ -2895,11 +2895,28 @@ def smart_ingest_webpage(current_user_id):
                                 f.write(download_response.content)
 
                             logger.info(f"[Job {job_id}] Saved {filename} from {doc_url} to Document Store")
+
+                            # Extract display name from filename (e.g., "gost-r-34.10-2012_abc123.pdf" → "34.10-2012")
+                            import re
+                            display_name = filename
+                            
+                            # Try to extract GOST standard number pattern (e.g., "34.10-2012", "59162-2020", "7.0.97-2016")
+                            gost_pattern = r'gost[-_]?(?:r[-_]?)?(\d+(?:\.\d+)?-\d{4})'
+                            gost_match = re.search(gost_pattern, filename, re.IGNORECASE)
+                            if gost_match:
+                                display_name = f"GOST {'R-' if 'r-' in filename.lower() or '_r_' in filename.lower() else ''}{gost_match.group(1)}"
+                            else:
+                                # Try to extract just the number-year pattern (e.g., "59162-2020")
+                                num_year_pattern = r'(\d+-\d{4})'
+                                num_match = re.search(num_year_pattern, filename)
+                                if num_match:
+                                    display_name = num_match.group(1)
                             
                             # Save individual document metadata for Document Store MCP
                             import json
                             doc_metadata = {
                                 'original_filename': filename,
+                                'display_name': display_name,
                                 'original_url': doc_url,
                                 'source_website': source_domain,
                                 'downloaded_at': datetime.utcnow().isoformat(),
@@ -2917,6 +2934,7 @@ def smart_ingest_webpage(current_user_id):
                                 'status': 'saved_to_store',
                                 'chunks': 0,
                                 'filename': filename,
+                                'display_name': display_name,
                                 'original_url': doc_url,
                                 'source_domain': source_domain,
                                 'path': save_path
