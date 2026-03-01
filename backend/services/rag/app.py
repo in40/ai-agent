@@ -2874,16 +2874,21 @@ def smart_ingest_webpage(current_user_id):
                             
                             # Sanitize filename - remove any remaining problematic characters
                             filename = re.sub(r'[<>:"|?*]', '_', filename)
-                            
-                            # Make filename unique if it already exists
+
+                            # Make filename unique using URL hash to avoid race conditions in parallel downloads
+                            # This ensures different URLs always get different filenames even with same base name
+                            import hashlib
+                            url_hash = hashlib.md5(doc_url.encode()).hexdigest()[:8]
+                            base, ext = os.path.splitext(filename)
+                            filename = f"{base}_{url_hash}{ext}"
                             save_path = os.path.join(docstore_dir, filename)
-                            if os.path.exists(save_path):
-                                base, ext = os.path.splitext(filename)
-                                counter = 1
-                                while os.path.exists(f"{base}_{counter}{ext}"):
-                                    counter += 1
-                                filename = f"{base}_{counter}{ext}"
+                            
+                            # Handle rare case where even hash-collided filename exists (atomic check+create)
+                            counter = 1
+                            while os.path.exists(save_path):
+                                filename = f"{base}_{url_hash}_{counter}{ext}"
                                 save_path = os.path.join(docstore_dir, filename)
+                                counter += 1
 
                             # Save to Document Store
                             with open(save_path, 'wb') as f:

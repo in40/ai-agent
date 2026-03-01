@@ -19,7 +19,7 @@ rag_embedding_model_env = os.getenv("RAG_EMBEDDING_MODEL")
 
 RAG_EMBEDDING_PROVIDER = rag_embedding_provider_env if rag_embedding_provider_env is not None else EMBEDDING_PROVIDER
 RAG_EMBEDDING_MODEL = rag_embedding_model_env if rag_embedding_model_env is not None else EMBEDDING_MODEL
-RAG_VECTOR_STORE_TYPE = os.getenv("RAG_VECTOR_STORE_TYPE", "chroma")
+RAG_VECTOR_STORE_TYPE = os.getenv("RAG_VECTOR_STORE_TYPE", "qdrant")
 RAG_TOP_K_RESULTS = int(os.getenv("RAG_TOP_K_RESULTS", "5"))
 RAG_SIMILARITY_THRESHOLD = float(os.getenv("RAG_SIMILARITY_THRESHOLD", "0.3"))
 RAG_CHUNK_SIZE = int(os.getenv("RAG_CHUNK_SIZE", "1000"))
