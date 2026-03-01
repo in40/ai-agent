@@ -420,7 +420,13 @@ def validate_input(data: Dict, schema: Dict) -> Dict:
 
                 if max_value is not None and value > max_value:
                     errors[field] = f'Maximum value is {max_value}'
-            
+
+            # Allowed values validation for strings
+            if isinstance(value, str) and 'allowed_values' in constraints:
+                allowed_values = constraints.get('allowed_values')
+                if allowed_values and value not in allowed_values:
+                    errors[field] = f'Value must be one of: {", ".join(allowed_values)}'
+
             # Sanitization
             if constraints.get('sanitize', False):
                 # Remove potentially dangerous characters

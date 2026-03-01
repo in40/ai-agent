@@ -39,3 +39,11 @@ graphviz
 grandalf
 marker-pdf>=0.1.0
 json-repair>=0.30.0
+
+# PDF Extraction (Multi-pass)
+PyMuPDF>=1.24.0
+pdfminer.six>=20231228
+
+# OCR for scanned PDFs
+pytesseract>=0.3.10
+pdf2image>=1.16.3

@@ -11,25 +11,46 @@ from .vector_store_manager import VectorStoreManager
 from .retriever import Retriever
 from .rag_chain import RAGChain
 from .reranker import Reranker
-from .config import RAG_CHUNK_SIZE, RAG_CHUNK_OVERLAP, RERANKER_ENABLED
+from .config import RAG_CHUNK_SIZE, RAG_CHUNK_OVERLAP, RERANKER_ENABLED, RAG_RETRIEVER_MODE
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 
 class RAGOrchestrator:
     """Main class that orchestrates all RAG components."""
 
-    def __init__(self, llm=None):
+    def __init__(self, llm=None, mode: Optional[str] = None):
         """
         Initialize the RAG orchestrator.
 
         Args:
             llm: Language model to use for generation (will be passed to RAGChain)
+            mode: Optional retrieval mode override ("vector", "graph", "hybrid").
+                  If not provided, uses RAG_RETRIEVER_MODE from config.
         """
         self.document_loader = DocumentLoader()
         self.embedding_manager = EmbeddingManager()
         self.vector_store_manager = VectorStoreManager()
-        self.retriever = Retriever(self.vector_store_manager)
-        self.rag_chain = RAGChain(self.retriever, llm)
+
+        # Use provided mode or fall back to config
+        retrieval_mode = mode if mode is not None else RAG_RETRIEVER_MODE
+
+        # Use HybridRetriever if enabled, otherwise use standard Retriever
+        if retrieval_mode == "hybrid":
+            from .hybrid_retriever import HybridRetriever
+            self.retriever = HybridRetriever(self.vector_store_manager)
+            print(f"[RAG] Using Hybrid Retriever (Vector + Graph) - mode: {retrieval_mode}")
+        elif retrieval_mode == "graph":
+            from .hybrid_retriever import HybridRetriever
+            # Graph-only mode (for testing)
+            self.retriever = HybridRetriever(self.vector_store_manager)
+            self.retriever.vector_weight = 0.0
+            self.retriever.graph_weight = 1.0
+            print(f"[RAG] Using Graph-only Retriever - mode: {retrieval_mode}")
+        else:
+            self.retriever = Retriever(self.vector_store_manager)
+            print(f"[RAG] Using Vector-only Retriever - mode: {retrieval_mode}")
+
+        self.rag_chain = RAGChain(self.retriever, llm, mode=retrieval_mode)
         self.reranker = Reranker() if RERANKER_ENABLED else None
 
         # Initialize text splitter for document preprocessing

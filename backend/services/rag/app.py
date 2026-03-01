@@ -76,6 +76,38 @@ def secure_filename(filename: str) -> str:
     return filename
 
 
+def fix_russian_encoding(text: str) -> str:
+    """
+    Detect and fix common Russian encoding issues (mojibake).
+    Common issue: CP1251 text decoded as Latin-1
+    Example: "Федеральное" → "ÔÅÄÅÐÀËÜÍÎÅ"
+    """
+    # Common mojibake patterns (CP1251 decoded as Latin-1)
+    mojibake_indicators = [
+        'ÔÅÄ',  # Федер
+        'ÐÅÃ',  # Рег
+        'ÒÅÕ',  # Тех
+        'ÇÀÙ',  # Защ
+        'ÈÍÔ',  # Инф
+        'ïî',   # по (common word)
+        'íà',   # на (common word)
+    ]
+
+    # Check if text looks like mojibake
+    is_mojibake = any(pattern in text for pattern in mojibake_indicators)
+
+    if is_mojibake:
+        try:
+            # Re-encode as Latin-1, decode as CP1251 (Russian Windows)
+            fixed = text.encode('latin-1').decode('cp1251')
+            return fixed
+        except (UnicodeDecodeError, UnicodeEncodeError) as e:
+            logger.warning(f"Encoding fix failed: {e}")
+            pass
+
+    return text
+
+
 @app.route('/health', methods=['GET'])
 def health_check():
     """Health check endpoint"""
@@ -93,7 +125,7 @@ def rag_query(current_user_id):
     """Endpoint for RAG queries"""
     try:
         data = request.get_json()
-        
+
         # Validate input
         schema = {
             'query': {
@@ -102,27 +134,34 @@ def rag_query(current_user_id):
                 'min_length': 1,
                 'max_length': 1000,
                 'sanitize': True
+            },
+            'mode': {
+                'type': str,
+                'required': False,
+                'allowed_values': ['vector', 'graph', 'hybrid']
             }
         }
-        
+
         validation_errors = validate_input(data, schema)
         if validation_errors:
             return jsonify({'error': f'Validation error: {validation_errors}'}), 400
-        
+
         query = data.get('query')
-        
-        # Initialize RAG orchestrator with appropriate LLM
+        mode = data.get('mode')  # Optional mode parameter from UI
+
+        # Initialize RAG orchestrator with appropriate LLM and mode
         response_generator = ResponseGenerator()
         llm = response_generator._get_llm_instance(
             provider=RESPONSE_LLM_PROVIDER,
             model=RESPONSE_LLM_MODEL
         )
-        
-        rag_orchestrator = RAGOrchestrator(llm=llm)
-        
+
+        # Pass mode to orchestrator (will use config default if mode is None)
+        rag_orchestrator = RAGOrchestrator(llm=llm, mode=mode)
+
         # Perform the query
         result = rag_orchestrator.query(query)
-        
+
         return jsonify(result), 200
     except Exception as e:
         logger.error(f"RAG query error: {str(e)}")
@@ -178,14 +217,567 @@ def rag_ingest(current_user_id):
         return jsonify({'error': f'RAG ingestion failed: {str(e)}'}), 500
 
 
+@app.route('/api/rag/test_extraction', methods=['POST'])
+def test_pdf_extraction():
+    """
+    Test PDF extraction quality WITHOUT ingesting into database.
+    
+    Use this endpoint to:
+    - Verify Russian text extraction quality
+    - Check for mojibake (encoding issues)
+    - See which extraction method is used
+    - Preview extracted text before committing to database
+    
+    Request: multipart/form-data with 'file' field containing PDF
+    Response: JSON with extraction results and quality metrics
+    """
+    try:
+        # Check if file was uploaded
+        if 'file' not in request.files:
+            return jsonify({'detail': 'No file provided'}), 400
+        
+        file = request.files['file']
+        
+        if file.filename == '':
+            return jsonify({'detail': 'Empty filename'}), 400
+        
+        if not file.filename.lower().endswith('.pdf'):
+            return jsonify({'detail': 'Only PDF files are supported'}), 400
+        
+        # Save uploaded file temporarily
+        import tempfile
+        import re
+        
+        def secure_filename(filename: str) -> str:
+            """Secure filename by removing dangerous characters"""
+            filename = os.path.basename(filename)
+            filename = re.sub(r'[^\w\-.]', '_', filename, flags=re.UNICODE)
+            return filename if filename else 'temp.pdf'
+        
+        with tempfile.NamedTemporaryFile(suffix='.pdf', delete=False) as tmp:
+            temp_path = tmp.name
+            file.save(temp_path)
+        
+        try:
+            # Import and use DocumentLoader directly
+            from rag_component.document_loader import DocumentLoader
+            
+            loader = DocumentLoader()
+            docs = loader.load_document(temp_path)
+            
+            if not docs or len(docs) == 0:
+                return jsonify({'detail': 'No text extracted from PDF'}), 400
+            
+            text = docs[0].page_content
+            extraction_method = docs[0].metadata.get('extraction_method', 'unknown')
+            
+            # Calculate quality metrics
+            import re
+            
+            # Cyrillic ratio
+            cyrillic_pattern = re.compile(r'[\u0400-\u04FF]')
+            cyrillic_matches = cyrillic_pattern.findall(text)
+            total_chars = len(text.replace(' ', '').replace('\n', ''))
+            cyrillic_ratio = len(cyrillic_matches) / total_chars if total_chars > 0 else 0
+            
+            # Check for mojibake
+            mojibake_patterns = ['ÔÅÄ', 'ÐÅÃ', 'ÒÅÕ', 'ÇÀÙ', 'ÈÍÔ', 'ïî', 'íà']
+            has_mojibake = any(p in text for p in mojibake_patterns)
+            
+            # Determine quality
+            quality = 'good'
+            if has_mojibake or cyrillic_ratio < 0.1:
+                quality = 'poor'
+            elif cyrillic_ratio < 0.3:
+                quality = 'warning'
+            
+            # Return results
+            return jsonify({
+                'success': True,
+                'extraction_method': extraction_method,
+                'text_length': len(text),
+                'cyrillic_ratio': cyrillic_ratio,
+                'has_mojibake': has_mojibake,
+                'quality': quality,
+                'text_sample': text[:1000],  # First 1000 chars for preview
+                'metadata': docs[0].metadata
+            }), 200
+            
+        finally:
+            # Clean up temp file
+            import os
+            if os.path.exists(temp_path):
+                os.unlink(temp_path)
+                
+    except Exception as e:
+        logger.error(f"Test extraction error: {str(e)}")
+        return jsonify({'detail': f'Extraction failed: {str(e)}'}), 500
+
+
+@app.route('/api/rag/test_extraction_from_docstore', methods=['POST'])
+def test_extraction_from_docstore():
+    """
+    Test PDF extraction directly from Document Store.
+    
+    Request JSON:
+    {
+        "document_id": "doc_id",
+        "job_id": "job_id"
+    }
+    
+    Response: JSON with extraction results and quality metrics
+    """
+    try:
+        data = request.get_json()
+        
+        if not data:
+            return jsonify({'detail': 'No JSON data provided'}), 400
+        
+        document_id = data.get('document_id')
+        job_id = data.get('job_id')
+        
+        if not document_id or not job_id:
+            return jsonify({'detail': 'document_id and job_id are required'}), 400
+        
+        logger.info(f"[TestExtraction] Fetching doc {document_id} from job {job_id}")
+        
+        # Import document store client
+        from backend.services.rag.document_store_client import document_store_client
+        
+        # First, get the document metadata to find the file path
+        docs_result = document_store_client.list_documents(job_id)
+        
+        if not docs_result.get('success'):
+            return jsonify({'detail': 'Failed to list documents'}), 500
+        
+        # Find our document in the list
+        documents = docs_result.get('result', {}).get('documents', [])
+        doc_info = None
+        for doc in documents:
+            if doc.get('doc_id') == document_id or doc.get('id') == document_id:
+                doc_info = doc
+                break
+        
+        if not doc_info:
+            logger.error(f"[TestExtraction] Document {document_id} not found in job {job_id}")
+            return jsonify({'detail': 'Document not found'}), 404
+        
+        # Get the document to retrieve the actual file
+        doc_result = document_store_client.get_document(job_id, document_id, format='pdf')
+        
+        if not doc_result.get('success'):
+            logger.error(f"[TestExtraction] Failed to get document: {doc_result}")
+            return jsonify({'detail': 'Failed to retrieve document content'}), 500
+        
+        # Get the document content
+        doc_data = doc_result.get('result', {})
+        
+        logger.info(f"[TestExtraction] Document data keys: {doc_data.keys() if isinstance(doc_data, dict) else type(doc_data)}")
+        
+        # Check if we have file_path or content
+        if 'file_path' in doc_data and os.path.exists(doc_data['file_path']):
+            pdf_path = doc_data['file_path']
+            logger.info(f"[TestExtraction] Using file path: {pdf_path}")
+        elif 'content' in doc_data:
+            content = doc_data['content']
+            logger.info(f"[TestExtraction] Content type: {type(content)}")
+            
+            # Handle nested content structure (content inside content)
+            if isinstance(content, dict):
+                if 'content' in content:
+                    # Nested structure: {'content': {'content': 'base64...', 'encoding': 'base64'}}
+                    actual_content = content['content']
+                    encoding = content.get('encoding', 'base64')
+                    logger.info(f"[TestExtraction] Found nested content with encoding: {encoding}")
+                    content = actual_content
+                elif 'data' in content:
+                    content = content['data']
+                elif 'binary' in content:
+                    content = content['binary']
+                elif 'text' in content:
+                    content = content['text']
+                else:
+                    logger.error(f"[TestExtraction] Unknown content dict structure: {content.keys()}")
+                    return jsonify({'detail': 'Unknown content format', 'debug': list(content.keys())}), 404
+            
+            # Now content should be a string (base64) or bytes
+            import tempfile
+            import base64
+            
+            with tempfile.NamedTemporaryFile(suffix='.pdf', delete=False) as tmp:
+                if isinstance(content, str):
+                    # Decode base64
+                    try:
+                        binary_content = base64.b64decode(content)
+                        tmp.write(binary_content)
+                        logger.info(f"[TestExtraction] Decoded base64 content ({len(binary_content)} bytes)")
+                    except Exception as e:
+                        logger.error(f"[TestExtraction] Base64 decode failed: {e}")
+                        return jsonify({'detail': f'Failed to decode content: {str(e)}'}), 400
+                elif isinstance(content, bytes):
+                    tmp.write(content)
+                    logger.info(f"[TestExtraction] Wrote bytes content ({len(content)} bytes)")
+                else:
+                    logger.error(f"[TestExtraction] Unknown content type: {type(content)}")
+                    return jsonify({'detail': f'Unsupported content type: {type(content)}'}), 400
+                pdf_path = tmp.name
+            logger.info(f"[TestExtraction] Saved content to temp file: {pdf_path}")
+        else:
+            logger.error(f"[TestExtraction] Document has no file_path or content: {doc_data.keys() if isinstance(doc_data, dict) else 'Not a dict'}")
+            return jsonify({'detail': 'Document has no content', 'debug': str(doc_data)}), 404
+        
+        try:
+            # Use DocumentLoader to extract - but try only PyMuPDF first for speed
+            from rag_component.document_loader import DocumentLoader
+            import fitz  # PyMuPDF directly for faster extraction
+            
+            # Try PyMuPDF directly first (fastest method)
+            text_parts = []
+            doc = fitz.open(pdf_path)
+            try:
+                for page_num in range(len(doc)):
+                    page = doc[page_num]
+                    page_text = page.get_text("text", flags=fitz.TEXT_PRESERVE_WHITESPACE)
+                    
+                    # Inline encoding fix for mojibake (CP1251 decoded as Latin-1)
+                    mojibake_indicators = ['ÔÅÄ', 'ÐÅÃ', 'ÒÅÕ', 'ÇÀÙ', 'ÈÍÔ', 'ïî', 'íà']
+                    if any(p in page_text for p in mojibake_indicators):
+                        try:
+                            # First, replace problematic Unicode chars with placeholders
+                            safe_text = page_text
+                            # Replace common problematic Unicode chars
+                            replacements = {
+                                '\u2014': '--',  # em-dash
+                                '\u2013': '-',   # en-dash
+                                '\u201c': '"',   # left double quote
+                                '\u201d': '"',   # right double quote
+                                '\u2018': "'",   # left single quote
+                                '\u2019': "'",   # right single quote
+                                '\u2026': '...', # ellipsis
+                                '\u00a9': '(c)', # copyright
+                                '\u00ae': '(R)', # registered
+                                '\u2122': '(TM)',# trademark
+                                '\ufffd': '',    # replacement character
+                                '\u2012': '-',   # figure dash
+                                '\u2010': '-',   # hyphen
+                                '\u2011': '-',   # non-breaking hyphen
+                                '\u2015': '--',  # horizontal bar
+                                '\u2016': '||',  # double vertical line
+                                '\u2017': '__',  # double low line
+                                '\u201a': ',',   # single low-9 quote
+                                '\u201b': "'",   # single high-reversed-9 quote
+                                '\u201e': ',,',  # double low-9 quote
+                                '\u201f': '"',   # double high-reversed-9 quote
+                                '\u2020': '+',   # dagger
+                                '\u2021': '++',  # double dagger
+                                '\u2022': '*',   # bullet
+                                '\u2030': '%o',  # per mille
+                                '\u2039': '<',   # single left angle quote
+                                '\u203a': '>',   # single right angle quote
+                                '\u203c': '!!',  # double exclamation
+                                '\u2044': '/',   # fraction slash
+                                '\u2049': '!?',  # exclamation question
+                                '\u2103': 'C',   # degree Celsius
+                                '\u2105': 'c/o', # care of
+                                '\u2109': 'F',   # degree Fahrenheit
+                                '\u2116': 'No',  # numero
+                                '\u2122': 'TM',  # trademark
+                                '\u2153': '1/3', # vulgar fraction one third
+                                '\u2154': '2/3', # vulgar fraction two thirds
+                                '\u215b': '1/8', # vulgar fraction one eighth
+                                '\u215c': '3/8', # vulgar fraction three eighths
+                                '\u215d': '5/8', # vulgar fraction five eighths
+                                '\u215e': '7/8', # vulgar fraction seven eighths
+                                '\u2190': '<-',  # leftwards arrow
+                                '\u2191': '^',   # upwards arrow
+                                '\u2192': '->',  # rightwards arrow
+                                '\u2193': 'v',   # downwards arrow
+                                '\u2212': '-',   # minus sign
+                                '\u2215': '/',   # division slash
+                                '\u2217': '*',   # asterisk operator
+                                '\u221e': 'inf', # infinity
+                                '\u2223': '|',   # divides
+                                '\u2264': '<=',  # less-than or equal
+                                '\u2265': '>=',  # greater-than or equal
+                                '\u2400': '',    # symbol for null
+                                '\u2409': '\\t', # symbol for horizontal tab
+                                '\u240a': '\\v', # symbol for vertical tab
+                                '\u240c': '\\f', # symbol for form feed
+                                '\u240d': '\\r', # symbol for carriage return
+                                '\u2424': '\\n', # symbol for newline
+                                '\u2500': '-',   # box drawings light horizontal
+                                '\u2502': '|',   # box drawings light vertical
+                                '\u250c': '+',   # box drawings light down and right
+                                '\u2510': '+',   # box drawings light down and left
+                                '\u2514': '+',   # box drawings light up and right
+                                '\u2518': '+',   # box drawings light up and left
+                                '\u251c': '+',   # box drawings light vertical and right
+                                '\u2524': '+',   # box drawings light vertical and left
+                                '\u252c': '+',   # box drawings light down and horizontal
+                                '\u2534': '+',   # box drawings light up and horizontal
+                                '\u253c': '+',   # box drawings light vertical and horizontal
+                                '\u2550': '=',   # box drawings double horizontal
+                                '\u2551': '|',   # box drawings double vertical
+                                '\u2554': '+',   # box drawings double down and right
+                                '\u2557': '+',   # box drawings double down and left
+                                '\u255a': '+',   # box drawings double up and right
+                                '\u255d': '+',   # box drawings double up and left
+                                '\u2560': '+',   # box drawings double vertical and right
+                                '\u2563': '+',   # box drawings double vertical and left
+                                '\u2566': '+',   # box drawings double down and horizontal
+                                '\u2569': '+',   # box drawings double up and horizontal
+                                '\u256c': '+',   # box drawings double vertical and horizontal
+                                '\u266a': '',    # eighth note
+                                '\u3000': ' ',   # ideographic space
+                                '\ufeff': '',    # zero width no-break space
+                            }
+                            for old, new in replacements.items():
+                                safe_text = safe_text.replace(old, new)
+                            
+                            # Now try the encoding fix
+                            page_text = safe_text.encode('latin-1').decode('cp1251')
+                            logger.info(f"[TestExtraction] Page {page_num}: Fixed mojibake encoding")
+                        except Exception as e:
+                            logger.warning(f"[TestExtraction] Page {page_num}: Encoding fix failed: {e}")
+                            # Keep original text if fix fails
+                    
+                    text_parts.append(page_text)
+            finally:
+                doc.close()
+            
+            text = '\n'.join(text_parts)
+            extraction_method = 'PyMuPDF (fast)'
+            
+            logger.info(f"[TestExtraction] PyMuPDF extracted {len(text)} chars")
+            
+            # Check if PyMuPDF produced garbage (lots of replacement chars or no Cyrillic)
+            import re as re_module
+            cyrillic_pattern = re_module.compile(r'[\u0400-\u04FF]')
+            cyrillic_count = len(cyrillic_pattern.findall(text))
+            total_chars = len(text.replace(' ', '').replace('\n', ''))
+            cyrillic_ratio = cyrillic_count / total_chars if total_chars > 0 else 0
+            
+            # If less than 10% Cyrillic, try pdfminer for better extraction
+            if cyrillic_ratio < 0.1 and total_chars > 100:
+                logger.info(f"[TestExtraction] PyMuPDF produced low-quality text (Cyrillic: {cyrillic_ratio:.1%}), trying pdfminer...")
+                try:
+                    from pdfminer.high_level import extract_text as pdfminer_extract
+                    from pdfminer.layout import LAParams
+                    laparams = LAParams(detect_vertical=True, all_texts=True, line_margin=0.5)
+                    text = pdfminer_extract(pdf_path, laparams=laparams)
+                    extraction_method = 'pdfminer'
+                    logger.info(f"[TestExtraction] pdfminer extracted {len(text)} chars")
+                    
+                    # Re-check Cyrillic ratio
+                    cyrillic_count = len(cyrillic_pattern.findall(text))
+                    total_chars = len(text.replace(' ', '').replace('\n', ''))
+                    cyrillic_ratio = cyrillic_count / total_chars if total_chars > 0 else 0
+                    
+                except Exception as e:
+                    logger.warning(f"[TestExtraction] pdfminer failed: {e}")
+                    # Keep PyMuPDF text
+            
+            # If pdfminer produced garbage (cid: markers), try OCR
+            if '(cid:' in text and len(text) > 100:
+                logger.info(f"[TestExtraction] pdfminer produced CID markers, trying Tesseract OCR...")
+                try:
+                    import pytesseract
+                    from pdf2image import convert_from_path
+                    images = convert_from_path(pdf_path, dpi=200)  # Lower DPI for speed
+                    ocr_text_parts = []
+                    for i, image in enumerate(images[:10]):  # Limit to first 10 pages for speed
+                        ocr_text = pytesseract.image_to_string(image, lang='rus+eng', config='--psm 6')
+                        ocr_text_parts.append(ocr_text)
+                    text = '\n'.join(ocr_text_parts)
+                    extraction_method = 'Tesseract OCR'
+                    logger.info(f"[TestExtraction] OCR extracted {len(text)} chars from {len(ocr_text_parts)} pages")
+                    
+                    # Re-check Cyrillic ratio
+                    cyrillic_count = len(cyrillic_pattern.findall(text))
+                    total_chars = len(text.replace(' ', '').replace('\n', ''))
+                    cyrillic_ratio = cyrillic_count / total_chars if total_chars > 0 else 0
+                    
+                except Exception as e:
+                    logger.warning(f"[TestExtraction] OCR failed: {e}")
+                    # Keep pdfminer text
+            
+            # If PyMuPDF didn't extract enough text, use full DocumentLoader
+            if not text or len(text.strip()) < 100:
+                logger.info(f"[TestExtraction] PyMuPDF extracted little text ({len(text)} chars), trying full pipeline...")
+                loader = DocumentLoader()
+                docs = loader.load_document(pdf_path)
+                if docs:
+                    text = docs[0].page_content
+                    extraction_method = docs[0].metadata.get('extraction_method', 'unknown')
+                else:
+                    return jsonify({'detail': 'No text extracted from PDF'}), 400
+            
+            if not text:
+                return jsonify({'detail': 'No text extracted from PDF'}), 400
+            
+            # Calculate quality metrics
+            import re
+            
+            cyrillic_pattern = re.compile(r'[\u0400-\u04FF]')
+            cyrillic_matches = cyrillic_pattern.findall(text)
+            total_chars = len(text.replace(' ', '').replace('\n', ''))
+            cyrillic_ratio = len(cyrillic_matches) / total_chars if total_chars > 0 else 0
+            
+            mojibake_patterns = ['ÔÅÄ', 'ÐÅÃ', 'ÒÅÕ', 'ÇÀÙ', 'ÈÍÔ', 'ïî', 'íà']
+            has_mojibake = any(p in text for p in mojibake_patterns)
+            
+            quality = 'good'
+            if has_mojibake or cyrillic_ratio < 0.1:
+                quality = 'poor'
+            elif cyrillic_ratio < 0.3:
+                quality = 'warning'
+            
+            return jsonify({
+                'success': True,
+                'extraction_method': extraction_method,
+                'text_length': len(text),
+                'cyrillic_ratio': cyrillic_ratio,
+                'has_mojibake': has_mojibake,
+                'quality': quality,
+                'text_sample': text[:1000],  # First 1000 chars for preview
+                'full_text': text,  # Full extracted text for download
+                'metadata': {'source': 'document_store', 'file': pdf_path},
+                'source': 'document_store'
+            }), 200
+            
+        finally:
+            # Clean up temp file if we created one
+            if 'content' in doc_data and os.path.exists(pdf_path):
+                os.unlink(pdf_path)
+        
+    except ImportError as e:
+        logger.error(f"Document store client not available: {str(e)}")
+        return jsonify({'detail': 'Document store integration not available'}), 503
+    except Exception as e:
+        logger.error(f"Test extraction from docstore error: {str(e)}")
+        import traceback
+        logger.error(traceback.format_exc())
+        return jsonify({'detail': f'Extraction failed: {str(e)}'}), 500
+
+
+@app.route('/api/rag/processing_stats', methods=['GET'])
+@require_permission(Permission.READ_RAG)
+def get_processing_stats(current_user_id):
+    """
+    Get PDF processing statistics showing which methods were used.
+    
+    Returns statistics about PDF extraction methods, processing times, and quality metrics.
+    """
+    try:
+        from .neo4j_integration import get_neo4j_connection
+        
+        neo4j = get_neo4j_connection()
+        
+        if not neo4j.connected:
+            return jsonify({
+                'success': False,
+                'error': 'Neo4j not connected',
+                'stats': {}
+            }), 200
+        
+        with neo4j.driver.session() as session:
+            # Get extraction method distribution
+            method_stats = session.run("""
+                MATCH (d:Document)
+                WHERE d.extraction_method IS NOT NULL
+                RETURN 
+                    d.extraction_method as method,
+                    count(*) as count,
+                    avg(d.extraction_time) as avg_time,
+                    min(d.extraction_time) as min_time,
+                    max(d.extraction_time) as max_time,
+                    avg(d.text_length) as avg_text_length,
+                    sum(CASE WHEN d.encoding_was_fixed THEN 1 ELSE 0 END) as encoding_fixed_count
+                ORDER BY count DESC
+            """).data()
+            
+            # Get fallback chain statistics
+            fallback_stats = session.run("""
+                MATCH (d:Document)
+                WHERE d.pdf_fallback_position IS NOT NULL
+                RETURN 
+                    d.pdf_fallback_position as position,
+                    d.pdf_extraction_method as method,
+                    count(*) as count,
+                    avg(d.pdf_extraction_time) as avg_time
+                ORDER BY position, count DESC
+            """).data()
+            
+            # Get recent processing activity
+            recent_docs = session.run("""
+                MATCH (d:Document)
+                WHERE d.pdf_processed_at IS NOT NULL
+                RETURN 
+                    d.filename as filename,
+                    d.doc_id as doc_id,
+                    d.pdf_extraction_method as method,
+                    d.pdf_extraction_time as time,
+                    d.pdf_text_length as text_length,
+                    d.pdf_encoding_fixed as encoding_fixed,
+                    d.pdf_processed_at as processed_at
+                ORDER BY d.pdf_processed_at DESC
+                LIMIT 50
+            """).data()
+            
+            # Calculate summary statistics
+            summary = session.run("""
+                MATCH (d:Document)
+                WHERE d.extraction_method IS NOT NULL
+                RETURN 
+                    count(*) as total_documents,
+                    avg(d.extraction_time) as overall_avg_time,
+                    sum(CASE WHEN d.encoding_was_fixed THEN 1 ELSE 0 END) as total_encoding_fixed,
+                    avg(d.text_length) as overall_avg_length
+            """).single()
+            
+            return jsonify({
+                'success': True,
+                'stats': {
+                    'extraction_methods': method_stats,
+                    'fallback_chain': fallback_stats,
+                    'recent_processing': recent_docs,
+                    'summary': {
+                        'total_documents': summary['total_documents'] if summary else 0,
+                        'overall_avg_time_seconds': float(summary['overall_avg_time']) if summary and summary['overall_avg_time'] else 0,
+                        'total_encoding_fixed': summary['total_encoding_fixed'] if summary else 0,
+                        'overall_avg_text_length': float(summary['overall_avg_length']) if summary and summary['overall_avg_length'] else 0
+                    }
+                }
+            }), 200
+            
+    except Exception as e:
+        logger.error(f"Error getting processing stats: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
 @app.route('/retrieve', methods=['POST'])
 @require_permission(Permission.READ_RAG)
 def rag_retrieve(current_user_id):
-    """Endpoint for retrieving documents from RAG"""
+    """
+    Endpoint for retrieving documents from RAG without LLM generation.
+    Use this for debugging retrieval or when you only need context.
+
+    Request body:
+    {
+        "query": "search query",
+        "top_k": 10,  // optional, default 5
+        "mode": "hybrid"  // optional: "vector", "graph", "hybrid"
+    }
+    """
     try:
         data = request.get_json()
 
-        # Validate input
+        # Validate input with mode parameter
         schema = {
             'query': {
                 'type': str,
@@ -199,6 +791,11 @@ def rag_retrieve(current_user_id):
                 'required': False,
                 'min_value': 1,
                 'max_value': 100
+            },
+            'mode': {
+                'type': str,
+                'required': False,
+                'allowed_values': ['vector', 'graph', 'hybrid']
             }
         }
 
@@ -208,15 +805,10 @@ def rag_retrieve(current_user_id):
 
         query = data.get('query')
         top_k = data.get('top_k', 5)  # Default to 5 results
+        mode = data.get('mode')  # Optional mode parameter
 
-        # Initialize RAG orchestrator with appropriate LLM
-        response_generator = ResponseGenerator()
-        llm = response_generator._get_llm_instance(
-            provider=RESPONSE_LLM_PROVIDER,
-            model=RESPONSE_LLM_MODEL
-        )
-
-        rag_orchestrator = RAGOrchestrator(llm=llm)
+        # Initialize RAG orchestrator with mode (no LLM needed for retrieval)
+        rag_orchestrator = RAGOrchestrator(llm=None, mode=mode)
 
         # Retrieve documents
         documents = rag_orchestrator.retrieve_documents(query, top_k=top_k)
@@ -238,7 +830,12 @@ def rag_retrieve(current_user_id):
 
             enhanced_documents.append(enhanced_doc)
 
-        return jsonify({'documents': enhanced_documents}), 200
+        return jsonify({
+            'documents': enhanced_documents,
+            'count': len(enhanced_documents),
+            'mode': mode or 'hybrid',
+            'query': query
+        }), 200
     except Exception as e:
         logger.error(f"RAG retrieval error: {str(e)}")
         return jsonify({'error': f'RAG retrieval failed: {str(e)}'}), 500

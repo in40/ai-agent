@@ -529,6 +529,11 @@
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="test-extraction-tab" data-bs-toggle="tab" data-bs-target="#test-extraction-panel" type="button">
+                                <i class="fas fa-flask"></i> 🧪 Test Extraction
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
                             <button class="nav-link" id="jobs-tab" data-bs-toggle="tab" data-bs-target="#jobs-panel" type="button">
                                 <i class="fas fa-tasks"></i> Jobs
                             </button>
@@ -845,6 +850,108 @@
                             </div>
                         </div>
 
+                        <!-- Test Extraction Panel -->
+                        <div class="tab-pane fade" id="test-extraction-panel" role="tabpanel">
+                            <h5><i class="fas fa-flask"></i> 🧪 Test PDF Extraction (No Database)</h5>
+                            <p class="text-muted">Test PDF text extraction quality <strong>without</strong> loading into the database. Use this to verify Russian text extraction, check for mojibake, and preview results before committing to ingestion.</p>
+
+                            <div class="card mb-4">
+                                <div class="card-header bg-warning text-dark">
+                                    <h6 class="mb-0"><i class="fas fa-info-circle"></i> What This Does</h6>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="mb-0">
+                                        <li>✅ Extracts text using multi-pass pipeline (PyMuPDF → pdfminer → PyPDFLoader → Tesseract OCR)</li>
+                                        <li>✅ Detects and fixes encoding issues (mojibake)</li>
+                                        <li>✅ Validates Cyrillic text quality</li>
+                                        <li>✅ Shows which extraction method was used</li>
+                                        <li>❌ <strong>Does NOT</strong> ingest into vector database</li>
+                                        <li>❌ <strong>Does NOT</strong> create jobs</li>
+                                        <li>❌ <strong>Does NOT</strong> pollute your knowledge base</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="mb-4">
+                                        <h6 class="mb-2"><i class="fas fa-arrow-circle-down"></i> Option 1: Upload PDF File</h6>
+                                        <div id="test-drop-zone" class="border-2 border-dashed border-warning rounded p-4 text-center mb-3" style="cursor: pointer; background-color: #fffbeb;">
+                                            <i class="fas fa-file-pdf fa-3x mb-3 text-warning"></i>
+                                            <p class="mb-0"><strong>Drag & drop a PDF here or click to browse</strong></p>
+                                            <p class="text-muted small mb-0">Single PDF file for testing</p>
+                                            <input type="file" id="test-file-upload" class="d-none" accept=".pdf">
+                                        </div>
+                                        <div id="test-selected-file" class="mt-2" style="display: none;">
+                                            <h6>Selected file:</h6>
+                                            <div id="test-file-info" class="alert alert-info"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <h6 class="mb-2"><i class="fas fa-database"></i> Option 2: Select from Document Store</h6>
+                                        <button id="test-load-docstore-btn" class="btn btn-primary mb-3">
+                                            <i class="fas fa-sync-alt"></i> Load Available Documents
+                                        </button>
+
+                                        <div id="test-docstore-results" style="display: none;">
+                                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                                <h6 class="mb-0">Available Documents:</h6>
+                                                <button id="test-docstore-select-all-btn" class="btn btn-sm btn-outline-primary" disabled>
+                                                    <i class="fas fa-check-square"></i> Select All
+                                                </button>
+                                            </div>
+
+                                            <div id="test-docstore-doc-list" class="list-group" style="max-height: 400px; overflow-y: auto;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-between mt-3">
+                                <button id="test-extract-btn" class="btn btn-warning btn-animated" disabled>
+                                    <span id="test-extract-spinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
+                                    <i class="fas fa-search"></i> Test Extraction
+                                </button>
+                            </div>
+
+                            <!-- Test Results -->
+                            <div id="test-extract-status" class="alert alert-info mt-3" style="display: none;" role="alert">
+                                <i class="fas fa-spinner fa-spin"></i> Extracting text...
+                            </div>
+                            <div id="test-extract-error" class="alert alert-danger mt-3" style="display: none;" role="alert">
+                                Extraction failed!
+                            </div>
+                            <div id="test-extract-result" class="alert alert-success mt-3" style="display: none;" role="alert">
+                                <h6><i class="fas fa-check-circle"></i> Extraction Completed!</h6>
+                                <div class="row mt-2">
+                                    <div class="col-md-3">
+                                        <strong>Method:</strong> <span id="test-result-method">-</span>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <strong>Text Length:</strong> <span id="test-result-length">-</span>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <strong>Cyrillic:</strong> <span id="test-result-cyrillic">-</span>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <strong>Mojibake:</strong> <span id="test-result-mojibake">-</span>
+                                    </div>
+                                </div>
+                                <div class="mt-2">
+                                    <strong>Quality:</strong> <span id="test-result-quality">-</span>
+                                </div>
+                            </div>
+
+                            <div id="test-extract-preview" class="mt-3" style="display: none;">
+                                <h6><i class="fas fa-file-alt"></i> Extracted Text Preview (first 1000 characters):</h6>
+                                <textarea class="form-control" id="test-text-preview" rows="10" readonly></textarea>
+                                <button id="test-download-btn" class="btn btn-outline-primary mt-2">
+                                    <i class="fas fa-download"></i> Download Full Text
+                                </button>
+                            </div>
+                        </div>
+
                         <!-- Jobs Panel -->
                         <div class="tab-pane fade" id="jobs-panel" role="tabpanel">
                             <h5><i class="fas fa-tasks"></i> Background Jobs Management</h5>
@@ -957,14 +1064,59 @@
 
                         <!-- Query Panel -->
                         <div class="tab-pane fade" id="query-panel" role="tabpanel">
+                            <!-- RAG Mode Selection -->
+                            <div class="card mb-3">
+                                <div class="card-body py-2">
+                                    <label class="form-label mb-1"><i class="fas fa-cog"></i> RAG Mode</label>
+                                    <div class="btn-group w-100" role="group">
+                                        <button type="button" class="btn btn-outline-primary rag-mode-btn active" data-mode="hybrid">
+                                            <i class="fas fa-project-diagram"></i> Hybrid (Vector + Graph)
+                                        </button>
+                                        <button type="button" class="btn btn-outline-primary rag-mode-btn" data-mode="vector">
+                                            <i class="fas fa-database"></i> Vector Only
+                                        </button>
+                                        <button type="button" class="btn btn-outline-primary rag-mode-btn" data-mode="retrieve">
+                                            <i class="fas fa-search"></i> Retrieve Only (No LLM)
+                                        </button>
+                                    </div>
+                                    <small class="text-muted d-block mt-1">
+                                        <i class="fas fa-info-circle"></i> Hybrid combines vector + graph. Retrieve Only shows raw context without LLM response.
+                                    </small>
+                                </div>
+                            </div>
+                            
                             <div class="rag-controls">
                                 <input type="text" class="form-control" id="rag-query" placeholder="Enter your RAG query">
                                 <button id="query-rag-btn" class="btn btn-primary btn-animated">
                                     <i class="fas fa-paper-plane"></i> Query
                                 </button>
                             </div>
+                            
+                            <!-- Raw Results Toggle (always shown for Retrieve Only mode) -->
+                            <div class="form-check mt-2" id="show-raw-results-container">
+                                <input class="form-check-input" type="checkbox" id="show-raw-results">
+                                <label class="form-check-label" for="show-raw-results">
+                                    <i class="fas fa-code"></i> <span id="show-raw-results-label">Show Raw Results (retrieved documents)</span>
+                                </label>
+                            </div>
+                            
                             <div id="rag-response" class="response-container mt-3">
                                 <p class="text-muted">Submit a query to see RAG results here...</p>
+                            </div>
+                            
+                            <!-- Raw Results Container (hidden by default) -->
+                            <div id="raw-results-container" class="mt-3" style="display: none;">
+                                <div class="card">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <h6 class="mb-0"><i class="fas fa-code"></i> Raw Context Data</h6>
+                                        <button class="btn btn-sm btn-outline-secondary" id="copy-raw-results-btn">
+                                            <i class="fas fa-copy"></i> Copy
+                                        </button>
+                                    </div>
+                                    <div class="card-body">
+                                        <pre id="raw-results-content" style="max-height: 500px; overflow-y: auto; background: #f8f9fa; padding: 10px; border-radius: 5px; font-size: 12px;"></pre>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -1708,17 +1860,28 @@
                 return;
             }
 
+            // Get selected RAG mode
+            const selectedModeBtn = document.querySelector('.rag-mode-btn.active');
+            const ragMode = selectedModeBtn ? selectedModeBtn.dataset.mode : 'hybrid';
+
+            // Check if raw results should be shown
+            const showRawResultsCheckbox = document.getElementById('show-raw-results');
+            const showRawResults = showRawResultsCheckbox.checked;
+            const rawResultsContainer = document.getElementById('raw-results-container');
+            const rawResultsContent = document.getElementById('raw-results-content');
+
             // Show loading state with animation
             queryRagBtn.classList.add('loading');
             queryRagBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span>Processing...';
             queryRagBtn.disabled = true;
 
+            const modeDescription = ragMode === 'retrieve' ? 'retrieving context' : `processing RAG query (${ragMode} mode)`;
             ragResponseDiv.innerHTML = `
                 <div class="text-center">
                     <div class="spinner-border text-primary" role="status">
                         <span class="visually-hidden">Loading...</span>
                     </div>
-                    <p class="mt-2">Processing RAG query, please wait...</p>
+                    <p class="mt-2">${modeDescription}, please wait...</p>
                 </div>
             `;
 
@@ -1727,13 +1890,24 @@
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), 43200000); // 12-hour timeout for RAG queries
 
-                const response = await fetch(`${API_BASE_URL}/api/rag/query`, {
+                // Use different endpoint for retrieve-only mode
+                const endpoint = ragMode === 'retrieve' 
+                    ? `${API_BASE_URL}/api/rag/retrieve`
+                    : `${API_BASE_URL}/api/rag/query`;
+
+                const response = await fetch(endpoint, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${AUTH_TOKEN}`
                     },
-                    body: JSON.stringify({ query }),
+                    body: JSON.stringify({
+                        query,
+                        // For retrieve mode, send 'hybrid' as the retrieval mode
+                        // (retrieve is just a UI mode that means "no LLM")
+                        mode: ragMode === 'retrieve' ? 'hybrid' : ragMode,
+                        top_k: ragMode === 'retrieve' ? 10 : undefined  // Default to 10 results for retrieve mode
+                    }),
                     signal: controller.signal  // Add the abort signal
                 });
 
@@ -1744,6 +1918,52 @@
                 }
 
                 const result = await response.json();
+
+                // Handle retrieve-only mode (no LLM response)
+                if (ragMode === 'retrieve') {
+                    // Always show raw results for retrieve mode
+                    rawResultsContent.textContent = JSON.stringify(result.documents || [], null, 2);
+                    rawResultsContainer.style.display = 'block';
+                    
+                    // Display retrieval results
+                    const documents = result.documents || [];
+                    let responseHTML = `<h5>📄 Retrieved Context (${documents.length} documents, ${result.mode || 'hybrid'} mode)</h5>`;
+                    
+                    if (documents.length === 0) {
+                        responseHTML += `<div class="alert alert-warning">No documents found for your query.</div>`;
+                    } else {
+                        documents.forEach((doc, index) => {
+                            const sourceBadge = doc.source ? 
+                                `<span class="badge bg-${doc.source.includes('vector') ? 'primary' : doc.source.includes('graph') ? 'success' : 'info'} me-2">${doc.source.toUpperCase()}</span>` : '';
+                            const scoreBadge = doc.score ? 
+                                `<span class="badge bg-secondary me-2">Score: ${doc.score.toFixed(3)}</span>` : '';
+                            
+                            responseHTML += `
+                                <div class="rag-document mt-3">
+                                    <div>
+                                        <h6>${sourceBadge}${scoreBadge}${doc.title || 'Untitled Document'}</h6>
+                                        <p class="mb-1"><small class="text-muted">${doc.source || 'Source unknown'}</small></p>
+                                        <div class="mt-2"><pre style="max-height: 300px; overflow-y: auto; font-size: 12px;">${doc.content}</pre></div>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                    }
+                    
+                    ragResponseDiv.innerHTML = responseHTML;
+                    queryRagBtn.classList.remove('loading');
+                    queryRagBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Query';
+                    queryRagBtn.disabled = false;
+                    return;
+                }
+
+                // Show raw results if requested (for normal query mode)
+                if (showRawResults && result.context) {
+                    rawResultsContent.textContent = JSON.stringify(result.context, null, 2);
+                    rawResultsContainer.style.display = 'block';
+                } else {
+                    rawResultsContainer.style.display = 'none';
+                }
 
                 // Helper function to safely truncate context
                 function truncateContext(context) {
@@ -1770,7 +1990,16 @@
                 let responseHTML = `<h5>RAG Response:</h5><div class="markdown-body">${renderedResponse}</div>`;
 
                 if (result.context && Array.isArray(result.context)) {
-                    responseHTML += `<h6>Context:</h6>`;
+                    // Count sources
+                    const vectorCount = result.context.filter(c => c.source && c.source.includes('vector')).length;
+                    const graphCount = result.context.filter(c => c.source && c.source.includes('Graph')).length;
+                    const bothCount = result.context.filter(c => c.source && c.source === 'both').length;
+                    
+                    responseHTML += `<h6>Context (${result.context.length} sources`;
+                    if (vectorCount > 0 || graphCount > 0 || bothCount > 0) {
+                        responseHTML += `: ${vectorCount} vector, ${graphCount} graph, ${bothCount} merged`;
+                    }
+                    responseHTML += `):</h6>`;
 
                     result.context.forEach((contextItem, index) => {
                         // Render document content with markdown (full content)
@@ -1780,6 +2009,14 @@
                         // Create a preview of the content (first 300 chars)
                         const previewContent = fullContent.substring(0, 300) + (fullContent.length > 300 ? '...' : '');
                         const renderedPreviewContent = md.render(previewContent);
+
+                        // Add source badge
+                        const sourceBadge = contextItem.source ? 
+                            `<span class="badge bg-${contextItem.source === 'vector' ? 'primary' : contextItem.source === 'graph' ? 'success' : 'info'} me-2">${contextItem.source.toUpperCase()}</span>` : '';
+
+                        // Add score if available
+                        const scoreBadge = contextItem.score ? 
+                            `<span class="badge bg-secondary me-2">Score: ${contextItem.score.toFixed(3)}</span>` : '';
 
                         // Add download link if available
                         const downloadLink = contextItem.download_info && contextItem.download_info.download_available ?
@@ -1804,7 +2041,7 @@
                             <div class="rag-document">
                                 <div class="d-flex justify-content-between align-items-start">
                                     <div>
-                                        <h6>${contextItem.title || 'Untitled Document'}</h6>
+                                        <h6>${sourceBadge}${scoreBadge}${contextItem.title || 'Untitled Document'}</h6>
                                         <p class="mb-1"><small class="text-muted">${contextItem.source || 'Source unknown'}</small></p>
                                         <div class="markdown-body content-preview" data-index="${index}">${renderedPreviewContent}</div>
                                         <div class="markdown-body content-full d-none" data-index="${index}">${renderedFullContent}</div>
@@ -2086,9 +2323,64 @@
         // ============================================
         
         // ============================================
+        // RAG Mode Selection
+        // ============================================
+        const ragModeBtns = document.querySelectorAll('.rag-mode-btn');
+        const showRawResultsContainer = document.getElementById('show-raw-results-container');
+        const showRawResultsLabel = document.getElementById('show-raw-results-label');
+        
+        ragModeBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Update button states
+                ragModeBtns.forEach(b => {
+                    b.classList.remove('active');
+                    b.classList.add('btn-outline-primary');
+                });
+                btn.classList.add('active');
+                btn.classList.remove('btn-outline-primary');
+                
+                const mode = btn.dataset.mode;
+                
+                // Update checkbox label and visibility based on mode
+                if (mode === 'retrieve') {
+                    // Retrieve Only mode - hide checkbox (always shows raw results)
+                    showRawResultsContainer.style.opacity = '0.5';
+                    showRawResultsContainer.style.pointerEvents = 'none';
+                    document.getElementById('show-raw-results').disabled = true;
+                    showRawResultsLabel.textContent = 'Show Raw Results (always shown for Retrieve Only)';
+                } else {
+                    // Hybrid/Vector mode - enable checkbox
+                    showRawResultsContainer.style.opacity = '1';
+                    showRawResultsContainer.style.pointerEvents = 'auto';
+                    document.getElementById('show-raw-results').disabled = false;
+                    showRawResultsLabel.textContent = 'Show Raw Results (retrieved documents)';
+                }
+                
+                console.log('[RAG] Mode selected:', mode);
+            });
+        });
+        
+        // Copy Raw Results button
+        const copyRawResultsBtn = document.getElementById('copy-raw-results-btn');
+        if (copyRawResultsBtn) {
+            copyRawResultsBtn.addEventListener('click', () => {
+                const rawResultsContent = document.getElementById('raw-results-content');
+                navigator.clipboard.writeText(rawResultsContent.textContent).then(() => {
+                    copyRawResultsBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                    setTimeout(() => {
+                        copyRawResultsBtn.innerHTML = '<i class="fas fa-copy"></i> Copy';
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Failed to copy:', err);
+                    alert('Failed to copy to clipboard');
+                });
+            });
+        }
+
+        // ============================================
         // Data Scientist - Input Source Management
         // ============================================
-        
+
         // Entity Extraction - Input Source Switching
         const dsInputSourceBtns = document.querySelectorAll('.ds-input-source-btn');
         let dsSelectedFile = null;
@@ -3684,10 +3976,11 @@
 
             // Optionally, update status every 30 seconds
             setInterval(updateServiceStatus, 30000);
-            
-            // Initialize Smart Ingestion and Jobs tabs
+
+            // Initialize Smart Ingestion, Jobs, and Test Extraction tabs
             initSmartIngestion();
             initJobsManagement();
+            initTestExtraction();
         });
         
         // ==================== Smart Ingestion Functions ====================
@@ -4504,7 +4797,404 @@
                 }, 3000); // Poll every 3 seconds
             }
         }
-        
+
+        // ==================== Test Extraction Functions ====================
+        function initTestExtraction() {
+            const testDropZone = document.getElementById('test-drop-zone');
+            const testFileInput = document.getElementById('test-file-upload');
+            const testExtractBtn = document.getElementById('test-extract-btn');
+            const testSelectedFile = document.getElementById('test-selected-file');
+            const testFileInfo = document.getElementById('test-file-info');
+            const testExtractStatus = document.getElementById('test-extract-status');
+            const testExtractError = document.getElementById('test-extract-error');
+            const testExtractResult = document.getElementById('test-extract-result');
+            const testExtractPreview = document.getElementById('test-extract-preview');
+            const testTextPreview = document.getElementById('test-text-preview');
+            const testDownloadBtn = document.getElementById('test-download-btn');
+
+            let testSelectedFileObj = null;
+            let fullExtractedText = '';
+
+            // Click to upload
+            if (testDropZone) {
+                testDropZone.addEventListener('click', () => testFileInput.click());
+            }
+
+            // File input change
+            if (testFileInput) {
+                testFileInput.addEventListener('change', (e) => {
+                    if (e.target.files && e.target.files.length > 0) {
+                        testSelectedFileObj = e.target.files[0];
+                        updateTestFileInfo();
+                    }
+                });
+            }
+
+            // Drag and drop
+            if (testDropZone) {
+                testDropZone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    testDropZone.classList.add('bg-warning', 'text-dark');
+                });
+
+                testDropZone.addEventListener('dragleave', () => {
+                    testDropZone.classList.remove('bg-warning', 'text-dark');
+                });
+
+                testDropZone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    testDropZone.classList.remove('bg-warning', 'text-dark');
+                    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                        testSelectedFileObj = e.dataTransfer.files[0];
+                        updateTestFileInfo();
+                    }
+                });
+            }
+
+            // Test extract button
+            if (testExtractBtn) {
+                testExtractBtn.addEventListener('click', startTestExtraction);
+            }
+
+            // Download button
+            if (testDownloadBtn) {
+                testDownloadBtn.addEventListener('click', () => {
+                    if (!fullExtractedText) return;
+                    const blob = new Blob([fullExtractedText], { type: 'text/plain' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = testSelectedFileObj ? testSelectedFileObj.name.replace('.pdf', '_extracted.txt') : 'extracted.txt';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                });
+            }
+
+            // Load from Document Store button
+            const testLoadDocstoreBtn = document.getElementById('test-load-docstore-btn');
+            if (testLoadDocstoreBtn) {
+                testLoadDocstoreBtn.addEventListener('click', loadTestDocstoreDocuments);
+            }
+
+            // Select all from Document Store
+            const testDocstoreSelectAllBtn = document.getElementById('test-docstore-select-all-btn');
+            if (testDocstoreSelectAllBtn) {
+                testDocstoreSelectAllBtn.addEventListener('click', () => {
+                    const checkboxes = document.querySelectorAll('.test-docstore-doc-checkbox');
+                    const isChecked = checkboxes.length > 0 && checkboxes[0].checked;
+                    checkboxes.forEach(cb => cb.checked = !isChecked);
+                    updateTestDocstoreSelection();
+                });
+            }
+
+            let testDocstoreDocuments = [];
+
+            async function loadTestDocstoreDocuments() {
+                const resultsDiv = document.getElementById('test-docstore-results');
+                const docList = document.getElementById('test-docstore-doc-list');
+                const selectAllBtn = document.getElementById('test-docstore-select-all-btn');
+                const AUTH_TOKEN = localStorage.getItem('authToken') || '';
+
+                resultsDiv.style.display = 'block';
+                docList.innerHTML = '<li class="list-group-item text-center"><i class="fas fa-spinner fa-spin"></i> Loading documents...</li>';
+                selectAllBtn.disabled = true;
+
+                try {
+                    // Fetch jobs from document store with auth token
+                    const response = await fetch('/api/rag/document_store/jobs', {
+                        headers: {
+                            'Authorization': `Bearer ${AUTH_TOKEN}`
+                        }
+                    });
+                    
+                    if (!response.ok) {
+                        if (response.status === 401) {
+                            throw new Error('Authentication required. Please log in again.');
+                        }
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    const jobs = data.jobs || [];
+
+                    // Extract PDF documents from jobs
+                    testDocstoreDocuments = [];
+                    jobs.forEach(job => {
+                        if (job.documents && Array.isArray(job.documents)) {
+                            job.documents.forEach(doc => {
+                                if (doc.format === 'pdf' || (doc.filename && doc.filename.toLowerCase().endsWith('.pdf'))) {
+                                    testDocstoreDocuments.push({
+                                        id: doc.id || doc.document_id || doc.doc_id,
+                                        filename: doc.filename || 'Unknown',
+                                        job_id: job.job_id,
+                                        created_at: job.created_at || doc.created_at,
+                                        format: 'pdf',
+                                        size: doc.size || 0
+                                    });
+                                }
+                            });
+                        }
+                    });
+
+                    if (testDocstoreDocuments.length === 0) {
+                        docList.innerHTML = '<li class="list-group-item text-muted">No PDF documents found in Document Store</li>';
+                        return;
+                    }
+
+                    // Render document list
+                    docList.innerHTML = testDocstoreDocuments.map((doc, idx) => {
+                        // Format file size
+                        let sizeDisplay;
+                        if (doc.size < 1024) {
+                            sizeDisplay = doc.size + ' B';
+                        } else if (doc.size < 1024 * 1024) {
+                            sizeDisplay = (doc.size / 1024).toFixed(1) + ' KB';
+                        } else {
+                            sizeDisplay = (doc.size / (1024 * 1024)).toFixed(2) + ' MB';
+                        }
+
+                        return `
+                        <label class="list-group-item list-group-item-action">
+                            <div class="form-check">
+                                <input class="form-check-input test-docstore-doc-checkbox" type="checkbox" value="${idx}" id="test-doc-${idx}">
+                                <label class="form-check-label w-100" for="test-doc-${idx}">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <i class="fas fa-file-pdf text-danger"></i>
+                                            <strong>${doc.filename}</strong>
+                                            <small class="text-muted d-block">${sizeDisplay} • Job: ${doc.job_id}</small>
+                                        </div>
+                                        <button class="btn btn-sm btn-outline-primary test-docstore-test-btn" data-idx="${idx}">
+                                            <i class="fas fa-flask"></i> Test
+                                        </button>
+                                    </div>
+                                </label>
+                            </div>
+                        </label>
+                    `}).join('');
+
+                    selectAllBtn.disabled = false;
+
+                    // Add event listeners to checkboxes
+                    document.querySelectorAll('.test-docstore-doc-checkbox').forEach(cb => {
+                        cb.addEventListener('change', updateTestDocstoreSelection);
+                    });
+
+                    // Add event listeners to test buttons
+                    document.querySelectorAll('.test-docstore-test-btn').forEach(btn => {
+                        btn.addEventListener('click', (e) => {
+                            const idx = parseInt(e.target.closest('button').dataset.idx);
+                            testDocumentFromDocstore(idx);
+                        });
+                    });
+
+                } catch (error) {
+                    console.error('[TestDocstore] Error:', error);
+                    docList.innerHTML = `<li class="list-group-item text-danger">Error loading documents: ${error.message}</li>`;
+                }
+            }
+
+            function updateTestDocstoreSelection() {
+                const checkboxes = document.querySelectorAll('.test-docstore-doc-checkbox:checked');
+                const selectAllBtn = document.getElementById('test-docstore-select-all-btn');
+                
+                if (selectAllBtn) {
+                    selectAllBtn.disabled = checkboxes.length === 0;
+                    selectAllBtn.innerHTML = checkboxes.length > 0 
+                        ? `<i class="fas fa-check-square"></i> Selected (${checkboxes.length})`
+                        : `<i class="fas fa-check-square"></i> Select All`;
+                }
+            }
+
+            async function testDocumentFromDocstore(idx) {
+                const doc = testDocstoreDocuments[idx];
+                if (!doc) return;
+
+                const AUTH_TOKEN = localStorage.getItem('authToken') || '';
+                const spinner = document.getElementById('test-extract-spinner');
+                const statusDiv = testExtractStatus;
+                const errorDiv = testExtractError;
+                const resultDiv = testExtractResult;
+                const previewDiv = testExtractPreview;
+
+                // Reset UI
+                statusDiv.style.display = 'block';
+                errorDiv.style.display = 'none';
+                resultDiv.style.display = 'none';
+                previewDiv.style.display = 'none';
+                spinner.classList.remove('d-none');
+                testExtractBtn.disabled = true;
+
+                try {
+                    // Call test extraction from docstore endpoint with auth
+                    const response = await fetch('/api/rag/test_extraction_from_docstore', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${AUTH_TOKEN}`
+                        },
+                        body: JSON.stringify({
+                            document_id: doc.id,
+                            job_id: doc.job_id
+                        })
+                    });
+
+                    // Check if response is JSON
+                    const contentType = response.headers.get('content-type');
+                    if (!contentType || !contentType.includes('application/json')) {
+                        const text = await response.text();
+                        console.error('[TestExtraction:Docstore] Non-JSON response:', text.substring(0, 200));
+                        throw new Error(`Server returned ${response.status} ${response.statusText}. Check server logs.`);
+                    }
+
+                    if (response.ok) {
+                        const result = await response.json();
+                        console.log('[TestExtraction:Docstore] Result:', result);
+
+                        fullExtractedText = result.full_text || result.text_sample || '';
+
+                        // Update metrics
+                        document.getElementById('test-result-method').textContent = result.extraction_method || 'Unknown';
+                        document.getElementById('test-result-length').textContent = (result.text_length || 0).toLocaleString();
+                        
+                        const cyrillicRatio = (result.cyrillic_ratio || 0) * 100;
+                        document.getElementById('test-result-cyrillic').textContent = cyrillicRatio.toFixed(1) + '%';
+                        
+                        document.getElementById('test-result-mojibake').textContent = result.has_mojibake ? '❌ Yes' : '✅ No';
+                        document.getElementById('test-result-mojibake').className = result.has_mojibake ? 'text-danger' : 'text-success';
+
+                        // Quality indicator
+                        const qualitySpan = document.getElementById('test-result-quality');
+                        qualitySpan.textContent = (result.quality || 'unknown').toUpperCase();
+                        if (result.quality === 'good') {
+                            qualitySpan.className = 'text-success fw-bold';
+                        } else if (result.quality === 'warning') {
+                            qualitySpan.className = 'text-warning fw-bold';
+                        } else {
+                            qualitySpan.className = 'text-danger fw-bold';
+                        }
+
+                        // Update preview
+                        testTextPreview.value = result.text_sample || '';
+
+                        // Show results
+                        statusDiv.style.display = 'none';
+                        resultDiv.style.display = 'block';
+                        previewDiv.style.display = 'block';
+
+                    } else {
+                        const error = await response.json();
+                        throw new Error(error.detail || `HTTP ${response.status}`);
+                    }
+                } catch (error) {
+                    console.error('[TestExtraction:Docstore] Error:', error);
+                    statusDiv.style.display = 'none';
+                    errorDiv.style.display = 'block';
+                    errorDiv.innerHTML = `<strong>Error:</strong> ${error.message}`;
+                } finally {
+                    spinner.classList.add('d-none');
+                    testExtractBtn.disabled = false;
+                }
+            }
+
+            function updateTestFileInfo() {
+                if (testSelectedFileObj) {
+                    testSelectedFile.style.display = 'block';
+                    const fileSize = testSelectedFileObj.size < 1024 * 1024 
+                        ? (testSelectedFileObj.size / 1024).toFixed(1) + ' KB'
+                        : (testSelectedFileObj.size / (1024 * 1024)).toFixed(2) + ' MB';
+                    testFileInfo.innerHTML = `<strong>${testSelectedFileObj.name}</strong> (${fileSize})`;
+                    testExtractBtn.disabled = false;
+                } else {
+                    testSelectedFile.style.display = 'none';
+                    testExtractBtn.disabled = true;
+                }
+            }
+
+            async function startTestExtraction() {
+                if (!testSelectedFileObj) {
+                    alert('Please select a PDF file first');
+                    return;
+                }
+
+                const spinner = document.getElementById('test-extract-spinner');
+                const statusDiv = testExtractStatus;
+                const errorDiv = testExtractError;
+                const resultDiv = testExtractResult;
+                const previewDiv = testExtractPreview;
+
+                // Reset UI
+                statusDiv.style.display = 'block';
+                errorDiv.style.display = 'none';
+                resultDiv.style.display = 'none';
+                previewDiv.style.display = 'none';
+                spinner.classList.remove('d-none');
+                testExtractBtn.disabled = true;
+
+                try {
+                    // Create form data
+                    const formData = new FormData();
+                    formData.append('file', testSelectedFileObj);
+
+                    // Call test extraction endpoint
+                    const response = await fetch('/api/rag/test_extraction', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (response.ok) {
+                        const result = await response.json();
+                        console.log('[TestExtraction] Result:', result);
+
+                        fullExtractedText = result.full_text || result.text_sample || '';
+
+                        // Update metrics
+                        document.getElementById('test-result-method').textContent = result.extraction_method || 'Unknown';
+                        document.getElementById('test-result-length').textContent = (result.text_length || 0).toLocaleString();
+                        
+                        const cyrillicRatio = (result.cyrillic_ratio || 0) * 100;
+                        document.getElementById('test-result-cyrillic').textContent = cyrillicRatio.toFixed(1) + '%';
+                        
+                        document.getElementById('test-result-mojibake').textContent = result.has_mojibake ? '❌ Yes' : '✅ No';
+                        document.getElementById('test-result-mojibake').className = result.has_mojibake ? 'text-danger' : 'text-success';
+
+                        // Quality indicator
+                        const qualitySpan = document.getElementById('test-result-quality');
+                        qualitySpan.textContent = (result.quality || 'unknown').toUpperCase();
+                        if (result.quality === 'good') {
+                            qualitySpan.className = 'text-success fw-bold';
+                        } else if (result.quality === 'warning') {
+                            qualitySpan.className = 'text-warning fw-bold';
+                        } else {
+                            qualitySpan.className = 'text-danger fw-bold';
+                        }
+
+                        // Update preview
+                        testTextPreview.value = result.text_sample || '';
+
+                        // Show results
+                        statusDiv.style.display = 'none';
+                        resultDiv.style.display = 'block';
+                        previewDiv.style.display = 'block';
+
+                    } else {
+                        const error = await response.json();
+                        throw new Error(error.detail || `HTTP ${response.status}`);
+                    }
+                } catch (error) {
+                    console.error('[TestExtraction] Error:', error);
+                    statusDiv.style.display = 'none';
+                    errorDiv.style.display = 'block';
+                    errorDiv.innerHTML = `<strong>Error:</strong> ${error.message}`;
+                } finally {
+                    spinner.classList.add('d-none');
+                    testExtractBtn.disabled = false;
+                }
+            }
+        }
+
         // ==================== Jobs Management Functions ====================
         function initJobsManagement() {
             const refreshBtn = document.getElementById('refresh-jobs-btn');

@@ -927,6 +927,71 @@ def get_services(current_user_id):
     }), 200
 
 
+# Proxy routes for Streamlit and React GUIs (no authentication required for these)
+@app.route('/streamlit/<path:path>', methods=['GET', 'POST', 'PUT', 'DELETE'])
+@app.route('/streamlit/', methods=['GET', 'POST', 'PUT', 'DELETE'])
+@app.route('/streamlit', methods=['GET', 'POST', 'PUT', 'DELETE'])
+def proxy_streamlit(path=''):
+    """Proxy requests to the Streamlit GUI"""
+    streamlit_url = os.getenv('STREAMLIT_URL', 'http://localhost:8501')
+    url = f"{streamlit_url}/{path}"
+
+    headers = {key: value for (key, value) in request.headers if key.lower() != 'host'}
+    headers['Host'] = streamlit_url.replace('http://', '').replace('https://', '')
+
+    try:
+        resp = requests.request(
+            method=request.method,
+            url=url,
+            headers=headers,
+            data=request.get_data(),
+            cookies=request.cookies,
+            allow_redirects=False
+        )
+
+        excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
+        headers = [(name, value) for (name, value) in resp.raw.headers.items()
+                   if name.lower() not in excluded_headers]
+
+        response = Response(resp.content, resp.status_code, headers)
+        return response
+    except Exception as e:
+        logger.error(f"Streamlit proxy error: {str(e)}")
+        return jsonify({'error': 'Streamlit service unavailable'}), 503
+
+
+@app.route('/react/<path:path>', methods=['GET', 'POST', 'PUT', 'DELETE'])
+@app.route('/react/', methods=['GET', 'POST', 'PUT', 'DELETE'])
+@app.route('/react', methods=['GET', 'POST', 'PUT', 'DELETE'])
+def proxy_react(path=''):
+    """Proxy requests to the React GUI"""
+    react_url = os.getenv('REACT_URL', 'http://localhost:3000')
+    url = f"{react_url}/{path}"
+
+    headers = {key: value for (key, value) in request.headers if key.lower() != 'host'}
+    headers['Host'] = react_url.replace('http://', '').replace('https://', '')
+
+    try:
+        resp = requests.request(
+            method=request.method,
+            url=url,
+            headers=headers,
+            data=request.get_data(),
+            cookies=request.cookies,
+            allow_redirects=False
+        )
+
+        excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
+        headers = [(name, value) for (name, value) in resp.raw.headers.items()
+                   if name.lower() not in excluded_headers]
+
+        response = Response(resp.content, resp.status_code, headers)
+        return response
+    except Exception as e:
+        logger.error(f"React proxy error: {str(e)}")
+        return jsonify({'error': 'React service unavailable'}), 503
+
+
 if __name__ == '__main__':
     # Get port from environment variable or default to 5000
     port = int(os.getenv('GATEWAY_PORT', 5000))

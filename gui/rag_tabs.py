@@ -22,11 +22,11 @@ def create_smart_ingestion_tab():
     """)
     
     # Create sub-tabs for different ingestion methods
-    ingest_tab1, ingest_tab2, ingest_tab3 = st.tabs(["Upload Files", "Document Store", "Batch Processing"])
-    
+    ingest_tab1, ingest_tab2, ingest_tab3, test_tab = st.tabs(["Upload Files", "Document Store", "Batch Processing", "🧪 Test Extraction (No DB)"])
+
     with ingest_tab1:
         st.subheader("Upload Files for Smart Ingestion")
-        
+
         # File uploader
         uploaded_files = st.file_uploader(
             "Upload PDF, TXT, or MD files",
@@ -34,24 +34,24 @@ def create_smart_ingestion_tab():
             accept_multiple_files=True,
             key="smart_ingest_uploader"
         )
-        
+
         # Ingestion options
         st.subheader("Ingestion Options")
-        
+
         chunking_strategy = st.selectbox(
             "Chunking Strategy",
             options=["smart_chunking", "naive_chunking", "section_based"],
             help="Smart chunking uses LLM to preserve semantic units"
         )
-        
+
         ingest_chunks = st.checkbox("Ingest chunks into vector DB", value=True)
-        
+
         custom_prompt = st.text_area(
             "Custom Chunking Prompt (optional)",
             help="Override the default chunking prompt",
             height=100
         )
-        
+
         # Start ingestion button
         if st.button("🚀 Start Smart Ingestion", type="primary"):
             if not uploaded_files:
@@ -244,6 +244,125 @@ def create_smart_ingestion_tab():
                             
                     except Exception as e:
                         st.error(f"❌ Error: {str(e)}")
+
+    with test_tab:
+        st.subheader("🧪 Test PDF Extraction (No Database)")
+        st.markdown("""
+        **Test mode**: Extract text from PDFs and verify quality **without** loading into the database.
+        
+        Use this to:
+        - Verify Russian text extraction quality
+        - Check for mojibake (encoding issues like `ÔÅÄÅÐÀËÜÍÎÅ`)
+        - See which extraction method is used (PyMuPDF, pdfminer, Tesseract OCR)
+        - Preview extracted text before committing to database
+        """)
+        
+        # File uploader for test mode
+        test_files = st.file_uploader(
+            "Upload PDF to test",
+            type=['pdf'],
+            accept_multiple_files=False,
+            key="test_extraction_uploader",
+            help="Select a single PDF to test extraction quality"
+        )
+        
+        if test_files:
+            if st.button("🔍 Test Extraction", type="primary"):
+                try:
+                    # Prepare file for upload
+                    files = [('file', (test_files.name, test_files.getvalue(), test_files.type))]
+                    
+                    with st.spinner(f"Extracting text from {test_files.name}..."):
+                        # Call the RAG service test extraction endpoint
+                        response = requests.post(
+                            f"{RAG_SERVICE_URL}/api/rag/test_extraction",
+                            files=files,
+                            timeout=300
+                        )
+                        
+                        if response.status_code == 200:
+                            result = response.json()
+                            
+                            # Display results
+                            st.success("✅ Extraction completed!")
+                            
+                            # Metrics
+                            col1, col2, col3, col4 = st.columns(4)
+                            with col1:
+                                st.metric("Method", result.get('extraction_method', 'N/A'))
+                            with col2:
+                                st.metric("Text Length", result.get('text_length', 0))
+                            with col3:
+                                cyrillic_ratio = result.get('cyrillic_ratio', 0)
+                                st.metric("Cyrillic", f"{cyrillic_ratio:.1%}")
+                            with col4:
+                                has_mojibake = result.get('has_mojibake', False)
+                                st.metric("Mojibake", "❌ Yes" if has_mojibake else "✅ No")
+                            
+                            # Quality indicator
+                            quality = result.get('quality', 'unknown')
+                            if quality == 'good':
+                                st.success("✅ **Quality: GOOD** - Text extraction looks correct")
+                            elif quality == 'warning':
+                                st.warning("⚠️ **Quality: WARNING** - Some issues detected")
+                            else:
+                                st.error("❌ **Quality: POOR** - Extraction may have issues")
+                            
+                            # Text preview
+                            st.subheader("📄 Extracted Text Preview")
+                            text_content = result.get('text_sample', '')
+                            st.text_area(
+                                "Text content (first 1000 characters)",
+                                value=text_content[:1000],
+                                height=300,
+                                disabled=True
+                            )
+                            
+                            # Full text download
+                            if text_content:
+                                st.download_button(
+                                    label="📥 Download Full Text",
+                                    data=text_content,
+                                    file_name=f"{test_files.name}.txt",
+                                    mime="text/plain"
+                                )
+                            
+                            # Detailed info
+                            with st.expander("📊 Detailed Extraction Info"):
+                                st.json(result)
+                                
+                        elif response.status_code == 400:
+                            error_detail = response.json().get('detail', 'Unknown error')
+                            st.error(f"❌ Extraction failed: {error_detail}")
+                        else:
+                            st.error(f"❌ Extraction failed with status: {response.status_code}")
+                            st.error(response.text)
+                            
+                except requests.exceptions.ConnectionError:
+                    st.error("❌ Cannot connect to RAG service. Is it running on port 5003?")
+                except Exception as e:
+                    st.error(f"❌ Error during extraction: {str(e)}")
+        
+        # Help section
+        with st.expander("ℹ️ How to interpret results"):
+            st.markdown("""
+            ### Extraction Methods
+            - **PyMuPDF**: Fast, works for most digital PDFs (preferred)
+            - **pdfminer**: Better for complex encodings
+            - **PyPDFLoader**: Legacy fallback
+            - **Tesseract OCR**: For scanned PDFs (slow, ~3s/page)
+            
+            ### Quality Indicators
+            - **Cyrillic ratio > 30%**: Good for Russian documents
+            - **Mojibake = No**: Text encoding is correct
+            - **Mojibake = Yes**: Text has encoding issues (e.g., `ÔÅÄÅÐÀËÜÍÎÅ` instead of `Федеральное`)
+            
+            ### What to do if quality is poor
+            1. Check if the PDF is corrupted
+            2. Try a different PDF source
+            3. If it's a scanned PDF, OCR may have limitations
+            4. Report the issue with the PDF sample
+            """)
 
 
 def create_jobs_tab():

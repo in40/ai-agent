@@ -50,3 +50,9 @@ RERANKER_HOSTNAME = os.getenv("RERANKER_HOSTNAME", "localhost")
 RERANKER_PORT = os.getenv("RERANKER_PORT", "1234")
 RERANKER_API_PATH = os.getenv("RERANKER_API_PATH", "/v1")
 RERANK_TOP_K_RESULTS = int(os.getenv("RERANK_TOP_K_RESULTS", "5"))
+
+# Hybrid RAG configuration
+RAG_RETRIEVER_MODE = os.getenv("RAG_RETRIEVER_MODE", "hybrid").lower()  # "vector", "graph", "hybrid"
+RAG_HYBRID_VECTOR_WEIGHT = float(os.getenv("RAG_HYBRID_VECTOR_WEIGHT", "0.6"))
+RAG_HYBRID_GRAPH_WEIGHT = float(os.getenv("RAG_HYBRID_GRAPH_WEIGHT", "0.4"))
+RAG_GRAPH_EXPANSION_DEPTH = int(os.getenv("RAG_GRAPH_EXPANSION_DEPTH", "2"))

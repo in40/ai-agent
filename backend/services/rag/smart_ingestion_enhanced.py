@@ -984,6 +984,12 @@ Return ONLY valid JSON:
         neo4j = get_neo4j_connection()
 
         if neo4j.connected:
+            # Add PDF processing metadata if available
+            if 'pdf_processing_metadata' in metadata:
+                # Store PDF-specific metadata in Neo4j
+                pdf_meta = metadata['pdf_processing_metadata']
+                neo4j.store_pdf_metadata(doc_id, pdf_meta)
+            
             # Store document metadata
             neo4j.store_document(doc_id, filename, metadata)
 

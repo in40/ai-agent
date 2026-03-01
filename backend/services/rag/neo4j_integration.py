@@ -116,7 +116,7 @@ class Neo4jIntegration:
         """Store document metadata in Neo4j"""
         if not self.connected:
             return False
-            
+
         try:
             with self.driver.session() as session:
                 session.run("""
@@ -124,17 +124,58 @@ class Neo4jIntegration:
                     SET d.filename = $filename,
                         d.uploaded_at = $uploaded_at,
                         d.format = $format,
-                        d.job_id = $job_id
+                        d.job_id = $job_id,
+                        d.extraction_method = $extraction_method,
+                        d.extraction_time = $extraction_time,
+                        d.text_length = $text_length,
+                        d.encoding_was_fixed = $encoding_was_fixed
                 """, {
                     'doc_id': doc_id,
                     'filename': filename,
                     'uploaded_at': metadata.get('uploaded_at', datetime.utcnow().isoformat()),
                     'format': metadata.get('format', 'pdf'),
-                    'job_id': metadata.get('job_id', '')
+                    'job_id': metadata.get('job_id', ''),
+                    'extraction_method': metadata.get('extraction_method', metadata.get('pdf_processing_metadata', {}).get('extraction_method', 'unknown')),
+                    'extraction_time': metadata.get('extraction_time_seconds', metadata.get('pdf_processing_metadata', {}).get('extraction_time_seconds', 0)),
+                    'text_length': metadata.get('text_length', metadata.get('pdf_processing_metadata', {}).get('text_length', 0)),
+                    'encoding_was_fixed': metadata.get('encoding_was_fixed', metadata.get('pdf_processing_metadata', {}).get('encoding_was_fixed', False))
                 })
             return True
         except Exception as e:
             logger.error(f"Error storing document in Neo4j: {e}")
+            return False
+
+    def store_pdf_metadata(self, doc_id: str, pdf_metadata: Dict[str, Any]) -> bool:
+        """Store detailed PDF processing metadata in Neo4j"""
+        if not self.connected:
+            return False
+
+        try:
+            with self.driver.session() as session:
+                session.run("""
+                    MATCH (d:Document {doc_id: $doc_id})
+                    SET d.pdf_extraction_method = $extraction_method,
+                        d.pdf_extraction_time = $extraction_time,
+                        d.pdf_method_time = $method_time,
+                        d.pdf_text_length = $text_length,
+                        d.pdf_encoding_fixed = $encoding_fixed,
+                        d.pdf_fallback_position = $fallback_position,
+                        d.pdf_methods_tried = $methods_tried,
+                        d.pdf_processed_at = $processed_at
+                """, {
+                    'doc_id': doc_id,
+                    'extraction_method': pdf_metadata.get('extraction_method', 'unknown'),
+                    'extraction_time': pdf_metadata.get('extraction_time_seconds', 0),
+                    'method_time': pdf_metadata.get('method_time_seconds', 0),
+                    'text_length': pdf_metadata.get('text_length', 0),
+                    'encoding_fixed': pdf_metadata.get('encoding_was_fixed', False),
+                    'fallback_position': pdf_metadata.get('fallback_chain_position', 1),
+                    'methods_tried': pdf_metadata.get('total_methods_tried', 1),
+                    'processed_at': datetime.utcnow().isoformat()
+                })
+            return True
+        except Exception as e:
+            logger.error(f"Error storing PDF metadata in Neo4j: {e}")
             return False
     
     def store_chunk(self, chunk_id: str, doc_id: str, chunk_data: Dict[str, Any]) -> bool:
@@ -290,7 +331,106 @@ class Neo4jIntegration:
             })
             
         return entities
+
+    def query_entities_by_text(self, query: str, limit: int = 10) -> List[Dict]:
+        """
+        Search for entities matching query text.
+        
+        Args:
+            query: User query text
+            limit: Max entities to return
+            
+        Returns:
+            List of entities with relevance scores
+        """
+        if not self.connected:
+            return []
+        
+        try:
+            with self.driver.session() as session:
+                # Search entities by name containing query terms
+                result = session.run("""
+                    MATCH (e:Entity)
+                    WHERE e.name CONTAINS $query 
+                       OR e.description CONTAINS $query
+                    RETURN e.name as name, 
+                           e.type as type, 
+                           e.relevance as relevance,
+                           e.description as description,
+                           e.document as document
+                    ORDER BY e.relevance DESC
+                    LIMIT $limit
+                """, {'query': query, 'limit': limit})
+                
+                return [dict(record) for record in result]
+        except Exception as e:
+            logger.error(f"Error querying entities: {e}")
+            return []
     
+    def get_related_entities(self, entity_name: str, max_depth: int = 2, 
+                            limit: int = 20) -> List[Dict]:
+        """
+        Get entities related to a given entity via graph traversal.
+        
+        Args:
+            entity_name: Starting entity name
+            max_depth: How many hops to traverse
+            limit: Max results
+            
+        Returns:
+            List of related entities with relationship info
+        """
+        if not self.connected:
+            return []
+        
+        try:
+            with self.driver.session() as session:
+                result = session.run("""
+                    MATCH (start:Entity {name: $name})
+                    MATCH (start)-[*1..$depth]-(related:Entity)
+                    RETURN related.name as name,
+                           related.type as type,
+                           related.relevance as relevance,
+                           related.document as document
+                    ORDER BY related.relevance DESC
+                    LIMIT $limit
+                """, {'name': entity_name, 'depth': max_depth, 'limit': limit})
+                
+                return [dict(record) for record in result]
+        except Exception as e:
+            logger.error(f"Error getting related entities: {e}")
+            return []
+    
+    def get_chunks_for_entity(self, entity_name: str, limit: int = 5) -> List[Dict]:
+        """
+        Get document chunks that mention a specific entity.
+        
+        Args:
+            entity_name: Entity to find chunks for
+            limit: Max chunks to return
+            
+        Returns:
+            List of chunks with content
+        """
+        if not self.connected:
+            return []
+        
+        try:
+            with self.driver.session() as session:
+                result = session.run("""
+                    MATCH (e:Entity {name: $name})<-[:MENTIONS]-(c:Chunk)
+                    RETURN c.chunk_id as chunk_id,
+                           c.content as content,
+                           c.section as section,
+                           c.title as title
+                    LIMIT $limit
+                """, {'name': entity_name, 'limit': limit})
+                
+                return [dict(record) for record in result]
+        except Exception as e:
+            logger.error(f"Error getting chunks for entity: {e}")
+            return []
+
     def query_similar_chunks(self, chunk_text: str, limit: int = 5) -> List[Dict]:
         """Query for similar chunks (requires vector indexing setup)"""
         if not self.connected:
