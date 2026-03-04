@@ -296,10 +296,10 @@ class DocumentLoader:
         """
         import base64
         
-        # Use NLP LLM configuration (same as chat/completion endpoints)
-        llm_base_url = os.getenv("NLP_LLM_BASE_URL", "http://localhost:1234/v1")
-        llm_model = os.getenv("NLP_LLM_MODEL", os.getenv("PDF_LLM_MODEL", "qwen3.5-35b"))
-        api_key = os.getenv("NLP_LLM_API_KEY", os.getenv("OPENAI_API_KEY", "not-needed"))
+        # Use PDF-specific LLM config, fall back to NLP LLM config
+        llm_base_url = os.getenv("PDF_LLM_BASE_URL", os.getenv("NLP_LLM_BASE_URL", "http://localhost:1234/v1"))
+        llm_model = os.getenv("PDF_LLM_MODEL", os.getenv("NLP_LLM_MODEL", "qwen3.5-35b"))
+        api_key = os.getenv("PDF_LLM_API_KEY", os.getenv("NLP_LLM_API_KEY", os.getenv("OPENAI_API_KEY", "not-needed")))
         
         logger.info(f"Sending PDF to LLM: url={llm_base_url}, model={llm_model}")
         
