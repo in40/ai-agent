@@ -837,8 +837,14 @@ def rag_import_processed(current_user_id):
 def rag_proxy(current_user_id, path):
     """Proxy for other RAG API endpoints"""
     try:
-        # Forward to RAG service
+        # Forward to RAG service - preserve query string
+        from urllib.parse import urlencode
         url = f"{RAG_SERVICE_URL}/api/rag/{path}"
+        
+        # Preserve query parameters
+        if request.query_string:
+            url = f"{url}?{request.query_string.decode('utf-8')}"
+        
         headers = {}
 
         # Forward Authorization header
