@@ -1252,6 +1252,7 @@ def process_phased_job_background(job):
                     page_range = extraction_config.get('page_range', 'all')
                     
                     logger.info(f"[Phased Job {job_id}] Extraction config: method={method}, page_range={page_range}")
+                    logger.info(f"[Phased Job {job_id}] extraction_config dict: {extraction_config}")
 
                     # Get documents ready for extraction
                     docs = get_documents_ready_for_phase(job_id, 'extract')
@@ -1271,6 +1272,8 @@ def process_phased_job_background(job):
                                         pages_to_extract = range(start - 1, end if end else None)  # 0-indexed
                             
                             # Extract using specified method
+                            logger.info(f"[Phased Job {job_id}] About to extract with method: '{method}' (type: {type(method).__name__})")
+                            
                             if method == 'auto' or method == 'pymupdf':
                                 try:
                                     text = loader._extract_with_pymupdf(doc.file_path, pages=pages_to_extract)

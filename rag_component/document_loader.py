@@ -295,12 +295,12 @@ class DocumentLoader:
             Markdown text from LLM
         """
         import base64
-        from .config import LLM_PROVIDER, LLM_MODEL
         
-        llm_provider = os.getenv("PDF_LLM_PROVIDER", LLM_PROVIDER)
-        llm_model = os.getenv("PDF_LLM_MODEL", LLM_MODEL)
+        # Use PDF-specific LLM config, fall back to env vars
+        llm_provider = os.getenv("PDF_LLM_PROVIDER", os.getenv("LLM_PROVIDER", "openai"))
+        llm_model = os.getenv("PDF_LLM_MODEL", os.getenv("LLM_MODEL", "gpt-4"))
         
-        logger.info(f"Sending PDF to LLM: {llm_model}")
+        logger.info(f"Sending PDF to LLM: provider={llm_provider}, model={llm_model}")
         
         # Read and encode PDF
         with open(file_path, 'rb') as f:
