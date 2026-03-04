@@ -875,11 +875,11 @@
                                                     <option value="pymupdf">PyMuPDF (Fast)</option>
                                                     <option value="pdfminer">PDFMiner (Complex PDFs)</option>
                                                     <option value="tesseract">Tesseract OCR (Scanned PDFs)</option>
-                                                    <option value="marker_llm">Marker + LLM (Best Quality)</option>
+                                                    <option value="llm">LLM (Direct PDF to Markdown)</option>
                                                 </select>
                                                 <small class="text-muted d-block mt-1">
                                                     Auto: PyMuPDF → PDFMiner → OCR<br>
-                                                    Marker+LLM: Uses {PDF_LLM_MODEL} for intelligent extraction (slow but highest quality)
+                                                    LLM: Sends PDF to {PDF_LLM_MODEL} with prompt "convert this pdf file to markdown .md file"
                                                 </small>
                                             </div>
 

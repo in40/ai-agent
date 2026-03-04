@@ -469,9 +469,9 @@ def extract_text():
                     extracted_text = loader._extract_with_tesseract(doc.file_path)
                     extraction_method_used = 'tesseract'
 
-                if method == 'marker_llm':
-                    extracted_text = loader._extract_with_marker_llm(doc.file_path)
-                    extraction_method_used = 'marker_llm'
+                if method == 'llm':
+                    extracted_text = loader._extract_with_llm(doc.file_path)
+                    extraction_method_used = 'llm'
 
                 if not extracted_text:
                     raise Exception("All extraction methods failed")
@@ -1296,9 +1296,9 @@ def process_phased_job_background(job):
                             elif method == 'tesseract':
                                 text = loader._extract_with_tesseract(doc.file_path)
                                 extraction_method_used = 'tesseract'
-                            elif method == 'marker_llm':
-                                text = loader._extract_with_marker_llm(doc.file_path)
-                                extraction_method_used = 'marker_llm'
+                            elif method == 'llm':
+                                text = loader._extract_with_llm(doc.file_path)
+                                extraction_method_used = 'llm'
                             else:
                                 # Default to pymupdf
                                 text = loader._extract_with_pymupdf(doc.file_path, pages=pages_to_extract)
