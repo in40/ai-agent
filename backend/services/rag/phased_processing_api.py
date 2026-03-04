@@ -657,7 +657,8 @@ def chunk_documents():
                 if not chunks:
                     raise Exception("No chunks generated")
                 
-                # Save chunks to database
+                # Save chunks to database (deactivate old chunks first)
+                phased_db.deactivate_chunks(doc.doc_id)  # Deactivate old chunks
                 phased_db.save_chunks(chunks)
                 
                 # Update document metadata
@@ -1302,9 +1303,10 @@ def process_phased_job_background(job):
                                 )
                                 continue  # Skip to next document
 
-                            # Save chunks to DB
+                            # Save chunks to DB (deactivate old chunks first)
+                            phased_db.deactivate_chunks(doc.doc_id)  # Deactivate old chunks
                             phased_db.save_chunks(chunks)
-                            
+
                             # ALSO save chunks as JSON file (for Document Store filter)
                             import json
                             chunks_file = text_path.replace('.txt', '.chunks.json')
