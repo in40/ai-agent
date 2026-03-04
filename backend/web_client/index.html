@@ -886,10 +886,10 @@
                                             <div id="page-range-options" class="mt-3" style="display: none;">
                                                 <label class="form-label small"><i class="fas fa-file-pdf"></i> Pages to Extract</label>
                                                 <div class="btn-group w-100" role="group">
-                                                    <input type="radio" class="btn-check" name="page-range" id="page-range-all" value="all" checked>
+                                                    <input type="radio" class="btn-check" name="page-range" id="page-range-all" value="all" checked onchange="togglePageRangeInputs()">
                                                     <label class="btn btn-outline-primary btn-sm" for="page-range-all">All Pages</label>
                                                     
-                                                    <input type="radio" class="btn-check" name="page-range" id="page-range-custom" value="custom">
+                                                    <input type="radio" class="btn-check" name="page-range" id="page-range-custom" value="custom" onchange="togglePageRangeInputs()">
                                                     <label class="btn btn-outline-primary btn-sm" for="page-range-custom">Custom Range</label>
                                                 </div>
                                                 <div id="page-range-inputs" class="mt-2" style="display: none;">
@@ -4758,26 +4758,22 @@
                 }
             };
 
-            // Page range radio button handlers
-            document.addEventListener('DOMContentLoaded', function() {
-                const pageRangeAll = document.getElementById('page-range-all');
+            // Toggle page range inputs visibility
+            window.togglePageRangeInputs = function() {
                 const pageRangeCustom = document.getElementById('page-range-custom');
                 const pageRangeInputs = document.getElementById('page-range-inputs');
                 
-                if (pageRangeAll && pageRangeCustom && pageRangeInputs) {
-                    pageRangeAll.addEventListener('change', function() {
-                        if (this.checked) {
-                            pageRangeInputs.style.display = 'none';
-                        }
-                    });
-                    
-                    pageRangeCustom.addEventListener('change', function() {
-                        if (this.checked) {
-                            pageRangeInputs.style.display = 'block';
-                        }
-                    });
+                if (pageRangeCustom && pageRangeInputs) {
+                    if (pageRangeCustom.checked) {
+                        pageRangeInputs.style.display = 'block';
+                    } else {
+                        pageRangeInputs.style.display = 'none';
+                    }
                 }
-                
+            };
+
+            // Page range radio button handlers
+            document.addEventListener('DOMContentLoaded', function() {
                 // Initialize extraction options visibility
                 toggleExtractionOptions();
             });
