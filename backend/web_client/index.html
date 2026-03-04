@@ -871,11 +871,15 @@
                                             <div id="extraction-options" class="mt-3" style="display: none;">
                                                 <label class="form-label small"><i class="fas fa-cog"></i> Extraction Method</label>
                                                 <select class="form-select form-select-sm" id="extraction-method">
-                                                    <option value="auto" selected>Auto (Best quality)</option>
+                                                    <option value="auto" selected>Auto (Recommended)</option>
                                                     <option value="pymupdf">PyMuPDF (Fast)</option>
-                                                    <option value="pdfminer">PDFMiner (Better for complex PDFs)</option>
+                                                    <option value="pdfminer">PDFMiner (Complex PDFs)</option>
+                                                    <option value="tesseract">Tesseract OCR (Scanned PDFs)</option>
                                                 </select>
-                                                <small class="text-muted d-block mt-1">Auto tries PyMuPDF first, then PDFMiner if quality is low</small>
+                                                <small class="text-muted d-block mt-1">
+                                                    Auto: PyMuPDF → PDFMiner → OCR<br>
+                                                    OCR: For scanned documents (slow, ~3s/page)
+                                                </small>
                                             </div>
 
                                             <!-- Page Range Selection -->

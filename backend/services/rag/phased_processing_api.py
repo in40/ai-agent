@@ -380,7 +380,7 @@ def extract_text():
     Request:
         job_id: Job ID to process
         document_ids: Optional list of specific document IDs (default: all pending in job)
-        method: Extraction method (pymupdf, pdfminer, pypdf, tesseract, auto)
+        method: Extraction method (pymupdf, pdfminer, tesseract, auto)
         page_range: Optional page range - 'all' or {'start': int, 'end': int}
 
     Returns:
@@ -454,11 +454,20 @@ def extract_text():
                                 extracted_text = loader._extract_with_pdfminer(doc.file_path)
                                 extraction_method_used = 'pdfminer'
                             except Exception:
-                                pass
+                                # Try Tesseract OCR as last resort
+                                try:
+                                    extracted_text = loader._extract_with_tesseract(doc.file_path)
+                                    extraction_method_used = 'tesseract'
+                                except Exception:
+                                    pass
 
                 if method == 'pdfminer':
                     extracted_text = loader._extract_with_pdfminer(doc.file_path)
                     extraction_method_used = 'pdfminer'
+
+                if method == 'tesseract':
+                    extracted_text = loader._extract_with_tesseract(doc.file_path)
+                    extraction_method_used = 'tesseract'
 
                 if not extracted_text:
                     raise Exception("All extraction methods failed")
