@@ -197,6 +197,9 @@ def create_job_from_docstore():
     Request:
         document_ids: List of document IDs to process
         phases: List of phases to run (default: all pending)
+        extraction_config: Optional extraction configuration
+            - method: Extraction method (auto, pymupdf, pdfminer)
+            - page_range: 'all' or {'start': int, 'end': int}
 
     Returns:
         job_id and processing status
@@ -206,6 +209,7 @@ def create_job_from_docstore():
         document_ids = data.get('document_ids', [])
         phases = data.get('phases', ['extract', 'chunk', 'vector', 'graph'])
         user_id = data.get('user_id', 'anonymous')
+        extraction_config = data.get('extraction_config', {})
 
         if not document_ids:
             return jsonify({
@@ -217,7 +221,7 @@ def create_job_from_docstore():
         # We need the job_id BEFORE creating documents so they match
         try:
             from backend.services.rag.job_queue import job_queue, _start_job_processing
-            
+
             job = job_queue.create_job(
                 user_id=user_id,
                 job_type='phased_processing',
@@ -226,13 +230,14 @@ def create_job_from_docstore():
                     'document_ids': document_ids,
                     'source': 'docstore',
                     'total_documents': 0,  # Will update after creating documents
-                    'files': []  # Track files
+                    'files': [],  # Track files
+                    'extraction_config': extraction_config  # Store extraction config
                 },
                 ingestion_mode='docstore',
                 processing_mode='vector_db',
                 chunking_strategy='smart_chunking'
             )
-            
+
             # Use the job_id from create_job() - this is what's in Redis
             job_id = job.job_id
             logger.info(f"Created job {job_id} in job queue")
@@ -371,12 +376,13 @@ def create_job_from_docstore():
 def extract_text():
     """
     Phase 2: Extract text from PDF documents
-    
+
     Request:
         job_id: Job ID to process
         document_ids: Optional list of specific document IDs (default: all pending in job)
         method: Extraction method (pymupdf, pdfminer, pypdf, tesseract, auto)
-    
+        page_range: Optional page range - 'all' or {'start': int, 'end': int}
+
     Returns:
         Processing status and document IDs being processed
     """
@@ -385,51 +391,61 @@ def extract_text():
         job_id = data.get('job_id')
         document_ids = data.get('document_ids')
         method = data.get('method', 'auto')
-        
+        page_range = data.get('page_range', 'all')
+
         if not job_id:
             return jsonify({
                 'success': False,
                 'error': 'job_id is required'
             }), 400
-        
+
         # Get documents ready for extraction
         if document_ids:
             documents = [phased_db.get_document(doc_id) for doc_id in document_ids]
             documents = [d for d in documents if d is not None]
         else:
             documents = phased_db.get_documents_ready_for_phase(job_id, 'extract')
-        
+
         if not documents:
             return jsonify({
                 'success': True,
                 'message': 'No documents ready for extraction',
                 'documents_processed': 0
             })
-        
+
         # Import document loader
         from rag_component.document_loader import DocumentLoader
-        
+
         loader = DocumentLoader()
         execution_id = f"exec_{uuid.uuid4().hex[:8]}"
         processed_count = 0
         failed_count = 0
-        
+
         for doc in documents:
             try:
                 start_time = datetime.utcnow()
-                
+
                 # Update status to in-progress
                 phased_db.update_document_phase_status(
                     doc.doc_id, 'extract', PhaseStatus.IN_PROGRESS
                 )
-                
-                # Extract text from PDF
+
+                # Extract text from PDF with specified method and page range
                 extracted_text = None
                 extraction_method_used = method
-                
+
+                # Handle page range parsing
+                pages_to_extract = None  # None means all pages
+                if page_range and page_range != 'all':
+                    if isinstance(page_range, dict):
+                        start = page_range.get('start')
+                        end = page_range.get('end')
+                        if start:
+                            pages_to_extract = range(start - 1, end if end else None)  # 0-indexed
+
                 if method == 'auto' or method == 'pymupdf':
                     try:
-                        extracted_text = loader._extract_with_pymupdf(doc.file_path)
+                        extracted_text = loader._extract_with_pymupdf(doc.file_path, pages=pages_to_extract)
                         extraction_method_used = 'pymupdf'
                     except Exception:
                         if method == 'auto':
@@ -439,26 +455,27 @@ def extract_text():
                                 extraction_method_used = 'pdfminer'
                             except Exception:
                                 pass
-                
+
                 if method == 'pdfminer':
                     extracted_text = loader._extract_with_pdfminer(doc.file_path)
                     extraction_method_used = 'pdfminer'
-                
+
                 if not extracted_text:
                     raise Exception("All extraction methods failed")
-                
+
                 # Save extracted text
                 text_path = doc.file_path.replace('.pdf', '.txt')
                 with open(text_path, 'w', encoding='utf-8') as f:
                     f.write(extracted_text)
-                
+
                 # Update document metadata
                 char_count = len(extracted_text)
                 phased_db.update_document_metadata(doc.doc_id, {
                     'extraction_method': extraction_method_used,
                     'extracted_char_count': char_count,
+                    'page_range': str(page_range) if page_range != 'all' else 'all',
                 })
-                
+
                 # Mark phase as completed
                 processing_time = (datetime.utcnow() - start_time).total_seconds() * 1000
                 phased_db.update_document_phase_status(
@@ -466,10 +483,11 @@ def extract_text():
                     metadata={
                         'method': extraction_method_used,
                         'char_count': char_count,
-                        'text_path': text_path
+                        'text_path': text_path,
+                        'page_range': str(page_range) if page_range != 'all' else 'all'
                     }
                 )
-                
+
                 # Log execution
                 phased_db.log_phase_execution(PhaseExecutionLog(
                     execution_id=execution_id,
@@ -482,12 +500,13 @@ def extract_text():
                     items_processed=char_count,
                     metadata={
                         'method': extraction_method_used,
-                        'text_path': text_path
+                        'text_path': text_path,
+                        'page_range': str(page_range) if page_range != 'all' else 'all'
                     }
                 ))
-                
+
                 processed_count += 1
-                
+
             except Exception as e:
                 logger.error(f"Extraction failed for {doc.doc_id}: {e}")
                 phased_db.update_document_phase_status(
@@ -495,7 +514,7 @@ def extract_text():
                     error_message=str(e)
                 )
                 failed_count += 1
-        
+
         return jsonify({
             'success': True,
             'job_id': job_id,
@@ -504,7 +523,7 @@ def extract_text():
             'execution_id': execution_id,
             'message': f'Extracted text from {processed_count} documents ({failed_count} failed)'
         })
-        
+
     except Exception as e:
         logger.error(f"Extraction failed: {e}")
         return jsonify({

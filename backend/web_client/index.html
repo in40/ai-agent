@@ -856,17 +856,51 @@
                                 </div>
                                 <div class="card-body">
                                     <p class="text-muted small mb-3">Select which phases to run. Already completed phases will be skipped.</p>
-                                    
+
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="form-check mb-2">
-                                                <input class="form-check-input phase-checkbox" type="checkbox" value="extract" id="phase-extract" checked>
+                                                <input class="form-check-input phase-checkbox" type="checkbox" value="extract" id="phase-extract" checked onchange="toggleExtractionOptions()">
                                                 <label class="form-check-label" for="phase-extract">
                                                     <i class="fas fa-file-alt"></i> Phase 2: Text Extraction
                                                 </label>
                                                 <small class="text-muted d-block">Extract text from PDFs</small>
                                             </div>
-                                            
+
+                                            <!-- Extraction Method Selection -->
+                                            <div id="extraction-options" class="mt-3" style="display: none;">
+                                                <label class="form-label small"><i class="fas fa-cog"></i> Extraction Method</label>
+                                                <select class="form-select form-select-sm" id="extraction-method">
+                                                    <option value="auto" selected>Auto (Best quality)</option>
+                                                    <option value="pymupdf">PyMuPDF (Fast)</option>
+                                                    <option value="pdfminer">PDFMiner (Better for complex PDFs)</option>
+                                                </select>
+                                                <small class="text-muted d-block mt-1">Auto tries PyMuPDF first, then PDFMiner if quality is low</small>
+                                            </div>
+
+                                            <!-- Page Range Selection -->
+                                            <div id="page-range-options" class="mt-3" style="display: none;">
+                                                <label class="form-label small"><i class="fas fa-file-pdf"></i> Pages to Extract</label>
+                                                <div class="btn-group w-100" role="group">
+                                                    <input type="radio" class="btn-check" name="page-range" id="page-range-all" value="all" checked>
+                                                    <label class="btn btn-outline-primary btn-sm" for="page-range-all">All Pages</label>
+                                                    
+                                                    <input type="radio" class="btn-check" name="page-range" id="page-range-custom" value="custom">
+                                                    <label class="btn btn-outline-primary btn-sm" for="page-range-custom">Custom Range</label>
+                                                </div>
+                                                <div id="page-range-inputs" class="mt-2" style="display: none;">
+                                                    <div class="row g-2">
+                                                        <div class="col-6">
+                                                            <input type="number" class="form-control form-control-sm" id="page-start" placeholder="Start" min="1">
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <input type="number" class="form-control form-control-sm" id="page-end" placeholder="End" min="1">
+                                                        </div>
+                                                    </div>
+                                                    <small class="text-muted d-block mt-1">Leave end blank for "start to end"</small>
+                                                </div>
+                                            </div>
+
                                             <div class="form-check mb-2">
                                                 <input class="form-check-input phase-checkbox" type="checkbox" value="chunk" id="phase-chunk" checked>
                                                 <label class="form-check-label" for="phase-chunk">
@@ -4704,7 +4738,46 @@
                     updateSmartIngestButton();
                 }
             };
-            
+
+            // Toggle extraction options visibility
+            window.toggleExtractionOptions = function() {
+                const extractCheckbox = document.getElementById('phase-extract');
+                const extractionOptions = document.getElementById('extraction-options');
+                const pageRangeOptions = document.getElementById('page-range-options');
+                
+                if (extractCheckbox && extractCheckbox.checked) {
+                    extractionOptions.style.display = 'block';
+                    pageRangeOptions.style.display = 'block';
+                } else {
+                    extractionOptions.style.display = 'none';
+                    pageRangeOptions.style.display = 'none';
+                }
+            };
+
+            // Page range radio button handlers
+            document.addEventListener('DOMContentLoaded', function() {
+                const pageRangeAll = document.getElementById('page-range-all');
+                const pageRangeCustom = document.getElementById('page-range-custom');
+                const pageRangeInputs = document.getElementById('page-range-inputs');
+                
+                if (pageRangeAll && pageRangeCustom && pageRangeInputs) {
+                    pageRangeAll.addEventListener('change', function() {
+                        if (this.checked) {
+                            pageRangeInputs.style.display = 'none';
+                        }
+                    });
+                    
+                    pageRangeCustom.addEventListener('change', function() {
+                        if (this.checked) {
+                            pageRangeInputs.style.display = 'block';
+                        }
+                    });
+                }
+                
+                // Initialize extraction options visibility
+                toggleExtractionOptions();
+            });
+
             async function startSmartIngestion() {
                 const selectedMode = document.querySelector('input[name="ingestMode"]:checked').value;
                 const processMode = document.querySelector('input[name="processMode"]:checked').value;
@@ -4773,10 +4846,24 @@
                     // Use phased processing endpoint
                     endpoint = '/api/rag/phased/from-docstore';
                     selectedDocs = docstoreDocuments.filter(d => d.selected);
+                    
+                    // Get extraction parameters
+                    const extractionMethod = document.getElementById('extraction-method').value;
+                    const pageRangeAll = document.getElementById('page-range-all').checked;
+                    const pageStart = document.getElementById('page-start').value;
+                    const pageEnd = document.getElementById('page-end').value;
+                    
                     body = JSON.stringify({
                         document_ids: selectedDocs.map(d => d.doc_id),
                         phases: selectedPhases,
-                        user_id: 'web_user'
+                        user_id: 'web_user',
+                        extraction_config: {
+                            method: extractionMethod,
+                            page_range: pageRangeAll ? 'all' : {
+                                start: pageStart ? parseInt(pageStart) : null,
+                                end: pageEnd ? parseInt(pageEnd) : null
+                            }
+                        }
                     });
                 }
 

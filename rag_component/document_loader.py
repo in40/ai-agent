@@ -170,13 +170,14 @@ class DocumentLoader:
         logger.error(error_msg)
         raise ValueError(error_msg)
 
-    def _extract_with_pymupdf(self, file_path: str) -> str:
+    def _extract_with_pymupdf(self, file_path: str, pages: Optional[range] = None) -> str:
         """
-        Extract text using PyMuPDF (fitz).
+        Extract text from PDF using PyMuPDF (fitz).
         Fast and works well for most PDFs.
-
+        
         Args:
             file_path: Path to PDF file
+            pages: Optional range of pages to extract (0-indexed). None means all pages.
 
         Returns:
             Extracted text content
@@ -190,7 +191,15 @@ class DocumentLoader:
         doc = fitz.open(file_path)
 
         try:
-            for page_num in range(len(doc)):
+            # Determine which pages to extract
+            if pages is not None:
+                page_nums = list(pages)
+                # Clamp to valid range
+                page_nums = [p for p in page_nums if 0 <= p < len(doc)]
+            else:
+                page_nums = range(len(doc))
+            
+            for page_num in page_nums:
                 page = doc[page_num]
                 # Extract text with flags for better Cyrillic support
                 page_text = page.get_text("text", flags=fitz.TEXT_PRESERVE_WHITESPACE)
