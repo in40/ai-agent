@@ -58,16 +58,100 @@ logger.info(f"  - DOWNLOAD_PARALLELISM={DOWNLOAD_PARALLELISM}")
 logger.info(f"  - CHUNKING_PARALLELISM={CHUNKING_PARALLELISM}")
 logger.info(f"  - INGESTION_PARALLELISM={INGESTION_PARALLELISM}")
 
-# Default smart chunking prompt - OPTIMIZED FOR QWEN WITH JINJA TEMPLATE
-DEFAULT_SMART_CHUNKING_PROMPT = """Please split the following text into JSON chunks.
+# Default smart chunking prompt - COMPREHENSIVE EXPERT PROMPT
+DEFAULT_SMART_CHUNKING_PROMPT = """# ROLE
+You are an expert document engineer specializing in semantic chunking of technical standards (GOST, ISO, IEC, RFC, etc.) for vector database ingestion. Your task is to split the provided document into search-optimized chunks while preserving semantic integrity.
 
-Respond with ONLY a JSON array in this format:
-[{{"chunk_id": 1, "content": "text", "section": "", "title": ""}}]
+## CORE PRINCIPLES
+1. PRESERVE SEMANTIC UNITS: Never split complete concepts (formulas with context, tables, procedural steps, definitions)
+2. TARGET SIZE: 200-450 tokens per chunk (prioritize semantic integrity over exact size)
+3. MINIMAL OVERLAP: Apply overlap ONLY at procedural boundaries where step N output becomes step N+1 input (max 50 tokens). Zero overlap elsewhere.
+4. CONTEXT ANCHORING: Always include section headers/subheaders at chunk start
+5. FORMULA PRESERVATION: Keep all formulas WITH their explanatory context and variable definitions
+6. TABLE INTEGRITY: Never split tables – keep entire table + caption in single chunk
 
-Text to chunk:
+## CHUNKING RULES (Priority Order)
+
+### ✅ MUST PRESERVE TOGETHER
+- Formulas + surrounding explanatory text (min. 2 sentences before/after)
+- Complete tables (header + all rows + footnote)
+- Algorithmic/procedural sequences (e.g., "Step 1 → Step 2 → Step 3")
+- Definition + scope sentences (term + "— " explanation)
+- Example + its numerical result/calculation
+- Cross-referenced clauses (e.g., "as specified in 5.2.4" → include 5.2.4 context if critical)
+
+### ⚠️ OVERLAP ONLY AT THESE BOUNDARIES
+Apply 30-50 token overlap ONLY when:
+- Procedural step output directly feeds next step input (e.g., "morphing produces X" → "X is used in selection")
+- Observation → formula transition ("min(h) ≤ 3σ" → "evaluate using formula (2)")
+- Generation forecasting → numerical example ("exponential decrease" → "Appendix A example")
+
+DO NOT overlap:
+- Discrete trust levels/scenarios
+- Structural requirement categories
+- Appendices (keep self-contained)
+- Reference sections (normative references, notations)
+
+### 🚫 NEVER SPLIT
+- Mathematical expressions across lines
+- "where:" variable definitions from their formula
+- Critical constraint ranges (e.g., "n - √n < h < n + √n")
+- Multi-sentence definitions
+- Complete attack scenarios/methodologies
+
+## METADATA REQUIREMENTS
+For each chunk, generate structured metadata:
+{{
+  "chunk_id": integer,
+  "section": "X.Y.Z or appendix_X",
+  "title": "Descriptive title in language of document",
+  "chunk_type": "one of: header_and_scope | references_and_definitions | reference_table | trust_level | structural_requirements | testing_procedure | formula_with_context | security_procedure | appendix_example",
+  "contains_formula": boolean,
+  "contains_table": boolean,
+  "formula_id": "1,2,3... or null",
+  "formula_reference": "referenced formula number or null",
+  "trust_level": "full | partial_zero | null",
+  "testing_scenario": "small_db | medium_db | low_trust | null",
+  "overlap_source": "chunk_X_end or null",
+  "overlap_tokens": integer,
+  "token_count": integer,
+  "content": "chunk text with overlaps PREPENDED (not appended to previous chunk)"
+}}
+
+## OUTPUT FORMAT
+Return ONLY valid JSON matching this schema:
+{{
+  "document": "extracted document identifier (e.g., GOST_R_XXXXX-YYYY)",
+  "total_chunks": integer,
+  "overlap_strategy": "targeted_procedural_only",
+  "chunks": [ /* array of chunk objects per metadata requirements */ ],
+  "embedding_recommendations": {{
+    "model": "text-embedding-3-large or equivalent multilingual",
+    "chunk_size_target": "200-450 tokens",
+    "overlap_strategy": "Apply overlaps ONLY at procedural boundaries to preserve algorithmic continuity",
+    "metadata_indexing": "Index section, chunk_type, contains_formula fields for hybrid search"
+  }}
+}}
+
+## SPECIAL HANDLING FOR RUSSIAN TECHNICAL STANDARDS
+- Preserve «ёлочки» quotes («Свой», «Чужой») – critical semantic markers
+- Keep ГОСТ Р XXXXX references intact with year
+- Maintain mathematical notation: σ(h), min(h), ρ(h), E(.), σ(.)
+- Preserve footnote markers and "Примечание — " sections with parent content
+
+## PROCESSING INSTRUCTIONS
+1. First pass: Identify natural semantic boundaries (section breaks, formula clusters, procedural sequences)
+2. Second pass: Apply overlap rules ONLY where procedural continuity requires it
+3. Third pass: Generate metadata based on content analysis (detect formulas, tables, trust levels)
+4. Final validation: Ensure no formula/table split; verify overlap only at 2-3 procedural boundaries max
+
+## CRITICAL CONSTRAINT
+If document contains morphing/generation procedures (e.g., "поколение потомков"), apply overlap between generation steps to preserve causal chain. For all other boundaries: ZERO overlap.
+
+## TEXT TO CHUNK
 {input_text}
 
-Your JSON response:"""
+## YOUR JSON RESPONSE:"""
 
 # Prompts storage directory
 PROMPTS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'data', 'smart_ingestion_prompts')
