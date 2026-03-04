@@ -283,6 +283,33 @@ class DocumentLoader:
 
         return '\n'.join(text_parts)
 
+    def _extract_with_marker_llm(self, file_path: str) -> str:
+        """
+        Extract text using Marker library with LLM enhancement.
+        Best quality but slowest method.
+        
+        Args:
+            file_path: Path to PDF file
+        
+        Returns:
+            Extracted text content
+        """
+        try:
+            from .pdf_converter import PDFToMarkdownConverter
+        except ImportError:
+            raise ImportError("Marker library not installed. Run: pip install marker-pdf")
+        
+        converter = PDFToMarkdownConverter()
+        
+        # Convert PDF to markdown using LLM-enhanced processing
+        # Uses MARKER_LLM_PROVIDER and PDF_LLM_MODEL from .env
+        markdown_content = converter.convert_pdf_to_markdown(file_path, timeout_seconds=600)
+        
+        if not markdown_content:
+            raise Exception("Marker LLM conversion failed")
+        
+        return markdown_content
+
     def _fix_russian_encoding(self, text: str) -> str:
         """
         Detect and fix common Russian encoding issues (mojibake).

@@ -875,10 +875,11 @@
                                                     <option value="pymupdf">PyMuPDF (Fast)</option>
                                                     <option value="pdfminer">PDFMiner (Complex PDFs)</option>
                                                     <option value="tesseract">Tesseract OCR (Scanned PDFs)</option>
+                                                    <option value="marker_llm">Marker + LLM (Best Quality)</option>
                                                 </select>
                                                 <small class="text-muted d-block mt-1">
                                                     Auto: PyMuPDF → PDFMiner → OCR<br>
-                                                    OCR: For scanned documents (slow, ~3s/page)
+                                                    Marker+LLM: Uses {PDF_LLM_MODEL} for intelligent extraction (slow but highest quality)
                                                 </small>
                                             </div>
 
