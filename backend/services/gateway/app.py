@@ -786,6 +786,41 @@ def download_file(path):
         return jsonify({'error': 'RAG service unavailable'}), 503
 
 
+@app.route('/api/rag/document-store/download/<job_id>/<path:filename>', methods=['GET'])
+def download_document_store_file(job_id: str, filename: str):
+    """Route for downloading files from Document Store"""
+    try:
+        # Forward to RAG service
+        url = f"{RAG_SERVICE_URL}/api/rag/document-store/download/{job_id}/{filename}"
+        
+        # Forward all headers except Host, ensuring Authorization header is preserved
+        headers = {}
+        for key, value in request.headers:
+            if key.lower() != 'host':
+                headers[key] = value
+        
+        # Explicitly ensure Authorization header is set if present in original request
+        auth_header = request.headers.get('Authorization')
+        if auth_header:
+            headers['Authorization'] = auth_header
+        
+        headers['Host'] = RAG_SERVICE_URL.replace('http://', '').replace('https://', '')
+        
+        # Forward query parameters
+        params = request.args.to_dict()
+        
+        resp = requests.get(url, headers=headers, params=params, timeout=60)
+        # Return the response from the RAG service with its original status code
+        excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
+        headers = [(name, value) for (name, value) in resp.raw.headers.items()
+                   if name.lower() not in excluded_headers]
+        response = Response(resp.content, resp.status_code, headers)
+        return response
+    except Exception as e:
+        logger.error(f"Download document store file route error: {str(e)}")
+        return jsonify({'error': 'RAG service unavailable'}), 503
+
+
 @app.route('/api/rag/import_processed', methods=['POST'])
 @require_permission(Permission.WRITE_RAG)
 def rag_import_processed(current_user_id):

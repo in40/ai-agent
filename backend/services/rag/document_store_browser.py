@@ -9,7 +9,7 @@ import json
 import logging
 from datetime import datetime
 from typing import List, Dict, Any, Optional
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, send_file
 from sqlalchemy import text
 
 from backend.services.rag.phased_processing_models import (
@@ -565,4 +565,77 @@ def scan_and_import():
         return jsonify({
             'success': False,
             'error': str(e)
+        }), 500
+
+
+# ============================================================================
+# FILE DOWNLOAD ENDPOINT
+# ============================================================================
+
+@document_store_bp.route('/download/<job_id>/<path:filename>', methods=['GET'])
+def download_document(job_id: str, filename: str):
+    """
+    Download a document from Document Store
+    
+    Args:
+        job_id: Job ID containing the document (can be with or without 'job_' prefix)
+        filename: Filename to download (pdf, txt, chunks.json, metadata.json)
+    
+    Returns:
+        File download response
+    """
+    try:
+        doc_store_path = "/root/qwen/ai_agent/document-store-mcp-server/data/ingested"
+        
+        # Construct the job directory name
+        # The job_id from API might be "08795a8215d8_rst_gov_ru:8443"
+        # But the actual directory is "job_job_08795a8215d8_rst_gov_ru:8443"
+        if not job_id.startswith('job_'):
+            job_dir = f"job_{job_id}"
+        else:
+            job_dir = job_id
+        
+        # Ensure the directory starts with "job_job_"
+        if not job_dir.startswith('job_job_'):
+            job_dir = f"job_{job_dir}"
+        
+        file_path = os.path.join(doc_store_path, job_dir, 'documents', filename)
+        
+        # Verify file exists
+        if not os.path.exists(file_path):
+            logger.warning(f"Document not found: {file_path}")
+            return jsonify({
+                'success': False,
+                'error': 'Document not found'
+            }), 404
+        
+        # Verify file is within document store directory (security check)
+        resolved_path = os.path.realpath(file_path)
+        resolved_doc_store = os.path.realpath(doc_store_path)
+        
+        if not resolved_path.startswith(resolved_doc_store):
+            logger.warning(f"Directory traversal attempt: {file_path}")
+            return jsonify({
+                'success': False,
+                'error': 'Access denied'
+            }), 403
+        
+        # Determine content type based on file extension
+        file_ext = os.path.splitext(filename)[1].lower()
+        content_types = {
+            '.pdf': 'application/pdf',
+            '.txt': 'text/plain',
+            '.json': 'application/json',
+            '.md': 'text/markdown'
+        }
+        content_type = content_types.get(file_ext, 'application/octet-stream')
+        
+        logger.info(f"Downloading document: {filename} from job {job_dir}")
+        return send_file(file_path, mimetype=content_type, as_attachment=True)
+        
+    except Exception as e:
+        logger.error(f"Download error: {str(e)}")
+        return jsonify({
+            'success': False,
+            'error': f'Download failed: {str(e)}'
         }), 500
