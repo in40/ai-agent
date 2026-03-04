@@ -285,30 +285,103 @@ class DocumentLoader:
 
     def _extract_with_marker_llm(self, file_path: str) -> str:
         """
-        Extract text using Marker library with LLM enhancement.
-        Best quality but slowest method.
+        Extract text by sending PDF content to LLM with specialized prompt.
+        First extracts text, then uses LLM for intelligent markdown formatting.
         
         Args:
             file_path: Path to PDF file
         
         Returns:
-            Extracted text content
+            Extracted markdown text content
         """
+        from .config import LLM_PROVIDER, LLM_MODEL
+        
+        # Use PDF-specific LLM config if available, otherwise fall back to default
+        llm_provider = os.getenv("PDF_LLM_PROVIDER", LLM_PROVIDER)
+        llm_model = os.getenv("PDF_LLM_MODEL", LLM_MODEL)
+        
+        logger.info(f"Sending PDF to LLM: provider={llm_provider}, model={llm_model}")
+        
+        # Step 1: Extract raw text from PDF
+        logger.info("Step 1: Extracting raw text from PDF...")
         try:
-            from .pdf_converter import PDFToMarkdownConverter
-        except ImportError:
-            raise ImportError("Marker library not installed. Run: pip install marker-pdf")
+            raw_text = self._extract_with_pymupdf(file_path)
+        except Exception as e:
+            logger.warning(f"PyMuPDF failed, trying pdfminer: {e}")
+            raw_text = self._extract_with_pdfminer(file_path)
         
-        converter = PDFToMarkdownConverter()
+        if not raw_text or len(raw_text) < 100:
+            raise Exception("Could not extract text from PDF")
         
-        # Convert PDF to markdown using LLM-enhanced processing
-        # Uses MARKER_LLM_PROVIDER and PDF_LLM_MODEL from .env
-        markdown_content = converter.convert_pdf_to_markdown(file_path, timeout_seconds=600)
+        logger.info(f"Step 1 complete: Extracted {len(raw_text)} characters")
         
-        if not markdown_content:
-            raise Exception("Marker LLM conversion failed")
+        # Step 2: Send to LLM for intelligent markdown formatting
+        logger.info("Step 2: Sending to LLM for markdown formatting...")
         
-        return markdown_content
+        # Specialized prompt for PDF to markdown conversion
+        system_prompt = """You are an expert document converter. Your task is to convert raw PDF text to clean, well-formatted Markdown.
+
+Rules:
+1. Identify and format headings properly (# for H1, ## for H2, etc.)
+2. Preserve paragraphs and line breaks
+3. Convert lists to proper Markdown list format (- or 1.)
+4. Convert tables to proper Markdown table format with | separators
+5. Preserve code blocks with ``` markers
+6. Maintain the logical structure and flow of the document
+7. Remove page numbers, headers, footers that are not part of content
+8. Output ONLY the markdown content, no explanations or commentary"""
+
+        user_prompt = f"""Convert this raw text extracted from a PDF document to a well-formatted Markdown (.md) file.
+
+Raw PDF text:
+{raw_text}"""
+        
+        # Send to LLM based on provider
+        if llm_provider.lower() == 'openai':
+            # Works with OpenAI-compatible APIs (LM Studio, Ollama with OpenAI compat, etc.)
+            from openai import OpenAI
+            
+            base_url = os.getenv("OPENAI_BASE_URL", "http://localhost:1234/v1")
+            api_key = os.getenv("OPENAI_API_KEY", "not-needed")
+            
+            client = OpenAI(base_url=base_url, api_key=api_key)
+            
+            response = client.chat.completions.create(
+                model=llm_model,
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt}
+                ],
+                max_tokens=32000,  # Support for long documents
+                timeout=300  # 5 minute timeout
+            )
+            
+            result = response.choices[0].message.content
+            logger.info(f"Step 2 complete: LLM returned {len(result)} characters")
+            return result
+            
+        elif llm_provider.lower() == 'ollama':
+            # Ollama native API
+            import requests
+            
+            ollama_url = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
+            
+            response = requests.post(
+                f"{ollama_url}/api/generate",
+                json={
+                    "model": llm_model,
+                    "prompt": f"{system_prompt}\n\n{user_prompt}",
+                    "stream": False
+                },
+                timeout=300
+            )
+            
+            result = response.json().get('response', '')
+            logger.info(f"Step 2 complete: LLM returned {len(result)} characters")
+            return result
+            
+        else:
+            raise ValueError(f"Unsupported LLM provider for PDF extraction: {llm_provider}")
 
     def _fix_russian_encoding(self, text: str) -> str:
         """
