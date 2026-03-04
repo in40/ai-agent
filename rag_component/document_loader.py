@@ -296,11 +296,12 @@ class DocumentLoader:
         """
         import base64
         
-        # Use PDF-specific LLM config, fall back to env vars
-        llm_provider = os.getenv("PDF_LLM_PROVIDER", os.getenv("LLM_PROVIDER", "openai"))
-        llm_model = os.getenv("PDF_LLM_MODEL", os.getenv("LLM_MODEL", "gpt-4"))
+        # Use NLP LLM configuration (same as chat/completion endpoints)
+        llm_base_url = os.getenv("NLP_LLM_BASE_URL", "http://localhost:1234/v1")
+        llm_model = os.getenv("NLP_LLM_MODEL", os.getenv("PDF_LLM_MODEL", "qwen3.5-35b"))
+        api_key = os.getenv("NLP_LLM_API_KEY", os.getenv("OPENAI_API_KEY", "not-needed"))
         
-        logger.info(f"Sending PDF to LLM: provider={llm_provider}, model={llm_model}")
+        logger.info(f"Sending PDF to LLM: url={llm_base_url}, model={llm_model}")
         
         # Read and encode PDF
         with open(file_path, 'rb') as f:
@@ -308,60 +309,31 @@ class DocumentLoader:
         
         prompt = "convert this pdf file to markdown .md file"
         
-        if llm_provider.lower() == 'openai':
-            from openai import OpenAI
-            
-            client = OpenAI(
-                base_url=os.getenv("OPENAI_BASE_URL", "http://localhost:1234/v1"),
-                api_key=os.getenv("OPENAI_API_KEY", "not-needed")
-            )
-            
-            response = client.chat.completions.create(
-                model=llm_model,
-                messages=[
-                    {
-                        "role": "user",
-                        "content": [
-                            {"type": "text", "text": prompt},
-                            {
-                                "type": "image_url",
-                                "image_url": {
-                                    "url": f"data:application/pdf;base64,{pdf_base64}"
-                                }
-                            }
-                        ]
-                    }
-                ],
-                max_tokens=32000,
-                timeout=600
-            )
-            
-            return response.choices[0].message.content
+        from openai import OpenAI
         
-        elif llm_provider.lower() == 'ollama':
-            import requests
-            
-            ollama_url = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
-            
-            response = requests.post(
-                f"{ollama_url}/api/chat",
-                json={
-                    "model": llm_model,
-                    "messages": [
+        client = OpenAI(base_url=llm_base_url, api_key=api_key)
+        
+        response = client.chat.completions.create(
+            model=llm_model,
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": prompt},
                         {
-                            "role": "user",
-                            "content": prompt,
-                            "images": [pdf_base64]
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:application/pdf;base64,{pdf_base64}"
+                            }
                         }
                     ]
-                },
-                timeout=600
-            )
-            
-            return response.json().get('message', {}).get('content', '')
+                }
+            ],
+            max_tokens=32000,
+            timeout=600
+        )
         
-        else:
-            raise ValueError(f"Unsupported LLM provider: {llm_provider}")
+        return response.choices[0].message.content
 
     def _fix_russian_encoding(self, text: str) -> str:
         """
