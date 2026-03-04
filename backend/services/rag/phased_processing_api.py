@@ -1241,31 +1241,84 @@ def process_phased_job_background(job):
                     if job:
                         job.current_stage = 'extracting'
                         job_queue.update_job(job)
+
+                    # Get extraction config from job parameters
+                    extraction_config = job.parameters.get('extraction_config', {})
+                    method = extraction_config.get('method', 'auto')
+                    page_range = extraction_config.get('page_range', 'all')
                     
+                    logger.info(f"[Phased Job {job_id}] Extraction config: method={method}, page_range={page_range}")
+
                     # Get documents ready for extraction
                     docs = get_documents_ready_for_phase(job_id, 'extract')
                     for doc in docs:
                         try:
-                            # Extract text
+                            # Extract text with configured method and page range
                             from rag_component.document_loader import DocumentLoader
                             loader = DocumentLoader()
-                            text = loader._extract_with_pymupdf(doc.file_path)
                             
+                            # Handle page range parsing
+                            pages_to_extract = None  # None means all pages
+                            if page_range and page_range != 'all':
+                                if isinstance(page_range, dict):
+                                    start = page_range.get('start')
+                                    end = page_range.get('end')
+                                    if start:
+                                        pages_to_extract = range(start - 1, end if end else None)  # 0-indexed
+                            
+                            # Extract using specified method
+                            if method == 'auto' or method == 'pymupdf':
+                                try:
+                                    text = loader._extract_with_pymupdf(doc.file_path, pages=pages_to_extract)
+                                    extraction_method_used = 'pymupdf'
+                                except Exception:
+                                    if method == 'auto':
+                                        # Try pdfminer
+                                        try:
+                                            text = loader._extract_with_pdfminer(doc.file_path)
+                                            extraction_method_used = 'pdfminer'
+                                        except Exception:
+                                            # Try Tesseract OCR as last resort
+                                            try:
+                                                text = loader._extract_with_tesseract(doc.file_path)
+                                                extraction_method_used = 'tesseract'
+                                            except Exception:
+                                                raise Exception("All extraction methods failed")
+                                    else:
+                                        raise
+                            elif method == 'pdfminer':
+                                text = loader._extract_with_pdfminer(doc.file_path)
+                                extraction_method_used = 'pdfminer'
+                            elif method == 'tesseract':
+                                text = loader._extract_with_tesseract(doc.file_path)
+                                extraction_method_used = 'tesseract'
+                            else:
+                                # Default to pymupdf
+                                text = loader._extract_with_pymupdf(doc.file_path, pages=pages_to_extract)
+                                extraction_method_used = 'pymupdf'
+
                             # Save text
                             text_path = doc.file_path.replace('.pdf', '.txt')
                             with open(text_path, 'w', encoding='utf-8') as f:
                                 f.write(text)
-                            
+
                             # Update metadata
                             phased_db.update_document_metadata(doc.doc_id, {
-                                'extraction_method': 'pymupdf',
-                                'extracted_char_count': len(text)
+                                'extraction_method': extraction_method_used,
+                                'extracted_char_count': len(text),
+                                'page_range': str(page_range) if page_range != 'all' else 'all'
                             })
-                            
+
                             # Mark phase complete
                             phased_db.update_document_phase_status(
-                                doc.doc_id, 'extract', PhaseStatus.COMPLETED
+                                doc.doc_id, 'extract', PhaseStatus.COMPLETED,
+                                metadata={
+                                    'method': extraction_method_used,
+                                    'page_range': str(page_range) if page_range != 'all' else 'all'
+                                }
                             )
+                            
+                            logger.info(f"[Phased Job {job_id}] Extracted {len(text)} chars from {doc.doc_id[:30]} using {extraction_method_used}")
                         except Exception as e:
                             logger.error(f"[Phased Job {job_id}] Extract failed for {doc.doc_id}: {e}")
                             phased_db.update_document_phase_status(
