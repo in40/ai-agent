@@ -24,7 +24,7 @@ from bs4 import BeautifulSoup
 
 # Import RAG components
 from rag_component.main import RAGOrchestrator
-from config.settings import RESPONSE_LLM_PROVIDER, RESPONSE_LLM_MODEL, str_to_bool
+from config.settings import RESPONSE_LLM_PROVIDER, RESPONSE_LLM_MODEL, LLM_CHUNKING_TIMEOUT, str_to_bool
 from models.response_generator import ResponseGenerator
 
 # Import job queue for background processing
@@ -58,132 +58,16 @@ logger.info(f"  - DOWNLOAD_PARALLELISM={DOWNLOAD_PARALLELISM}")
 logger.info(f"  - CHUNKING_PARALLELISM={CHUNKING_PARALLELISM}")
 logger.info(f"  - INGESTION_PARALLELISM={INGESTION_PARALLELISM}")
 
-# Default smart chunking prompt
-DEFAULT_SMART_CHUNKING_PROMPT = """# ROLE
-You are an expert document engineer specializing in semantic chunking of technical standards (GOST, ISO, IEC, RFC, etc.) for vector database ingestion. Your task is to split the provided document into search-optimized chunks while preserving semantic integrity.
+# Default smart chunking prompt - OPTIMIZED FOR QWEN WITH JINJA TEMPLATE
+DEFAULT_SMART_CHUNKING_PROMPT = """Please split the following text into JSON chunks.
 
-## CORE PRINCIPLES
-1. PRESERVE SEMANTIC UNITS: Never split complete concepts (formulas with context, tables, procedural steps, definitions)
-2. TARGET SIZE: 200-450 tokens per chunk (prioritize semantic integrity over exact size)
-3. MINIMAL OVERLAP: Apply overlap ONLY at procedural boundaries where step N output becomes step N+1 input (max 50 tokens). Zero overlap elsewhere.
-4. CONTEXT ANCHORING: Always include section headers/subheaders at chunk start
-5. FORMULA PRESERVATION: Keep all formulas WITH their explanatory context and variable definitions
-6. TABLE INTEGRITY: Never split tables – keep entire table + caption in single chunk
+Respond with ONLY a JSON array in this format:
+[{{"chunk_id": 1, "content": "text", "section": "", "title": ""}}]
 
-## CHUNKING RULES (Priority Order)
+Text to chunk:
+{input_text}
 
-### ✅ MUST PRESERVE TOGETHER
-- Formulas + surrounding explanatory text (min. 2 sentences before/after)
-- Complete tables (header + all rows + footnote)
-- Algorithmic/procedural sequences (e.g., "Step 1 → Step 2 → Step 3")
-- Definition + scope sentences (term + "— " explanation)
-- Example + its numerical result/calculation
-- Cross-referenced clauses (e.g., "as specified in 5.2.4" → include 5.2.4 context if critical)
-
-### ⚠️ OVERLAP ONLY AT THESE BOUNDARIES
-Apply 30-50 token overlap ONLY when:
-- Procedural step output directly feeds next step input (e.g., "morphing produces X" → "X is used in selection")
-- Observation → formula transition ("min(h) ≤ 3σ" → "evaluate using formula (2)")
-- Generation forecasting → numerical example ("exponential decrease" → "Appendix A example")
-
-DO NOT overlap:
-- Discrete trust levels/scenarios
-- Structural requirement categories
-- Appendices (keep self-contained)
-- Reference sections (normative references, notations)
-
-### 🚫 NEVER SPLIT
-- Mathematical expressions across lines
-- "where:" variable definitions from their formula
-- Critical constraint ranges (e.g., "n - √n < h < n + √n")
-- Multi-sentence definitions
-- Complete attack scenarios/methodologies
-
-## METADATA REQUIREMENTS
-For each chunk, generate structured metadata:
-{
-  "chunk_id": integer,
-  "section": "X.Y.Z or appendix_X",
-  "title": "Descriptive title in language of document",
-  "chunk_type": "one of: header_and_scope | references_and_definitions | reference_table | trust_level | structural_requirements | testing_procedure | formula_with_context | security_procedure | appendix_example",
-  "contains_formula": boolean,
-  "contains_table": boolean,
-  "formula_id": "1,2,3... or null",
-  "formula_reference": "referenced formula number or null",
-  "trust_level": "full | partial_zero | null",
-  "testing_scenario": "small_db | medium_db | low_trust | null",
-  "overlap_source": "chunk_X_end or null",
-  "overlap_tokens": integer,
-  "token_count": integer,
-  "content": "chunk text with overlaps PREPENDED (not appended to previous chunk)",
-  "entities": [/* optional: array of extracted entities for knowledge graph */]
-}
-
-## ENTITY EXTRACTION RULES (for Knowledge Graph)
-For each chunk, extract key entities to build a knowledge graph:
-1. **STANDARDS**: GOST, ISO, IEC, RFC standards (e.g., "GOST R 34.10-2012", "ISO 27001")
-2. **ORGANIZATIONS**: Companies, government bodies, agencies (e.g., "FSB Russia", "ISO/IEC")
-3. **TECHNOLOGIES**: Technical terms, algorithms, protocols (e.g., "elliptic curve cryptography", "SHA-256")
-4. **LOCATIONS**: Geographical entities, countries, regions (e.g., "Russian Federation", "Moscow")
-5. **CONCEPTS**: Key domain concepts (e.g., "digital signature", "hash function", "encryption key")
-6. **PERSONS**: People mentioned (rare in technical docs)
-
-For each entity, provide:
-{
-  "name": "exact entity name as appears in text",
-  "type": "STANDARD | ORGANIZATION | TECHNOLOGY | LOCATION | CONCEPT | PERSON",
-  "relevance": "high | medium | low"  // high if central to chunk, low if mentioned in passing
-}
-
-Example entities array:
-"entities": [
-  {"name": "GOST R 34.10-2012", "type": "STANDARD", "relevance": "high"},
-  {"name": "elliptic curve", "type": "TECHNOLOGY", "relevance": "high"},
-  {"name": "Russian Federation", "type": "LOCATION", "relevance": "medium"},
-  {"name": "digital signature", "type": "CONCEPT", "relevance": "high"}
-]
-
-## OUTPUT FORMAT
-Return ONLY valid JSON matching this schema:
-{
-  "document": "extracted document identifier (e.g., GOST_R_XXXXX-YYYY)",
-  "total_chunks": integer,
-  "total_entities": integer,  // count of all extracted entities
-  "entity_types": {  // count by type
-    "STANDARD": integer,
-    "ORGANIZATION": integer,
-    "TECHNOLOGY": integer,
-    "LOCATION": integer,
-    "CONCEPT": integer,
-    "PERSON": integer
-  },
-  "overlap_strategy": "targeted_procedural_only",
-  "chunks": [ /* array of chunk objects per metadata requirements */ ],
-  "embedding_recommendations": {
-    "model": "text-embedding-3-large or equivalent multilingual",
-    "chunk_size_target": "200-450 tokens",
-    "overlap_strategy": "Apply overlaps ONLY at procedural boundaries to preserve algorithmic continuity",
-    "metadata_indexing": "Index section, chunk_type, contains_formula, entities fields for hybrid search"
-  }
-}
-
-## SPECIAL HANDLING FOR RUSSIAN TECHNICAL STANDARDS
-- Preserve «ёлочки» quotes («Свой», «Чужой») – critical semantic markers
-- Keep ГОСТ Р XXXXX references intact with year
-- Maintain mathematical notation: σ(h), min(h), ρ(h), E(.), σ(.)
-- Preserve footnote markers and "Примечание — " sections with parent content
-
-## PROCESSING INSTRUCTIONS
-1. First pass: Identify natural semantic boundaries (section breaks, formula clusters, procedural sequences)
-2. Second pass: Apply overlap rules ONLY where procedural continuity requires it
-3. Third pass: Generate metadata based on content analysis (detect formulas, tables, trust levels)
-4. Final validation: Ensure no formula/table split; verify overlap only at 2-3 procedural boundaries max
-
-## CRITICAL CONSTRAINT
-If document contains morphing/generation procedures (e.g., "поколение потомков"), apply overlap between generation steps to preserve causal chain. For all other boundaries: ZERO overlap.
-
----
-TEXT TO CHUNK PROVIDED"""
+Your JSON response:"""
 
 # Prompts storage directory
 PROMPTS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'data', 'smart_ingestion_prompts')
@@ -396,68 +280,133 @@ def download_document_via_mcp(url: str) -> Tuple[bool, str, str]:
         return False, str(e), ""
 
 
-def chunk_document_with_llm(file_path: str, prompt: str, filename: str = "") -> Tuple[bool, List[Dict], str]:
+async def chunk_document_with_llm(file_path: str, prompt: str, filename: str = "", timeout: int = None) -> Tuple[bool, List[Dict], str]:
     """
-    Chunk a document using LLM.
+    Chunk a document using LLM (async version with proper timeout).
     
     Args:
         file_path: Path to the document file
         prompt: Chunking prompt to use
         filename: Original filename
+        timeout: Timeout in seconds (overrides .env setting)
         
     Returns:
         Tuple of (success, chunks_list, error_message)
     """
     try:
         from rag_component.document_loader import DocumentLoader
+        import asyncio
         
         # Load document
         document_loader = DocumentLoader()
         docs = document_loader.load_document(file_path)
-        
+
         document_content = ""
         for doc in docs:
             document_content += doc.page_content + "\n"
-        
+
         if not document_content.strip():
             return False, [], "Empty document content"
-        
+
         # Initialize LLM
         response_generator = ResponseGenerator()
         llm = response_generator._get_llm_instance(
             provider=RESPONSE_LLM_PROVIDER,
             model=RESPONSE_LLM_MODEL
         )
-        
-        # Prepare full prompt
-        full_prompt = f"{prompt}\n\n---\nTEXT TO CHUNK:\n{document_content}"
-        
-        # Call LLM
+
+        # Use default prompt if empty prompt provided
+        if not prompt or prompt.strip() == "":
+            prompt = DEFAULT_SMART_CHUNKING_PROMPT
+
+        # Prepare full prompt with input text injected
+        full_prompt = prompt.format(input_text=document_content[:50000])  # Limit to 50K chars
+
+        # Call LLM with timeout
+        actual_timeout = timeout or LLM_CHUNKING_TIMEOUT
         logger.info(f"Calling LLM for chunking: {filename or file_path}")
-        response = llm.invoke(full_prompt)
-        response_content = response.content if hasattr(response, 'content') else str(response)
+        logger.info(f"Timeout: {actual_timeout} seconds ({actual_timeout/60:.1f} minutes)")
         
-        # Parse JSON response
+        try:
+            # Use asyncio.wait_for to enforce timeout
+            response = await asyncio.wait_for(
+                llm.ainvoke(full_prompt),
+                timeout=actual_timeout
+            )
+            response_content = response.content if hasattr(response, 'content') else str(response)
+        except asyncio.TimeoutError:
+            logger.error(f"LLM call timed out after {actual_timeout} seconds")
+            return False, [], f"LLM call timed out after {actual_timeout} seconds"
+        except Exception as e:
+            logger.error(f"LLM call failed: {str(e)}")
+            return False, [], f"LLM call failed: {str(e)}"
+
+        # Log raw response for debugging
+        logger.info(f"LLM response length: {len(response_content)} chars")
+        logger.info(f"LLM response preview: {response_content[:500]}...")
+
+        # Post-process: Extract JSON from markdown response
+        # Step 1: Remove markdown code blocks
+        cleaned_response = response_content.strip()
+        if cleaned_response.startswith('```json'):
+            cleaned_response = cleaned_response[7:]
+        elif cleaned_response.startswith('```'):
+            cleaned_response = cleaned_response[3:]
+        if cleaned_response.endswith('```'):
+            cleaned_response = cleaned_response[:-3]
+        cleaned_response = cleaned_response.strip()
+
+        # Step 2: Remove any text before first [ or after last ]
+        bracket_start = cleaned_response.find('[')
+        bracket_end = cleaned_response.rfind(']')
+        if bracket_start != -1 and bracket_end != -1 and bracket_end > bracket_start:
+            cleaned_response = cleaned_response[bracket_start:bracket_end + 1]
+            logger.info(f"Extracted JSON array: {len(cleaned_response)} chars")
+        else:
+            logger.warning("No JSON array brackets found, trying object format")
+
+        # Step 3: Parse JSON
         try:
             import re
-            json_match = re.search(r'\{[\s\S]*\}', response_content)
+            # Try to find JSON array first
+            json_match = re.search(r'\[[\s\S]*\]', cleaned_response)
             if json_match:
                 json_str = json_match.group(0)
+                logger.info(f"Found JSON array: {len(json_str)} chars")
                 chunking_result = json.loads(json_str)
+                chunks = chunking_result if isinstance(chunking_result, list) else []
             else:
-                chunking_result = json.loads(response_content)
+                # Fallback: try to find JSON object
+                json_match = re.search(r'\{[\s\S]*\}', cleaned_response)
+                if json_match:
+                    json_str = json_match.group(0)
+                    logger.info(f"Found JSON object: {len(json_str)} chars")
+                    chunking_result = json.loads(json_str)
+                    chunks = chunking_result.get('chunks', [])
+                else:
+                    logger.error(f"No JSON found. Raw response: {response_content[:1000]}")
+                    return False, [], "No JSON found in LLM response"
         except json.JSONDecodeError as e:
             logger.error(f"Failed to parse LLM response: {str(e)}")
+            logger.error(f"Raw response: {response_content[:1000]}")
             return False, [], f"Failed to parse LLM response: {str(e)}"
-        
-        chunks = chunking_result.get('chunks', [])
+
         logger.info(f"Generated {len(chunks)} chunks for {filename or file_path}")
-        
+
         return True, chunks, ""
-        
+
     except Exception as e:
         logger.error(f"Chunking error: {str(e)}")
         return False, [], str(e)
+
+
+def chunk_document_with_llm_sync(file_path: str, prompt: str, filename: str = "", timeout: int = None) -> Tuple[bool, List[Dict], str]:
+    """
+    Synchronous wrapper for async chunk_document_with_llm.
+    Use this when calling from synchronous code.
+    """
+    import asyncio
+    return asyncio.run(chunk_document_with_llm(file_path, prompt, filename, timeout))
 
 
 def ingest_chunks_to_vectorstore(chunks: List[Dict], document_id: str, filename: str) -> bool:

@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>AI Agent Dashboard</title>
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -760,6 +763,25 @@
                                             </div>
                                         </div>
                                         
+                                        <!-- File Type Filter -->
+                                        <div class="btn-group mb-3" role="group">
+                                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="filterDocstoreByType('all')" id="filter-all-btn">
+                                                <i class="fas fa-layer-group"></i> All
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="filterDocstoreByType('pdf')" id="filter-pdf-btn">
+                                                <i class="fas fa-file-pdf"></i> PDFs
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-success" onclick="filterDocstoreByType('txt')" id="filter-txt-btn">
+                                                <i class="fas fa-file-alt"></i> Text
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-info" onclick="filterDocstoreByType('chunks')" id="filter-chunks-btn">
+                                                <i class="fas fa-th-large"></i> Chunks
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-warning" onclick="filterDocstoreByType('metadata')" id="filter-metadata-btn">
+                                                <i class="fas fa-file-code"></i> Metadata
+                                            </button>
+                                        </div>
+
                                         <!-- Pagination Controls -->
                                         <div class="d-flex justify-content-between align-items-center mb-2" id="docstore-pagination-top" style="display: none;">
                                             <small class="text-muted" id="docstore-showing-info">Showing 0-0 of 0</small>
@@ -826,7 +848,60 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
+                            <!-- Phase Selection Card -->
+                            <div class="card mb-4" id="phase-selection-card">
+                                <div class="card-header">
+                                    <h6 class="mb-0"><i class="fas fa-tasks"></i> Processing Phases</h6>
+                                </div>
+                                <div class="card-body">
+                                    <p class="text-muted small mb-3">Select which phases to run. Already completed phases will be skipped.</p>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input phase-checkbox" type="checkbox" value="extract" id="phase-extract" checked>
+                                                <label class="form-check-label" for="phase-extract">
+                                                    <i class="fas fa-file-alt"></i> Phase 2: Text Extraction
+                                                </label>
+                                                <small class="text-muted d-block">Extract text from PDFs</small>
+                                            </div>
+                                            
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input phase-checkbox" type="checkbox" value="chunk" id="phase-chunk" checked>
+                                                <label class="form-check-label" for="phase-chunk">
+                                                    <i class="fas fa-th-large"></i> Phase 3: Chunking
+                                                </label>
+                                                <small class="text-muted d-block">Split text into semantic chunks</small>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-md-6">
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input phase-checkbox" type="checkbox" value="vector" id="phase-vector" checked>
+                                                <label class="form-check-label" for="phase-vector">
+                                                    <i class="fas fa-database"></i> Phase 4: Vector Indexing
+                                                </label>
+                                                <small class="text-muted d-block">Store chunks in Qdrant</small>
+                                            </div>
+                                            
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input phase-checkbox" type="checkbox" value="graph" id="phase-graph">
+                                                <label class="form-check-label" for="phase-graph">
+                                                    <i class="fas fa-project-diagram"></i> Phase 5: Graph Build
+                                                </label>
+                                                <small class="text-muted d-block">Extract entities to Neo4j</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="alert alert-warning mt-3" id="phase-warning" style="display:none;">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        <span id="phase-warning-text"></span>
+                                    </div>
+                                </div>
+                            </div>
+
                             <!-- Action Button -->
                             <div class="d-flex justify-content-between mt-3">
                                 <button id="smart-ingest-btn" class="btn btn-primary btn-animated" disabled>
@@ -4163,7 +4238,7 @@
             function updateSmartIngestButton() {
                 const selectedMode = document.querySelector('input[name="ingestMode"]:checked').value;
                 let hasDocuments = false;
-                
+
                 if (selectedMode === 'files') {
                     hasDocuments = smartSelectedFilesArray.length > 0;
                 } else if (selectedMode === 'webpage') {
@@ -4171,10 +4246,82 @@
                 } else if (selectedMode === 'docstore') {
                     hasDocuments = docstoreDocuments.filter(d => d.selected).length > 0;
                 }
-                
+
                 smartIngestBtn.disabled = !hasDocuments;
             }
-            
+
+            // Phase selection functions
+            function getSelectedPhases() {
+                const checkboxes = document.querySelectorAll('.phase-checkbox:checked');
+                return Array.from(checkboxes).map(cb => cb.value);
+            }
+
+            function validatePhaseSelection() {
+                const phases = getSelectedPhases();
+                const warningDiv = document.getElementById('phase-warning');
+
+                if (phases.length === 0) {
+                    warningDiv.style.display = 'block';
+                    warningDiv.className = 'alert alert-warning mt-3';
+                    document.getElementById('phase-warning-text').textContent =
+                        'Please select at least one phase to run.';
+                    return false;
+                }
+
+                // Check if any selected files are already TXT (don't need extraction)
+                const selectedDocs = docstoreDocuments.filter(d => d.selected);
+                console.log('[Validate] === VALIDATION START ===');
+                console.log('[Validate] Selected docs count:', selectedDocs.length);
+                console.log('[Validate] Selected docs details:', selectedDocs.map(d => ({
+                    doc_id: d.doc_id,
+                    filename: d.filename,
+                    file_type: d.file_type,
+                    format: d.format,
+                    selected: d.selected
+                })));
+                
+                const hasOnlyTextFiles = selectedDocs.length > 0 && 
+                    selectedDocs.every(d => d.file_type === 'txt');
+                
+                console.log('[Validate] hasOnlyTextFiles:', hasOnlyTextFiles);
+                
+                // If only TXT files selected and Extract not checked, that's OK
+                if (phases.includes('chunk') && !phases.includes('extract')) {
+                    if (hasOnlyTextFiles) {
+                        // TXT files don't need extraction
+                        console.log('[Validate] ✅ TXT files only - allowing without Extract');
+                        warningDiv.style.display = 'none';
+                    } else {
+                        console.log('[Validate] ❌ Non-TXT files detected - showing warning');
+                        warningDiv.style.display = 'block';
+                        warningDiv.className = 'alert alert-warning mt-3';
+                        document.getElementById('phase-warning-text').textContent =
+                            'Chunking requires Extract to run first. Extract will be executed before Chunking.';
+                    }
+                } else if (phases.includes('vector') && !phases.includes('chunk')) {
+                    warningDiv.style.display = 'block';
+                    warningDiv.className = 'alert alert-warning mt-3';
+                    document.getElementById('phase-warning-text').textContent =
+                        'Vector indexing requires Chunking to run first. Chunking will be executed before Vector.';
+                } else if (phases.includes('graph') && !phases.includes('chunk')) {
+                    warningDiv.style.display = 'block';
+                    warningDiv.className = 'alert alert-warning mt-3';
+                    document.getElementById('phase-warning-text').textContent =
+                        'Graph build requires Chunking to run first. Chunking will be executed before Graph.';
+                } else {
+                    warningDiv.style.display = 'none';
+                }
+                
+                return true;
+            }
+
+            // Add event listeners to phase checkboxes
+            document.querySelectorAll('.phase-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', () => {
+                    validatePhaseSelection();
+                });
+            });
+
             async function scanWebPage() {
                 const urlInput = document.getElementById('webpage-url');
                 const resultsDiv = document.getElementById('webpage-results');
@@ -4301,7 +4448,7 @@
                 resultsDiv.style.display = 'block';
                 
                 try {
-                    const response = await fetch('/api/rag/document_store/jobs', {
+                    const response = await fetch('/api/rag/document-store/documents?limit=9999', {
                         headers: {
                             'Authorization': `Bearer ${AUTH_TOKEN}`
                         }
@@ -4323,73 +4470,47 @@
                     if (response.ok) {
                         const data = await response.json();
                         console.log('Document Store data:', data);
-                        const jobs = data.jobs || [];
                         
+                        // New endpoint returns: {success: true, documents: [...], pagination: {...}}
+                        const documents = data.documents || [];
+                        console.log('[DocStore] Found documents:', documents.length);
+
                         docstoreDocuments = [];
-                        const items = [];
-                        
-                        jobs.forEach(job => {
-                            const documents = job.documents || job.result?.documents || [];
-                            console.log('[DocStore] Job documents:', documents);
+
+                        documents.forEach(doc => {
+                            console.log('[DocStore] Processing document:', doc);
+
+                            const docId = doc.doc_id || `doc_${Math.random().toString(36).substr(2, 9)}`;
+                            // Use original_filename from API, or construct from doc_id + file_type
+                            let filename = doc.original_filename || doc.filename;
+                            if (!filename) {
+                                // Construct filename from doc_id and file_type
+                                const ext = doc.file_type === 'txt' ? '.txt' : 
+                                           doc.file_type === 'pdf' ? '.pdf' : 
+                                           doc.file_type === 'metadata' ? '.metadata.json' :
+                                           doc.file_type === 'chunks' ? '.chunks.json' : '.json';
+                                filename = docId + ext;
+                            }
                             
-                            documents.forEach(doc => {
-                                console.log('[DocStore] Processing document:', doc);
-                                
-                                const docId = doc.doc_id || `doc_${Math.random().toString(36).substr(2, 9)}`;
-                                
-                                // Extract filename with multiple fallback strategies
-                                let filename = 'Unknown Document';
-                                
-                                // Strategy 1: Try metadata.original_filename
-                                if (doc.metadata && doc.metadata.original_filename) {
-                                    filename = doc.metadata.original_filename;
-                                    console.log('[DocStore] Got filename from metadata.original_filename:', filename);
-                                }
-                                // Strategy 2: Try top-level original_filename
-                                else if (doc.original_filename) {
-                                    filename = doc.original_filename;
-                                    console.log('[DocStore] Got filename from original_filename:', filename);
-                                }
-                                // Strategy 3: Try filename field if it looks real (not doc_XXX.pdf)
-                                else if (doc.filename && !doc.filename.match(/^doc_\d+\.pdf$/)) {
-                                    filename = doc.filename;
-                                    console.log('[DocStore] Got filename from filename field:', filename);
-                                }
-                                // Strategy 4: Extract from doc_id (e.g., "rst_gov_ru:8443_gost-r-50739-1995=edt2006" -> "gost-r-50739-1995.pdf")
-                                else if (docId.includes('_')) {
-                                    const parts = docId.split('_');
-                                    // Try to find a part that looks like a filename
-                                    for (let i = parts.length - 1; i >= 0; i--) {
-                                        const part = parts[i];
-                                        if (part.includes('.') || part.includes('gost') || part.includes('iso') || part.includes('rfc')) {
-                                            filename = part.includes('.') ? part : part + '.pdf';
-                                            console.log('[DocStore] Extracted filename from doc_id part:', filename);
-                                            break;
-                                        }
-                                    }
-                                    // If no good part found, use the last part
-                                    if (filename === 'Unknown Document' && parts.length > 0) {
-                                        const lastPart = parts[parts.length - 1];
-                                        filename = lastPart.includes('.') ? lastPart : lastPart + '.pdf';
-                                        console.log('[DocStore] Using last doc_id part as filename:', filename);
-                                    }
-                                }
-                                // Strategy 5: Use doc_id as last resort
-                                else {
-                                    filename = docId.includes('.') ? docId : docId + '.pdf';
-                                    console.log('[DocStore] Using doc_id as filename:', filename);
-                                }
-                                
-                                docstoreDocuments.push({
-                                    id: docId,
-                                    doc_id: docId,  // Store doc_id separately for API call
-                                    filename: filename,
-                                    format: doc.format || 'pdf',
-                                    size: doc.size || 0,  // Store file size in bytes
-                                    selected: false,
-                                    job_id: job.job_id || job.id || '',
-                                    source_website: job.source_website || doc.source_website || doc.original_url || ''
-                                });
+                            // Get file type from API response (already determined by backend)
+                            const fileType = doc.file_type || (
+                                filename.toLowerCase().endsWith('.txt') ? 'txt' :
+                                filename.toLowerCase().endsWith('.json') ? (
+                                    filename.toLowerCase().includes('chunk') ? 'chunks' :
+                                    filename.toLowerCase().includes('metadata') ? 'metadata' : 'json'
+                                ) : 'pdf'
+                            );
+
+                            docstoreDocuments.push({
+                                id: docId,
+                                doc_id: docId,
+                                filename: filename,
+                                format: doc.format || fileType,
+                                size: doc.size || doc.file_size || 0,
+                                file_type: fileType,  // pdf, txt, chunks, metadata
+                                selected: false,
+                                job_id: doc.job_id || '',
+                                source_website: doc.source_website || ''
                             });
                         });
                         
@@ -4431,35 +4552,78 @@
             }
 
             // Document Store pagination functions
+            let docstoreFileTypeFilter = 'all';  // all, pdf, txt, chunks
+
+            // Make filter function global for onclick handlers
+            window.filterDocstoreByType = function(fileType) {
+                docstoreFileTypeFilter = fileType;
+
+                // Update button styles
+                document.querySelectorAll('.btn-group .btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                const activeBtn = document.getElementById(`filter-${fileType}-btn`);
+                if (activeBtn) activeBtn.classList.add('active');
+
+                // Re-render with filter
+                renderDocstoreDocuments();
+            }
+
             function renderDocstoreDocuments() {
                 const docList = document.getElementById('docstore-doc-list');
                 if (!docList) return;
 
                 const startIndex = (docstoreCurrentPage - 1) * docstorePageSize;
                 const endIndex = Math.min(startIndex + docstorePageSize, docstoreDocuments.length);
-                const pageDocs = docstoreDocuments.slice(startIndex, endIndex);
+                
+                // Apply file type filter
+                let filteredDocs = docstoreDocuments;
+                if (docstoreFileTypeFilter !== 'all') {
+                    filteredDocs = docstoreDocuments.filter(doc => {
+                        if (!doc.file_type) return false;
+                        return doc.file_type === docstoreFileTypeFilter;
+                    });
+                }
+                
+                const pageDocs = filteredDocs.slice(startIndex, endIndex);
 
                 const items = pageDocs.map((doc, i) => {
                     const globalIndex = startIndex + i;
                     const sourceInfo = doc.source_website ? ` - <small class="text-primary">🌐 ${doc.source_website}</small>` : '';
                     const sizeInfo = doc.size > 0 ? ` - <small class="text-muted">💾 ${formatFileSize(doc.size)}</small>` : '';
                     const checked = doc.selected ? 'checked' : '';
+                    
+                    // Determine icon based on file type
+                    let iconHtml;
+                    if (doc.file_type === 'txt') {
+                        iconHtml = '<i class="fas fa-file-alt text-success"></i>';
+                    } else if (doc.file_type === 'chunks' || doc.file_type === 'metadata') {
+                        iconHtml = '<i class="fas fa-file-code text-info"></i>';
+                    } else if (doc.file_type === 'json') {
+                        iconHtml = '<i class="fas fa-file-code text-warning"></i>';
+                    } else {
+                        iconHtml = '<i class="fas fa-file-pdf text-danger"></i>';
+                    }
+                    
+                    const fileLabel = doc.file_type ? `(${doc.file_type.toUpperCase()})` : '';
+                    const displayName = doc.filename || doc.display_name || 'Unknown';
+                    
                     return `<li class="list-group-item">
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="docstore-${globalIndex}" onchange="toggleDocstoreDoc(${globalIndex}, this.checked)" ${checked}>
-                            <label class="form-check-label" for="docstore-${globalIndex}">
-                                <i class="fas fa-file-pdf text-danger"></i> ${doc.filename}
-                                <br><small class="text-muted">(${doc.format}) - Job: ${doc.job_id}${sourceInfo}${sizeInfo}</small>
+                            <input class="form-check-input" type="checkbox" id="docstore-${doc.doc_id}" onchange="toggleDocstoreDocById('${doc.doc_id}', this.checked)" ${checked}>
+                            <label class="form-check-label" for="docstore-${doc.doc_id}">
+                                ${iconHtml} ${displayName}
+                                <br><small class="text-muted">${fileLabel} ${doc.format || ''} - Job: ${doc.job_id}${sourceInfo}${sizeInfo}</small>
                             </label>
                         </div>
                     </li>`;
                 });
-                
+
                 if (items.length > 0) {
                     docList.innerHTML = items.join('');
                     // Update showing info
-                    document.getElementById('docstore-showing-info').textContent = 
-                        `Showing ${startIndex + 1}-${endIndex} of ${docstoreDocuments.length}`;
+                    document.getElementById('docstore-showing-info').textContent =
+                        `Showing ${startIndex + 1}-${endIndex} of ${filteredDocs.length} (Total: ${docstoreDocuments.length})`;
                 } else {
                     docList.innerHTML = '<li class="list-group-item text-muted">No documents found in Document Store. Please upload documents to Document Store first.</li>';
                 }
@@ -4507,6 +4671,17 @@
                 updateSmartIngestButton();
             };
 
+            // Toggle document selection by doc_id (works correctly with filtering/pagination)
+            window.toggleDocstoreDocById = function(docId, checked) {
+                const doc = docstoreDocuments.find(d => d.doc_id === docId);
+                if (doc) {
+                    doc.selected = checked;
+                    console.log('[Toggle] Selected doc:', doc.filename, 'file_type:', doc.file_type, 'selected:', doc.selected);
+                    updateSmartIngestButton();
+                }
+            };
+            
+            // Legacy function - kept for compatibility
             window.toggleDocstoreDoc = function(index, checked) {
                 if (docstoreDocuments[index]) {
                     docstoreDocuments[index].selected = checked;
@@ -4517,10 +4692,18 @@
             async function startSmartIngestion() {
                 const selectedMode = document.querySelector('input[name="ingestMode"]:checked').value;
                 const processMode = document.querySelector('input[name="processMode"]:checked').value;
+                const selectedPhases = getSelectedPhases();
+
+                // Validate phase selection
+                if (!validatePhaseSelection()) {
+                    smartIngestBtn.disabled = false;
+                    return;
+                }
 
                 console.log('[SmartIngest] Starting with mode:', selectedMode);
                 console.log('[SmartIngest] Files array:', smartSelectedFilesArray);
                 console.log('[SmartIngest] Files count:', smartSelectedFilesArray.length);
+                console.log('[SmartIngest] Selected phases:', selectedPhases);
 
                 const statusDiv = document.getElementById('smart-ingest-status');
                 const resultDiv = document.getElementById('smart-ingest-result');
@@ -4542,8 +4725,8 @@
                 let selectedDocs = [];  // Track selected documents for status display
 
                 if (selectedMode === 'files') {
-                    // File mode - use async endpoint
-                    endpoint = '/api/rag/smart_ingest_files';
+                    // File mode - use phased processing endpoint
+                    endpoint = '/api/rag/phased/upload';
                     console.log('[SmartIngest] Adding files to FormData...');
                     smartSelectedFilesArray.forEach((file, index) => {
                         console.log(`[SmartIngest] File ${index}:`, file.name, file.size, file.type);
@@ -4571,17 +4754,13 @@
                         custom_prompt: document.getElementById('custom-chunking-prompt').value || undefined
                     });
                 } else if (selectedMode === 'docstore') {
-                    // Use Document Store endpoint
-                    endpoint = '/api/rag/smart_ingest_docstore';
+                    // Use phased processing endpoint
+                    endpoint = '/api/rag/phased/from-docstore';
                     selectedDocs = docstoreDocuments.filter(d => d.selected);
                     body = JSON.stringify({
-                        documents: selectedDocs.map(d => ({
-                            job_id: d.job_id,
-                            doc_id: d.doc_id  // Use the stored doc_id directly
-                        })),
-                        chunking_strategy: document.getElementById('chunking-strategy').value,
-                        ingest_chunks: document.getElementById('ingest-chunks-checkbox').checked,
-                        process_mode: processMode
+                        document_ids: selectedDocs.map(d => d.doc_id),
+                        phases: selectedPhases,
+                        user_id: 'web_user'
                     });
                 }
 
@@ -4692,102 +4871,197 @@
                 const errorDiv = document.getElementById('smart-ingest-error');
                 const spinner = document.getElementById('smart-ingest-spinner');
                 const progressDiv = document.getElementById('smart-ingest-progress');
-                
+
                 jobPollInterval = setInterval(async () => {
                     try {
-                        const response = await fetch(`/jobs/${jobId}`, {
-                            headers: {
-                                'Authorization': `Bearer ${AUTH_TOKEN}`
-                            }
-                        });
-                        
+                        // Try phased processing endpoint first, fallback to old endpoint
+                        let response;
+                        try {
+                            response = await fetch(`/api/rag/phased/job/${jobId}/status`, {
+                                headers: {
+                                    'Authorization': `Bearer ${AUTH_TOKEN}`
+                                }
+                            });
+                        } catch (e) {
+                            // Fallback to old endpoint
+                            response = await fetch(`/jobs/${jobId}`, {
+                                headers: {
+                                    'Authorization': `Bearer ${AUTH_TOKEN}`
+                                }
+                            });
+                        }
+
                         if (!response.ok) {
                             throw new Error(`HTTP ${response.status}`);
                         }
+
+                        const jobData = await response.json();
+                        console.log('[JobPoll] Job status:', jobData);
                         
-                        const job = await response.json();
-                        console.log('[JobPoll] Job status:', job);
-                        
-                        // Update progress bar
-                        const progress = job.progress || 0;
-                        const stage = job.current_stage || 'Initializing...';
-                        const docsProcessed = job.documents_processed || 0;
-                        
-                        statusDiv.innerHTML = `
-                            <strong>Processing Job:</strong> ${jobId}<br>
-                            <strong>Status:</strong> ${job.status || 'pending'}<br>
-                            <strong>Progress:</strong> ${progress}%<br>
-                            <strong>Stage:</strong> ${stage}<br>
-                            <strong>Documents Processed:</strong> ${docsProcessed}
-                        `;
-                        
-                        // Update progress bar
-                        const progressBar = document.getElementById('smart-ingest-progress-bar');
-                        if (progressBar) {
-                            progressBar.style.width = `${progress}%`;
-                        }
-                        
-                        // Check if job is complete
-                        if (job.status === 'completed') {
-                            clearInterval(jobPollInterval);
-                            spinner.classList.add('d-none');
-                            progressDiv.style.display = 'none';
-                            statusDiv.style.display = 'none';
+                        // Handle phased processing response
+                        if (jobData.progress && jobData.progress.phases) {
+                            const progress = jobData.progress;
+                            const phases = progress.phases;
+                            const docs = jobData.documents || {};
                             
-                            const result = job.result || {};
-                            resultDiv.style.display = 'block';
+                            // Get selected phases from UI (only count phases that were requested)
+                            const selectedPhases = getSelectedPhases();
+                            const totalPhases = selectedPhases.length || 4; // Use selected phases count
                             
-                            if (result.documents_processed > 0 || job.documents_processed > 0) {
-                                // Get filenames from job parameters
-                                let filesText = '';
-                                if (job.parameters && job.parameters.documents && job.parameters.documents.length > 0) {
-                                    const docs = job.parameters.documents;
-                                    if (docs.length === 1) {
-                                        const name = docs[0].filename || docs[0].doc_id || 'Unknown';
-                                        filesText = `<br><strong>File:</strong> ${name}`;
-                                    } else if (docs.length <= 5) {
-                                        const names = docs.map(d => d.filename || d.doc_id || 'Unknown').join(', ');
-                                        filesText = `<br><strong>Files:</strong> ${names}`;
-                                    } else {
-                                        filesText = `<br><strong>Files:</strong> ${docs.length} documents`;
-                                    }
-                                }
-                                
-                                const docsCount = result.documents_processed || job.documents_processed || 0;
-                                const chunksCount = result.total_chunks || job.chunks_generated || 0;
-                                
-                                resultDiv.innerHTML = `
-                                    <strong>Success!</strong><br>
-                                    Processed ${docsCount} documents<br>
-                                    Generated ${chunksCount} chunks
-                                    ${filesText}
-                                `;
-                                resultDiv.className = 'alert alert-success mt-3';
-                            } else {
-                                // Show error details
-                                let errorMsg = 'No documents were processed.';
-                                if (result.errors && result.errors.length > 0) {
-                                    errorMsg += '<br><strong>Errors:</strong><br>';
-                                    result.errors.forEach((err, idx) => {
-                                        errorMsg += `- ${err.filename || err.doc_id || 'Unknown'}: ${err.error || 'Unknown error'}<br>`;
-                                    });
-                                }
-                                resultDiv.innerHTML = `<strong>Failed:</strong> ${errorMsg}`;
-                                resultDiv.className = 'alert alert-warning mt-3';
+                            // Calculate progress based on SELECTED phases only
+                            let completedCount = 0;
+                            if (selectedPhases.includes('extract')) completedCount += phases.extract?.completed || 0;
+                            if (selectedPhases.includes('chunk')) completedCount += phases.chunk?.completed || 0;
+                            if (selectedPhases.includes('vector')) completedCount += phases.vector?.completed || 0;
+                            if (selectedPhases.includes('graph')) completedCount += phases.graph?.completed || 0;
+                            
+                            const totalDocs = progress.documents_total || 1;
+                            const overallProgress = Math.round((completedCount / (totalDocs * totalPhases)) * 100);
+                            
+                            // Update status with phase progress
+                            statusDiv.innerHTML = `
+                                <strong>Processing Job:</strong> ${jobId}<br>
+                                <strong>Overall Progress:</strong> ${overallProgress}%<br>
+                                <div class="row mt-2">
+                                    ${selectedPhases.includes('extract') ? `
+                                    <div class="col-md-3">
+                                        <small>Extract: ${phases.extract?.completed || 0}/${totalDocs}</small>
+                                        <div class="progress" style="height: 4px;">
+                                            <div class="progress-bar bg-success" style="width: ${(phases.extract?.completed || 0) / totalDocs * 100}%"></div>
+                                        </div>
+                                    </div>` : ''}
+                                    ${selectedPhases.includes('chunk') ? `
+                                    <div class="col-md-3">
+                                        <small>Chunk: ${phases.chunk?.completed || 0}/${totalDocs}</small>
+                                        <div class="progress" style="height: 4px;">
+                                            <div class="progress-bar bg-info" style="width: ${(phases.chunk?.completed || 0) / totalDocs * 100}%"></div>
+                                        </div>
+                                    </div>` : ''}
+                                    ${selectedPhases.includes('vector') ? `
+                                    <div class="col-md-3">
+                                        <small>Vector: ${phases.vector?.completed || 0}/${totalDocs}</small>
+                                        <div class="progress" style="height: 4px;">
+                                            <div class="progress-bar bg-primary" style="width: ${(phases.vector?.completed || 0) / totalDocs * 100}%"></div>
+                                        </div>
+                                    </div>` : ''}
+                                    ${selectedPhases.includes('graph') ? `
+                                    <div class="col-md-3">
+                                        <small>Graph: ${phases.graph?.completed || 0}/${totalDocs}</small>
+                                        <div class="progress" style="height: 4px;">
+                                            <div class="progress-bar bg-warning" style="width: ${(phases.graph?.completed || 0) / totalDocs * 100}%"></div>
+                                        </div>
+                                    </div>` : ''}
+                                </div>
+                                <small class="text-muted mt-2">Completed: ${docs.completed || 0}, Failed: ${docs.failed || 0}, Processing: ${docs.processing || 0}</small>
+                                ${docs.completed > 0 ? `<div class="alert alert-success mt-2 mb-0"><i class="fas fa-check-circle"></i> <strong>Results:</strong> Extracted text saved as .txt files in Document Store directory</div>` : ''}
+                            `;
+                            
+                            // Update main progress bar
+                            const progressBar = document.getElementById('smart-ingest-progress-bar');
+                            if (progressBar) {
+                                progressBar.style.width = `${overallProgress}%`;
                             }
                             
-                            smartIngestBtn.disabled = false;
-                        } else if (job.status === 'failed') {
-                            clearInterval(jobPollInterval);
-                            spinner.classList.add('d-none');
-                            progressDiv.style.display = 'none';
-                            statusDiv.style.display = 'none';
-                            
-                            errorDiv.style.display = 'block';
-                            errorDiv.innerHTML = `<strong>Job Failed:</strong> ${job.error || 'Unknown error'}`;
-                            errorDiv.className = 'alert alert-danger mt-3';
-                            
-                            smartIngestBtn.disabled = false;
+                            // Check if all documents are completed or failed
+                            if ((docs.completed || 0) + (docs.failed || 0) >= totalDocs) {
+                                clearInterval(jobPollInterval);
+                                spinner.classList.add('d-none');
+                                progressDiv.style.display = 'none';
+                                statusDiv.style.display = 'none';
+                                
+                                resultDiv.style.display = 'block';
+                                resultDiv.innerHTML = `
+                                    <strong>Success!</strong><br>
+                                    Processed ${docs.completed || 0} documents<br>
+                                    ${docs.failed > 0 ? `<span class="text-warning">Failed: ${docs.failed}</span><br>` : ''}
+                                `;
+                                resultDiv.className = 'alert alert-success mt-3';
+                                updateSmartIngestButton();
+                                return;
+                            }
+                        } else {
+                            // Fallback to old format
+                            const job = jobData;
+                            const progress = job.progress || 0;
+                            const stage = job.current_stage || 'Initializing...';
+                            const docsProcessed = job.documents_processed || 0;
+
+                            statusDiv.innerHTML = `
+                                <strong>Processing Job:</strong> ${jobId}<br>
+                                <strong>Status:</strong> ${job.status || 'pending'}<br>
+                                <strong>Progress:</strong> ${progress}%<br>
+                                <strong>Stage:</strong> ${stage}<br>
+                                <strong>Documents Processed:</strong> ${docsProcessed}
+                            `;
+
+                            // Update progress bar
+                            const progressBar = document.getElementById('smart-ingest-progress-bar');
+                            if (progressBar) {
+                                progressBar.style.width = `${progress}%`;
+                            }
+
+                            // Check if job is complete
+                            if (job.status === 'completed') {
+                                clearInterval(jobPollInterval);
+                                spinner.classList.add('d-none');
+                                progressDiv.style.display = 'none';
+                                statusDiv.style.display = 'none';
+
+                                const result = job.result || {};
+                                resultDiv.style.display = 'block';
+
+                                if (result.documents_processed > 0 || job.documents_processed > 0) {
+                                    // Get filenames from job parameters
+                                    let filesText = '';
+                                    if (job.parameters && job.parameters.documents && job.parameters.documents.length > 0) {
+                                        const docs = job.parameters.documents;
+                                        if (docs.length === 1) {
+                                            const name = docs[0].filename || docs[0].doc_id || 'Unknown';
+                                            filesText = `<br><strong>File:</strong> ${name}`;
+                                        } else if (docs.length <= 5) {
+                                            const names = docs.map(d => d.filename || d.doc_id || 'Unknown').join(', ');
+                                            filesText = `<br><strong>Files:</strong> ${names}`;
+                                        } else {
+                                            filesText = `<br><strong>Files:</strong> ${docs.length} documents`;
+                                        }
+                                    }
+
+                                    const docsCount = result.documents_processed || job.documents_processed || 0;
+                                    const chunksCount = result.total_chunks || job.chunks_generated || 0;
+
+                                    resultDiv.innerHTML = `
+                                        <strong>Success!</strong><br>
+                                        Processed ${docsCount} documents<br>
+                                        Generated ${chunksCount} chunks
+                                        ${filesText}
+                                    `;
+                                    resultDiv.className = 'alert alert-success mt-3';
+                                } else {
+                                    // Show error details
+                                    let errorMsg = 'No documents were processed.';
+                                    if (result.errors && result.errors.length > 0) {
+                                        errorMsg += '<br><strong>Errors:</strong><br>';
+                                        result.errors.forEach((err, idx) => {
+                                            errorMsg += `- ${err.filename || err.doc_id || 'Unknown'}: ${err.error || 'Unknown error'}<br>`;
+                                        });
+                                    }
+                                    resultDiv.innerHTML = `<strong>Failed:</strong> ${errorMsg}`;
+                                    resultDiv.className = 'alert alert-warning mt-3';
+                                }
+
+                                smartIngestBtn.disabled = false;
+                            } else if (job.status === 'failed') {
+                                clearInterval(jobPollInterval);
+                                spinner.classList.add('d-none');
+                                progressDiv.style.display = 'none';
+                                statusDiv.style.display = 'none';
+
+                                errorDiv.style.display = 'block';
+                                errorDiv.innerHTML = `<strong>Job Failed:</strong> ${job.error || 'Unknown error'}`;
+                                errorDiv.className = 'alert alert-danger mt-3';
+
+                                smartIngestBtn.disabled = false;
+                            }
                         }
                         
                     } catch (error) {

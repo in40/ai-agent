@@ -242,12 +242,17 @@ class JobQueue:
                 result = process_func(job)
                 logger.info(f"[JobQueue] Job {job_id} processing completed")
 
-                # Update with result
-                job.status = JobStatus.COMPLETED.value
-                job.progress = 100
-                job.current_stage = "completed"
-                job.result = result
-                self.update_job(job)
+                # Update job status - preserve any data fields updated by process_func
+                # Get current job state from Redis (may have been updated by process_func)
+                current_job = self.get_job(job_id)
+                if current_job:
+                    # Only update status fields, preserve data fields
+                    current_job.status = JobStatus.COMPLETED.value
+                    current_job.progress = 100
+                    current_job.current_stage = "completed"
+                    if result:  # Only set result if it's not None/empty
+                        current_job.result = result
+                    self.update_job(current_job)
                 logger.info(f"[JobQueue] Job {job_id} marked as COMPLETED")
 
                 logger.info(f"Job {job_id} completed successfully")
@@ -885,6 +890,11 @@ def _start_job_processing(job):
         # Import and use the docstore processing function
         from .app import _process_smart_ingest_docstore
         job_queue.start_worker(job.job_id, _process_smart_ingest_docstore)
+
+    elif job.job_type == 'phased_processing':
+        # Import and use the phased processing function
+        from .phased_processing_api import process_phased_job_background
+        job_queue.start_worker(job.job_id, process_phased_job_background)
 
 
 @jobs_bp.route('/jobs/<job_id>/start_processing', methods=['POST'])

@@ -77,7 +77,8 @@ class ResponseGenerator:
                 credentials=GIGACHAT_CREDENTIALS,
                 scope=GIGACHAT_SCOPE,
                 access_token=GIGACHAT_ACCESS_TOKEN,
-                verify_ssl_certs=GIGACHAT_VERIFY_SSL_CERTS
+                verify_ssl_certs=GIGACHAT_VERIFY_SSL_CERTS,
+                request_timeout=120  # 2 minute timeout
             )
         else:
             # Construct the base URL based on provider configuration for other providers
@@ -107,7 +108,8 @@ class ResponseGenerator:
                 model=model,
                 temperature=0.7,  # Slightly higher temperature for more natural responses
                 api_key=api_key,
-                base_url=base_url
+                base_url=base_url,
+                request_timeout=120  # 2 minute timeout
             )
 
         # Create the output parser (keeping it for potential future use)
@@ -279,11 +281,18 @@ class ResponseGenerator:
                     api_key = OPENAI_API_KEY or ("sk-fake-key" if base_url else OPENAI_API_KEY)
 
                 # Create the LLM with the determined base URL
+                # Timeout from .env: LLM_CHUNKING_TIMEOUT (default: 14400 seconds = 4 hours for production)
+                # For testing, set in .env: LLM_CHUNKING_TIMEOUT=120
+                from config.settings import LLM_CHUNKING_TIMEOUT
+                logger.info(f"LLM timeout: {LLM_CHUNKING_TIMEOUT} seconds ({LLM_CHUNKING_TIMEOUT/3600:.1f} hours)")
+                
                 return ChatOpenAI(
                     model=actual_model,
                     temperature=0.7,
                     api_key=api_key,
-                    base_url=base_url
+                    base_url=base_url,
+                    request_timeout=LLM_CHUNKING_TIMEOUT,
+                    max_retries=0  # Don't retry on timeout
                 )
         else:
             # Return the default LLM instance

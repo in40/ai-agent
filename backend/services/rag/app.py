@@ -23,6 +23,12 @@ from backend.security import require_permission, validate_input, Permission
 # Import job queue blueprint
 from backend.services.rag.job_queue import jobs_bp
 
+# Import document store browser blueprint (phased processing)
+from backend.services.rag.document_store_browser import document_store_bp
+
+# Import phased processing API blueprint
+from backend.services.rag.phased_processing_api import phased_processing_bp
+
 # Import smart ingestion endpoints (need to import after app is created to avoid circular imports)
 # We'll register them directly by importing the functions
 
@@ -43,6 +49,12 @@ logger = logging.getLogger(__name__)
 
 # Register job queue blueprint
 app.register_blueprint(jobs_bp)
+
+# Register document store browser blueprint (phased processing)
+app.register_blueprint(document_store_bp)
+
+# Register phased processing API blueprint
+app.register_blueprint(phased_processing_bp)
 
 def secure_filename(filename: str) -> str:
     """
@@ -1844,6 +1856,8 @@ def list_document_store_jobs(current_user_id):
     """List all ingestion jobs from Document Store MCP Server with documents"""
     try:
         from .document_store_client import document_store_client
+        import os
+        import json
 
         # Get list of jobs
         jobs_result = document_store_client.list_ingestion_jobs()
@@ -1857,29 +1871,66 @@ def list_document_store_jobs(current_user_id):
             else:
                 jobs = result.get('jobs', [])
 
-            # For each job, get the list of documents
+            # For each job, scan actual directory for all file types
             for job in jobs:
                 job_id = job.get('job_id')
                 if job_id:
-                    # Call list_documents for this job
-                    docs_result = document_store_client.list_documents(job_id)
-                    logger.info(f"[DocStore API] list_documents result for {job_id}: {docs_result}")
-
-                    if docs_result.get('success'):
-                        docs_data = docs_result.get('result', {})
-                        logger.info(f"[DocStore API] docs_data: {docs_data}")
-
-                        if isinstance(docs_data, dict) and docs_data.get('success'):
-                            job['documents'] = docs_data.get('documents', [])
-                            logger.info(f"[DocStore API] Set job['documents'] from nested success: {job['documents'][:2] if job['documents'] else []}")
-                        else:
-                            job['documents'] = docs_data.get('documents', [])
-                            logger.info(f"[DocStore API] Set job['documents'] directly: {job['documents'][:2] if job['documents'] else []}")
-                    else:
-                        job['documents'] = []
-                        logger.warning(f"[DocStore API] list_documents failed: {docs_result}")
-                else:
-                    job['documents'] = []
+                    # Scan actual directory for all files
+                    docs_path = f"/root/qwen/ai_agent/document-store-mcp-server/data/ingested/{job_id}/documents"
+                    documents = []
+                    
+                    if os.path.exists(docs_path):
+                        # Get all files in directory
+                        for filename in os.listdir(docs_path):
+                            file_path = os.path.join(docs_path, filename)
+                            if os.path.isfile(file_path):
+                                file_ext = os.path.splitext(filename)[1].lower()
+                                doc_id = os.path.splitext(filename)[0]
+                                
+                                # Determine file type
+                                if file_ext == '.pdf':
+                                    file_type = 'pdf'
+                                    file_format = 'pdf'
+                                elif file_ext == '.txt':
+                                    file_type = 'txt'
+                                    file_format = 'text'
+                                elif file_ext == '.json':
+                                    if 'chunk' in filename.lower():
+                                        file_type = 'chunks'
+                                        file_format = 'json'
+                                    elif 'metadata' in filename.lower():
+                                        file_type = 'metadata'
+                                        file_format = 'json'
+                                    else:
+                                        file_type = 'json'
+                                        file_format = 'json'
+                                else:
+                                    file_type = 'other'
+                                    file_format = file_ext.replace('.', '')
+                                
+                                # Load metadata if available
+                                metadata = {}
+                                metadata_path = os.path.join(docs_path, f"{doc_id}.metadata.json")
+                                if os.path.exists(metadata_path) and file_ext == '.pdf':
+                                    try:
+                                        with open(metadata_path, 'r') as f:
+                                            metadata = json.load(f)
+                                    except:
+                                        pass
+                                
+                                documents.append({
+                                    'doc_id': doc_id,
+                                    'filename': filename,
+                                    'original_filename': metadata.get('original_filename', filename),
+                                    'format': file_format,
+                                    'file_type': file_type,  # NEW: pdf, txt, chunks, metadata
+                                    'size': os.path.getsize(file_path),
+                                    'source_website': job.get('source_website', ''),
+                                    'original_url': metadata.get('original_url', '')
+                                })
+                    
+                    job['documents'] = documents
+                    logger.info(f"[DocStore API] Found {len(documents)} files for job {job_id}")
 
             return jsonify({'jobs': jobs}), 200
         else:

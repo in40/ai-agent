@@ -34,8 +34,8 @@ except ImportError:
     logger.warning("VectorStoreManager not available")
 
 # For LLM-based chunking
-RESPONSE_LLM_PROVIDER = "lmstudio"
-RESPONSE_LLM_MODEL = "zai-org/glm-4.7-flash"
+# Use settings from .env - NO HARDCODING
+from config.settings import RESPONSE_LLM_PROVIDER, RESPONSE_LLM_MODEL
 
 from models.response_generator import ResponseGenerator
 

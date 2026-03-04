@@ -87,6 +87,11 @@ PROMPT_LLM_HOSTNAME = os.getenv("PROMPT_LLM_HOSTNAME", DEFAULT_LLM_HOSTNAME)
 PROMPT_LLM_PORT = os.getenv("PROMPT_LLM_PORT", DEFAULT_LLM_PORT)
 PROMPT_LLM_API_PATH = os.getenv("PROMPT_LLM_API_PATH", DEFAULT_LLM_API_PATH)
 
+# LLM Chunking Timeout (in seconds)
+# Default: 14400 (4 hours) for production large documents
+# For testing, set in .env: LLM_CHUNKING_TIMEOUT=120
+LLM_CHUNKING_TIMEOUT = int(os.getenv("LLM_CHUNKING_TIMEOUT", "14400"))
+
 # API Keys
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
