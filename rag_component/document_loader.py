@@ -283,13 +283,14 @@ class DocumentLoader:
 
         return '\n'.join(text_parts)
 
-    def _extract_with_llm(self, file_path: str) -> str:
+    def _extract_with_llm(self, file_path: str, pages: Optional[range] = None) -> str:
         """
         Send PDF to LLM for markdown conversion.
         Converts PDF pages to images, then sends to vision-capable LLM.
         
         Args:
             file_path: Path to PDF file
+            pages: Optional range of pages to extract (0-indexed). None means all pages.
         
         Returns:
             Markdown text from LLM
@@ -307,7 +308,19 @@ class DocumentLoader:
         # Convert PDF pages to images
         try:
             from pdf2image import convert_from_path
-            images = convert_from_path(file_path, dpi=200)  # Higher DPI for better formula recognition
+            
+            # Determine which pages to convert
+            if pages is not None:
+                page_nums = list(pages)
+                # Convert to 1-indexed for pdf2image (first_page, last_page)
+                first_page = min(page_nums) + 1
+                last_page = max(page_nums) + 1
+                logger.info(f"Converting pages {first_page}-{last_page} to images")
+                images = convert_from_path(file_path, dpi=200, first_page=first_page, last_page=last_page)
+            else:
+                logger.info("Converting all pages to images")
+                images = convert_from_path(file_path, dpi=200)  # Higher DPI for better formula recognition
+            
             logger.info(f"Converted PDF to {len(images)} images")
         except ImportError:
             logger.error("pdf2image not installed. Run: apt-get install poppler-utils && pip install pdf2image")
@@ -320,8 +333,10 @@ class DocumentLoader:
         
         # Process each page and combine results
         all_markdown = []
-        for page_num, img in enumerate(images, 1):
-            logger.info(f"Processing page {page_num}/{len(images)}")
+        start_page = min(list(pages)) + 1 if pages else 1
+        for page_idx, img in enumerate(images):
+            page_num = start_page + page_idx
+            logger.info(f"Processing page {page_num}")
             
             # Convert image to base64
             img_buffer = io.BytesIO()

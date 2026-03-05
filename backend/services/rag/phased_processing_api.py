@@ -1302,7 +1302,8 @@ def process_phased_job_background(job):
                                 extraction_method_used = 'tesseract'
                             elif method == 'llm':
                                 logger.info(f"[Phased Job {job_id}] Calling LLM extraction for {doc.doc_id}")
-                                text = loader._extract_with_llm(doc.file_path)
+                                logger.info(f"[Phased Job {job_id}] Page range: {page_range}")
+                                text = loader._extract_with_llm(doc.file_path, pages=pages_to_extract)
                                 extraction_method_used = 'llm'
                                 logger.info(f"[Phased Job {job_id}] LLM extraction returned {len(text)} chars")
                             else:
