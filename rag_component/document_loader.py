@@ -285,8 +285,8 @@ class DocumentLoader:
 
     def _extract_with_llm(self, file_path: str) -> str:
         """
-        Send PDF file directly to LLM with specialized prompt.
-        LLM converts PDF to markdown.
+        Send PDF to LLM for markdown conversion.
+        Converts PDF pages to images, then sends to vision-capable LLM.
         
         Args:
             file_path: Path to PDF file
@@ -295,6 +295,7 @@ class DocumentLoader:
             Markdown text from LLM
         """
         import base64
+        import io
         
         # Use PDF-specific LLM config, fall back to NLP LLM config
         llm_base_url = os.getenv("PDF_LLM_BASE_URL", os.getenv("NLP_LLM_BASE_URL", "http://localhost:1234/v1"))
@@ -303,37 +304,59 @@ class DocumentLoader:
         
         logger.info(f"Sending PDF to LLM: url={llm_base_url}, model={llm_model}")
         
-        # Read and encode PDF
-        with open(file_path, 'rb') as f:
-            pdf_base64 = base64.b64encode(f.read()).decode('utf-8')
+        # Convert PDF pages to images
+        try:
+            from pdf2image import convert_from_path
+            images = convert_from_path(file_path, dpi=200)  # Higher DPI for better formula recognition
+            logger.info(f"Converted PDF to {len(images)} images")
+        except ImportError:
+            logger.error("pdf2image not installed. Run: apt-get install poppler-utils && pip install pdf2image")
+            raise ImportError("pdf2image required for PDF extraction. Install poppler-utils and pdf2image")
         
-        prompt = "convert this pdf file to markdown .md file"
+        prompt = "convert this pdf file to markdown .md file. preserve all mathematical formulas, equations, and special notation in LaTeX format."
         
         from openai import OpenAI
-        
         client = OpenAI(base_url=llm_base_url, api_key=api_key)
         
-        response = client.chat.completions.create(
-            model=llm_model,
-            messages=[
-                {
-                    "role": "user",
-                    "content": [
-                        {"type": "text", "text": prompt},
-                        {
-                            "type": "image_url",
-                            "image_url": {
-                                "url": f"data:application/pdf;base64,{pdf_base64}"
+        # Process each page and combine results
+        all_markdown = []
+        for page_num, img in enumerate(images, 1):
+            logger.info(f"Processing page {page_num}/{len(images)}")
+            
+            # Convert image to base64
+            img_buffer = io.BytesIO()
+            img.save(img_buffer, format='PNG')
+            img_base64 = base64.b64encode(img_buffer.getvalue()).decode('utf-8')
+            
+            # Send to LLM
+            response = client.chat.completions.create(
+                model=llm_model,
+                messages=[
+                    {
+                        "role": "user",
+                        "content": [
+                            {"type": "text", "text": f"Page {page_num}: {prompt}"},
+                            {
+                                "type": "image_url",
+                                "image_url": {
+                                    "url": f"data:image/png;base64,{img_base64}"
+                                }
                             }
-                        }
-                    ]
-                }
-            ],
-            max_tokens=32000,
-            timeout=600
-        )
+                        ]
+                    }
+                ],
+                max_tokens=32000,
+                timeout=600
+            )
+            
+            page_markdown = response.choices[0].message.content
+            all_markdown.append(page_markdown)
+            logger.info(f"Page {page_num}: LLM returned {len(page_markdown)} chars")
         
-        return response.choices[0].message.content
+        # Combine all pages
+        full_markdown = "\n\n".join(all_markdown)
+        logger.info(f"LLM extraction complete: {len(full_markdown)} total chars")
+        return full_markdown
 
     def _fix_russian_encoding(self, text: str) -> str:
         """
