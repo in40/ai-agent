@@ -4034,16 +4034,16 @@
                     // Check if we have a token stored
                     if (AUTH_TOKEN) {
                         // Try to validate the token by making a request to an auth-protected endpoint
-                        // We'll use the agent status endpoint which requires authentication
+                        // We'll use the health endpoint which requires authentication
                         try {
-                            const agentStatusResponse = await fetch(`${API_BASE_URL}/api/agent/status`, {
+                            const healthResponse = await fetch(`${API_BASE_URL}/api/health`, {
                                 method: 'GET',
                                 headers: {
                                     'Authorization': `Bearer ${AUTH_TOKEN}`
                                 }
                             });
 
-                            if (agentStatusResponse.ok) {
+                            if (healthResponse.ok) {
                                 tokenIndicator.className = 'status-indicator status-active';
                                 tokenStatusText.textContent = 'Valid';
                             } else {
