@@ -3990,37 +3990,21 @@
             }
             
             // Check overall system health using the /api/health endpoint
-            // First, we need to determine the correct backend URL
-            // The backend typically runs on port 5000, but we'll try multiple approaches
-            let backendBaseUrl = `${window.location.protocol}//${window.location.hostname}:5000`;
+            // Use current origin (nginx proxy) instead of hardcoded port
+            let backendBaseUrl = API_BASE_URL;
             let healthCheckSuccessful = false;
-            let agentStatusCheckSuccessful = false;
-            
-            // Try the default backend URL (port 5000)
+
+            // Try health check on current origin (nginx proxy on port 443)
             try {
-                const healthResponse = await fetch(`${backendBaseUrl}/api/health`, {
+                const healthResponse = await fetch(`${API_BASE_URL}/api/health`, {
                     method: 'GET'
                 });
-                
+
                 if (healthResponse.ok) {
                     healthCheckSuccessful = true;
                 }
             } catch (error) {
-                console.warn('Health check failed on port 5000:', error);
-                
-                // If port 5000 fails, try the same origin as the web page
-                try {
-                    const pageOriginHealthResponse = await fetch(`${API_BASE_URL}/api/health`, {
-                        method: 'GET'
-                    });
-                    
-                    if (pageOriginHealthResponse.ok) {
-                        backendBaseUrl = API_BASE_URL;
-                        healthCheckSuccessful = true;
-                    }
-                } catch (originError) {
-                    console.warn('Health check failed on page origin:', originError);
-                }
+                console.warn('Health check failed:', error);
             }
             
             // Update System Health status indicator (third card)
@@ -4045,22 +4029,21 @@
             if (tokenCard) {
                 const tokenIndicator = tokenCard.querySelector('.status-indicator');
                 const tokenStatusText = tokenCard.querySelector('.small.text-muted');
-                
+
                 if (tokenIndicator && tokenStatusText) {
                     // Check if we have a token stored
                     if (AUTH_TOKEN) {
                         // Try to validate the token by making a request to an auth-protected endpoint
                         // We'll use the agent status endpoint which requires authentication
                         try {
-                            const agentStatusResponse = await fetch(`${backendBaseUrl}/api/agent/status`, {
+                            const agentStatusResponse = await fetch(`${API_BASE_URL}/api/agent/status`, {
                                 method: 'GET',
                                 headers: {
                                     'Authorization': `Bearer ${AUTH_TOKEN}`
                                 }
                             });
-                            
+
                             if (agentStatusResponse.ok) {
-                                agentStatusCheckSuccessful = true;
                                 tokenIndicator.className = 'status-indicator status-active';
                                 tokenStatusText.textContent = 'Valid';
                             } else {

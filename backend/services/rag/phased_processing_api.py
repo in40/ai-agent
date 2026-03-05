@@ -1253,6 +1253,7 @@ def process_phased_job_background(job):
                     
                     logger.info(f"[Phased Job {job_id}] Extraction config: method={method}, page_range={page_range}")
                     logger.info(f"[Phased Job {job_id}] extraction_config dict: {extraction_config}")
+                    logger.info(f"[Phased Job {job_id}] method type: {type(method).__name__}, value: '{method}'")
 
                     # Get documents ready for extraction
                     docs = get_documents_ready_for_phase(job_id, 'extract')
@@ -1300,8 +1301,10 @@ def process_phased_job_background(job):
                                 text = loader._extract_with_tesseract(doc.file_path)
                                 extraction_method_used = 'tesseract'
                             elif method == 'llm':
+                                logger.info(f"[Phased Job {job_id}] Calling LLM extraction for {doc.doc_id}")
                                 text = loader._extract_with_llm(doc.file_path)
                                 extraction_method_used = 'llm'
+                                logger.info(f"[Phased Job {job_id}] LLM extraction returned {len(text)} chars")
                             else:
                                 # Default to pymupdf
                                 text = loader._extract_with_pymupdf(doc.file_path, pages=pages_to_extract)
