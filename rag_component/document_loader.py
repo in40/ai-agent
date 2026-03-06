@@ -293,10 +293,11 @@ class DocumentLoader:
             pages: Optional range of pages to extract (0-indexed). None means all pages.
         
         Returns:
-            Markdown text from LLM
+            Clean markdown text from LLM (no code blocks or explanations)
         """
         import base64
         import io
+        import re
         
         # Use PDF-specific LLM config, fall back to NLP LLM config
         llm_base_url = os.getenv("PDF_LLM_BASE_URL", os.getenv("NLP_LLM_BASE_URL", "http://localhost:1234/v1"))
@@ -326,14 +327,17 @@ class DocumentLoader:
             logger.error("pdf2image not installed. Run: apt-get install poppler-utils && pip install pdf2image")
             raise ImportError("pdf2image required for PDF extraction. Install poppler-utils and pdf2image")
         
-        prompt = "convert this pdf file to markdown .md file. preserve all mathematical formulas, equations, and special notation in LaTeX format."
+        # System prompt instructs LLM to output ONLY markdown
+        system_prompt = "You are a PDF to Markdown converter. Output ONLY the markdown content. Do not include explanations, code blocks around the output, or any text outside the markdown content."
+        user_prompt = "Convert this PDF page to clean markdown. Preserve all mathematical formulas and equations in LaTeX format. Output ONLY the markdown, nothing else."
         
         from openai import OpenAI
         client = OpenAI(base_url=llm_base_url, api_key=api_key)
         
-        # Process each page and combine results
-        all_markdown = []
+        # Process all pages and combine into single document
+        all_markdown_parts = []
         start_page = min(list(pages)) + 1 if pages else 1
+        
         for page_idx, img in enumerate(images):
             page_num = start_page + page_idx
             logger.info(f"Processing page {page_num}")
@@ -347,10 +351,11 @@ class DocumentLoader:
             response = client.chat.completions.create(
                 model=llm_model,
                 messages=[
+                    {"role": "system", "content": system_prompt},
                     {
                         "role": "user",
                         "content": [
-                            {"type": "text", "text": f"Page {page_num}: {prompt}"},
+                            {"type": "text", "text": user_prompt},
                             {
                                 "type": "image_url",
                                 "image_url": {
@@ -365,13 +370,75 @@ class DocumentLoader:
             )
             
             page_markdown = response.choices[0].message.content
-            all_markdown.append(page_markdown)
+            
+            # Clean up LLM response - remove markdown code block wrappers
+            page_markdown = self._clean_llm_markdown(page_markdown)
+            
+            # Add page marker as comment (doesn't render in markdown)
+            all_markdown_parts.append(f"<!-- Page {page_num} -->\n\n{page_markdown}")
             logger.info(f"Page {page_num}: LLM returned {len(page_markdown)} chars")
         
-        # Combine all pages
-        full_markdown = "\n\n".join(all_markdown)
+        # Combine all pages into single markdown document
+        full_markdown = "\n\n".join(all_markdown_parts)
         logger.info(f"LLM extraction complete: {len(full_markdown)} total chars")
         return full_markdown
+    
+    def _clean_llm_markdown(self, markdown: str) -> str:
+        """
+        Clean LLM markdown output - remove code block wrappers and explanations.
+        
+        Args:
+            markdown: Raw markdown from LLM
+        
+        Returns:
+            Clean markdown content only
+        """
+        if not markdown:
+            return ""
+        
+        # Remove markdown code block wrappers (```markdown ... ```)
+        # But preserve code blocks WITHIN the content
+        lines = markdown.split('\n')
+        cleaned_lines = []
+        in_wrapper = False
+        wrapper_start_found = False
+        
+        for line in lines:
+            stripped = line.strip()
+            
+            # Detect wrapper start (```markdown or ``` at very beginning)
+            if not wrapper_start_found and (stripped.startswith('```markdown') or stripped == '```'):
+                in_wrapper = True
+                wrapper_start_found = True
+                continue
+            
+            # Detect wrapper end
+            if in_wrapper and stripped == '```' and len(cleaned_lines) > 0:
+                in_wrapper = False
+                continue
+            
+            # Skip common LLM explanation patterns
+            if any(pattern in stripped.lower() for pattern in [
+                'here is the markdown',
+                'here\'s the markdown',
+                'converted to markdown',
+                'markdown output',
+                'output:',
+                'result:'
+            ]):
+                continue
+            
+            cleaned_lines.append(line)
+        
+        result = '\n'.join(cleaned_lines)
+        
+        # If still wrapped, try regex removal
+        if result.startswith('```'):
+            match = re.search(r'^```(?:markdown)?\s*\n(.*?)\n```$', result, re.DOTALL)
+            if match:
+                result = match.group(1)
+        
+        return result.strip()
 
     def _fix_russian_encoding(self, text: str) -> str:
         """

@@ -1311,8 +1311,14 @@ def process_phased_job_background(job):
                                 text = loader._extract_with_pymupdf(doc.file_path, pages=pages_to_extract)
                                 extraction_method_used = 'pymupdf'
 
-                            # Save text
-                            text_path = doc.file_path.replace('.pdf', '.txt')
+                            # Save text as markdown
+                            if extraction_method_used == 'llm':
+                                # LLM extraction produces markdown, save as .md
+                                text_path = doc.file_path.replace('.pdf', '.md')
+                            else:
+                                # Other methods produce plain text, save as .txt
+                                text_path = doc.file_path.replace('.pdf', '.txt')
+                            
                             with open(text_path, 'w', encoding='utf-8') as f:
                                 f.write(text)
 

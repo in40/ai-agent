@@ -156,12 +156,14 @@ def get_file_type_from_filename(filename: str) -> str:
     """Determine file type from filename"""
     if not filename:
         return 'unknown'
-    
+
     filename_lower = filename.lower()
     if filename_lower.endswith('.pdf'):
         return 'pdf'
     elif filename_lower.endswith('.txt'):
         return 'txt'
+    elif filename_lower.endswith('.md'):
+        return 'md'
     elif filename_lower.endswith('.json'):
         if 'chunk' in filename_lower:
             return 'chunks'
