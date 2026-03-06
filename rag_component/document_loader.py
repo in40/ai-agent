@@ -396,7 +396,13 @@ class DocumentLoader:
         if not markdown:
             return ""
         
-        # Remove markdown code block wrappers (```markdown ... ```)
+        # Remove outer markdown code block wrappers (```markdown ... ```)
+        # This is the most common case - LLM wraps entire output
+        match = re.search(r'^```(?:markdown)?\s*\n(.*?)\n```$', markdown, re.DOTALL)
+        if match:
+            return match.group(1).strip()
+        
+        # Remove markdown code block wrappers (``` ... ```)
         # But preserve code blocks WITHIN the content
         lines = markdown.split('\n')
         cleaned_lines = []
@@ -432,7 +438,7 @@ class DocumentLoader:
         
         result = '\n'.join(cleaned_lines)
         
-        # If still wrapped, try regex removal
+        # If still wrapped, try regex removal again
         if result.startswith('```'):
             match = re.search(r'^```(?:markdown)?\s*\n(.*?)\n```$', result, re.DOTALL)
             if match:

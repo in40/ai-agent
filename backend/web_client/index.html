@@ -4782,6 +4782,7 @@
                 
                 if (!modal || !modalTitle || !modalBody) {
                     console.error('Preview modal elements not found');
+                    alert('Preview modal not initialized. Please refresh the page.');
                     return;
                 }
                 
@@ -4808,17 +4809,24 @@
                     
                     if (fileType === 'md') {
                         // Render markdown
-                        modalBody.innerHTML = marked.parse(content);
+                        const htmlContent = marked.parse(content);
+                        modalBody.innerHTML = `<div class="markdown-preview">${htmlContent}</div>`;
+                        
                         // Render LaTeX formulas with KaTeX
-                        renderMathInElement(modalBody, {
-                            delimiters: [
-                                {left: '$$', right: '$$', display: true},
-                                {left: '$', right: '$', display: false},
-                                {left: '\\(', right: '\\)', display: false},
-                                {left: '\\[', right: '\\]', display: true}
-                            ],
-                            throwOnError: false
-                        });
+                        if (typeof renderMathInElement === 'function') {
+                            renderMathInElement(modalBody, {
+                                delimiters: [
+                                    {left: '$$', right: '$$', display: true},
+                                    {left: '$', right: '$', display: false},
+                                    {left: '\\(', right: '\\)', display: false},
+                                    {left: '\\[', right: '\\]', display: true}
+                                ],
+                                throwOnError: false
+                            });
+                            console.log('KaTeX rendering complete');
+                        } else {
+                            console.error('KaTeX renderMathInElement not loaded');
+                        }
                     } else {
                         // Plain text with formatting
                         modalBody.innerHTML = `<pre style="white-space: pre-wrap; word-wrap: break-word;">${content}</pre>`;
@@ -4826,6 +4834,7 @@
                 } catch (error) {
                     modalSpinner.style.display = 'none';
                     modalBody.innerHTML = `<div class="alert alert-danger">Error loading file: ${error.message}</div>`;
+                    console.error('Preview error:', error);
                 }
             };
 
