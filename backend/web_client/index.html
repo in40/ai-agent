@@ -4779,39 +4779,39 @@
                 const modalTitle = document.getElementById('file-preview-title');
                 const modalBody = document.getElementById('file-preview-content');
                 const modalSpinner = document.getElementById('file-preview-spinner');
-                
+
                 if (!modal || !modalTitle || !modalBody) {
                     console.error('Preview modal elements not found');
                     alert('Preview modal not initialized. Please refresh the page.');
                     return;
                 }
-                
+
                 modalTitle.textContent = filename;
                 modalBody.innerHTML = '';
-                modalSpinner.style.display = 'block';
-                
+                if (modalSpinner) modalSpinner.style.display = 'block';
+
                 const modalInstance = new bootstrap.Modal(modal);
                 modalInstance.show();
-                
+
                 try {
                     const response = await fetch(`/api/rag/document-store/download/${jobId}/${filename}`, {
                         headers: {
                             'Authorization': `Bearer ${AUTH_TOKEN}`
                         }
                     });
-                    
+
                     if (!response.ok) {
                         throw new Error('Failed to load file');
                     }
-                    
+
                     const content = await response.text();
-                    modalSpinner.style.display = 'none';
-                    
+                    if (modalSpinner) modalSpinner.style.display = 'none';
+
                     if (fileType === 'md') {
                         // Render markdown
                         const htmlContent = marked.parse(content);
                         modalBody.innerHTML = `<div class="markdown-preview">${htmlContent}</div>`;
-                        
+
                         // Render LaTeX formulas with KaTeX
                         if (typeof renderMathInElement === 'function') {
                             renderMathInElement(modalBody, {
@@ -4832,7 +4832,7 @@
                         modalBody.innerHTML = `<pre style="white-space: pre-wrap; word-wrap: break-word;">${content}</pre>`;
                     }
                 } catch (error) {
-                    modalSpinner.style.display = 'none';
+                    if (modalSpinner) modalSpinner.style.display = 'none';
                     modalBody.innerHTML = `<div class="alert alert-danger">Error loading file: ${error.message}</div>`;
                     console.error('Preview error:', error);
                 }
