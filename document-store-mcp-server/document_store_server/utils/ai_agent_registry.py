@@ -107,7 +107,7 @@ class AIAgentRegistryIntegration:
             while self.running:
                 try:
                     if self.service_id and self.registry_client:
-                        self.registry_client.send_heartbeat(self.service_id)
+                        self.registry_client.heartbeat(self.service_id, ttl)
                     time.sleep(ttl / 2)  # Send at half TTL interval
                 except Exception as e:
                     print(f"⚠️  Heartbeat failed: {e}")
