@@ -12,6 +12,7 @@ import os
 import json
 import uuid
 import logging
+import time
 from datetime import datetime
 from typing import List, Dict, Any, Optional
 from flask import Blueprint, request, jsonify
@@ -211,6 +212,42 @@ def create_job_from_docstore():
         user_id = data.get('user_id', 'anonymous')
         extraction_config = data.get('extraction_config', {})
 
+        # Log received config
+        logger.info(f"[create_job_from_docstore] Received extraction_config: {json.dumps(extraction_config, indent=2)}")
+
+        # Validate method
+        valid_methods = ['auto', 'pymupdf', 'pdfminer', 'tesseract', 'llm']
+        method = extraction_config.get('method', 'auto')
+        if method not in valid_methods:
+            logger.warning(f"[create_job_from_docstore] Invalid extraction method '{method}', using 'auto' instead. Valid: {valid_methods}")
+            extraction_config['method'] = 'auto'
+            method = 'auto'
+        else:
+            logger.info(f"[create_job_from_docstore] ✓ Extraction method '{method}' is valid")
+
+        # Validate page_range
+        page_range = extraction_config.get('page_range', 'all')
+        if page_range != 'all' and isinstance(page_range, dict):
+            start = page_range.get('start')
+            end = page_range.get('end')
+            
+            if start and (not isinstance(start, int) or start < 1):
+                logger.warning(f"[create_job_from_docstore] Invalid page_range start '{start}', using 'all' instead")
+                extraction_config['page_range'] = 'all'
+            elif end and (not isinstance(end, int) or end < 1):
+                logger.warning(f"[create_job_from_docstore] Invalid page_range end '{end}', using 'all' instead")
+                extraction_config['page_range'] = 'all'
+            elif start and end and start > end:
+                logger.warning(f"[create_job_from_docstore] Invalid page_range: start ({start}) > end ({end}), using 'all' instead")
+                extraction_config['page_range'] = 'all'
+            else:
+                logger.info(f"[create_job_from_docstore] ✓ Page range valid: {start}-{end if end else 'end'}")
+        else:
+            logger.info(f"[create_job_from_docstore] ✓ Page range: {page_range}")
+
+        # Log final validated config
+        logger.info(f"[create_job_from_docstore] Final extraction_config after validation: {json.dumps(extraction_config, indent=2)}")
+
         if not document_ids:
             return jsonify({
                 'success': False,
@@ -266,13 +303,77 @@ def create_job_from_docstore():
             }), 500
 
         # SECOND: Create documents in phased processing DB with the SAME job_id
+        # For Document Store documents, we need to read metadata from JSON files
         created_count = 0
+        
+        # Document Store base directory
+        docstore_base = "/root/qwen/ai_agent/document-store-mcp-server/data/ingested"
+        
         for doc_id in document_ids:
+            # Try to get from phased DB first
             existing_doc = phased_db.get_document(doc_id)
-
+            
+            # If not in phased DB, try to load from Document Store metadata
             if not existing_doc:
-                logger.warning(f"Document {doc_id} not found in phased DB")
-                continue
+                # Search for the document in Document Store
+                # Format: job_{job_id}_{source}/documents/{doc_id}.metadata.json
+                import glob as glob_module
+                
+                # First, try exact match
+                metadata_files = glob_module.glob(f"{docstore_base}/**/documents/{doc_id}.metadata.json", recursive=True)
+                
+                # If no exact match, this might be a group_base_id, search for all matching documents
+                if not metadata_files:
+                    # Search for documents with pattern like {doc_id}_*.metadata.json
+                    metadata_files = glob_module.glob(f"{docstore_base}/**/documents/{doc_id}_*.metadata.json", recursive=True)
+
+                if metadata_files:
+                    # Process each matching document - only process the first one
+                    metadata_file = metadata_files[0]
+                    with open(metadata_file, 'r') as f:
+                        metadata = json.load(f)
+
+                    # Find the actual file (could be .pdf, .md, or .txt)
+                    doc_dir = os.path.dirname(metadata_file)
+                    actual_doc_id = os.path.splitext(os.path.basename(metadata_file))[0].replace('.metadata', '')
+                    file_path = None
+                    file_size = 0
+
+                    # Try to find the actual document file
+                    # IMPORTANT: PDF must be FIRST to ensure LLM extraction runs on original PDF
+                    # TXT/MD are outputs from previous extractions and should only be used as fallback
+                    for ext in ['.pdf', '.md', '.txt']:
+                        candidate = os.path.join(doc_dir, f"{actual_doc_id}{ext}")
+                        if os.path.exists(candidate):
+                            file_path = candidate
+                            file_size = os.path.getsize(candidate)
+                            break
+
+                    if not file_path:
+                        # Fallback to PDF path even if it doesn't exist
+                        file_path = os.path.join(doc_dir, f"{actual_doc_id}.pdf")
+                    
+                    # Create a mock document object
+                    class MockDocument:
+                        def __init__(self, metadata, file_path, file_size):
+                            self.original_filename = metadata.get('original_filename', f"{actual_doc_id}.pdf")
+                            self.display_name = metadata.get('display_name', actual_doc_id)
+                            self.file_path = file_path
+                            self.file_size = file_size
+                            self.content_type = metadata.get('content_type', 'application/pdf')
+                            self.source_url = metadata.get('original_url', '')
+                            self.source_website = metadata.get('source_website', '')
+                            self.extraction_method = None
+                            self.chunk_count = 0
+                    
+                    existing_doc = MockDocument(metadata, file_path, file_size)
+                    logger.info(f"[Phased Job {job_id}] Loaded {actual_doc_id} from Document Store: {file_path}")
+                    
+                    # Update doc_id to the actual_doc_id for document creation
+                    doc_id = actual_doc_id
+                else:
+                    logger.warning(f"Document {doc_id} not found in phased DB or Document Store")
+                    continue
             
             # Determine which phases to run based on request
             # For NEW jobs, always run requested phases (don't reuse old phase status)
@@ -470,8 +571,14 @@ def extract_text():
                     extraction_method_used = 'tesseract'
 
                 if method == 'llm':
-                    extracted_text = loader._extract_with_llm(doc.file_path)
-                    extraction_method_used = 'llm'
+                    try:
+                        extracted_text = loader._extract_with_llm(doc.file_path)
+                        extraction_method_used = 'llm'
+                    except Exception as llm_error:
+                        logger.warning(f"LLM extraction failed ({llm_error}), falling back to PyMuPDF")
+                        # Fallback to PyMuPDF if LLM fails/times out
+                        extracted_text = loader._extract_with_pymupdf(doc.file_path, pages=pages_to_extract)
+                        extraction_method_used = 'pymupdf'
 
                 if not extracted_text:
                     raise Exception("All extraction methods failed")
@@ -656,12 +763,35 @@ def chunk_documents():
                 phased_db.update_document_phase_status(
                     doc.doc_id, 'chunk', PhaseStatus.IN_PROGRESS
                 )
+
+                # Read extracted text - handle various file types
+                file_path_lower = doc.file_path.lower()
                 
-                # Read extracted text
-                text_path = doc.file_path.replace('.pdf', '.txt')
+                # Determine the text file path based on original file type
+                if file_path_lower.endswith('.pdf'):
+                    # PDF file - look for extracted .txt or .md
+                    text_path = doc.file_path.replace('.pdf', '.txt')
+                    if not os.path.exists(text_path):
+                        text_path = doc.file_path.replace('.pdf', '.md')
+                elif file_path_lower.endswith('.md'):
+                    # Already a markdown file - use it directly
+                    text_path = doc.file_path
+                elif file_path_lower.endswith('.txt'):
+                    # Already a text file - use it directly
+                    text_path = doc.file_path
+                else:
+                    # Try common extensions
+                    base_path = doc.file_path.rsplit('.', 1)[0]
+                    if os.path.exists(f"{base_path}.txt"):
+                        text_path = f"{base_path}.txt"
+                    elif os.path.exists(f"{base_path}.md"):
+                        text_path = f"{base_path}.md"
+                    else:
+                        text_path = doc.file_path
+                
                 if not os.path.exists(text_path):
-                    raise Exception("Extracted text not found")
-                
+                    raise Exception(f"Extracted text not found at: {text_path}")
+
                 with open(text_path, 'r', encoding='utf-8') as f:
                     text_content = f.read()
                 
@@ -1303,9 +1433,16 @@ def process_phased_job_background(job):
                             elif method == 'llm':
                                 logger.info(f"[Phased Job {job_id}] Calling LLM extraction for {doc.doc_id}")
                                 logger.info(f"[Phased Job {job_id}] Page range: {page_range}")
-                                text = loader._extract_with_llm(doc.file_path, pages=pages_to_extract)
-                                extraction_method_used = 'llm'
-                                logger.info(f"[Phased Job {job_id}] LLM extraction returned {len(text)} chars")
+                                try:
+                                    text = loader._extract_with_llm(doc.file_path, pages=pages_to_extract)
+                                    extraction_method_used = 'llm'
+                                    logger.info(f"[Phased Job {job_id}] LLM extraction returned {len(text)} chars")
+                                except Exception as llm_error:
+                                    logger.warning(f"[Phased Job {job_id}] LLM extraction failed ({llm_error}), falling back to PyMuPDF")
+                                    # Fallback to PyMuPDF if LLM fails/times out
+                                    text = loader._extract_with_pymupdf(doc.file_path, pages=pages_to_extract)
+                                    extraction_method_used = 'pymupdf'
+                                    logger.info(f"[Phased Job {job_id}] Fallback PyMuPDF extraction returned {len(text)} chars")
                             else:
                                 # Default to pymupdf
                                 text = loader._extract_with_pymupdf(doc.file_path, pages=pages_to_extract)
@@ -1357,28 +1494,58 @@ def process_phased_job_background(job):
                     docs = get_documents_ready_for_phase(job_id, 'chunk')
                     for doc in docs:
                         try:
-                            # Read extracted text
-                            text_path = doc.file_path.replace('.pdf', '.txt')
+                            # Read extracted text - handle various file types
+                            file_path_lower = doc.file_path.lower()
+                            
+                            # Determine the text file path based on original file type
+                            if file_path_lower.endswith('.pdf'):
+                                # PDF file - look for extracted .txt or .md
+                                text_path = doc.file_path.replace('.pdf', '.txt')
+                                if not os.path.exists(text_path):
+                                    text_path = doc.file_path.replace('.pdf', '.md')
+                            elif file_path_lower.endswith('.md'):
+                                # Already a markdown file - use it directly
+                                text_path = doc.file_path
+                            elif file_path_lower.endswith('.txt'):
+                                # Already a text file - use it directly
+                                text_path = doc.file_path
+                            else:
+                                # Try common extensions
+                                base_path = doc.file_path.rsplit('.', 1)[0]
+                                if os.path.exists(f"{base_path}.txt"):
+                                    text_path = f"{base_path}.txt"
+                                elif os.path.exists(f"{base_path}.md"):
+                                    text_path = f"{base_path}.md"
+                                else:
+                                    text_path = doc.file_path
+                            
                             if not os.path.exists(text_path):
-                                raise Exception("Extracted text not found")
+                                raise Exception(f"Extracted text not found at: {text_path}")
 
                             with open(text_path, 'r', encoding='utf-8') as f:
                                 text = f.read()
 
                             # Use LLM-based smart chunking with async timeout
                             logger.info(f"[Phased Job {job_id}] Calling LLM for smart chunking...")
-                            
+
                             from .smart_ingestion_enhanced import chunk_document_with_llm_sync
-                            
+
                             # Chunk using LLM with proper timeout (uses config from .env)
-                            success, llm_chunks, error = chunk_document_with_llm_sync(
+                            # Returns: (success, chunks, error, cleaning_method)
+                            success, llm_chunks, error, cleaning_method = chunk_document_with_llm_sync(
                                 file_path=text_path,
                                 prompt="",  # Use default prompt
                                 filename=doc.original_filename,
                                 timeout=LLM_CHUNKING_TIMEOUT  # Pass timeout from .env
                             )
-                            
+
                             if success:
+                                # Log warning if aggressive cleaning or latex conversion was used
+                                if cleaning_method == "aggressive":
+                                    logger.warning(f"[Phased Job {job_id}] ⚠️ Document {doc.doc_id}: Aggressive JSON cleaning applied. LaTeX formulas may be corrupted.")
+                                elif cleaning_method == "latex_converted":
+                                    logger.warning(f"[Phased Job {job_id}] ⚠️ Document {doc.doc_id}: LaTeX formulas converted to natural language. Mathematical meaning preserved.")
+                                
                                 # Convert LLM chunks to our Chunk format
                                 from backend.services.rag.phased_processing_models import Chunk
                                 chunks = []
@@ -1395,6 +1562,23 @@ def process_phased_job_background(job):
                                         token_count=c.get('token_count', 0),
                                     ))
                                 logger.info(f"[Phased Job {job_id}] LLM generated {len(chunks)} chunks")
+                                
+                                # Store cleaning method in metadata for UI notification
+                                if cleaning_method == "latex_converted":
+                                    chunking_metadata = {
+                                        'cleaning_method': cleaning_method,
+                                        'warning': 'LaTeX formulas converted to natural language descriptions (mathematical meaning preserved)'
+                                    }
+                                elif cleaning_method == "aggressive":
+                                    chunking_metadata = {
+                                        'cleaning_method': cleaning_method,
+                                        'warning': 'LaTeX formulas may be corrupted due to aggressive JSON cleaning'
+                                    }
+                                else:
+                                    chunking_metadata = {
+                                        'cleaning_method': cleaning_method,
+                                        'warning': None
+                                    }
                             else:
                                 logger.error(f"[Phased Job {job_id}] LLM chunking failed: {error}")
                                 # NO FALLBACK - mark document as failed
@@ -1409,8 +1593,14 @@ def process_phased_job_background(job):
                             phased_db.save_chunks(chunks)
 
                             # ALSO save chunks as JSON file (for Document Store filter)
-                            import json
-                            chunks_file = text_path.replace('.txt', '.chunks.json')
+                            # Fix: Handle both .txt and .md file extensions
+                            if text_path.endswith('.md'):
+                                chunks_file = text_path.replace('.md', '.chunks.json')
+                            elif text_path.endswith('.txt'):
+                                chunks_file = text_path.replace('.txt', '.chunks.json')
+                            else:
+                                # Fallback: append .chunks.json to any other extension
+                                chunks_file = text_path + '.chunks.json'
                             chunks_data = {
                                 'doc_id': doc.doc_id,
                                 'filename': doc.original_filename,
@@ -1437,9 +1627,10 @@ def process_phased_job_background(job):
                                 'chunking_strategy': 'smart_llm' if success else 'fixed_size'
                             })
 
-                            # Mark phase complete
+                            # Mark phase complete - include cleaning method warning if applicable
                             phased_db.update_document_phase_status(
-                                doc.doc_id, 'chunk', PhaseStatus.COMPLETED
+                                doc.doc_id, 'chunk', PhaseStatus.COMPLETED,
+                                metadata=chunking_metadata if success else None
                             )
                         except Exception as e:
                             logger.error(f"[Phased Job {job_id}] Chunk failed for {doc.doc_id}: {e}")
@@ -1642,7 +1833,11 @@ def get_job_status(job_id: str):
         completed_docs = [d for d in all_docs if d.overall_status == DocumentStatus.COMPLETED]
         failed_docs = [d for d in all_docs if d.overall_status == DocumentStatus.FAILED]
         processing_docs = [d for d in all_docs if d.overall_status == DocumentStatus.PROCESSING]
-        
+
+        # Note: chunking_metadata warning checks removed - metadata not currently persisted to DB
+        # Warnings would be shown here if we stored chunking_metadata in the database
+        warnings = None
+
         return jsonify({
             'success': True,
             'job_id': job_id,
@@ -1653,7 +1848,8 @@ def get_job_status(job_id: str):
                 'failed': len(failed_docs),
                 'processing': len(processing_docs),
             },
-            'failed_document_ids': [d.doc_id for d in failed_docs]
+            'failed_document_ids': [d.doc_id for d in failed_docs],
+            'warnings': warnings if warnings else None
         })
         
     except Exception as e:
