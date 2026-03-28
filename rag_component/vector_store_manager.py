@@ -4,8 +4,11 @@ Handles storage and retrieval of document embeddings.
 """
 import os
 from typing import List, Optional
-from langchain_chroma import Chroma
 from langchain_community.vectorstores import FAISS
+
+# Conditional import for Chroma - only needed if using Chroma vector store
+if os.getenv("RAG_VECTOR_STORE_TYPE", "qdrant") == "chroma":
+    from langchain_chroma import Chroma
 from langchain_core.documents import Document as LCDocument
 from .config import (
     RAG_VECTOR_STORE_TYPE,

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fancy Love in Every Line</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Playfair Display', serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background: linear-gradient(90deg, #fad0c4 0%, #ff9a9e 25%, #6a0dad 75%, #c2e9fb 100%);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            text-align: center;
+            padding: 30px;
+            background: rgba(75, 29, 120, 0.6);
+            border-radius: 20px;
+        }
+
+        h1 {
+            font-size: 3em;
+            margin-bottom: 40px;
+            color: #fff;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+        }
+
+        .poem-line {
+            font-size: 1.6em;
+            margin: 15px auto;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+        }
+
+        /* Flying pigeon animation */
+        .flying-pigeon {
+            position: fixed;
+            font-size: 20em;
+            z-index: 999;
+            animation: flyPigeon 30s linear infinite;
+        }
+
+        @keyframes flyPigeon {
+            0% { top: -100px; left: 20%; }
+            50% { left: 80%; transform: scaleX(-1); }
+            100% { top: calc(100vh + 100px); left: 20%; }
+        }
+
+        /* Flower container styling */
+        .flower-container {
+            position: fixed;
+            z-index: 100;
+        }
+
+        /* SVG flower styling */
+        .flower {
+            position: absolute;
+            animation: growShrink 4s ease-in-out infinite alternate;
+        }
+
+        @keyframes growShrink {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.2); }
+        }
+
+        /* Individual flower positions */
+        #flower1 { top: 30%; left: 8%; }
+        #flower2 { top: 20%; right: 8%; }
+        #flower3 { bottom: 20%; left: 15%; }
+        #flower4 { bottom: 30%; right: 15%; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Fancy Love in Every Line</h1>
+        <!-- Poem lines with love at the end -->
+        <p class="poem-line">The sun awakes to kiss the sky,<br><strong>love</strong></p>
+        <p class="poem-line">its rays dance soft and ever high—<br><strong>love</strong></p>
+        <p class="poem-line">a fleeting thought in morning light<br><strong>love</strong></p>
+        <p class="poem-line">still lingers sweet with endless <strong>love</strong></p>
+    </div>
+
+    <!-- Large flying pigeon -->
+    <div class="flying-pigeon" style="top: -100px; left: 45%;">
+        🕊️
+    </div>
+
+    <!-- Flower container -->
+    <div class="flower-container">
+        <!-- Large static flowers with SVG -->
+        <div class="flower" id="flower1">
+            <svg viewBox="0 0 100 100" width="60" height="60">
+                <path d="M50 20 C30 20, 20 40, 20 50 C20 60, 30 80, 50 80 C70 80, 80 60, 80 50 C80 40, 70 20, 50 20 Z" fill="#ff7ce5" stroke="#ff7ce5" stroke-width="2">
+                    <animate attributeName="opacity" values="0;1;0" dur="3s" repeatCount="indefinite"/>
+                </path>
+                <path d="M50 25 C35 25, 25 45, 25 55 C25 65, 35 85, 50 85 C65 85, 75 65, 75 55 C75 45, 65 25, 50 25 Z" fill="#ff7ce5" stroke="#ff7ce5" stroke-width="2">
+                    <animate attributeName="opacity" values="0;1;0" dur="3s" repeatCount="indefinite" begin="1s"/>
+                </path>
+                <path d="M50 30 C40 30, 45 40, 45 50 C45 60, 40 70, 50 70 C60 70, 65 60, 65 50 C65 40, 60 30, 50 30 Z" fill="#ff7ce5" stroke="#ff7ce5" stroke-width="2">
+                    <animate attributeName="opacity" values="0;1;0" dur="3s" repeatCount="indefinite" begin="2s"/>
+                </path>
+            </svg>
+        </div>
+        <div class="flower" id="flower2">
+            <svg viewBox="0 0 100 100" width="60" height="60">
+                <path d="M50 20 C30 20, 20 40, 20 50 C20 60, 30 80, 50 80 C70 80, 80 60, 80 50 C80 40, 70 20, 50 20 Z" fill="#a0c4ff" stroke="#a0c4ff" stroke-width="2">
+                    <animate attributeName="opacity" values="0;1;0" dur="3s" repeatCount="indefinite"/>
+                </path>
+                <path d="M50 25 C35 25, 25 45, 25 55 C25 65, 35 85, 50 85 C65 85, 75 65, 75 55 C75 45, 65 25, 50 25 Z" fill="#a0c4ff" stroke="#a0c4ff" stroke-width="2">
+                    <animate attributeName="opacity" values="0;1;0" dur="3s" repeatCount="indefinite" begin="1s"/>
+                </path>
+                <path d="M50 30 C40 30, 45 40, 45 50 C45 60, 40 70, 50 70 C60 70, 65 60, 65 50 C65 40, 45 30, 60 30 Z" fill="#a0c4ff" stroke="#a0c4ff" stroke-width="2">
+                    <animate attributeName="opacity" values="0;1;0" dur="3s" repeatCount="indefinite" begin="2s"/>
+                </path>
+            </svg>
+        </div>
+        <div class="flower" id="flower3">
+            <svg viewBox="0 0 100 100" width="60" height="60">
+                <path d="M50 20 C30 20, 20 40, 20 50 C20 60, 30 80, 50 80 C70 80, 80 60, 80 50 C80 40, 70 20, 50 20 Z" fill="#fad0c4" stroke="#fad0c4" stroke-width="2">
+                    <animate attributeName="opacity" values="0;1;0" dur="3s" repeatCount="indefinite"/>
+                </path>
+                <path d="M50 25 C35 25, 25 45, 25 55 C25 65, 35 85, 50 85 C65 85, 75 65, 75 55 C75 45, 65 25, 50 25 Z" fill="#fad0c4" stroke="#fad0c4" stroke-width="2">
+                    <animate attributeName="opacity" values="0;1;0" dur="3s" repeatCount="indefinite" begin="1s"/>
+                </path>
+                <path d="M50 30 C40 30, 45 40, 45 50 C45 60, 40 70, 50 70 C60 70, 65 60, 65 50 C65 40, 45 30, 60 30 Z" fill="#fad0c4" stroke="#fad0c4" stroke-width="2">
+                    <animate attributeName="opacity" values="0;1;0" dur="3s" repeatCount="indefinite" begin="2s"/>
+                </path>
+            </svg>
+        </div>
+        <div class="flower" id="flower4">
+            <svg viewBox="0 0 100 100" width="60" height="60">
+                <path d="M50 20 C30 20, 20 40, 20 50 C20 60, 30 80, 50 80 C70 80, 80 60, 80 50 C80 40, 70 20, 50 20 Z" fill="#fdbb2d" stroke="#fdbb2d" stroke-width="2">
+                    <animate attributeName="opacity" values="0;1;0" dur="3s" repeatCount="indefinite"/>
+                </path>
+                <path d="M50 25 C35 25, 25 45, 25 55 C25 65, 35 85, 50 85 C65 85, 75 65, 75 55 C75 45, 65 25, 50 25 Z" fill="#fdbb2d" stroke="#fdbb2d" stroke-width="2">
+                    <animate attributeName="opacity" values="0;1;0" dur="3s" repeatCount="indefinite" begin="1s"/>
+                </path>
+                <path d="M50 30 C40 30, 45 40, 45 50 C45 60, 40 70, 50 70 C60 70, 65 60, 65 50 C65 40, 45 30, 60 30 Z" fill="#fdbb2d" stroke="#fdbb2d" stroke-width="2">
+                    <animate attributeName="opacity" values="0;1;0" dur="3s" repeatCount="indefinite" begin="2s"/>
+                </path>
+            </svg>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Fade in poem lines
+            const lines = document.querySelectorAll('.poem-line');
+            let currentLineIndex = 0;
+
+            function showNextLine() {
+                if (currentLineIndex < lines.length) {
+                    lines[currentLineIndex].style.opacity = '1';
+                    currentLineIndex++;
+                    setTimeout(showNextLine, 2500);
+                }
+            }
+
+            // Set initial opacity for all lines
+            lines.forEach(line => {
+                line.style.opacity = '0';
+                line.style.transition = 'opacity 2s ease-in';
+            });
+
+            // Start showing lines after a delay
+            setTimeout(showNextLine, 1000);
+        });
+    </script>
+</body>
+</html>

@@ -43,9 +43,14 @@ app.config['MAX_CONTENT_LENGTH'] = 500 * 1024 * 1024  # 500MB
 # Enable CORS for all routes
 CORS(app)
 
-# Initialize logging
-logging.basicConfig(level=logging.INFO)
+# Initialize logging with configurable level
+log_level = os.getenv('LOG_LEVEL', 'INFO').upper()
+logging.basicConfig(
+    level=getattr(logging, log_level, logging.INFO),
+    format='%(asctime)s [%(levelname)s] %(name)s: %(message)s'
+)
 logger = logging.getLogger(__name__)
+logger.info(f"Logging initialized at {log_level} level")
 
 # Register job queue blueprint
 app.register_blueprint(jobs_bp)
@@ -55,6 +60,161 @@ app.register_blueprint(document_store_bp)
 
 # Register phased processing API blueprint
 app.register_blueprint(phased_processing_bp)
+
+# ============================================================================
+# STARTUP RECOVERY: Recover stuck jobs from previous service instance
+# ============================================================================
+
+def recover_stuck_jobs_on_startup():
+    """
+    Recover jobs that were left in 'processing' status when the service restarted.
+
+    This happens because worker threads are daemon threads and die when the service
+    stops, but the job status remains in Redis as 'processing'.
+
+    Recovery logic (using heartbeat tracking):
+    1. Find all jobs in 'processing' status
+    2. Check heartbeat timestamp (updated per page during LLM extraction)
+    3. Only recover if heartbeat is old (>10 min) or missing
+    4. Skip jobs with recent heartbeats (still actively processing before restart)
+    
+    This prevents recovering jobs that are legitimately processing many pages
+    (e.g., 100-page PDF at 2 min/page = 200 minutes).
+    """
+    try:
+        from backend.services.rag.job_queue import job_queue, JobStatus
+        from datetime import datetime, timezone
+
+        # Get all processing jobs
+        all_jobs = job_queue.get_all_jobs(limit=1000)
+        recovered_count = 0
+        skipped_count = 0
+
+        now = datetime.now(timezone.utc)
+        heartbeat_timeout_seconds = 600  # 10 minutes - if no heartbeat in this time, job is stuck
+
+        for job in all_jobs:
+            if job.status != JobStatus.PROCESSING.value:
+                continue
+
+            # Check if worker is tracked and alive
+            # In a new process, worker_metadata is empty, so this will be False
+            worker_alive = False
+            if job.job_id in job_queue.worker_metadata:
+                worker_info = job_queue.worker_metadata[job.job_id]
+                worker_alive = worker_info['thread'].is_alive()
+
+            if worker_alive:
+                logger.info(f"[Startup Recovery] Job {job.job_id} has active worker, skipping")
+                skipped_count += 1
+                continue
+
+            # Worker is dead (expected in new process after restart)
+            # Check heartbeat to determine if job was actively processing or truly stuck
+            heartbeat = job.parameters.get('heartbeat', {})
+            heartbeat_timestamp = heartbeat.get('timestamp')
+            should_recover = True
+            skip_reason = None
+
+            if heartbeat_timestamp:
+                try:
+                    # Parse heartbeat timestamp
+                    hb_str = heartbeat_timestamp
+                    if '+' in hb_str or 'Z' in hb_str:
+                        hb_str = hb_str.replace('Z', '+00:00')
+                        hb_time = datetime.fromisoformat(hb_str)
+                    else:
+                        hb_time = datetime.fromisoformat(hb_str).replace(tzinfo=timezone.utc)
+
+                    # Calculate how old the heartbeat is
+                    hb_age = now - hb_time
+                    hb_age_seconds = hb_age.total_seconds()
+
+                    if hb_age_seconds < heartbeat_timeout_seconds:
+                        # Recent heartbeat - job was actively processing when service stopped
+                        # Worker died, so we need to recover and restart the job
+                        # Note: This means long-running jobs will restart from beginning on service restart
+                        # This is unavoidable because worker threads are daemon threads
+                        logger.info(f"[Startup Recovery] Job {job.job_id} had recent heartbeat ({int(hb_age_seconds)}s ago, page {heartbeat.get('page_num', '?')}/{heartbeat.get('total_pages', '?')}), worker died - recovering")
+                    else:
+                        # Old heartbeat - job was stuck before service stopped
+                        logger.info(f"[Startup Recovery] Job {job.job_id} heartbeat is old ({int(hb_age_seconds)}s ago) - recovering")
+
+                except Exception as e:
+                    logger.warning(f"[Startup Recovery] Failed to parse heartbeat for {job.job_id}: {e}")
+            else:
+                # No heartbeat - check job updated_at as fallback
+                try:
+                    updated_at_str = job.updated_at
+                    if '+' in updated_at_str or 'Z' in updated_at_str:
+                        updated_at_str = updated_at_str.replace('Z', '+00:00')
+                        updated_at = datetime.fromisoformat(updated_at_str)
+                    else:
+                        updated_at = datetime.fromisoformat(updated_at_str).replace(tzinfo=timezone.utc)
+
+                    age = now - updated_at
+                    if age.total_seconds() < 300:  # 5 minutes
+                        logger.info(f"[Startup Recovery] Job {job.job_id} recently updated ({int(age.total_seconds())}s ago) but no worker - recovering")
+                    else:
+                        logger.info(f"[Startup Recovery] Job {job.job_id} is old ({int(age.total_seconds())}s ago) - recovering")
+                except Exception as e:
+                    logger.warning(f"[Startup Recovery] Failed to parse updated_at for {job.job_id}: {e}")
+
+            # Recover the job (worker is dead)
+            # Preserve completed_pages for page-level resume
+            completed_pages = job.parameters.get('completed_pages', [])
+            pages_completed = len(completed_pages)
+            
+            job.status = JobStatus.PENDING.value
+            job.current_stage = "queued"
+            # Only reset progress to 0 if no pages were completed (full restart)
+            # Otherwise, set progress based on completed pages
+            if pages_completed > 0:
+                total_pages = heartbeat.get('total_pages', 0) if heartbeat else 0
+                if total_pages > 0:
+                    job.progress = int((pages_completed / total_pages) * 100)
+                    logger.info(f"[Startup Recovery] Job {job.job_id} has {pages_completed}/{total_pages} pages completed, preserving progress ({job.progress}%)")
+            else:
+                job.progress = 0
+
+            if 'recovery_history' not in job.parameters:
+                job.parameters['recovery_history'] = []
+            job.parameters['recovery_history'].append({
+                'action': 'startup_recovery',
+                'timestamp': datetime.now(timezone.utc).isoformat(),
+                'reason': 'Service restarted - worker thread died',
+                'previous_stage': job.current_stage,
+                'last_heartbeat': heartbeat.get('timestamp', 'none'),
+                'last_page': f"{heartbeat.get('page_num', '?')}/{heartbeat.get('total_pages', '?')}" if heartbeat else 'N/A',
+                'pages_completed': pages_completed,
+                'will_resume_from_page': pages_completed + 1 if pages_completed > 0 else 1
+            })
+
+            job_queue.update_job(job)
+            recovered_count += 1
+            if pages_completed > 0:
+                logger.info(f"[Startup Recovery] Recovered job {job.job_id} for page-level resume (completed: {pages_completed}, will resume from page {pages_completed + 1})")
+            else:
+                logger.info(f"[Startup Recovery] Recovered job {job.job_id} (was {job.current_stage}, last heartbeat: {heartbeat.get('timestamp', 'never')})")
+
+        if recovered_count > 0:
+            logger.info(f"[Startup Recovery] Complete: {recovered_count} jobs recovered, {skipped_count} skipped")
+        else:
+            logger.info(f"[Startup Recovery] Complete: No stuck jobs found ({skipped_count} active jobs skipped)")
+
+    except Exception as e:
+        logger.error(f"[Startup Recovery] Failed: {e}")
+
+
+# Run recovery on startup (after a short delay to ensure Redis connection is ready)
+import threading
+def delayed_startup_recovery():
+    import time
+    time.sleep(2)  # Wait for Redis connection
+    recover_stuck_jobs_on_startup()
+
+recovery_thread = threading.Thread(target=delayed_startup_recovery, daemon=True)
+recovery_thread.start()
 
 def secure_filename(filename: str) -> str:
     """

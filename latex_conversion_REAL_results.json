@@ -1,0 +1,26 @@
+[
+  {
+    "formula_id": 1,
+    "original_latex": "$$S^C_{MAC} = KDF(K_{in}, label, seed) = HMAC_{256}(K_{in}, 0x01 || label || 0x00 || seed || 0x01 || 0x00),$$",
+    "real_conversion": "ERROR: Connection error.",
+    "status": "failed"
+  },
+  {
+    "formula_id": 2,
+    "original_latex": "$$ICV_i^C = E_{S_{MAC}^C}[C-MAC_{i-1} || '0x80' || '0x00' || '0x00' || '0x00'], i=1, \\dots;$$",
+    "real_conversion": "ERROR: Connection error.",
+    "status": "failed"
+  },
+  {
+    "formula_id": 3,
+    "original_latex": "$$C-MAC = MAC(S_{MAC}^C) [ICV^C || M];$$",
+    "real_conversion": "ERROR: Connection error.",
+    "status": "failed"
+  },
+  {
+    "formula_id": 4,
+    "original_latex": "$$ICV_1^R = (\\text{C-MAC}_0 || \\text{'0x00'} || \\text{'0x00'} || \\text{'0x00'} || \\text{'0x00'});$$",
+    "real_conversion": "ERROR: Connection error.",
+    "status": "failed"
+  }
+]

@@ -372,11 +372,13 @@ async def chunk_document_with_llm(file_path: str, prompt: str, filename: str = "
         file_path: Path to the document file
         prompt: Chunking prompt to use
         filename: Original filename
-        timeout: Timeout in seconds (overrides .env setting)
+
+(Showing lines 360-374 of 1175. Use offset=375 to continue.)        timeout: Timeout in seconds (overrides .env setting)
         
     Returns:
         Tuple of (success, chunks_list, error_message)
     """
+    logger.info(f"[DEBUG] === chunk_document_with_llm STARTED for file={file_path} ===")
     try:
         from rag_component.document_loader import DocumentLoader
         import asyncio
@@ -384,6 +386,7 @@ async def chunk_document_with_llm(file_path: str, prompt: str, filename: str = "
         # Load document
         document_loader = DocumentLoader()
         docs = document_loader.load_document(file_path)
+        logger.info(f"[DEBUG] Loaded {len(docs)} documents")
 
         document_content = ""
         for doc in docs:
@@ -422,12 +425,12 @@ async def chunk_document_with_llm(file_path: str, prompt: str, filename: str = "
             logger.error(f"LLM call timed out after {actual_timeout} seconds")
             return False, [], f"LLM call timed out after {actual_timeout} seconds"
         except Exception as e:
-            logger.error(f"LLM call failed: {str(e)}")
+            logger.error(f"[DEBUG] LLM call failed with exception: type={type(e).__name__}, str(e)={repr(str(e))}")
             return False, [], f"LLM call failed: {str(e)}"
 
         # Log raw response for debugging
         logger.info(f"LLM response length: {len(response_content)} chars")
-        logger.info(f"LLM response preview: {response_content[:500]}...")
+        logger.info(f"[DEBUG] LLM response preview (first 1000 chars): {repr(response_content[:1000])}")
 
         # Post-process: Extract JSON from markdown response
         # Step 1: Remove markdown code blocks
@@ -449,6 +452,9 @@ async def chunk_document_with_llm(file_path: str, prompt: str, filename: str = "
         else:
             logger.warning("No JSON array brackets found, trying object format")
 
+        # DEBUG: Log the cleaned_response before parsing
+        logger.info(f"[DEBUG] cleaned_response (first 500 chars): {repr(cleaned_response[:500])}")
+
         # Step 3: Parse JSON
         try:
             import re
@@ -457,6 +463,7 @@ async def chunk_document_with_llm(file_path: str, prompt: str, filename: str = "
             if json_match:
                 json_str = json_match.group(0)
                 logger.info(f"Found JSON array: {len(json_str)} chars")
+                logger.info(f"[DEBUG] json_str before parse: {repr(json_str[:200])}")
                 chunking_result = json.loads(json_str)
                 chunks = chunking_result if isinstance(chunking_result, list) else []
             else:
@@ -465,14 +472,16 @@ async def chunk_document_with_llm(file_path: str, prompt: str, filename: str = "
                 if json_match:
                     json_str = json_match.group(0)
                     logger.info(f"Found JSON object: {len(json_str)} chars")
+                    logger.info(f"[DEBUG] json_str (object) before parse: {repr(json_str[:200])}")
                     chunking_result = json.loads(json_str)
                     chunks = chunking_result.get('chunks', [])
                 else:
                     logger.error(f"No JSON found. Raw response: {response_content[:1000]}")
                     return False, [], "No JSON found in LLM response"
         except json.JSONDecodeError as e:
-            logger.error(f"Failed to parse LLM response: {str(e)}")
-            logger.error(f"Raw response: {response_content[:1000]}")
+            logger.error(f"[DEBUG] Failed to parse LLM response with JSONDecodeError")
+            logger.error(f"[DEBUG] str(e) = {repr(str(e))}")
+            logger.error(f"[DEBUG] Raw cleaned_response = {repr(cleaned_response[:500])}")
             return False, [], f"Failed to parse LLM response: {str(e)}"
 
         logger.info(f"Generated {len(chunks)} chunks for {filename or file_path}")
@@ -489,8 +498,12 @@ def chunk_document_with_llm_sync(file_path: str, prompt: str, filename: str = ""
     Synchronous wrapper for async chunk_document_with_llm.
     Use this when calling from synchronous code.
     """
+    logger.info(f"[DEBUG] === chunk_document_with_llm_sync STARTED ===")
+    logger.info(f"[DEBUG] file_path={file_path}, filename={filename}")
     import asyncio
-    return asyncio.run(chunk_document_with_llm(file_path, prompt, filename, timeout))
+    result = asyncio.run(chunk_document_with_llm(file_path, prompt, filename, timeout))
+    logger.info(f"[DEBUG] === chunk_document_with_llm_sync COMPLETED ===")
+    return result
 
 
 def ingest_chunks_to_vectorstore(chunks: List[Dict], document_id: str, filename: str) -> bool:

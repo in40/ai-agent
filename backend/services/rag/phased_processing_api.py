@@ -516,8 +516,10 @@ def extract_text():
 
         # Import document loader
         from rag_component.document_loader import DocumentLoader
+        from backend.services.rag.job_queue import job_queue as jq
 
-        loader = DocumentLoader()
+        # Pass job context for per-page heartbeat tracking
+        loader = DocumentLoader(job_id=job_id, job_queue=jq, doc_id=None)
         execution_id = f"exec_{uuid.uuid4().hex[:8]}"
         processed_count = 0
         failed_count = 0
@@ -571,14 +573,9 @@ def extract_text():
                     extraction_method_used = 'tesseract'
 
                 if method == 'llm':
-                    try:
-                        extracted_text = loader._extract_with_llm(doc.file_path)
-                        extraction_method_used = 'llm'
-                    except Exception as llm_error:
-                        logger.warning(f"LLM extraction failed ({llm_error}), falling back to PyMuPDF")
-                        # Fallback to PyMuPDF if LLM fails/times out
-                        extracted_text = loader._extract_with_pymupdf(doc.file_path, pages=pages_to_extract)
-                        extraction_method_used = 'pymupdf'
+                    # LLM extraction - NO FALLBACK
+                    extracted_text = loader._extract_with_llm(doc.file_path)
+                    extraction_method_used = 'llm'
 
                 if not extracted_text:
                     raise Exception("All extraction methods failed")
@@ -1356,12 +1353,50 @@ def process_phased_job_background(job):
         logger.info(f"[Phased Job {job_id}] Starting background processing")
         logger.info(f"[Phased Job {job_id}] Phases: {phases}")
         
+        # Import PhaseStatus early for use in fallback and error handling
+        from backend.services.rag.phased_processing_models import PhaseStatus
+        
         # Get documents for this job
         all_docs = phased_db.get_documents_by_job(job_id)
         if not all_docs:
-            logger.error(f"[Phased Job {job_id}] No documents found")
-            return
-        
+            logger.warning(f"[Phased Job {job_id}] No documents found, attempting fallback from Document Store")
+            # Try to load documents from Document Store for jobs that only specified 'chunk' phase
+            import glob as glob_mod
+            base_dir = "/root/qwen/ai_agent/document-store-mcp-server/data/ingested"
+            document_ids = job.parameters.get('document_ids', [])
+            for doc_id in document_ids:
+                matches = glob_mod.glob(f"{base_dir}/**/{doc_id}.pdf", recursive=True)
+                if not matches:
+                    logger.warning(f"Document {doc_id} not found in Document Store for fallback")
+                    continue
+                file_path = matches[0]
+                doc_record = DocumentProcessing(
+                    doc_id=doc_id,
+                    job_id=job_id,
+                    user_id=job.user_id,
+                    original_filename=os.path.basename(file_path),
+                    display_name=os.path.basename(file_path),
+                    file_path=file_path,
+                    file_size=os.path.getsize(file_path),
+                    content_type='application/pdf',
+                    source_url='',
+                    source_website='',
+                    phase_upload=PhaseStatus.COMPLETED,
+                    phase_extract=PhaseStatus.SKIPPED,
+                    phase_chunk=PhaseStatus.PENDING if 'chunk' in phases else PhaseStatus.SKIPPED,
+                    phase_vector=PhaseStatus.PENDING if 'vector' in phases else PhaseStatus.SKIPPED,
+                    phase_graph=PhaseStatus.PENDING if 'graph' in phases else PhaseStatus.SKIPPED,
+                    current_phase='chunk' if 'chunk' in phases else 'vector' if 'vector' in phases else 'graph',
+                    overall_status='PROCESSING',
+                    extraction_method=None,
+                    chunk_count=0,
+                )
+                if phased_db.create_document(doc_record):
+                    all_docs.append(doc_record)
+                    logger.info(f"[Phased Job {job_id}] Added fallback document {doc_id}")
+            if not all_docs:
+                logger.error(f"[Phased Job {job_id}] No documents found even after fallback")
+                return
         logger.info(f"[Phased Job {job_id}] Processing {len(all_docs)} documents")
         
         # Process each phase sequentially
@@ -1391,7 +1426,10 @@ def process_phased_job_background(job):
                         try:
                             # Extract text with configured method and page range
                             from rag_component.document_loader import DocumentLoader
-                            loader = DocumentLoader()
+                            from backend.services.rag.job_queue import job_queue as jq
+                            
+                            # Pass job context for per-page heartbeat tracking
+                            loader = DocumentLoader(job_id=job_id, job_queue=jq, doc_id=doc.doc_id)
                             
                             # Handle page range parsing
                             pages_to_extract = None  # None means all pages
@@ -1433,16 +1471,46 @@ def process_phased_job_background(job):
                             elif method == 'llm':
                                 logger.info(f"[Phased Job {job_id}] Calling LLM extraction for {doc.doc_id}")
                                 logger.info(f"[Phased Job {job_id}] Page range: {page_range}")
-                                try:
-                                    text = loader._extract_with_llm(doc.file_path, pages=pages_to_extract)
-                                    extraction_method_used = 'llm'
-                                    logger.info(f"[Phased Job {job_id}] LLM extraction returned {len(text)} chars")
-                                except Exception as llm_error:
-                                    logger.warning(f"[Phased Job {job_id}] LLM extraction failed ({llm_error}), falling back to PyMuPDF")
-                                    # Fallback to PyMuPDF if LLM fails/times out
-                                    text = loader._extract_with_pymupdf(doc.file_path, pages=pages_to_extract)
-                                    extraction_method_used = 'pymupdf'
-                                    logger.info(f"[Phased Job {job_id}] Fallback PyMuPDF extraction returned {len(text)} chars")
+
+                                # Update heartbeat before LLM call (can take minutes)
+                                from backend.services.rag.job_queue import job_queue as jq
+                                current_job = jq.get_job(job_id)
+                                
+                                # Get completed pages for page-level resume
+                                completed_pages = set()
+                                if current_job and 'completed_pages' in current_job.parameters:
+                                    completed_pages = set(current_job.parameters.get('completed_pages', []))
+                                    logger.info(f"[Phased Job {job_id}] Resuming with {len(completed_pages)} completed pages")
+                                
+                                if current_job:
+                                    current_job.parameters['heartbeat'] = {
+                                        'timestamp': datetime.utcnow().isoformat(),
+                                        'phase': 'extract',
+                                        'doc_id': doc.doc_id,
+                                        'action': 'llm_extraction_starting'
+                                    }
+                                    jq.update_job(current_job)
+
+                                # LLM extraction with page-level resume support
+                                text = loader._extract_with_llm(
+                                    doc.file_path, 
+                                    pages=pages_to_extract,
+                                    job_id=job_id,
+                                    completed_pages=completed_pages if completed_pages else None
+                                )
+                                extraction_method_used = 'llm'
+                                logger.info(f"[Phased Job {job_id}] LLM extraction returned {len(text)} chars")
+
+                                # Update heartbeat after LLM call
+                                if current_job:
+                                    current_job.parameters['heartbeat'] = {
+                                        'timestamp': datetime.utcnow().isoformat(),
+                                        'phase': 'extract',
+                                        'doc_id': doc.doc_id,
+                                        'action': 'llm_extraction_completed',
+                                        'chars_extracted': len(text)
+                                    }
+                                    jq.update_job(current_job)
                             else:
                                 # Default to pymupdf
                                 text = loader._extract_with_pymupdf(doc.file_path, pages=pages_to_extract)
@@ -1492,6 +1560,56 @@ def process_phased_job_background(job):
                         job_queue.update_job(job)
 
                     docs = get_documents_ready_for_phase(job_id, 'chunk')
+                    if not docs:
+                        logger.warning(f"[Phased Job {job_id}] No documents found ready for chunking, attempting fallback from Document Store")
+                        for doc_id in document_ids:
+                            existing_doc = phased_db.get_document(doc_id)
+                            if existing_doc:
+                                docs.append(existing_doc)
+                                continue
+                            import glob as glob_mod
+                            base_dir = "/root/qwen/ai_agent/document-store-mcp-server/data/ingested"
+                            matches = glob_mod.glob(f"{base_dir}/**/{doc_id}.pdf", recursive=True)
+                            if not matches:
+                                logger.warning(f"Document {doc_id} not found in Document Store")
+                                continue
+                            file_path = matches[0]
+                            class MockDoc:
+                                def __init__(self, doc_id, path):
+                                    self.doc_id = doc_id
+                                    self.original_filename = os.path.basename(path)
+                                    self.display_name = self.original_filename
+                                    self.file_path = path
+                                    self.file_size = os.path.getsize(path)
+                                    self.content_type = 'application/pdf'
+                                    self.source_url = ''
+                                    self.source_website = ''
+                                    self.extraction_method = None
+                                    self.chunk_count = 0
+                            mock_doc = MockDoc(doc_id, file_path)
+                            doc_record = DocumentProcessing(
+                                doc_id=mock_doc.doc_id,
+                                job_id=job_id,
+                                user_id=user_id,
+                                original_filename=mock_doc.original_filename,
+                                display_name=mock_doc.display_name,
+                                file_path=mock_doc.file_path,
+                                file_size=mock_doc.file_size,
+                                content_type=mock_doc.content_type,
+                                source_url=mock_doc.source_url,
+                                source_website=mock_doc.source_website,
+                                phase_upload=PhaseStatus.COMPLETED,
+                                phase_extract=PhaseStatus.SKIPPED,
+                                phase_chunk=PhaseStatus.PENDING,
+                                phase_vector=PhaseStatus.PENDING,
+                                phase_graph=PhaseStatus.PENDING,
+                                current_phase='chunk',
+                                overall_status='PROCESSING',
+                                extraction_method=None,
+                                chunk_count=0,
+                            )
+                            if phased_db.create_document(doc_record):
+                                docs.append(doc_record)
                     for doc in docs:
                         try:
                             # Read extracted text - handle various file types
@@ -1525,27 +1643,65 @@ def process_phased_job_background(job):
                             with open(text_path, 'r', encoding='utf-8') as f:
                                 text = f.read()
 
+                            # Determine cleaning method based on extraction method and file type
+                            # This is used for UI notifications about potential LaTeX issues
+                            cleaning_method = None
+                            if text_path.endswith('.md'):
+                                # LLM extraction produces markdown with LaTeX formulas
+                                # Check job config for specific cleaning preference
+                                try:
+                                    chunking_config = job.parameters.get('chunking_config', {})
+                                    cleaning_method = chunking_config.get('cleaning_method')
+                                except:
+                                    pass
+                                if not cleaning_method:
+                                    # Default to latex_converted for .md files (LLM extraction)
+                                    cleaning_method = 'latex_converted'
+                            else:
+                                # Plain text extraction - no LaTeX processing
+                                cleaning_method = None
+
                             # Use LLM-based smart chunking with async timeout
                             logger.info(f"[Phased Job {job_id}] Calling LLM for smart chunking...")
+                            
+                            # Update heartbeat before LLM chunking (can take minutes)
+                            from backend.services.rag.job_queue import job_queue as jq
+                            current_job = jq.get_job(job_id)
+                            if current_job:
+                                current_job.parameters['heartbeat'] = {
+                                    'timestamp': datetime.utcnow().isoformat(),
+                                    'phase': 'chunk',
+                                    'doc_id': doc.doc_id,
+                                    'action': 'llm_chunking_starting'
+                                }
+                                jq.update_job(current_job)
 
                             from .smart_ingestion_enhanced import chunk_document_with_llm_sync
 
                             # Chunk using LLM with proper timeout (uses config from .env)
-                            # Returns: (success, chunks, error, cleaning_method)
-                            success, llm_chunks, error, cleaning_method = chunk_document_with_llm_sync(
+                            # Returns: (success, chunks, error_message) - 3 values only
+                            logger.info(f"[Phased Job {job_id}] About to call chunk_document_with_llm_sync for file: {text_path}")
+                            success, llm_chunks, error = chunk_document_with_llm_sync(
                                 file_path=text_path,
                                 prompt="",  # Use default prompt
                                 filename=doc.original_filename,
                                 timeout=LLM_CHUNKING_TIMEOUT  # Pass timeout from .env
                             )
+                            logger.info(f"[Phased Job {job_id}] chunk_document_with_llm_sync returned: success={success}, chunks_count={len(llm_chunks) if llm_chunks else 0}, error={repr(error)[:500]}")
+                            
+                            # Update heartbeat after LLM chunking
+                            if current_job:
+                                current_job.parameters['heartbeat'] = {
+                                    'timestamp': datetime.utcnow().isoformat(),
+                                    'phase': 'chunk',
+                                    'doc_id': doc.doc_id,
+                                    'action': 'llm_chunking_completed',
+                                    'chunks_generated': len(llm_chunks) if llm_chunks else 0,
+                                    'success': success
+                                }
+                                jq.update_job(current_job)
 
                             if success:
-                                # Log warning if aggressive cleaning or latex conversion was used
-                                if cleaning_method == "aggressive":
-                                    logger.warning(f"[Phased Job {job_id}] ⚠️ Document {doc.doc_id}: Aggressive JSON cleaning applied. LaTeX formulas may be corrupted.")
-                                elif cleaning_method == "latex_converted":
-                                    logger.warning(f"[Phased Job {job_id}] ⚠️ Document {doc.doc_id}: LaTeX formulas converted to natural language. Mathematical meaning preserved.")
-                                
                                 # Convert LLM chunks to our Chunk format
                                 from backend.services.rag.phased_processing_models import Chunk
                                 chunks = []

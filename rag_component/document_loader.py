@@ -7,6 +7,7 @@ import re
 import logging
 from typing import List, Optional, Dict, Any
 from pathlib import Path
+from datetime import datetime
 from langchain_community.document_loaders import (
     TextLoader,
     PyPDFLoader,
@@ -23,9 +24,12 @@ logger = logging.getLogger(__name__)
 class DocumentLoader:
     """Class responsible for loading documents of various types."""
 
-    def __init__(self):
+    def __init__(self, job_id: Optional[str] = None, job_queue=None, doc_id: Optional[str] = None):
         self.supported_types = RAG_SUPPORTED_FILE_TYPES
         self.use_pdf_conversion = RAG_PDF_TO_MARKDOWN_CONVERSION_ENABLED
+        self.job_id = job_id
+        self.job_queue = job_queue
+        self.doc_id = doc_id
 
     def load_document(self, file_path: str) -> List[LCDocument]:
         """
@@ -59,7 +63,11 @@ class DocumentLoader:
 
                     if markdown_file_path:
                         # Use UnstructuredMarkdownLoader for the converted Markdown
-                        loader = UnstructuredMarkdownLoader(markdown_file_path)
+                        try:
+                            loader = UnstructuredMarkdownLoader(markdown_file_path)
+                        except ImportError:
+                            logger.warning("unstructured not available, using TextLoader for converted .md")
+                            loader = TextLoader(markdown_file_path, encoding='utf-8')
                     else:
                         # If conversion failed, fall back to multi-pass PDF extraction
                         logger.warning(f"PDF conversion failed for {file_path}, falling back to multi-pass extraction")
@@ -80,7 +88,12 @@ class DocumentLoader:
         elif file_ext == '.html':
             loader = UnstructuredHTMLLoader(file_path)
         elif file_ext == '.md':
-            loader = UnstructuredMarkdownLoader(file_path)
+            # Try UnstructuredMarkdownLoader first, fall back to TextLoader
+            try:
+                loader = UnstructuredMarkdownLoader(file_path)
+            except ImportError:
+                logger.warning("unstructured not available, using TextLoader for .md files")
+                loader = TextLoader(file_path, encoding='utf-8')
         else:
             # Default to text loader for any other supported type
             loader = TextLoader(file_path, encoding='utf-8')
@@ -283,33 +296,51 @@ class DocumentLoader:
 
         return '\n'.join(text_parts)
 
-    def _extract_with_llm(self, file_path: str, pages: Optional[range] = None) -> str:
+    def _extract_with_llm(self, file_path: str, pages: Optional[range] = None, timeout_seconds: Optional[int] = None, 
+                          job_id: Optional[str] = None, completed_pages: Optional[set] = None) -> str:
         """
         Send PDF to LLM for markdown conversion.
         Converts PDF pages to images, then sends to vision-capable LLM.
-        
+        Supports page-level resume by skipping already-completed pages.
+
         Args:
             file_path: Path to PDF file
             pages: Optional range of pages to extract (0-indexed). None means all pages.
-        
+            timeout_seconds: Optional timeout in seconds (default: from LLM_CHUNKING_TIMEOUT env var)
+            job_id: Optional job ID for page-level resume support
+            completed_pages: Optional set of 0-indexed page numbers already completed
+
         Returns:
             Clean markdown text from LLM (no code blocks or explanations)
         """
         import base64
         import io
         import re
-        
+        import time
+        import shutil
+
         # Use PDF-specific LLM config, fall back to NLP LLM config
         llm_base_url = os.getenv("PDF_LLM_BASE_URL", os.getenv("NLP_LLM_BASE_URL", "http://localhost:1234/v1"))
         llm_model = os.getenv("PDF_LLM_MODEL", os.getenv("NLP_LLM_MODEL", "qwen3.5-35b"))
         api_key = os.getenv("PDF_LLM_API_KEY", os.getenv("NLP_LLM_API_KEY", os.getenv("OPENAI_API_KEY", "not-needed")))
-        
-        logger.info(f"Sending PDF to LLM: url={llm_base_url}, model={llm_model}")
+
+        # Get timeout from parameter or environment variable (default: 43200 seconds = 12 hours)
+        timeout = timeout_seconds if timeout_seconds else int(os.getenv("LLM_CHUNKING_TIMEOUT", "43200"))
+
+        logger.info(f"Sending PDF to LLM: url={llm_base_url}, model={llm_model}, timeout={timeout}s")
+        logger.debug(f"LLM client init: base_url={llm_base_url}, api_key={'***' if api_key else None}")
+
+        # Setup temp directory for page-level resume (if job_id provided)
+        temp_dir = None
+        if job_id:
+            temp_dir = os.path.join('/tmp/rag_page_resume', job_id)
+            os.makedirs(temp_dir, exist_ok=True)
+            logger.info(f"Page-level resume enabled: temp_dir={temp_dir}")
         
         # Convert PDF pages to images
         try:
             from pdf2image import convert_from_path
-            
+
             # Determine which pages to convert
             if pages is not None:
                 page_nums = list(pages)
@@ -320,34 +351,70 @@ class DocumentLoader:
                 images = convert_from_path(file_path, dpi=200, first_page=first_page, last_page=last_page)
             else:
                 logger.info("Converting all pages to images")
-                images = convert_from_path(file_path, dpi=200)  # Higher DPI for better formula recognition
-            
+                images = convert_from_path(file_path, dpi=200)  # 200 DPI for faster processing
+
             logger.info(f"Converted PDF to {len(images)} images")
+            logger.debug(f"Image DPI: 200, format: PNG")
         except ImportError:
             logger.error("pdf2image not installed. Run: apt-get install poppler-utils && pip install pdf2image")
             raise ImportError("pdf2image required for PDF extraction. Install poppler-utils and pdf2image")
         
         # System prompt instructs LLM to output ONLY markdown
-        system_prompt = "You are a PDF to Markdown converter. Output ONLY the markdown content. Do not include explanations, code blocks around the output, or any text outside the markdown content."
-        user_prompt = "Convert this PDF page to clean markdown. Preserve all mathematical formulas and equations in LaTeX format. Output ONLY the markdown, nothing else."
+        system_prompt = """You are a PDF to Markdown converter. Output ONLY the markdown content. Do not include explanations, code blocks around the output, or any text outside the markdown content.
+
+IMPORTANT: Some PDF pages may contain watermarks (e.g., "DRAFT", "CONFIDENTIAL", "SAMPLE", or similar overlay text). These watermarks are NOT part of the actual document content and MUST be IGNORED. Do not extract or include any watermark text in your markdown output. Only extract the genuine document content."""
+
+        user_prompt = "Convert this PDF page to clean markdown. Preserve all mathematical formulas and equations in LaTeX format. IMPORTANT: Ignore and do not extract any watermarks (such as DRAFT, CONFIDENTIAL, SAMPLE, or similar overlay text). Output ONLY the markdown content, nothing else."
+
+        # Log prompts
+        logger.info(f"LLM extraction prompt (system): {system_prompt[:200]}...")
+        logger.info(f"LLM extraction prompt (user): {user_prompt[:200]}...")
+        logger.debug(f"LLM extraction prompt (system, full): {system_prompt}")
+        logger.debug(f"LLM extraction prompt (user, full): {user_prompt}")
         
         from openai import OpenAI
         client = OpenAI(base_url=llm_base_url, api_key=api_key)
-        
+
+        # Time entire LLM extraction
+        llm_total_start = time.time()
+
         # Process all pages and combine into single document
         all_markdown_parts = []
         start_page = min(list(pages)) + 1 if pages else 1
-        
+        total_pages = len(images)
+        pages_processed = 0
+        pages_skipped = 0
+
         for page_idx, img in enumerate(images):
             page_num = start_page + page_idx
+            page_idx_0based = page_num - 1  # 0-indexed for completed_pages set
+
+            # Check if this page was already completed (page-level resume)
+            if completed_pages and page_idx_0based in completed_pages:
+                # Load from temp file
+                page_file = os.path.join(temp_dir, f"page_{page_idx_0based:04d}.md") if temp_dir else None
+                if page_file and os.path.exists(page_file):
+                    with open(page_file, 'r', encoding='utf-8') as f:
+                        page_markdown = f.read()
+                    all_markdown_parts.append(f"<!-- Page {page_num} -->\n\n{page_markdown}")
+                    pages_skipped += 1
+                    logger.info(f"Page {page_num}: Skipped (already completed, loaded from temp)")
+                    continue
+                else:
+                    logger.warning(f"Page {page_num}: Marked as completed but temp file not found, re-processing")
+
             logger.info(f"Processing page {page_num}")
-            
+
             # Convert image to base64
             img_buffer = io.BytesIO()
             img.save(img_buffer, format='PNG')
             img_base64 = base64.b64encode(img_buffer.getvalue()).decode('utf-8')
-            
-            # Send to LLM
+
+            # Send to LLM with configurable timeout
+            llm_start = time.time()
+            logger.info(f"Page {page_num}: Sending image to LLM (base64 size: {len(img_base64)} bytes)")
+            logger.debug(f"Page {page_num}: LLM request: model={llm_model}, max_tokens=32000, timeout={timeout}s")
+
             response = client.chat.completions.create(
                 model=llm_model,
                 messages=[
@@ -366,21 +433,83 @@ class DocumentLoader:
                     }
                 ],
                 max_tokens=32000,
-                timeout=600
+                timeout=timeout  # Use configurable timeout
             )
-            
+
+            llm_time = time.time() - llm_start
+            logger.info(f"Page {page_num}: LLM call {llm_time:.2f}s")
+
             page_markdown = response.choices[0].message.content
-            
+
+            # Log response metadata
+            logger.info(f"Page {page_num}: LLM response: {len(page_markdown)} chars")
+            if hasattr(response, 'usage'):
+                logger.debug(f"Page {page_num}: LLM response usage: prompt={response.usage.prompt_tokens}, completion={response.usage.completion_tokens}, total={response.usage.total_tokens}")
+            logger.debug(f"Page {page_num}: LLM response finish_reason: {response.choices[0].finish_reason}")
+            logger.debug(f"Page {page_num}: LLM response (first 500 chars): {page_markdown[:500]}...")
+
             # Clean up LLM response - remove markdown code block wrappers
+            clean_start = time.time()
             page_markdown = self._clean_llm_markdown(page_markdown)
-            
+            clean_time = time.time() - clean_start
+            logger.debug(f"Page {page_num}: Markdown cleanup {clean_time:.2f}s")
+
+            # Save page to temp file immediately (for page-level resume)
+            if temp_dir:
+                page_file = os.path.join(temp_dir, f"page_{page_idx_0based:04d}.md")
+                with open(page_file, 'w', encoding='utf-8') as f:
+                    f.write(page_markdown)
+                logger.debug(f"Page {page_num}: Saved to temp file {page_file}")
+
             # Add page marker as comment (doesn't render in markdown)
             all_markdown_parts.append(f"<!-- Page {page_num} -->\n\n{page_markdown}")
             logger.info(f"Page {page_num}: LLM returned {len(page_markdown)} chars")
-        
+            pages_processed += 1
+
+            # Update heartbeat after each page (for long-running jobs, prevents false "stuck" detection)
+            if self.job_id and self.job_queue and self.doc_id:
+                try:
+                    current_job = self.job_queue.get_job(self.job_id)
+                    if current_job:
+                        progress_pct = int((page_num / total_pages) * 100) if total_pages else 0
+                        # Track completed pages in job parameters
+                        if 'completed_pages' not in current_job.parameters:
+                            current_job.parameters['completed_pages'] = []
+                        if page_idx_0based not in current_job.parameters['completed_pages']:
+                            current_job.parameters['completed_pages'].append(page_idx_0based)
+                        
+                        current_job.parameters['heartbeat'] = {
+                            'timestamp': datetime.utcnow().isoformat(),
+                            'phase': 'extract',
+                            'doc_id': self.doc_id,
+                            'action': 'page_processed',
+                            'page_num': page_num,
+                            'total_pages': total_pages,
+                            'chars_extracted': len(page_markdown),
+                            'progress_percent': progress_pct,
+                            'pages_completed': len(current_job.parameters['completed_pages']),
+                            'pages_remaining': total_pages - len(current_job.parameters['completed_pages'])
+                        }
+                        self.job_queue.update_job(current_job)
+                        logger.info(f"Page {page_num}: Heartbeat updated ({progress_pct}% complete, {pages_skipped} skipped, {pages_processed} processed)")
+                except Exception as e:
+                    # Log error but don't fail page processing
+                    logger.error(f"Page {page_num}: Failed to update heartbeat: {e}")
+
         # Combine all pages into single markdown document
         full_markdown = "\n\n".join(all_markdown_parts)
-        logger.info(f"LLM extraction complete: {len(full_markdown)} total chars")
+        llm_total_time = time.time() - llm_total_start
+        logger.info(f"LLM extraction complete: {len(full_markdown)} total chars in {llm_total_time:.2f}s ({len(full_markdown)/llm_total_time:.0f} chars/sec)")
+        logger.info(f"LLM extraction summary: {pages_processed} pages processed, {pages_skipped} pages skipped (resumed)")
+        
+        # Cleanup temp directory after successful completion
+        if temp_dir and os.path.exists(temp_dir):
+            try:
+                shutil.rmtree(temp_dir)
+                logger.info(f"Cleaned up temp directory: {temp_dir}")
+            except Exception as e:
+                logger.warning(f"Failed to cleanup temp directory {temp_dir}: {e}")
+        
         return full_markdown
     
     def _clean_llm_markdown(self, markdown: str) -> str:

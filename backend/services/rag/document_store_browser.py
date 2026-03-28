@@ -60,6 +60,7 @@ def list_documents():
         import os
         doc_store_path = "/root/qwen/ai_agent/document-store-mcp-server/data/ingested"
         all_documents = []
+        doc_groups = {}  # Group documents by doc_id (PDF + its variants)
         
         if os.path.exists(doc_store_path):
             for job_dir in os.listdir(doc_store_path):
@@ -71,7 +72,7 @@ def list_documents():
                 if not os.path.exists(docs_path):
                     continue
                 
-                # Get all files
+                # First pass: collect all files and group by doc_id
                 for filename in os.listdir(docs_path):
                     file_path = os.path.join(docs_path, filename)
                     if not os.path.isfile(file_path):
@@ -97,18 +98,73 @@ def list_documents():
                             except:
                                 pass
                     
-                    all_documents.append({
-                        'doc_id': doc_id,
-                        'original_filename': filename,
-                        'display_name': metadata.get('display_name', doc_id),
+                    # Group documents by base doc_id (without file type suffix)
+                    # This allows PDFs to be grouped with their .txt, .md variants
+                    # The naming pattern appears to be: base.N_hhhhhhhh.ext or base.ext
+                    # We need to strip the file extension (.pdf, .txt, .md, .json) and hex suffix (_8hexchars)
+                    base_doc_id = filename
+                    file_ext = os.path.splitext(filename)[1].lower()
+                    
+                    # Remove file extension (only actual extensions: .txt, .md, .json, .pdf)
+                    if file_ext in ['.txt', '.md', '.json', '.pdf']:
+                        # Remove extension from the end
+                        base_doc_id = base_doc_id[:-len(file_ext)]
+                        
+                        # If the result ends with .metadata, strip that too for grouping
+                        if base_doc_id.endswith('.metadata'):
+                            base_doc_id = base_doc_id[:-9]  # len('.metadata') = 9
+                        
+                        # Check for hex suffix pattern like _6d81409d at the end
+                        if '_' in base_doc_id:
+                            parts = base_doc_id.rsplit('_', 1)
+                            if len(parts) == 2 and len(parts[1]) == 8:
+                                try:
+                                    # Verify it looks like hex (8 hex chars)
+                                    int(parts[1], 16)
+                                    # Keep the base WITHOUT the hex suffix for grouping
+                                    base_doc_id = parts[0]
+                                except ValueError:
+                                    pass
+                    
+                    if base_doc_id not in doc_groups:
+                        doc_groups[base_doc_id] = {
+                            'doc_id': base_doc_id,
+                            'base_name': base_doc_id,
+                            'files': [],
+                            'metadata': metadata if file_ext == '.pdf' else {}
+                        }
+                    
+                    doc_groups[base_doc_id]['files'].append({
+                        'filename': filename,
                         'file_type': file_type,
                         'format': file_type,
                         'size': file_size,
                         'file_size': file_size,
                         'job_id': job_dir.replace('job_', ''),
                         'source_website': metadata.get('source_website', ''),
-                        'metadata': metadata
+                        'metadata': metadata if file_ext == '.pdf' else {}
                     })
+        
+        # Convert doc_groups to flat list of files for backward compatibility
+        # Each file becomes a separate document entry
+        all_documents = []
+        for base_doc_id, group_data in doc_groups.items():
+            for file_info in group_data['files']:
+                all_documents.append({
+                    'doc_id': base_doc_id,
+                    'original_filename': file_info['filename'],
+                    'display_name': group_data['metadata'].get('display_name', base_doc_id),
+                    'file_type': file_info['file_type'],
+                    'format': file_info['format'],
+                    'size': file_info['size'],
+                    'file_size': file_info['file_size'],
+                    'job_id': file_info['job_id'],
+                    'source_website': file_info.get('source_website', ''),
+                    'metadata': file_info.get('metadata', {}),
+                    'group_base_id': base_doc_id,
+                    'group_files': [f['file_type'] for f in group_data['files']],
+                    'group_files_info': group_data['files']
+                })
         
         # Apply filters
         documents = all_documents
@@ -122,6 +178,7 @@ def list_documents():
                 d for d in documents 
                 if search_lower in d.get('original_filename', '').lower() 
                 or search_lower in d.get('display_name', '').lower()
+                or search_lower in d.get('group_base_id', '').lower()
             ]
         
         if file_type_filter:

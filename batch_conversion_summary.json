@@ -1,0 +1,152 @@
+{
+  "completed_at": "2026-03-19T13:46:00.963468",
+  "total_time_seconds": 21601.679998,
+  "completed": [
+    {
+      "job_id": "job_b91d58ce4a3b",
+      "group_num": 1,
+      "pdfs": [
+        "gost-34_35cf3ed7"
+      ],
+      "elapsed_seconds": 1200.042801
+    },
+    {
+      "job_id": "job_f5255520c645",
+      "group_num": 2,
+      "pdfs": [
+        "gost-r-34_e022c4bb"
+      ],
+      "elapsed_seconds": 1200.032155
+    },
+    {
+      "job_id": "job_7be0c4184e96",
+      "group_num": 3,
+      "pdfs": [
+        "gost-r-52069_2c53c42c"
+      ],
+      "elapsed_seconds": 1800.074428
+    },
+    {
+      "job_id": "job_d88768ad1b21",
+      "group_num": 4,
+      "pdfs": [
+        "gost-r-52633_93230662"
+      ],
+      "elapsed_seconds": 1200.030628
+    },
+    {
+      "job_id": "job_78ffaf4ecfac",
+      "group_num": 5,
+      "pdfs": [
+        "gost-r-53110-2008=edt2020_0608256d"
+      ],
+      "elapsed_seconds": 600.020647
+    },
+    {
+      "job_id": "job_4e38bbb722ec",
+      "group_num": 6,
+      "pdfs": [
+        "gost-r-53131-2008_f47922b6"
+      ],
+      "elapsed_seconds": 900.023055
+    },
+    {
+      "job_id": "job_a72dd33046dc",
+      "group_num": 7,
+      "pdfs": [
+        "gost-r-56545-2015=edt2018_0efaf655"
+      ],
+      "elapsed_seconds": 300.01126
+    },
+    {
+      "job_id": "job_9ea940b53b06",
+      "group_num": 8,
+      "pdfs": [
+        "gost-r-58143-2018_f7def8e8"
+      ],
+      "elapsed_seconds": 600.018183
+    },
+    {
+      "job_id": "job_ba06668b73d6",
+      "group_num": 9,
+      "pdfs": [
+        "gost-r-59453_3b8321db"
+      ],
+      "elapsed_seconds": 300.01243
+    },
+    {
+      "job_id": "job_d9cfc66e6948",
+      "group_num": 10,
+      "pdfs": [
+        "gost-r-59711-2022_7d087333"
+      ],
+      "elapsed_seconds": 6000.194518
+    },
+    {
+      "job_id": "job_69272ab1199c",
+      "group_num": 11,
+      "pdfs": [
+        "gost-r-72118-2025_4e3f6075"
+      ],
+      "elapsed_seconds": 5400.141392
+    },
+    {
+      "job_id": "job_c1fb7c5ff11b",
+      "group_num": 12,
+      "pdfs": [
+        "r-1323565.1_1c653cc5"
+      ],
+      "elapsed_seconds": 300.007298
+    },
+    {
+      "job_id": "job_951cf10c1d22",
+      "group_num": 13,
+      "pdfs": [
+        "r-1323565.1_37a65fe4"
+      ],
+      "elapsed_seconds": 300.005581
+    },
+    {
+      "job_id": "job_f7c07613f678",
+      "group_num": 14,
+      "pdfs": [
+        "r-1323565.1_58194614"
+      ],
+      "elapsed_seconds": 300.006969
+    },
+    {
+      "job_id": "job_6e52cf9244d7",
+      "group_num": 15,
+      "pdfs": [
+        "r-1323565.1_7cc8c08f"
+      ],
+      "elapsed_seconds": 300.011465
+    },
+    {
+      "job_id": "job_306d60f6f26d",
+      "group_num": 16,
+      "pdfs": [
+        "r-1323565.1_a245d888"
+      ],
+      "elapsed_seconds": 300.00662
+    },
+    {
+      "job_id": "job_c3414ed91011",
+      "group_num": 17,
+      "pdfs": [
+        "r-1323565.1_dc753eb4"
+      ],
+      "elapsed_seconds": 300.006073
+    },
+    {
+      "job_id": "job_e091d5fca9f4",
+      "group_num": 18,
+      "pdfs": [
+        "r-50.1_4bd380de"
+      ],
+      "elapsed_seconds": 300.010096
+    }
+  ],
+  "failed": [],
+  "total_groups": 18
+}

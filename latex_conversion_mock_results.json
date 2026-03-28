@@ -1,0 +1,50 @@
+[
+  {
+    "formula_id": 1,
+    "original_latex": "$$S^C_{MAC} = KDF(K_{in}, label, seed) = HMAC_{256}(K_{in}, 0x01 || label || 0x00 || seed || 0x01 || 0x00),$$",
+    "expected_conversion": "S sub MAC superscript C equals KDF of K sub in, label, and seed, equals HMAC sub 256 of K sub in, 0x01 concatenated with label concatenated with 0x00 concatenated with seed concatenated with 0x01 concatenated with 0x00",
+    "status": "mock_result"
+  },
+  {
+    "formula_id": 2,
+    "original_latex": "$$ICV_i^C = E_{S_{MAC}^C}[C-MAC_{i-1} || '0x80' || '0x00' || '0x00' || '0x00'], i=1, \\dots;$$",
+    "expected_conversion": "ICV sub i superscript C equals E sub S sub MAC superscript C applied to C-MAC sub i-1 concatenated with 0x80 concatenated with 0x00 concatenated with 0x00 concatenated with 0x00, where i equals 1 and so on",
+    "status": "mock_result"
+  },
+  {
+    "formula_id": 3,
+    "original_latex": "$$C-MAC = MAC(S_{MAC}^C) [ICV^C || M];$$",
+    "expected_conversion": "C-MAC equals MAC of S sub MAC superscript C applied to ICV superscript C concatenated with M",
+    "status": "mock_result"
+  },
+  {
+    "formula_id": 4,
+    "original_latex": "$$ICV_1^R = (\\text{C-MAC}_0 || \\text{'0x00'} || \\text{'0x00'} || \\text{'0x00'} || \\text{'0x00'});$$",
+    "expected_conversion": "ICV sub 1 superscript R equals C-MAC sub 0 concatenated with 0x00 concatenated with 0x00 concatenated with 0x00 concatenated with 0x00",
+    "status": "mock_result"
+  },
+  {
+    "formula_id": 5,
+    "original_latex": "$$ICV_i^R = (\\text{R-MAC}_{i-1} || \\text{'0x00'} || \\text{'0x00'} || \\text{'0x00'} || \\text{'0x00'}), i = 2, \\dots;$$",
+    "expected_conversion": "ICV sub i superscript R equals R-MAC sub i-1 concatenated with 0x00 concatenated with 0x00 concatenated with 0x00 concatenated with 0x00, where i equals 2 and so on",
+    "status": "mock_result"
+  },
+  {
+    "formula_id": 6,
+    "original_latex": "$$M = (\\text{CLA}' || \\text{INS} || \\text{P1} || \\text{P2} || \\text{Lc (без учета шифрования и C-MAC)} || \\text{Data (без шифрования и C-MAC)} || \\text{Li} || \\text{R-Data (данные ответа)} || \\text{SW});$$",
+    "expected_conversion": "M equals CLA prime concatenated with INS concatenated with P1 concatenated with P2 concatenated with Lc without encryption and C-MAC concatenated with Data without encryption and C-MAC concatenated with Li concatenated with R-Data response data concatenated with SW",
+    "status": "mock_result"
+  },
+  {
+    "formula_id": 7,
+    "original_latex": "$$\\text{R-MAC} = \\text{MAC}(S_{MAC}^R) [ICV^R || M];$$",
+    "expected_conversion": "R-MAC equals MAC of S sub MAC superscript R applied to ICV superscript R concatenated with M",
+    "status": "mock_result"
+  },
+  {
+    "formula_id": 8,
+    "original_latex": "$$\\text{APDU} = \\text{CLA}' || \\text{INS} || \\text{P1} || \\text{P2} || \\text{Lc} || \\text{Data} || \\text{Li} || \\text{R-Data} || \\text{R-MAC} || \\text{SW}.$$",
+    "expected_conversion": "APDU equals CLA prime concatenated with INS concatenated with P1 concatenated with P2 concatenated with Lc concatenated with Data concatenated with Li concatenated with R-Data concatenated with R-MAC concatenated with SW",
+    "status": "mock_result"
+  }
+]

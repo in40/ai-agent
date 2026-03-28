@@ -1,0 +1,482 @@
+{
+  "completed_groups": [
+    {
+      "group": 1,
+      "pdfs": [
+        "gost-34_35cf3ed7"
+      ],
+      "job_id": "job_b91d58ce4a3b"
+    },
+    {
+      "group": 2,
+      "pdfs": [
+        "gost-r-34_e022c4bb"
+      ],
+      "job_id": "job_f5255520c645"
+    },
+    {
+      "group": 3,
+      "pdfs": [
+        "gost-r-52069_2c53c42c"
+      ],
+      "job_id": "job_7be0c4184e96"
+    },
+    {
+      "group": 4,
+      "pdfs": [
+        "gost-r-52633_93230662"
+      ],
+      "job_id": "job_d88768ad1b21"
+    },
+    {
+      "group": 5,
+      "pdfs": [
+        "gost-r-53110-2008=edt2020_0608256d"
+      ],
+      "job_id": "job_78ffaf4ecfac"
+    },
+    {
+      "group": 6,
+      "pdfs": [
+        "gost-r-53131-2008_f47922b6"
+      ],
+      "job_id": "job_4e38bbb722ec"
+    },
+    {
+      "group": 7,
+      "pdfs": [
+        "gost-r-56545-2015=edt2018_0efaf655"
+      ],
+      "job_id": "job_a72dd33046dc"
+    },
+    {
+      "group": 8,
+      "pdfs": [
+        "gost-r-58143-2018_f7def8e8"
+      ],
+      "job_id": "job_9ea940b53b06"
+    },
+    {
+      "group": 9,
+      "pdfs": [
+        "gost-r-59453_3b8321db"
+      ],
+      "job_id": "job_ba06668b73d6"
+    },
+    {
+      "group": 10,
+      "pdfs": [
+        "gost-r-59711-2022_7d087333"
+      ],
+      "job_id": "job_d9cfc66e6948"
+    },
+    {
+      "group": 11,
+      "pdfs": [
+        "gost-r-72118-2025_4e3f6075"
+      ],
+      "job_id": "job_69272ab1199c"
+    },
+    {
+      "group": 12,
+      "pdfs": [
+        "r-1323565.1_1c653cc5"
+      ],
+      "job_id": "job_c1fb7c5ff11b"
+    },
+    {
+      "group": 13,
+      "pdfs": [
+        "r-1323565.1_37a65fe4"
+      ],
+      "job_id": "job_951cf10c1d22"
+    },
+    {
+      "group": 14,
+      "pdfs": [
+        "r-1323565.1_58194614"
+      ],
+      "job_id": "job_f7c07613f678"
+    },
+    {
+      "group": 15,
+      "pdfs": [
+        "r-1323565.1_7cc8c08f"
+      ],
+      "job_id": "job_6e52cf9244d7"
+    },
+    {
+      "group": 16,
+      "pdfs": [
+        "r-1323565.1_a245d888"
+      ],
+      "job_id": "job_306d60f6f26d"
+    },
+    {
+      "group": 17,
+      "pdfs": [
+        "r-1323565.1_dc753eb4"
+      ],
+      "job_id": "job_c3414ed91011"
+    },
+    {
+      "group": 18,
+      "pdfs": [
+        "r-50.1_4bd380de"
+      ],
+      "job_id": "job_e091d5fca9f4"
+    },
+    {
+      "group": 1,
+      "pdfs": [
+        "gost-34_43a10467"
+      ],
+      "job_id": "job_2993a994c950"
+    },
+    {
+      "group": 2,
+      "pdfs": [
+        "gost-r-50739-1995=edt2006_c56e9b4d"
+      ],
+      "job_id": "job_58b819d125ba"
+    },
+    {
+      "group": 3,
+      "pdfs": [
+        "gost-r-52633_7a42a2e5"
+      ],
+      "job_id": "job_90dcdd75c21b"
+    },
+    {
+      "group": 4,
+      "pdfs": [
+        "gost-r-53111-2008=edt2018_a9334210"
+      ],
+      "job_id": "job_9b3195b07bc4"
+    },
+    {
+      "group": 1,
+      "pdfs": [
+        "gost-34_cb3ee5c9"
+      ],
+      "job_id": "job_b72176cc9e92"
+    },
+    {
+      "group": 2,
+      "pdfs": [
+        "gost-r-51583-2014=edt2018_6b5b0f74"
+      ],
+      "job_id": "job_f09758765270"
+    },
+    {
+      "group": 4,
+      "pdfs": [
+        "gost-r-53113_b6054df6"
+      ],
+      "job_id": "job_d7f60402c4af"
+    },
+    {
+      "group": 1,
+      "pdfs": [
+        "gost-r-34_51200256"
+      ],
+      "job_id": "job_7e9e2d3bade4"
+    },
+    {
+      "group": 2,
+      "pdfs": [
+        "gost-r-51583-2014=edt2018_6b5b0f74"
+      ],
+      "job_id": "job_3b270a025af1"
+    },
+    {
+      "group": 3,
+      "pdfs": [
+        "gost-r-52633_d3d73e47"
+      ],
+      "job_id": "job_575cd30712e0"
+    },
+    {
+      "group": 5,
+      "pdfs": [
+        "gost-r-54583-2011_db7936db"
+      ],
+      "job_id": "job_c62a188fd3c1"
+    },
+    {
+      "group": 6,
+      "pdfs": [
+        "gost-r-56939-2016=edt2018_da505e3e"
+      ],
+      "job_id": "job_1b76fcadd5e9"
+    },
+    {
+      "group": 7,
+      "pdfs": [
+        "gost-r-59162-2020_115cf792"
+      ],
+      "job_id": "job_0d66f91973d7"
+    },
+    {
+      "group": 8,
+      "pdfs": [
+        "gost-r-59547-2021_c84a5a4d"
+      ],
+      "job_id": "job_7a9d93255099"
+    },
+    {
+      "group": 9,
+      "pdfs": [
+        "gost-r-71252-2024_93fbdd23"
+      ],
+      "job_id": "job_670dc5c84a6f"
+    },
+    {
+      "group": 16,
+      "pdfs": [
+        "r-50.1_15f58fa0"
+      ],
+      "job_id": "job_9147f7424a1c"
+    },
+    {
+      "group": 17,
+      "pdfs": [
+        "r-50.1_b0c52905"
+      ],
+      "job_id": "job_989bf96f6375"
+    },
+    {
+      "group": 10,
+      "pdfs": [
+        "r-1323565.1_0cdebced"
+      ],
+      "job_id": "job_33d03a0eb7be"
+    },
+    {
+      "group": 11,
+      "pdfs": [
+        "r-1323565.1_2dad0d33"
+      ],
+      "job_id": "job_005437bcc525"
+    },
+    {
+      "group": 12,
+      "pdfs": [
+        "r-1323565.1_3ac5d65d"
+      ],
+      "job_id": "job_d64bd33c2616"
+    },
+    {
+      "group": 13,
+      "pdfs": [
+        "r-1323565.1_7204943a"
+      ],
+      "job_id": "job_9e461d807694"
+    },
+    {
+      "group": 14,
+      "pdfs": [
+        "r-1323565.1_9868b0c8"
+      ],
+      "job_id": "job_e07cee8b7066"
+    },
+    {
+      "group": 1,
+      "pdfs": [
+        "gost-r-34_51200256"
+      ],
+      "job_id": "job_260826e76182"
+    },
+    {
+      "group": 2,
+      "pdfs": [
+        "gost-r-51583-2014=edt2018_6b5b0f74"
+      ],
+      "job_id": "job_28c9b49dba9e"
+    },
+    {
+      "group": 3,
+      "pdfs": [
+        "gost-r-52633_d3d73e47"
+      ],
+      "job_id": "job_a2a4c6bfd254"
+    },
+    {
+      "group": 4,
+      "pdfs": [
+        "gost-r-53114-2008=edt2018_40f53e83"
+      ],
+      "job_id": "job_c54ed20099cd"
+    },
+    {
+      "group": 5,
+      "pdfs": [
+        "gost-r-56093-2014=edt2018_9288520f"
+      ],
+      "job_id": "job_ec8ff8db902a"
+    },
+    {
+      "group": 7,
+      "pdfs": [
+        "gost-r-59453_18a844fc"
+      ],
+      "job_id": "job_97109d8710b2"
+    },
+    {
+      "group": 8,
+      "pdfs": [
+        "gost-r-59709-2022_3e823926"
+      ],
+      "job_id": "job_b80d57ed1812"
+    },
+    {
+      "group": 9,
+      "pdfs": [
+        "gost-r-71252-2024_93fbdd23"
+      ],
+      "job_id": "job_2e4222ee7684"
+    },
+    {
+      "group": 11,
+      "pdfs": [
+        "r-1323565.1_2dad0d33"
+      ],
+      "job_id": "job_3f3a3404fe15"
+    },
+    {
+      "group": 10,
+      "pdfs": [
+        "r-1323565.1_0cdebced"
+      ],
+      "job_id": "job_a9da9371b8c8"
+    },
+    {
+      "group": 12,
+      "pdfs": [
+        "r-1323565.1_3ac5d65d"
+      ],
+      "job_id": "job_76470f9a9709"
+    },
+    {
+      "group": 13,
+      "pdfs": [
+        "r-1323565.1_7204943a"
+      ],
+      "job_id": "job_3185b345f6dd"
+    },
+    {
+      "group": 14,
+      "pdfs": [
+        "r-1323565.1_9868b0c8"
+      ],
+      "job_id": "job_8f15a9ed1547"
+    },
+    {
+      "group": 15,
+      "pdfs": [
+        "r-1323565.1_ca600c45"
+      ],
+      "job_id": "job_25dbebf7fc11"
+    },
+    {
+      "group": 16,
+      "pdfs": [
+        "r-50.1_15f58fa0"
+      ],
+      "job_id": "job_1f485208d7e2"
+    },
+    {
+      "group": 17,
+      "pdfs": [
+        "r-50.1_b35ec6fa"
+      ],
+      "job_id": "job_f22aeec79b67"
+    },
+    {
+      "group": 1,
+      "pdfs": [
+        "gost-r-34_51200256"
+      ],
+      "job_id": "job_0f3a56e689e4"
+    },
+    {
+      "group": 2,
+      "pdfs": [
+        "gost-r-51583-2014=edt2018_6b5b0f74"
+      ],
+      "job_id": "job_1230d75932c6"
+    },
+    {
+      "group": 3,
+      "pdfs": [
+        "gost-r-52633_d3d73e47"
+      ],
+      "job_id": "job_3f260413fafc"
+    },
+    {
+      "group": 1,
+      "pdfs": [
+        "gost-r-34_51200256"
+      ],
+      "job_id": "job_2c43d7d968c4"
+    },
+    {
+      "group": 2,
+      "pdfs": [
+        "gost-r-51583-2014=edt2018_6b5b0f74"
+      ],
+      "job_id": "job_c0c94290ef45"
+    },
+    {
+      "group": 3,
+      "pdfs": [
+        "gost-r-52633_d3d73e47"
+      ],
+      "job_id": "job_f6a66f664258"
+    },
+    {
+      "group": 7,
+      "pdfs": [
+        "gost-r-59453_18a844fc"
+      ],
+      "job_id": "job_0f2fdde5966d"
+    },
+    {
+      "group": 3,
+      "pdfs": [
+        "gost-r-52633_d3d73e47"
+      ],
+      "job_id": "job_aa0bbd448730"
+    },
+    {
+      "group": 1,
+      "pdfs": [
+        "gost-r-50922-2006_00dc836a"
+      ],
+      "job_id": "job_472626153747"
+    },
+    {
+      "group": 2,
+      "pdfs": [
+        "gost-r-53109-2008=edt2018_68ad1b8b"
+      ],
+      "job_id": "job_ae1c1533bbba"
+    },
+    {
+      "group": 3,
+      "pdfs": [
+        "gost-r-56938-2016=edt2018_86a0c3ab"
+      ],
+      "job_id": "job_45248b54c8c4"
+    },
+    {
+      "group": 1,
+      "pdfs": [
+        "gost-r-51275-2006=edt2018_62b9bb2c"
+      ],
+      "job_id": "job_9c93590247c0"
+    }
+  ],
+  "failed_groups": [],
+  "next_group": 0
+}

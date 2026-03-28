@@ -19,8 +19,9 @@ def str_to_bool(value, default=False):
         # If the value doesn't match known boolean strings, return default
         return default
 
-# Load environment variables
-load_dotenv()
+# Load environment variables from .env file
+# override=True ensures .env values take precedence over existing shell environment variables
+load_dotenv(override=True)
 
 # Database configuration
 DB_TYPE = os.getenv("DB_TYPE", "postgresql")

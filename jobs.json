@@ -1,0 +1,68 @@
+[
+  {
+    "job_id": "job_2cc3afa5094448eb9d0cd8f171fe7eec_7",
+    "name": "Group 1 - Processing Job 7",
+    "phases": [
+      "extract"
+    ],
+    "parameters": {
+      "document_ids": [
+        "pdf-001-001",
+        "pdf-001-002",
+        "pdf-001-003",
+        "pdf-001-004",
+        "pdf-001-005",
+        "pdf-001-006",
+        "pdf-001-007",
+        "pdf-001-008",
+        "pdf-001-009"
+      ],
+      "max_tokens": "5000",
+      "temperature": 0.7
+    }
+  },
+  {
+    "job_id": "job_2cc3afa5094448eb9d0cd8f171fe7eec_8",
+    "name": "Group 2 - Processing Job 8",
+    "phases": [
+      "extract"
+    ],
+    "parameters": {
+      "document_ids": [
+        "pdf-001-001",
+        "pdf-001-002",
+        "pdf-001-003",
+        "pdf-001-004",
+        "pdf-001-005",
+        "pdf-001-006",
+        "pdf-001-007",
+        "pdf-001-008",
+        "pdf-001-009"
+      ],
+      "max_tokens": "5000",
+      "temperature": 0.7
+    }
+  },
+  {
+    "job_id": "job_2cc3afa5094448eb9d0cd8f171fe7eec_9",
+    "name": "Group 3 - Processing Job 9",
+    "phases": [
+      "extract"
+    ],
+    "parameters": {
+      "document_ids": [
+        "pdf-001-001",
+        "pdf-001-002",
+        "pdf-001-003",
+        "pdf-001-004",
+        "pdf-001-005",
+        "pdf-001-006",
+        "pdf-001-007",
+        "pdf-001-008",
+        "pdf-001-009"
+      ],
+      "max_tokens": "5000",
+      "temperature": 0.7
+    }
+  }
+]

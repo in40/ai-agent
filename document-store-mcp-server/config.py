@@ -28,3 +28,9 @@ SEARCH_RESULTS_LIMIT = int(os.getenv("SEARCH_RESULTS_LIMIT", "50"))
 # Logging
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
 LOG_FILE = os.getenv("LOG_FILE", "/root/qwen/ai_agent/document-store-mcp-server/document_store.log")
+
+# Settings object for backwards compatibility with health check
+class Settings:
+    llm_base_url = os.getenv("LLM_BASE_URL", "http://localhost:1234/v1")
+
+settings = Settings()

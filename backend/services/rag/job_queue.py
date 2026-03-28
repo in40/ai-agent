@@ -86,11 +86,12 @@ class SmartIngestionJob:
 
 class JobQueue:
     """Manages background job queue with Redis or in-memory fallback"""
-    
+
     def __init__(self):
         self.jobs: Dict[str, SmartIngestionJob] = {}
         self.lock = threading.Lock()
         self.workers: Dict[str, threading.Thread] = {}
+        self.worker_metadata: Dict[str, Dict[str, Any]] = {}  # Track worker metadata for recovery
         
     def create_job(self, user_id: str, job_type: str, parameters: Dict[str, Any], 
                    ingestion_mode: str = 'files', processing_mode: str = 'vector_db',
@@ -221,13 +222,13 @@ class JobQueue:
     def start_worker(self, job_id: str, process_func):
         """Start background worker for a job"""
         logger.info(f"[JobQueue] Starting worker for job {job_id}")
-        
+
         def worker():
             logger.info(f"[JobQueue] Worker thread started for job {job_id}")
             try:
                 job = self.get_job(job_id)
                 logger.info(f"[JobQueue] Retrieved job {job_id}: status={job.status if job else 'None'}")
-                
+
                 if not job or job.status != JobStatus.PENDING.value:
                     logger.warning(f"[JobQueue] Job {job_id} not in PENDING status, skipping")
                     return
@@ -235,6 +236,9 @@ class JobQueue:
                 # Update status to processing
                 job.status = JobStatus.PROCESSING.value
                 job.current_stage = "initializing"
+                # Add worker tracking metadata
+                job.parameters['worker_started_at'] = datetime.utcnow().isoformat()
+                job.parameters['worker_pid'] = os.getpid()
                 self.update_job(job)
                 logger.info(f"[JobQueue] Job {job_id} status updated to PROCESSING")
 
@@ -264,11 +268,19 @@ class JobQueue:
                     job.status = JobStatus.FAILED.value
                     job.error = str(e)
                     self.update_job(job)
-        
+
         thread = threading.Thread(target=worker, daemon=True, name=f"job-worker-{job_id}")
         thread.start()
         logger.info(f"[JobQueue] Worker thread for job {job_id} started successfully (thread={thread.name})")
         self.workers[job_id] = thread
+        
+        # Store worker metadata for recovery
+        self.worker_metadata[job_id] = {
+            'thread': thread,
+            'started_at': datetime.utcnow().isoformat(),
+            'pid': os.getpid()
+        }
+        
         return thread
 
 
@@ -937,12 +949,228 @@ def start_processing(job_id):
     
     # Start the worker
     job_queue.start_worker(job.job_id, process_job_background)
-    
+
     logger.info(f"Job {job_id} processing started with local files")
-    
+
     return jsonify({
         'message': 'Job processing started',
         'job_id': job_id,
         'status': 'processing',
         'local_files': local_files
     }), 200
+
+
+@jobs_bp.route('/jobs/<job_id>/recover', methods=['POST'])
+def recover_stuck_job(job_id):
+    """
+    Recover a stuck job by resetting it to pending status
+    
+    Use this when a job is stuck in 'processing' status but the worker thread is dead.
+    This can happen when:
+    - Service was restarted
+    - Worker process crashed
+    - Worker thread died unexpectedly
+    
+    The job will be reset to 'pending' status and can be restarted.
+    """
+    job = job_queue.get_job(job_id)
+
+    if not job:
+        return jsonify({'error': 'Job not found'}), 404
+
+    if job.status not in [JobStatus.PROCESSING.value]:
+        return jsonify({'error': 'Can only recover processing jobs'}), 400
+
+    # Check if worker is still alive
+    worker_alive = False
+    if job_id in job_queue.worker_metadata:
+        worker_info = job_queue.worker_metadata[job_id]
+        worker_alive = worker_info['thread'].is_alive()
+
+    # Reset job to pending
+    job.status = JobStatus.PENDING.value
+    job.current_stage = "queued"
+    job.progress = 0
+    job.error = None
+    
+    # Add recovery metadata
+    if 'recovery_history' not in job.parameters:
+        job.parameters['recovery_history'] = []
+    job.parameters['recovery_history'].append({
+        'action': 'recover_stuck',
+        'timestamp': datetime.utcnow().isoformat(),
+        'worker_was_alive': worker_alive,
+        'previous_stage': job.current_stage
+    })
+
+    job_queue.update_job(job)
+
+    logger.info(f"Job {job_id} recovered (worker alive: {worker_alive})")
+
+    return jsonify({
+        'message': 'Job recovered - ready to restart',
+        'job_id': job_id,
+        'new_status': job.status,
+        'worker_was_alive': worker_alive
+    }), 200
+
+
+@jobs_bp.route('/jobs/recover-all-stuck', methods=['POST'])
+def recover_all_stuck_jobs():
+    """
+    Find and recover all stuck jobs across all users
+    
+    A job is considered stuck if:
+    - Status is 'processing'
+    - Worker thread is not alive (or not tracked)
+    - No progress update for more than max_age_minutes
+    
+    Request JSON (optional):
+    {
+        "max_age_minutes": 30,  // Only recover jobs older than this (default: 30)
+        "dry_run": true         // Don't actually recover, just report (default: false)
+    }
+    
+    Response:
+    {
+        "jobs_scanned": 10,
+        "jobs_stuck": 2,
+        "jobs_recovered": 2,
+        "stuck_jobs": [...]
+    }
+    """
+    try:
+        data = request.get_json() or {}
+        max_age_minutes = data.get('max_age_minutes', 30)
+        dry_run = data.get('dry_run', False)
+
+        cutoff_time = datetime.utcnow() - timedelta(minutes=max_age_minutes)
+        cutoff_str = cutoff_time.isoformat()
+
+        jobs_scanned = 0
+        jobs_stuck = 0
+        jobs_recovered = 0
+        stuck_jobs = []
+
+        # Get all jobs from Redis
+        all_jobs = job_queue.get_all_jobs(limit=1000)
+
+        for job in all_jobs:
+            jobs_scanned += 1
+
+            # Only check processing jobs
+            if job.status != JobStatus.PROCESSING.value:
+                continue
+
+            # Check if job is old enough to be considered stuck
+            if job.updated_at < cutoff_str:
+                jobs_stuck += 1
+
+                # Check if worker is alive
+                worker_alive = False
+                if job.job_id in job_queue.worker_metadata:
+                    worker_info = job_queue.worker_metadata[job.job_id]
+                    worker_alive = worker_info['thread'].is_alive()
+
+                job_info = {
+                    'job_id': job.job_id,
+                    'user_id': job.user_id,
+                    'job_type': job.job_type,
+                    'current_stage': job.current_stage,
+                    'updated_at': job.updated_at,
+                    'worker_alive': worker_alive
+                }
+                stuck_jobs.append(job_info)
+
+                if not dry_run:
+                    # Reset job to pending
+                    job.status = JobStatus.PENDING.value
+                    job.current_stage = "queued"
+                    job.progress = 0
+                    job.error = None
+                    
+                    if 'recovery_history' not in job.parameters:
+                        job.parameters['recovery_history'] = []
+                    job.parameters['recovery_history'].append({
+                        'action': 'auto_recover_stuck',
+                        'timestamp': datetime.utcnow().isoformat(),
+                        'worker_was_alive': worker_alive,
+                        'previous_stage': job.current_stage
+                    })
+
+                    job_queue.update_job(job)
+                    jobs_recovered += 1
+                    logger.info(f"Auto-recovered stuck job {job.job_id}")
+
+        return jsonify({
+            'success': True,
+            'jobs_scanned': jobs_scanned,
+            'jobs_stuck': jobs_stuck,
+            'jobs_recovered': jobs_recovered,
+            'stuck_jobs': stuck_jobs,
+            'cutoff_time': cutoff_str,
+            'max_age_minutes': max_age_minutes,
+            'dry_run': dry_run
+        }), 200
+
+    except Exception as e:
+        logger.error(f"Error recovering stuck jobs: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+
+@jobs_bp.route('/jobs/check-workers', methods=['GET'])
+def check_worker_status():
+    """
+    Check status of all active worker threads
+    
+    Response:
+    {
+        "active_workers": 2,
+        "workers": [
+            {
+                "job_id": "job_abc123",
+                "started_at": "2026-03-23T10:00:00",
+                "is_alive": true,
+                "pid": 12345
+            }
+        ],
+        "orphaned_jobs": [...]  // Jobs in 'processing' but no worker
+    }
+    """
+    try:
+        active_workers = []
+        orphaned_jobs = []
+
+        # Check tracked workers
+        for job_id, worker_info in job_queue.worker_metadata.items():
+            is_alive = worker_info['thread'].is_alive()
+            active_workers.append({
+                'job_id': job_id,
+                'started_at': worker_info['started_at'],
+                'pid': worker_info['pid'],
+                'is_alive': is_alive
+            })
+
+        # Find orphaned jobs (processing but no worker tracked)
+        all_jobs = job_queue.get_all_jobs(limit=1000)
+        for job in all_jobs:
+            if job.status == JobStatus.PROCESSING.value:
+                if job.job_id not in job_queue.worker_metadata:
+                    orphaned_jobs.append({
+                        'job_id': job.job_id,
+                        'user_id': job.user_id,
+                        'job_type': job.job_type,
+                        'current_stage': job.current_stage,
+                        'updated_at': job.updated_at
+                    })
+
+        return jsonify({
+            'active_workers': len(active_workers),
+            'workers': active_workers,
+            'orphaned_jobs': orphaned_jobs,
+            'orphaned_count': len(orphaned_jobs)
+        }), 200
+
+    except Exception as e:
+        logger.error(f"Error checking worker status: {str(e)}")
+        return jsonify({'error': str(e)}), 500
