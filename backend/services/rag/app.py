@@ -2752,14 +2752,44 @@ def smart_ingest_files(current_user_id):
                             shutil.copy2(file_info['path'], dest_path)
                             logger.info(f"[Job {job_id}] Saved {file_info['original_filename']} to Document Store")
                             
-                            results['document_results'].append({
+                            results['file_results'].append({
                                 'filename': file_info['original_filename'],
                                 'status': 'saved_to_store',
                                 'chunks': 0,
                                 'path': dest_path
                             })
+                            # Save chunks to .chunks.json file
+                            import uuid
+                            base_name = os.path.splitext(file_info["original_filename"])[0]
+                            doc_id = f"{base_name}_{uuid.uuid4().hex[:8]}"
+                            chunks_file = os.path.join(docstore_dir, f"{base_name}_{uuid.uuid4().hex[:8]}.chunks.json")
+                            chunks_data_output = {
+                                "doc_id": doc_id,
+                                "filename": file_info["original_filename"],
+                                "total_chunks": 0,
+                                "chunking_strategy": chunking_strategy,
+                                "chunks": []
+                            }
+                            with open(chunks_file, "w", encoding="utf-8") as f:
+                                json.dump(chunks_data_output, f, indent=2, ensure_ascii=False)
+                            logger.info(f"[Job {job_id}] Saved chunks to {chunks_file}")
+                            # Save chunks to .chunks.json file
+                            import uuid
+                            base_name = os.path.splitext(file_info["original_filename"])[0]
+                            doc_id = f"{base_name}_{uuid.uuid4().hex[:8]}"
+                            chunks_file = os.path.join(docstore_dir, f"{base_name}_{uuid.uuid4().hex[:8]}.chunks.json")
+                            chunks_data_output = {
+                                "doc_id": doc_id,
+                                "filename": file_info["original_filename"],
+                                "total_chunks": len(chunks),
+                                "chunking_strategy": chunking_strategy,
+                                "chunks": [{"chunk_id": f"{doc_id}_chunk_{i:04d}", "chunk_index": i, "content": chunks[i], "section": "", "title": f"Chunk {i+1}", "token_count": len(chunks[i].split())} for i in range(len(chunks))]
+                            }
+                            with open(chunks_file, "w", encoding="utf-8") as f:
+                                json.dump(chunks_data_output, f, indent=2, ensure_ascii=False)
+                            logger.info(f"[Job {job_id}] Saved chunks to {chunks_file}")
                         else:
-                            results['document_results'].append({
+                            results['file_results'].append({
                                 'filename': file_info['original_filename'],
                                 'status': 'success',
                                 'chunks': len(chunks)
@@ -3140,7 +3170,7 @@ def smart_ingest_webpage(current_user_id):
                                 json.dump(doc_metadata, f, indent=2)
 
                             results['documents_processed'] += 1
-                            results['document_results'].append({
+                            results['file_results'].append({
                                 'url': doc_url,
                                 'status': 'saved_to_store',
                                 'chunks': 0,
@@ -3153,7 +3183,7 @@ def smart_ingest_webpage(current_user_id):
                         except Exception as download_error:
                             logger.error(f"[Job {job_id}] Download failed for {doc_url}: {download_error}")
                             results['errors'].append({'url': doc_url, 'error': str(download_error)})
-                            results['document_results'].append({
+                            results['file_results'].append({
                                 'url': doc_url,
                                 'status': 'failed',
                                 'error': str(download_error)
@@ -3202,7 +3232,7 @@ def smart_ingest_webpage(current_user_id):
                         except Exception as download_error:
                             logger.error(f"[Job {job_id}] Download failed for {doc_url}: {download_error}")
                             results['errors'].append({'url': doc_url, 'error': str(download_error)})
-                            results['document_results'].append({
+                            results['file_results'].append({
                                 'url': doc_url,
                                 'status': 'failed',
                                 'error': str(download_error)
@@ -3215,7 +3245,7 @@ def smart_ingest_webpage(current_user_id):
                         
                         if not document_content.strip():
                             results['errors'].append({'url': doc_url, 'error': 'Empty document'})
-                            results['document_results'].append({
+                            results['file_results'].append({
                                 'url': doc_url,
                                 'status': 'empty',
                                 'chunks': 0
@@ -3288,7 +3318,7 @@ def smart_ingest_webpage(current_user_id):
                         
                         results['documents_processed'] += 1
                         results['total_chunks'] += len(chunks)
-                        results['document_results'].append({
+                        results['file_results'].append({
                             'url': doc_url,
                             'status': 'success',
                             'chunks': len(chunks)
@@ -3303,7 +3333,7 @@ def smart_ingest_webpage(current_user_id):
                         import traceback
                         logger.error(traceback.format_exc())
                         results['errors'].append({'url': doc_url, 'error': str(e)})
-                        results['document_results'].append({
+                        results['file_results'].append({
                             'url': doc_url,
                             'status': 'error',
                             'error': str(e)

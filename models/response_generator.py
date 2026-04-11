@@ -1,16 +1,62 @@
+import sys
+from pathlib import Path
+
+# Get project root for config imports
+project_root = Path(__file__).resolve().parent.parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
+
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from pydantic import BaseModel, Field
 from langchain_core.output_parsers import PydanticOutputParser
-from config.settings import (
-    RESPONSE_LLM_PROVIDER, RESPONSE_LLM_MODEL, RESPONSE_LLM_HOSTNAME,
-    RESPONSE_LLM_PORT, RESPONSE_LLM_API_PATH, OPENAI_API_KEY, DEEPSEEK_API_KEY,
-    GIGACHAT_CREDENTIALS, GIGACHAT_SCOPE, GIGACHAT_ACCESS_TOKEN,
-    GIGACHAT_VERIFY_SSL_CERTS, ENABLE_SCREEN_LOGGING, DEFAULT_LLM_PROVIDER,
-    DEFAULT_LLM_MODEL, DEFAULT_LLM_HOSTNAME, DEFAULT_LLM_PORT, DEFAULT_LLM_API_PATH,
-    FORCE_DEFAULT_MODEL_FOR_ALL
-)
+
+# Import from project root config.settings
+try:
+    import config.settings as settings
+    RESPONSE_LLM_PROVIDER = settings.RESPONSE_LLM_PROVIDER
+    RESPONSE_LLM_MODEL = settings.RESPONSE_LLM_MODEL
+    RESPONSE_LLM_HOSTNAME = settings.RESPONSE_LLM_HOSTNAME
+    RESPONSE_LLM_PORT = settings.RESPONSE_LLM_PORT
+    RESPONSE_LLM_API_PATH = settings.RESPONSE_LLM_API_PATH
+    OPENAI_API_KEY = settings.OPENAI_API_KEY
+    DEEPSEEK_API_KEY = settings.DEEPSEEK_API_KEY
+    GIGACHAT_CREDENTIALS = settings.GIGACHAT_CREDENTIALS
+    GIGACHAT_SCOPE = settings.GIGACHAT_SCOPE
+    GIGACHAT_ACCESS_TOKEN = settings.GIGACHAT_ACCESS_TOKEN
+    GIGACHAT_VERIFY_SSL_CERTS = settings.GIGACHAT_VERIFY_SSL_CERTS
+    ENABLE_SCREEN_LOGGING = settings.ENABLE_SCREEN_LOGGING
+    DEFAULT_LLM_PROVIDER = settings.DEFAULT_LLM_PROVIDER
+    DEFAULT_LLM_MODEL = settings.DEFAULT_LLM_MODEL
+    DEFAULT_LLM_HOSTNAME = settings.DEFAULT_LLM_HOSTNAME
+    DEFAULT_LLM_PORT = settings.DEFAULT_LLM_PORT
+    DEFAULT_LLM_API_PATH = settings.DEFAULT_LLM_API_PATH
+    FORCE_DEFAULT_MODEL_FOR_ALL = settings.FORCE_DEFAULT_MODEL_FOR_ALL
+except (ImportError, ModuleNotFoundError):
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("settings", project_root / "config" / "settings.py")
+    settings = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(settings)
+    RESPONSE_LLM_PROVIDER = settings.RESPONSE_LLM_PROVIDER
+    RESPONSE_LLM_MODEL = settings.RESPONSE_LLM_MODEL
+    RESPONSE_LLM_HOSTNAME = settings.RESPONSE_LLM_HOSTNAME
+    RESPONSE_LLM_PORT = settings.RESPONSE_LLM_PORT
+    RESPONSE_LLM_API_PATH = settings.RESPONSE_LLM_API_PATH
+    OPENAI_API_KEY = settings.OPENAI_API_KEY
+    DEEPSEEK_API_KEY = settings.DEEPSEEK_API_KEY
+    GIGACHAT_CREDENTIALS = settings.GIGACHAT_CREDENTIALS
+    GIGACHAT_SCOPE = settings.GIGACHAT_SCOPE
+    GIGACHAT_ACCESS_TOKEN = settings.GIGACHAT_ACCESS_TOKEN
+    GIGACHAT_VERIFY_SSL_CERTS = settings.GIGACHAT_VERIFY_SSL_CERTS
+    ENABLE_SCREEN_LOGGING = settings.ENABLE_SCREEN_LOGGING
+    DEFAULT_LLM_PROVIDER = settings.DEFAULT_LLM_PROVIDER
+    DEFAULT_LLM_MODEL = settings.DEFAULT_LLM_MODEL
+    DEFAULT_LLM_HOSTNAME = settings.DEFAULT_LLM_HOSTNAME
+    DEFAULT_LLM_PORT = settings.DEFAULT_LLM_PORT
+    DEFAULT_LLM_API_PATH = settings.DEFAULT_LLM_API_PATH
+    FORCE_DEFAULT_MODEL_FOR_ALL = settings.FORCE_DEFAULT_MODEL_FOR_ALL
+
 from utils.prompt_manager import PromptManager
 from utils.ssh_keep_alive import SSHKeepAliveContext
 import logging
@@ -283,16 +329,29 @@ class ResponseGenerator:
                 # Create the LLM with the determined base URL
                 # Timeout from .env: LLM_CHUNKING_TIMEOUT (default: 14400 seconds = 4 hours for production)
                 # For testing, set in .env: LLM_CHUNKING_TIMEOUT=120
-                from config.settings import LLM_CHUNKING_TIMEOUT
+                LLM_CHUNKING_TIMEOUT = settings.LLM_CHUNKING_TIMEOUT
                 logger.info(f"LLM timeout: {LLM_CHUNKING_TIMEOUT} seconds ({LLM_CHUNKING_TIMEOUT/3600:.1f} hours)")
                 
+                # Create custom httpx client with explicit timeouts
+                import httpx
+                http_client = httpx.Client(
+                    timeout=httpx.Timeout(
+                        timeout=float(LLM_CHUNKING_TIMEOUT),
+                        connect=30.0,
+                        read=float(LLM_CHUNKING_TIMEOUT),
+                        write=float(LLM_CHUNKING_TIMEOUT)
+                    ),
+                    limits=httpx.Limits(max_keepalive_connections=1, max_connections=1)
+                )
+
                 return ChatOpenAI(
                     model=actual_model,
                     temperature=0.7,
                     api_key=api_key,
                     base_url=base_url,
                     request_timeout=LLM_CHUNKING_TIMEOUT,
-                    max_retries=0  # Don't retry on timeout
+                    max_retries=0,  # Don't retry on timeout
+                    http_client=http_client
                 )
         else:
             # Return the default LLM instance

@@ -26,13 +26,18 @@ class DocumentStoreServerHandlers:
             },
             {
                 "name": "list_documents",
-                "description": "List all documents for a specific ingestion job, including metadata",
+                "description": "List all documents for a specific ingestion job, including metadata. Supports format filtering: when filter_format is specified (e.g., 'md'), only documents with that format are returned, but ALL related files (pdf, chunks) for those documents are included in the result.",
                 "inputSchema": {
                     "type": "object",
                     "properties": {
                         "job_id": {
                             "type": "string",
                             "description": "Ingestion job ID"
+                        },
+                        "filter_format": {
+                            "type": "string",
+                            "description": "Optional format filter (e.g., 'md', 'pdf', 'chunks'). When specified, only documents with this format are returned, but all related files for those documents are included.",
+                            "enum": ["txt", "pdf", "md", "json", "chunks"]
                         }
                     },
                     "required": ["job_id"]

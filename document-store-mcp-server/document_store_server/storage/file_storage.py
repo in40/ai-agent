@@ -26,6 +26,9 @@ class FileStorage:
     def _get_document_path(self, job_id: str, doc_id: str, format: str = "txt") -> Path:
         """Get document file path"""
         docs_dir = self._get_documents_dir(job_id)
+        # Special case for chunks format - use .chunks.json extension
+        if format.lower() == "chunks":
+            return docs_dir / f"{doc_id}.chunks.json"
         return docs_dir / f"{doc_id}.{format}"
     
     def _get_metadata_path(self, job_id: str, doc_id: str) -> Path:
@@ -170,57 +173,95 @@ class FileStorage:
         
         return deleted
     
-    def list_documents(self, job_id: str) -> List[Dict[str, Any]]:
+    def list_documents(self, job_id: str, filter_format: Optional[str] = None) -> List[Dict[str, Any]]:
         """
-        List all documents for a job.
+        List all documents for a job with optional format filtering.
+
+        When filter_format is specified:
+        - Only documents that have the filtered format are returned
+        - For each matching document, ALL related files (pdf, md, chunks) are included
+        - This ensures grouped display: if filtering by "md", show only docs with .md files,
+          but include their associated .pdf and .chunks.json files in the result
 
         Args:
             job_id: Ingestion job ID
+            filter_format: Optional format to filter by (e.g., 'md', 'pdf'). 
+                          If None, returns all documents without filtering.
 
         Returns:
-            List of document info dictionaries with original filenames from metadata
+            List of document info dictionaries. Each entry represents a unique doc_id
+            with its available formats grouped together via the 'formats' field.
         """
         docs_dir = self._get_documents_dir(job_id)
 
         if not docs_dir.exists():
             return []
 
-        documents = []
-        seen_ids = set()
+        # First pass: collect all files grouped by doc_id
+        doc_files: Dict[str, Dict[str, Path]] = {}  # doc_id -> {format: path}
 
         for file_path in docs_dir.iterdir():
+            # Skip metadata files (but NOT chunks files - they should be included)
             if file_path.suffix == '.json' and 'metadata' in file_path.stem:
                 continue
 
-            doc_id = file_path.stem
-            if doc_id in seen_ids:
-                continue
-            seen_ids.add(doc_id)
+            # Determine format from extension first, then extract doc_id
+            if file_path.name.endswith('.chunks.json'):
+                # Special case: .chunks.json files - doc_id is everything before .chunks.json
+                fmt = 'chunks'
+                doc_id = file_path.name[:-12]  # Remove '.chunks.json' (12 chars)
+            else:
+                doc_id = file_path.stem
+                fmt = file_path.suffix[1:]  # Remove dot
 
-            # Get metadata if available
+            if doc_id not in doc_files:
+                doc_files[doc_id] = {}
+            doc_files[doc_id][fmt] = file_path
+
+        # Second pass: apply filter and build result
+        documents = []
+        
+        for doc_id, formats_dict in doc_files.items():
+            # If filtering, check if the document has the requested format
+            if filter_format:
+                filter_lower = filter_format.lower()
+                # Check for exact match or special cases (chunks)
+                has_filter_format = any(
+                    f.lower() == filter_lower for f in formats_dict.keys()
+                )
+                if not has_filter_format:
+                    continue  # Skip documents without the filtered format
+
+            # Get metadata from the .metadata.json file
             metadata = self.get_metadata(job_id, doc_id) or {}
 
-            # Get file size
-            try:
-                size = file_path.stat().st_size
-            except:
-                size = 0
+            # Build list of available formats with their details
+            available_formats = []
+            for fmt, path in formats_dict.items():
+                try:
+                    size = path.stat().st_size
+                except:
+                    size = 0
+                
+                available_formats.append({
+                    "format": fmt,
+                    "size": size,
+                    "filename": path.name
+                })
 
-            # Use original filename from metadata if available, otherwise use file path name
-            original_filename = metadata.get('original_filename', file_path.name)
-            
-            # Get source website from metadata if available
+            # Use original filename from metadata if available
+            original_filename = metadata.get('original_filename', doc_id)
             source_website = metadata.get('source_website', '')
             original_url = metadata.get('original_url', '')
 
             documents.append({
                 "doc_id": doc_id,
-                "filename": original_filename,  # Use original filename from metadata
-                "original_url": original_url,  # Add source URL
-                "source_website": source_website,  # Add source website
-                "format": file_path.suffix[1:],  # Remove dot
-                "size": size,
-                "metadata": metadata
+                "filename": original_filename,
+                "original_url": original_url,
+                "source_website": source_website,
+                "formats": available_formats,  # All available formats for this document
+                "metadata": metadata,
+                "has_format": {fmt: True for fmt in formats_dict.keys()}  # Quick lookup
             })
 
         return sorted(documents, key=lambda x: x["doc_id"])

@@ -23,9 +23,34 @@ import requests
 from bs4 import BeautifulSoup
 
 # Import RAG components
+import sys
+from pathlib import Path
+
+# Get project root for config imports
+# For files in backend/services/rag/, we need to go up 3 levels to get to project root
+project_root = Path(__file__).resolve().parent.parent.parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
+
 from rag_component.main import RAGOrchestrator
-from config.settings import RESPONSE_LLM_PROVIDER, RESPONSE_LLM_MODEL, LLM_CHUNKING_TIMEOUT, str_to_bool
 from models.response_generator import ResponseGenerator
+
+# Import from project root config.settings
+try:
+    import config.settings as settings
+    RESPONSE_LLM_PROVIDER = settings.RESPONSE_LLM_PROVIDER
+    RESPONSE_LLM_MODEL = settings.RESPONSE_LLM_MODEL
+    LLM_CHUNKING_TIMEOUT = settings.LLM_CHUNKING_TIMEOUT
+    str_to_bool = settings.str_to_bool
+except (ImportError, ModuleNotFoundError):
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("settings", project_root / "config" / "settings.py")
+    settings = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(settings)
+    RESPONSE_LLM_PROVIDER = settings.RESPONSE_LLM_PROVIDER
+    RESPONSE_LLM_MODEL = settings.RESPONSE_LLM_MODEL
+    LLM_CHUNKING_TIMEOUT = settings.LLM_CHUNKING_TIMEOUT
+    str_to_bool = settings.str_to_bool
 
 # Import job queue for background processing
 from .job_queue import job_queue, JobStatus, SmartIngestionJob
@@ -99,8 +124,19 @@ DO NOT overlap:
 - Multi-sentence definitions
 - Complete attack scenarios/methodologies
 
-## METADATA REQUIREMENTS
-For each chunk, generate structured metadata:
+### 🚫 NEVER SKIP (must include ALL content)
+- Multi-line formulas, especially those split across lines with \backslash or \\ continuation markers
+- Cryptographic key values (hex strings like $K_{{MAC}} = ...$, $S^{{C}}_{{MAC}} = ...$)
+- Session keys, master keys, initialization vectors
+- Any content inside $...$ or $$...$$ delimiters
+- Appendix examples and test vectors (they contain critical reference data)
+
+## METADATA REQUIREMENTS - CRITICAL FIELD DEFINITIONS
+
+For each chunk, you MUST generate ALL of the following fields. **NO field can be omitted.**
+
+### REQUIRED FIELDS (every chunk MUST have all of these):
+
 {{
   "chunk_id": integer,
   "section": "X.Y.Z or appendix_X",
@@ -115,8 +151,47 @@ For each chunk, generate structured metadata:
   "overlap_source": "chunk_X_end or null",
   "overlap_tokens": integer,
   "token_count": integer,
-  "content": "chunk text with overlaps PREPENDED (not appended to previous chunk)"
+  "content": "ACTUAL TEXT FROM THE DOCUMENT - THIS FIELD IS MANDATORY"
 }}
+
+### ⚠️ CRITICAL: THE "content" FIELD ⚠️
+
+**The "content" field is THE MOST IMPORTANT field. Without it, the chunk is USELESS.**
+
+**Rules for "content" field:**
+
+1. **MUST contain actual text from the document** - Copy the exact text from the input document
+2. **CANNOT be empty or null** - Every chunk must have content
+3. **CANNOT be a description** - Do NOT write "this chunk contains..." - just include the actual text
+4. **Must be 200-450 tokens** - Each chunk should have substantial content
+5. **Preserve formatting** - Keep headers, formulas, tables as they appear in the document
+6. **Include section headers** - Start each chunk with relevant section/subsection headers
+
+**Example of CORRECT content field:**
+```json
+{{
+  "chunk_id": 1,
+  "section": "1",
+  "title": "Область применения",
+  "content": "# 1 Область применения\\\\n\\\\nНастоящие рекомендации определяют криптографические алгоритмы... (actual document text follows)"
+}}
+```
+
+**Example of WRONG content field (DO NOT DO THIS):**
+```json
+{{
+  "chunk_id": 1,
+  "section": "1", 
+  "title": "Область применения",
+  "content": "This section describes the scope of the standard..."  ← WRONG! This is a description, not actual content!
+}}
+```
+
+**BEFORE SUBMITTING YOUR JSON, VERIFY:**
+- □ Every chunk has a "content" field
+- □ Every "content" field contains actual document text (not descriptions)
+- □ Every "content" field is at least 200 tokens
+- □ The content is copied from the input document, not generated/summarized
 
 ## OUTPUT FORMAT
 Return ONLY valid JSON matching this schema:
@@ -148,10 +223,66 @@ Return ONLY valid JSON matching this schema:
 ## CRITICAL CONSTRAINT
 If document contains morphing/generation procedures (e.g., "поколение потомков"), apply overlap between generation steps to preserve causal chain. For all other boundaries: ZERO overlap.
 
+## COVERAGE REQUIREMENTS (CRITICAL - READ CAREFULLY)
+1. You MUST process the ENTIRE document text provided in the TEXT TO CHUNK section
+2. Every paragraph, section, sentence, and piece of content must appear in at least one chunk
+3. Do NOT stop early - continue chunking until ALL content from the input is covered
+4. The "total_chunks" field must reflect ALL chunks needed for the COMPLETE document
+5. If the document is long, create MORE chunks (10, 20, 30+) - do not limit yourself
+6. Typical technical standards require 15-50 chunks depending on length
+7. Complete coverage is MORE IMPORTANT than having few chunks
+
+## VALIDATION CHECKLIST (BEFORE RESPONDING)
+Before finalizing your JSON response, you MUST verify:
+□ Every section of the input text is included in at least one chunk
+□ No paragraphs, sections, or content are skipped
+□ The "total_chunks" count exactly matches the number of chunks in the "chunks" array
+□ All content from the input appears in the chunks (mentally compare input vs output)
+□ You have NOT stopped after only processing the first few paragraphs
+
+## WARNING ABOUT COMMON MISTAKES
+DO NOT make these errors:
+✗ Processing only the title page and foreword, then stopping
+✗ Ignoring content after the first few sections
+✗ Creating only 2-5 chunks for a long document
+✗ Counting "total_chunks" as a small number when more content remains
+
+INSTEAD:
+✓ Read through the ENTIRE input text from start to finish
+✓ Create a chunk for EACH semantic section you find
+✓ Continue until you reach the END of the input text
+✓ Set "total_chunks" to the actual count of all chunks created
+
 ## TEXT TO CHUNK
 {input_text}
 
-## YOUR JSON RESPONSE:"""
+## YOUR JSON RESPONSE (Remember: Process ENTIRE document, create ALL needed chunks)
+
+**FINAL REMINDER BEFORE YOU RESPOND:**
+
+⚠️ **THE "content" FIELD IS MANDATORY FOR EVERY CHUNK** ⚠️
+
+If you submit JSON without the "content" field in any chunk:
+- The chunking will FAIL
+- The document will be marked as failed
+- All your work will be wasted
+
+**For each chunk in the "chunks" array, you MUST include:**
+1. All metadata fields (chunk_id, section, title, etc.)
+2. **THE "content" FIELD WITH ACTUAL DOCUMENT TEXT**
+
+**DO NOT** submit JSON like this (WRONG):
+```json
+{{"chunk_id": 1, "section": "1", "title": "Scope"}}  ← MISSING content field!
+```
+
+**DO** submit JSON like this (CORRECT):
+```json
+{{"chunk_id": 1, "section": "1", "title": "Scope", "content": "# 1 Scope\\\\n\\\\nThis standard defines..."}}
+```
+
+**Your response must be valid JSON.**
+"""
 
 # Prompts storage directory
 PROMPTS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'data', 'smart_ingestion_prompts')
@@ -364,17 +495,226 @@ def download_document_via_mcp(url: str) -> Tuple[bool, str, str]:
         return False, str(e), ""
 
 
+def _validate_chunking_coverage(document_content: str, chunks: List[Dict]) -> Tuple[bool, str]:
+    """
+    Validate that LLM chunking adequately covered the input document.
+    
+    This function performs two critical checks:
+    1. Content coverage ratio - ensures chunks cover sufficient % of input
+    2. Minimum chunk count - ensures document wasn't under-chunked
+    
+    Args:
+        document_content: Original document text that was sent to LLM
+        chunks: List of chunk dictionaries, each with a 'content' field
+    
+    Returns:
+        Tuple of (is_valid, message)
+        - is_valid: False means hard failure, True means success (may have warning)
+        - message: Empty string if no issues, error message if invalid, or warning if suboptimal
+    
+    Validation thresholds:
+        - < 50% coverage: HARD FAILURE (reject)
+        - 50-70% coverage: WARNING (accept but notify)
+        - < expected chunk count: WARNING (accept but notify)
+    """
+    if not chunks:
+        return False, "No chunks generated by LLM"
+    
+    # Calculate total chunked content length
+    total_chunked_length = sum(len(c.get('content', '')) for c in chunks)
+    input_length = len(document_content)
+    
+    if input_length == 0:
+        return False, "Empty document content"
+    
+    # Calculate coverage ratio
+    coverage_ratio = total_chunked_length / input_length
+    
+    # === Minimum chunk count validation ===
+    # Estimate expected chunks based on document size
+    # Average chunk target: 200-450 tokens ≈ 800-1800 characters
+    # Use conservative estimate: 1000 chars per chunk
+    estimated_chunks_needed = max(1, input_length // 1000)
+    min_expected_chunks = max(3, estimated_chunks_needed)  # At least 3 chunks
+    
+    chunk_count_warning = ""
+    if len(chunks) < min_expected_chunks:
+        chunk_count_warning = (
+            f"Suspiciously few chunks: {len(chunks)} generated vs "
+            f"~{min_expected_chunks} expected for {input_length}-char document. "
+            f"Expected ~1 chunk per 1000 characters."
+        )
+        logger.warning(f"Chunk count validation WARNING: {chunk_count_warning}")
+    # === END CHUNK COUNT VALIDATION ===
+    
+    # Log coverage for monitoring
+    logger.info(
+        f"Chunking coverage validation: "
+        f"input={input_length} chars, "
+        f"chunked={total_chunked_length} chars, "
+        f"coverage={coverage_ratio:.1%}, "
+        f"chunks={len(chunks)} (expected ~{min_expected_chunks})"
+    )
+    
+    # Critical threshold: Less than 50% coverage is a hard failure
+    if coverage_ratio < 0.50:
+        error_msg = (
+            f"Insufficient content coverage: {coverage_ratio:.1%} "
+            f"({total_chunked_length}/{input_length} chars in {len(chunks)} chunks). "
+            f"Expected >50%. LLM may have stopped prematurely or document is too large."
+        )
+        logger.error(f"Coverage validation FAILED: {error_msg}")
+        return False, error_msg
+    
+    # Warning threshold: Less than 70% coverage OR insufficient chunk count
+    warnings = []
+    if coverage_ratio < 0.70:
+        warnings.append(
+            f"Low content coverage: {coverage_ratio:.1%} "
+            f"({total_chunked_length}/{input_length} chars). "
+            f"Expected >70%. Some content may be missing."
+        )
+    
+    if chunk_count_warning:
+        warnings.append(chunk_count_warning)
+    
+    if warnings:
+        warning_msg = " | ".join(warnings)
+        logger.warning(f"Chunking validation warnings: {warning_msg}")
+        return True, warning_msg  # Success but with warning
+    
+    # Good coverage
+    logger.info(f"Coverage validation PASSED: {coverage_ratio:.1%}")
+    return True, ""
+
+
+def _split_markdown_by_headings(text: str) -> List[Tuple[str, str]]:
+    """
+    Split markdown text by second-level (##) headings.
+    Returns list of (heading, content) tuples.
+    If no ## headings found, falls back to top-level (#) headings.
+    """
+    lines = text.split('\n')
+
+    # Try ## first (preferred - finer granularity)
+    sections = _extract_sections(lines, '## ')
+
+    # If only 1 section found, fall back to # headings
+    if len(sections) <= 1:
+        sections = _extract_sections(lines, '# ')
+
+    return sections
+
+
+def _extract_sections(lines: list, prefix: str) -> list:
+    """Extract sections from lines split by heading prefix."""
+    sections = []
+    current_heading = None
+    current_lines = []
+    prefix_len = len(prefix)
+    next_prefix = '#' + prefix  # Don't match sub-headings
+
+    for line in lines:
+        if line.startswith(prefix) and not line.startswith(next_prefix):
+            if current_heading is not None or current_lines:
+                sections.append((current_heading or 'Document', '\n'.join(current_lines)))
+            current_heading = line[prefix_len:].strip()
+            current_lines = [line]
+        else:
+            current_lines.append(line)
+
+    if current_heading is not None or current_lines:
+        sections.append((current_heading or 'Document', '\n'.join(current_lines)))
+
+    return sections
+
+
+async def _chunk_section_with_llm(section_content: str, section_heading: str, prompt_template: str, llm, filename: str, section_idx: int, total_sections: int) -> Tuple[bool, List[Dict], str]:
+    """Chunk a single section of the document."""
+    import asyncio
+    import re as _re
+
+    section_prompt = prompt_template.format(input_text=section_content)
+    if total_sections > 1:
+        section_prefix = f"You are processing section {section_idx + 1} of {total_sections}: \"{section_heading}\"\n\n"
+        section_prompt = section_prefix + section_prompt
+
+    logger.info(f"[SECTION {section_idx + 1}/{total_sections}] Calling LLM for section: {section_heading} ({len(section_content)} chars)")
+
+    try:
+        response = await asyncio.wait_for(llm.ainvoke(section_prompt), timeout=LLM_CHUNKING_TIMEOUT)
+        response_content = response.content if hasattr(response, 'content') else str(response)
+    except asyncio.TimeoutError:
+        logger.error(f"[SECTION {section_idx + 1}/{total_sections}] LLM call timed out")
+        return False, [], f"LLM call timed out for section: {section_heading}"
+    except Exception as e:
+        logger.error(f"[SECTION {section_idx + 1}/{total_sections}] LLM call failed: {type(e).__name__}: {str(e)}")
+        return False, [], f"LLM call failed for section {section_heading}: {str(e)}"
+
+    logger.info(f"[SECTION {section_idx + 1}/{total_sections}] LLM response: {len(response_content)} chars")
+
+    cleaned_response = _re.sub(r'\[THINK\][\s\S]*?\[/THINK\]', '', response_content)
+    cleaned_response = _re.sub(r'<think>[\s\S]*?</think>', '', cleaned_response, flags=_re.IGNORECASE)
+    if '[THINK]' in cleaned_response and '[/THINK]' not in cleaned_response:
+        think_idx = cleaned_response.index('[THINK]')
+        cleaned_response = cleaned_response[:think_idx]
+    cleaned_response = cleaned_response.strip()
+
+    if cleaned_response.startswith('```json'):
+        cleaned_response = cleaned_response[7:]
+    elif cleaned_response.startswith('```'):
+        cleaned_response = cleaned_response[3:]
+    if cleaned_response.endswith('```'):
+        cleaned_response = cleaned_response[:-3]
+    cleaned_response = cleaned_response.strip()
+
+    try:
+        from .json_utils import parse_json_robust
+
+        json_match = _re.search(r'\{[\s\S]*\}', cleaned_response)
+        if not json_match:
+            json_match = _re.search(r'\[[\s\S]*\]', cleaned_response)
+
+        if not json_match:
+            logger.error(f"[SECTION {section_idx + 1}/{total_sections}] No JSON found")
+            return False, [], f"No JSON found in LLM response for section: {section_heading}"
+
+        json_str = json_match.group(0)
+        chunking_result = parse_json_robust(json_str, default_on_error={'chunks': []})
+
+        if isinstance(chunking_result, dict):
+            if 'chunks' in chunking_result:
+                chunks = chunking_result['chunks']
+            elif 'chunk_id' in chunking_result and 'content' in chunking_result:
+                chunks = [chunking_result]
+            elif any(k in chunking_result for k in ['section', 'title', 'text']):
+                chunks = [chunking_result]
+            else:
+                chunks = []
+        elif isinstance(chunking_result, list):
+            chunks = chunking_result
+        else:
+            chunks = []
+
+        valid_chunks = [c for c in chunks if isinstance(c, dict) and 'chunk_id' in c and 'content' in c]
+        logger.info(f"[SECTION {section_idx + 1}/{total_sections}] Extracted {len(valid_chunks)} valid chunks")
+        return True, valid_chunks, ""
+
+    except Exception as e:
+        logger.error(f"[SECTION {section_idx + 1}/{total_sections}] Failed to parse LLM response: {str(e)}")
+        return False, [], f"Failed to parse LLM response for section {section_heading}: {str(e)}"
+
+
 async def chunk_document_with_llm(file_path: str, prompt: str, filename: str = "", timeout: int = None) -> Tuple[bool, List[Dict], str]:
     """
     Chunk a document using LLM (async version with proper timeout).
-    
+
     Args:
         file_path: Path to the document file
         prompt: Chunking prompt to use
         filename: Original filename
+        timeout: Timeout in seconds (overrides .env setting)
 
-(Showing lines 360-374 of 1175. Use offset=375 to continue.)        timeout: Timeout in seconds (overrides .env setting)
-        
     Returns:
         Tuple of (success, chunks_list, error_message)
     """
@@ -382,7 +722,7 @@ async def chunk_document_with_llm(file_path: str, prompt: str, filename: str = "
     try:
         from rag_component.document_loader import DocumentLoader
         import asyncio
-        
+
         # Load document
         document_loader = DocumentLoader()
         docs = document_loader.load_document(file_path)
@@ -407,82 +747,162 @@ async def chunk_document_with_llm(file_path: str, prompt: str, filename: str = "
             prompt = DEFAULT_SMART_CHUNKING_PROMPT
 
         # Prepare full prompt with input text injected
-        full_prompt = prompt.format(input_text=document_content[:50000])  # Limit to 50K chars
+        doc_length = len(document_content)
+        doc_tokens_estimate = doc_length // 4
+        logger.info(
+            f"[CHUNKING] Document loaded: {doc_length} characters, "
+            f"~{doc_tokens_estimate} tokens, "
+            f"file={file_path}"
+        )
 
-        # Call LLM with timeout
-        actual_timeout = timeout or LLM_CHUNKING_TIMEOUT
-        logger.info(f"Calling LLM for chunking: {filename or file_path}")
-        logger.info(f"Timeout: {actual_timeout} seconds ({actual_timeout/60:.1f} minutes)")
-        
-        try:
-            # Use asyncio.wait_for to enforce timeout
-            response = await asyncio.wait_for(
-                llm.ainvoke(full_prompt),
-                timeout=actual_timeout
-            )
-            response_content = response.content if hasattr(response, 'content') else str(response)
-        except asyncio.TimeoutError:
-            logger.error(f"LLM call timed out after {actual_timeout} seconds")
-            return False, [], f"LLM call timed out after {actual_timeout} seconds"
-        except Exception as e:
-            logger.error(f"[DEBUG] LLM call failed with exception: type={type(e).__name__}, str(e)={repr(str(e))}")
-            return False, [], f"LLM call failed: {str(e)}"
+        # Check if we should split by sections
+        sections = _split_markdown_by_headings(document_content)
+        total_sections = len(sections)
 
-        # Log raw response for debugging
-        logger.info(f"LLM response length: {len(response_content)} chars")
-        logger.info(f"[DEBUG] LLM response preview (first 1000 chars): {repr(response_content[:1000])}")
+        if total_sections > 1:
+            # Multi-section processing
+            logger.info(f"[CHUNKING] Document has {total_sections} top-level sections - processing sequentially")
 
-        # Post-process: Extract JSON from markdown response
-        # Step 1: Remove markdown code blocks
-        cleaned_response = response_content.strip()
-        if cleaned_response.startswith('```json'):
-            cleaned_response = cleaned_response[7:]
-        elif cleaned_response.startswith('```'):
-            cleaned_response = cleaned_response[3:]
-        if cleaned_response.endswith('```'):
-            cleaned_response = cleaned_response[:-3]
-        cleaned_response = cleaned_response.strip()
+            all_chunks = []
 
-        # Step 2: Remove any text before first [ or after last ]
-        bracket_start = cleaned_response.find('[')
-        bracket_end = cleaned_response.rfind(']')
-        if bracket_start != -1 and bracket_end != -1 and bracket_end > bracket_start:
-            cleaned_response = cleaned_response[bracket_start:bracket_end + 1]
-            logger.info(f"Extracted JSON array: {len(cleaned_response)} chars")
+            for section_idx, (section_heading, section_content) in enumerate(sections):
+                success, section_chunks, error = await _chunk_section_with_llm(
+                    section_content=section_content,
+                    section_heading=section_heading,
+                    prompt_template=prompt,
+                    llm=llm,
+                    filename=filename or file_path,
+                    section_idx=section_idx,
+                    total_sections=total_sections
+                )
+
+                if not success:
+                    logger.error(f"[CHUNKING] Section {section_idx + 1} failed: {error}")
+                    return False, [], error
+
+                for chunk in section_chunks:
+                    chunk['_section'] = section_heading
+                    all_chunks.append(chunk)
+
+                logger.info(f"[CHUNKING] Section {section_idx + 1}/{total_sections} complete: {len(section_chunks)} chunks")
+
+            chunks = all_chunks
+            logger.info(f"[CHUNKING] All sections complete: {len(chunks)} total chunks from {total_sections} sections")
+
         else:
-            logger.warning("No JSON array brackets found, trying object format")
+            # Single section - use original async approach
+            full_prompt = prompt.format(input_text=document_content)
+            actual_timeout = timeout or LLM_CHUNKING_TIMEOUT
+            logger.info(f"Calling LLM for chunking: {filename or file_path}")
+            logger.info(f"Timeout: {actual_timeout} seconds ({actual_timeout/60:.1f} minutes)")
 
-        # DEBUG: Log the cleaned_response before parsing
-        logger.info(f"[DEBUG] cleaned_response (first 500 chars): {repr(cleaned_response[:500])}")
+            try:
+                response = await asyncio.wait_for(
+                    llm.ainvoke(full_prompt),
+                    timeout=actual_timeout
+                )
+                response_content = response.content if hasattr(response, 'content') else str(response)
+            except asyncio.TimeoutError:
+                logger.error(f"LLM call timed out after {actual_timeout} seconds")
+                return False, [], f"LLM call timed out after {actual_timeout} seconds"
+            except Exception as e:
+                logger.error(f"[DEBUG] LLM call failed with exception: type={type(e).__name__}, str(e)={repr(str(e))}")
+                return False, [], f"LLM call failed: {str(e)}"
 
-        # Step 3: Parse JSON
-        try:
+            # Log raw response for debugging
+            logger.info(f"LLM response length: {len(response_content)} chars")
+            logger.info(f"[DEBUG] LLM response preview (first 1000 chars): {repr(response_content[:1000])}")
+
+            # Post-process: Extract JSON from markdown response
+            # Step 1: Remove [THINK]...[/THINK] blocks (model reasoning)
             import re
-            # Try to find JSON array first
-            json_match = re.search(r'\[[\s\S]*\]', cleaned_response)
-            if json_match:
-                json_str = json_match.group(0)
-                logger.info(f"Found JSON array: {len(json_str)} chars")
-                logger.info(f"[DEBUG] json_str before parse: {repr(json_str[:200])}")
-                chunking_result = json.loads(json_str)
-                chunks = chunking_result if isinstance(chunking_result, list) else []
-            else:
-                # Fallback: try to find JSON object
+            cleaned_response = re.sub(r'\[THINK\][\s\S]*?\[/THINK\]', '', response_content)
+            if '[THINK]' in cleaned_response and '[/THINK]' not in cleaned_response:
+                think_idx = cleaned_response.index('[THINK]')
+                cleaned_response = cleaned_response[:think_idx]
+            cleaned_response = cleaned_response.strip()
+
+            # Step 2: Remove markdown code blocks
+            if cleaned_response.startswith('```json'):
+                cleaned_response = cleaned_response[7:]
+            elif cleaned_response.startswith('```'):
+                cleaned_response = cleaned_response[3:]
+            if cleaned_response.endswith('```'):
+                cleaned_response = cleaned_response[:-3]
+            cleaned_response = cleaned_response.strip()
+
+            # DEBUG: Log the cleaned_response before parsing
+            logger.info(f"[DEBUG] cleaned_response after preprocessing: {len(cleaned_response)} chars")
+            logger.info(f"[DEBUG] cleaned_response (first 500 chars): {repr(cleaned_response[:500])}")
+
+            # Step 3: Parse JSON using robust parser with json_repair support
+            try:
+                from .json_utils import parse_json_robust
+
+                # The prompt expects an object with 'chunks' array, so try object format first
                 json_match = re.search(r'\{[\s\S]*\}', cleaned_response)
                 if json_match:
                     json_str = json_match.group(0)
                     logger.info(f"Found JSON object: {len(json_str)} chars")
-                    logger.info(f"[DEBUG] json_str (object) before parse: {repr(json_str[:200])}")
-                    chunking_result = json.loads(json_str)
-                    chunks = chunking_result.get('chunks', [])
+                    logger.info(f"[DEBUG] json_str before parse: {repr(json_str[:200])}")
+
+                    # Use robust JSON parser that handles malformed JSON from small LLMs
+                    chunking_result = parse_json_robust(json_str, default_on_error={'chunks': []})
+
+                    # Extract chunks from object
+                    if isinstance(chunking_result, dict):
+                        if 'chunks' in chunking_result:
+                            chunks = chunking_result['chunks']
+                        elif 'chunk_id' in chunking_result and 'content' in chunking_result:
+                            chunks = [chunking_result]
+                            logger.info(f"[DEBUG] Single chunk object detected, wrapping in array")
+                        elif any(k in chunking_result for k in ['section', 'title', 'text']):
+                            chunks = [chunking_result]
+                            logger.info(f"[DEBUG] Chunk-like object detected, wrapping in array")
+                        else:
+                            chunks = []
+                        logger.info(f"[DEBUG] Extracted {len(chunks)} chunks from object")
+                    else:
+                        logger.warning(f"Unexpected chunking_result type: {type(chunking_result)}, expected dict")
+                        chunks = []
                 else:
-                    logger.error(f"No JSON found. Raw response: {response_content[:1000]}")
-                    return False, [], "No JSON found in LLM response"
-        except json.JSONDecodeError as e:
-            logger.error(f"[DEBUG] Failed to parse LLM response with JSONDecodeError")
-            logger.error(f"[DEBUG] str(e) = {repr(str(e))}")
-            logger.error(f"[DEBUG] Raw cleaned_response = {repr(cleaned_response[:500])}")
-            return False, [], f"Failed to parse LLM response: {str(e)}"
+                    json_match = re.search(r'\[[\s\S]*\]', cleaned_response)
+                    if json_match:
+                        json_str = json_match.group(0)
+                        logger.info(f"Found JSON array (fallback): {len(json_str)} chars")
+                        logger.info(f"[DEBUG] json_str before parse: {repr(json_str[:200])}")
+
+                        chunking_result = parse_json_robust(json_str, default_on_error=[])
+
+                        if isinstance(chunking_result, list):
+                            chunks = chunking_result
+                            logger.info(f"[DEBUG] Extracted {len(chunks)} chunks from array")
+                        elif isinstance(chunking_result, dict):
+                            chunks = chunking_result.get('chunks', [chunking_result])
+                            logger.info(f"[DEBUG] Got dict from array parse: {len(chunks)} chunks")
+                        else:
+                            logger.warning(f"Unexpected chunking_result type: {type(chunking_result)}")
+                            chunks = []
+                    else:
+                        logger.error(f"No JSON found. Raw response: {response_content[:1000]}")
+                        return False, [], "No JSON found in LLM response"
+
+                logger.info(f"[DEBUG] Successfully parsed JSON: {len(chunks)} chunks found")
+
+                valid_chunks = []
+                for chunk in chunks:
+                    if isinstance(chunk, dict) and 'chunk_id' in chunk and 'content' in chunk:
+                        valid_chunks.append(chunk)
+                    else:
+                        logger.warning(f"Filtered out invalid chunk: {chunk}")
+                chunks = valid_chunks
+                logger.info(f"[DEBUG] After filtering: {len(chunks)} valid chunks")
+
+            except Exception as e:
+                logger.error(f"[DEBUG] Failed to parse LLM response with exception: type={type(e).__name__}, str(e)={repr(str(e))}")
+                logger.error(f"[DEBUG] Raw cleaned_response = {repr(cleaned_response[:500])}")
+                return False, [], f"Failed to parse LLM response: {str(e)}"
+
 
         logger.info(f"Generated {len(chunks)} chunks for {filename or file_path}")
 
@@ -1126,12 +1546,16 @@ def process_hybrid_endpoint(current_user_id):
                 
                 response = llm.invoke(full_prompt)
                 response_content = response.content if hasattr(response, 'content') else str(response)
-                
-                # Parse JSON response
+
+                # Parse JSON response using robust parser
                 import re, json
+                from .json_utils import parse_json_robust
                 json_match = re.search(r'\{[\s\S]*\}', response_content)
-                chunking_result = json.loads(json_match.group(0) if json_match else response_content)
-                chunks = chunking_result.get('chunks', [])
+                chunking_result = parse_json_robust(
+                    json_match.group(0) if json_match else response_content,
+                    default_on_error={'chunks': []}
+                )
+                chunks = chunking_result.get('chunks', []) if isinstance(chunking_result, dict) else []
                 
                 # Process in hybrid mode
                 doc_id = f"doc_{file.filename.replace('.', '_')}_{int(time.time())}"

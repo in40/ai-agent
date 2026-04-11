@@ -363,12 +363,15 @@ class PDFProcessingPipeline:
 
             logger.info(f"LLM response received ({len(response_content)} chars)")
 
-            # Parse JSON from response
+            # Parse JSON from response using robust parser
             try:
+                from .json_utils import parse_json_robust
                 json_match = re.search(r'\{[\s\S]*\}', response_content)
                 json_str = json_match.group(0) if json_match else response_content
-                chunking_result = json.loads(json_str)
-            except json.JSONDecodeError as e:
+                
+                # Use robust JSON parser that handles malformed JSON from small LLMs
+                chunking_result = parse_json_robust(json_str, default_on_error={'chunks': []})
+            except Exception as e:
                 logger.error(f"Failed to parse LLM JSON response: {e}")
                 logger.error(f"Response content: {response_content[:500]}...")
                 return False, [], f"Failed to parse LLM response: {str(e)}"

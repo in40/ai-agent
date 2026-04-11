@@ -39,35 +39,40 @@ class DocumentHandlers:
     def handle_list_documents(self, params: Dict[str, Any]) -> Dict[str, Any]:
         """
         List documents for a job.
-        
+
         Args:
             job_id: Ingestion job ID
-            
+            filter_format: Optional format to filter by (e.g., 'md', 'pdf', 'chunks')
+                          When specified, only documents with that format are returned,
+                          but all related files for those documents are included.
+
         Returns:
-            List of documents
+            List of documents grouped by doc_id with their available formats
         """
         try:
             job_id = params.get("job_id")
-            
+            filter_format = params.get("filter_format")  # Optional format filter
+
             if not job_id:
                 return {
                     "success": False,
                     "error": "job_id is required"
                 }
-            
+
             if not self.storage.job_exists(job_id):
                 return {
                     "success": False,
                     "error": f"Job {job_id} not found"
                 }
-            
-            documents = self.storage.list_documents(job_id)
-            
+
+            documents = self.storage.list_documents(job_id, filter_format=filter_format)
+
             return {
                 "success": True,
                 "job_id": job_id,
                 "documents": documents,
-                "total": len(documents)
+                "total": len(documents),
+                "filtered_by": filter_format if filter_format else None
             }
         except Exception as e:
             return {

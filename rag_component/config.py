@@ -3,16 +3,36 @@ Configuration module for the RAG component.
 Handles environment variables and settings specific to RAG functionality.
 """
 import os
+import sys
+from pathlib import Path
 from typing import Optional
-from config.settings import str_to_bool
+
+# Get the project root (parent of rag_component)
+project_root = Path(__file__).resolve().parent.parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
+
+# Import from project root config.settings (not rag_component.config.settings)
+try:
+    # Try direct import from parent directory
+    import config.settings as settings
+    str_to_bool = settings.str_to_bool
+    EMBEDDING_PROVIDER = settings.EMBEDDING_PROVIDER
+    EMBEDDING_MODEL = settings.EMBEDDING_MODEL
+except (ImportError, ModuleNotFoundError):
+    # Fallback: directly import from file path
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("settings", project_root / "config" / "settings.py")
+    settings = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(settings)
+    str_to_bool = settings.str_to_bool
+    EMBEDDING_PROVIDER = settings.EMBEDDING_PROVIDER
+    EMBEDDING_MODEL = settings.EMBEDDING_MODEL
 
 
 # RAG Configuration
 RAG_ENABLED = str_to_bool(os.getenv("RAG_ENABLED", "true"))
 RAG_MODE = os.getenv("RAG_MODE", "local").lower()  # Options: "local", "mcp", "hybrid"
-
-# Embedding Configuration - Use centralized settings if RAG-specific settings are not provided
-from config.settings import EMBEDDING_PROVIDER, EMBEDDING_MODEL
 # Only use RAG-specific provider/model if they are explicitly set in the environment
 rag_embedding_provider_env = os.getenv("RAG_EMBEDDING_PROVIDER")
 rag_embedding_model_env = os.getenv("RAG_EMBEDDING_MODEL")

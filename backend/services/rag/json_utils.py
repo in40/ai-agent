@@ -13,10 +13,10 @@ def extract_json_from_response(response_text: str) -> str:
     """
     Extract JSON object from LLM response text.
     Handles markdown code blocks and surrounding text.
-    
+
     Args:
         response_text: Raw LLM response text
-        
+
     Returns:
         Extracted JSON string or None if not found
     """
@@ -27,14 +27,184 @@ def extract_json_from_response(response_text: str) -> str:
         # Verify it looks like JSON
         if json_candidate.startswith('{') or json_candidate.startswith('['):
             return json_candidate
-    
+
     # Fall back to finding first { to last }
     json_match = re.search(r'\{[\s\S]*\}', response_text)
     if json_match:
         return json_match.group(0)
-    
+
     return None
 
+
+def validate_chunk_json(parsed: dict) -> tuple[bool, list]:
+    """
+    Validate that parsed chunking JSON has correct structure.
+    
+    Args:
+        parsed: Parsed JSON dictionary
+        
+    Returns:
+        Tuple of (is_valid, list_of_errors)
+    """
+    errors = []
+    
+    if not isinstance(parsed, dict):
+        errors.append("Root is not a dictionary")
+        return False, errors
+    
+    # Check for chunks array
+    if 'chunks' not in parsed:
+        errors.append("Missing 'chunks' field")
+        return False, errors
+    
+    if not isinstance(parsed['chunks'], list):
+        errors.append("'chunks' is not a list")
+        return False, errors
+    
+    # Validate each chunk
+    for i, chunk in enumerate(parsed['chunks']):
+        if not isinstance(chunk, dict):
+            errors.append(f"Chunk {i} is not a dictionary")
+            continue
+        
+        # Check for required fields
+        required_fields = ['chunk_id', 'content']
+        for field in required_fields:
+            if field not in chunk:
+                errors.append(f"Chunk {i} missing '{field}' field")
+        
+        # Check for corrupted keys (sign of json_repair corruption)
+        for key in chunk.keys():
+            if '"' in key or '\n' in key or ':' in key:
+                errors.append(f"Chunk {i} has corrupted key: {repr(key)}")
+    
+    return len(errors) == 0, errors
+
+
+def fix_corrupted_chunk_keys(chunk: dict) -> dict:
+    """
+    Fix corrupted keys in chunk dictionary from json_repair.
+    
+    Args:
+        chunk: Chunk dictionary with potentially corrupted keys
+        
+    Returns:
+        Fixed chunk dictionary
+    """
+    fixed = {}
+    content_value = None
+    
+    for key, value in chunk.items():
+        # Check if this is a corrupted key that contains the content
+        if '"content' in key or key.endswith('"content'):
+            # Extract the actual content value
+            if isinstance(value, str):
+                # Try to extract content from the corrupted value
+                content_match = re.search(r'"content":\s*"([^"]*(?:\\.[^"]*)*)"', value)
+                if content_match:
+                    content_value = content_match.group(1)
+                else:
+                    # The value itself might be the content
+                    content_value = value
+        
+        # Check if key contains other field names (sign of corruption)
+        elif '"token_count' in key or '"overlap' in key:
+            # Extract the actual field name and value
+            if 'token_count' in key:
+                # Try to extract token_count value
+                match = re.search(r'"token_count":\s*(\d+)', key)
+                if match:
+                    fixed['token_count'] = int(match.group(1))
+                if isinstance(value, str) and value.isdigit():
+                    fixed['token_count'] = int(value)
+            if 'overlap' in key:
+                fixed['overlap_source'] = value.replace('\\n', '').strip() if isinstance(value, str) else value
+        else:
+            # Normal key, keep as-is
+            fixed[key] = value
+    
+    # Add recovered content
+    if content_value and 'content' not in fixed:
+        fixed['content'] = content_value
+    
+    return fixed
+
+
+def parse_json_robust(response_text: str, default_on_error: dict = None) -> dict:
+    """
+    Robustly parse JSON from LLM response with validation.
+    
+    Strategy:
+    1. Extract JSON from response
+    2. Try standard json.loads()
+    3. If fails, try json_repair BUT validate strictly
+    4. Reject any chunks without proper structure
+    5. Return default on failure
+    
+    Args:
+        response_text: Raw LLM response text
+        default_on_error: Default value to return if all parsing fails
+        
+    Returns:
+        Parsed JSON as dict, or default_on_error
+    """
+    if default_on_error is None:
+        default_on_error = {}
+    
+    # Step 1: Extract JSON from response
+    json_str = extract_json_from_response(response_text)
+    if not json_str:
+        logger.warning("No JSON object found in response")
+        return default_on_error
+    
+    result = None
+    
+    # Step 2: Try standard json.loads() first
+    try:
+        result = json.loads(json_str)
+        logger.info("Successfully parsed JSON with standard parser")
+    except json.JSONDecodeError as e:
+        logger.debug(f"Standard JSON parse failed: {e}")
+        
+        # Step 3: Try json_repair if available
+        try:
+            import json_repair
+            result = json_repair.repair_json(json_str, return_objects=True)
+            logger.info("Successfully parsed JSON using json_repair")
+        except ImportError:
+            logger.debug("json_repair not available")
+        except Exception as e:
+            logger.debug(f"json_repair failed: {e}")
+    
+    # Step 4: Validate result
+    if not result or not isinstance(result, dict):
+        logger.error(f"Parsed result is invalid: {type(result)}")
+        return default_on_error
+    
+    # Step 5: Validate and clean chunks array
+    if 'chunks' in result and isinstance(result['chunks'], list):
+        valid_chunks = []
+        for i, chunk in enumerate(result['chunks']):
+            if isinstance(chunk, dict) and 'chunk_id' in chunk and 'content' in chunk:
+                # Fix any corrupted keys in this chunk
+                fixed_chunk = fix_corrupted_chunk_keys(chunk)
+                if 'content' in fixed_chunk:
+                    valid_chunks.append(fixed_chunk)
+                else:
+                    logger.warning(f"Chunk {i} rejected: no content after fix")
+            else:
+                logger.warning(f"Chunk {i} rejected: invalid structure {type(chunk)}")
+        
+        result['chunks'] = valid_chunks
+        logger.info(f"Validated chunks: {len(valid_chunks)}/{len(result['chunks'])} valid")
+    
+    # Step 6: Final validation
+    is_valid, errors = validate_chunk_json(result)
+    if not is_valid:
+        logger.error(f"Final validation failed: {errors}")
+        return default_on_error
+    
+    return result
 
 def fix_escape_characters(json_str: str) -> str:
     r"""
@@ -53,21 +223,21 @@ def fix_escape_characters(json_str: str) -> str:
     """
     if not json_str:
         return json_str
-    
+
     # Track positions we've already processed to avoid double-processing
     processed = set()
     result = []
     i = 0
-    
+
     while i < len(json_str):
         char = json_str[i]
-        
+
         # If we're inside a string value (after a colon and quote)
         if char == '\\' and i not in processed:
             # Check if this is a valid JSON escape sequence
             if i + 1 < len(json_str):
                 next_char = json_str[i + 1]
-                
+
                 # Valid JSON escapes: \", \\, \/, \b, \f, \n, \r, \t, \uXXXX
                 if next_char in '"\\bfnrt/':
                     # Valid escape, keep as-is
@@ -84,7 +254,7 @@ def fix_escape_characters(json_str: str) -> str:
                         result.append(hex_chars)
                         i += 6
                         continue
-                
+
                 # Invalid escape - need to escape the backslash
                 # But first check if we're actually in a string context
                 # Look back to see if we're inside quotes
@@ -93,7 +263,7 @@ def fix_escape_characters(json_str: str) -> str:
                     if json_str[j] == '"' and (j == 0 or json_str[j - 1] != '\\'):
                         last_quote = j
                         break
-                
+
                 if last_quote is not None:
                     # We're inside a string - escape the backslash
                     result.append('\\\\')
@@ -110,7 +280,7 @@ def fix_escape_characters(json_str: str) -> str:
         else:
             result.append(char)
             i += 1
-    
+
     return ''.join(result)
 
 

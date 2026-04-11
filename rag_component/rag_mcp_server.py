@@ -50,13 +50,28 @@ logger = logging.getLogger('MCPServer.RAG')
 
 class RAGRequestHandler:
     """Handler for RAG-related requests from the MCP framework."""
-    
-    def __init__(self, rag_orchestrator: RAGOrchestrator):
+
+    def __init__(self, rag_orchestrator: RAGOrchestrator, server: 'RAGMCPServer' = None):
         self.rag_orchestrator = rag_orchestrator
-        
+        self.server = server
+
     async def handle_request(self, request: Dict[str, Any]) -> Dict[str, Any]:
         """Handle incoming RAG requests."""
         try:
+            # Ensure the orchestrator is initialized (lazy initialization)
+            if self.server and not self.server._initialized:
+                await self.server._ensure_initialized()
+            
+            # If still not initialized, return an error
+            if not self.rag_orchestrator and self.server and self.server.rag_orchestrator:
+                self.rag_orchestrator = self.server.rag_orchestrator
+            
+            if not self.rag_orchestrator:
+                return {
+                    "error": "RAG orchestrator not initialized. LM Studio may not be available.",
+                    "status": "error"
+                }
+
             logger.info(f"Received RAG request: {request}")
 
             action = request.get("action")
@@ -355,24 +370,41 @@ class RAGMCPServer:
         self.server = None
         self.service_wrapper = None
         self.running = False
+        self.llm = None
+        self._initialized = False
+
+    def _initialize_llm(self):
+        """Initialize the LLM once during server startup."""
+        if self.llm is None:
+            try:
+                from models.response_generator import ResponseGenerator
+                response_gen = ResponseGenerator()
+                self.llm = response_gen.llm
+            except Exception as e:
+                logger.warning(f"Could not initialize LLM: {e}. RAG operations requiring LLM may fail.")
+                self.llm = None
+
+    async def _ensure_initialized(self):
+        """Lazy initialization of RAG orchestrator on first request."""
+        if not self._initialized:
+            logger.info("Initializing RAG orchestrator on first request...")
+            self._initialize_llm()
+            self.rag_orchestrator = RAGOrchestrator(llm=self.llm)
+            self.request_handler = RAGRequestHandler(self.rag_orchestrator)
+            self._initialized = True
+            logger.info("RAG orchestrator initialized successfully")
 
     async def start(self):
         """Start the RAG MCP server."""
         try:
             logger.info(f"Initializing RAG MCP Server on {self.host}:{self.port}")
 
-            # Initialize the RAG orchestrator with a dummy LLM initially
-            # The actual LLM will be configured based on the application's settings
-            from models.response_generator import ResponseGenerator
-            try:
-                response_gen = ResponseGenerator()
-                llm = response_gen.llm
-            except Exception:
-                # If we can't get an LLM, we'll initialize with None and handle it in RAGOrchestrator
-                llm = None
-
-            self.rag_orchestrator = RAGOrchestrator(llm=llm)
-            self.request_handler = RAGRequestHandler(self.rag_orchestrator)
+            # Initialize LLM once (but not the full orchestrator yet)
+            self._initialize_llm()
+            
+            # Don't initialize RAGOrchestrator here - do it lazily on first request
+            # This allows the server to start even if LM Studio is not available
+            logger.info("RAG MCP Server started (orchestrator will be initialized on first request)")
 
             # Create service info for the registry
             # Use 127.0.0.1 instead of 0.0.0.0 for service registration since 0.0.0.0 is not a valid call address
@@ -441,6 +473,10 @@ class RAGMCPServer:
                 logger.error("Failed to start service wrapper")
                 raise Exception("Failed to start service wrapper")
 
+            # Create request handler with server reference for lazy initialization
+            # Pass None for orchestrator initially - it will be initialized on first request
+            self.request_handler = RAGRequestHandler(rag_orchestrator=None, server=self)
+
             # Start the server (placeholder - actual implementation depends on your server framework)
             await self._start_server()
 
@@ -477,6 +513,28 @@ class RAGMCPServer:
                     "status": "error"
                 })
 
+        async def health_check(request):
+            """Health check endpoint that reports service status."""
+            # Check if the server is running
+            server_status = "running" if self.running else "stopped"
+            
+            # Check if orchestrator is initialized
+            orchestrator_status = "initialized" if self._initialized else "not_initialized"
+            
+            # Check if LLM is available
+            llm_status = "available" if self.llm is not None else "unavailable"
+            
+            # Overall status is healthy if server is running (orchestrator can be lazy-loaded)
+            overall_status = "healthy" if self.running else "unhealthy"
+            
+            return web.json_response({
+                "status": overall_status,
+                "server": server_status,
+                "orchestrator": orchestrator_status,
+                "llm": llm_status,
+                "message": "RAG MCP Server is running" if self.running else "RAG MCP Server is not running"
+            })
+
         app = web.Application()
         # Add the main endpoint that handles all actions
         app.router.add_post('/', handle_request)
@@ -490,6 +548,10 @@ class RAGMCPServer:
         app.router.add_post('/list', handle_request)
         app.router.add_post('/rerank_documents', handle_request)
         app.router.add_post('/process_search_results_with_download', handle_request)
+        
+        # Add health check endpoint
+        app.router.add_get('/health', health_check)
+        app.router.add_post('/health', health_check)
 
         runner = web.AppRunner(app)
         await runner.setup()

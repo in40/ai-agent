@@ -98,43 +98,43 @@ def list_documents():
                             except:
                                 pass
                     
-                    # Group documents by base doc_id (without file type suffix)
-                    # This allows PDFs to be grouped with their .txt, .md variants
-                    # The naming pattern appears to be: base.N_hhhhhhhh.ext or base.ext
-                    # We need to strip the file extension (.pdf, .txt, .md, .json) and hex suffix (_8hexchars)
-                    base_doc_id = filename
+                    # Group documents by full doc_id (WITH hex suffix) for uniqueness
+                    # This ensures r-1323565.1_395de1a8 and r-1323565.1_881b0329 are treated as SEPARATE documents
+                    # We also extract group_base_id for display grouping in UI
+                    full_doc_id_with_ext = filename
                     file_ext = os.path.splitext(filename)[1].lower()
-                    
-                    # Remove file extension (only actual extensions: .txt, .md, .json, .pdf)
+
+                    # Remove file extension to get doc_id
+                    full_doc_id = full_doc_id_with_ext
                     if file_ext in ['.txt', '.md', '.json', '.pdf']:
-                        # Remove extension from the end
-                        base_doc_id = base_doc_id[:-len(file_ext)]
-                        
-                        # If the result ends with .metadata, strip that too for grouping
-                        if base_doc_id.endswith('.metadata'):
-                            base_doc_id = base_doc_id[:-9]  # len('.metadata') = 9
-                        
-                        # Check for hex suffix pattern like _6d81409d at the end
-                        if '_' in base_doc_id:
-                            parts = base_doc_id.rsplit('_', 1)
-                            if len(parts) == 2 and len(parts[1]) == 8:
-                                try:
-                                    # Verify it looks like hex (8 hex chars)
-                                    int(parts[1], 16)
-                                    # Keep the base WITHOUT the hex suffix for grouping
-                                    base_doc_id = parts[0]
-                                except ValueError:
-                                    pass
-                    
-                    if base_doc_id not in doc_groups:
-                        doc_groups[base_doc_id] = {
-                            'doc_id': base_doc_id,
-                            'base_name': base_doc_id,
+                        full_doc_id = full_doc_id[:-len(file_ext)]
+
+                        # If the result ends with .metadata, strip that too
+                        if full_doc_id.endswith('.metadata'):
+                            full_doc_id = full_doc_id[:-9]
+
+                    # Extract group_base_id by removing hex suffix (for display grouping ONLY)
+                    group_base_id = full_doc_id
+                    if '_' in full_doc_id:
+                        parts = full_doc_id.rsplit('_', 1)
+                        if len(parts) == 2 and len(parts[1]) == 8:
+                            try:
+                                int(parts[1], 16)
+                                group_base_id = parts[0]  # "r-1323565.1" for grouping
+                            except ValueError:
+                                pass
+
+                    # Use FULL doc_id (with hex) as unique key
+                    if full_doc_id not in doc_groups:
+                        doc_groups[full_doc_id] = {
+                            'doc_id': full_doc_id,          # FULL ID: "r-1323565.1_395de1a8"
+                            'group_base_id': group_base_id, # For display: "r-1323565.1"
+                            'base_name': full_doc_id,
                             'files': [],
                             'metadata': metadata if file_ext == '.pdf' else {}
                         }
-                    
-                    doc_groups[base_doc_id]['files'].append({
+
+                    doc_groups[full_doc_id]['files'].append({
                         'filename': filename,
                         'file_type': file_type,
                         'format': file_type,
@@ -148,12 +148,12 @@ def list_documents():
         # Convert doc_groups to flat list of files for backward compatibility
         # Each file becomes a separate document entry
         all_documents = []
-        for base_doc_id, group_data in doc_groups.items():
+        for full_doc_id, group_data in doc_groups.items():
             for file_info in group_data['files']:
                 all_documents.append({
-                    'doc_id': base_doc_id,
+                    'doc_id': full_doc_id,                        # FULL ID with hex!
                     'original_filename': file_info['filename'],
-                    'display_name': group_data['metadata'].get('display_name', base_doc_id),
+                    'display_name': group_data['metadata'].get('display_name', group_data['group_base_id']),
                     'file_type': file_info['file_type'],
                     'format': file_info['format'],
                     'size': file_info['size'],
@@ -161,7 +161,7 @@ def list_documents():
                     'job_id': file_info['job_id'],
                     'source_website': file_info.get('source_website', ''),
                     'metadata': file_info.get('metadata', {}),
-                    'group_base_id': base_doc_id,
+                    'group_base_id': group_data['group_base_id'],  # For UI grouping display
                     'group_files': [f['file_type'] for f in group_data['files']],
                     'group_files_info': group_data['files']
                 })

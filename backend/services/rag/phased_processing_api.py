@@ -312,23 +312,41 @@ def create_job_from_docstore():
         for doc_id in document_ids:
             # Try to get from phased DB first
             existing_doc = phased_db.get_document(doc_id)
-            
+
             # If not in phased DB, try to load from Document Store metadata
             if not existing_doc:
                 # Search for the document in Document Store
                 # Format: job_{job_id}_{source}/documents/{doc_id}.metadata.json
                 import glob as glob_module
-                
-                # First, try exact match
+
+                # Try EXACT match first - this is the expected case now that frontend sends full doc_id
                 metadata_files = glob_module.glob(f"{docstore_base}/**/documents/{doc_id}.metadata.json", recursive=True)
                 
-                # If no exact match, this might be a group_base_id, search for all matching documents
+                # If no metadata file, try looking for the PDF directly
                 if not metadata_files:
-                    # Search for documents with pattern like {doc_id}_*.metadata.json
-                    metadata_files = glob_module.glob(f"{docstore_base}/**/documents/{doc_id}_*.metadata.json", recursive=True)
-
-                if metadata_files:
-                    # Process each matching document - only process the first one
+                    pdf_files = glob_module.glob(f"{docstore_base}/**/documents/{doc_id}.pdf", recursive=True)
+                    if pdf_files:
+                        # Found PDF without metadata - create minimal metadata
+                        metadata_file = pdf_files[0]
+                        metadata = {}
+                        doc_dir = os.path.dirname(metadata_file)
+                        actual_doc_id = doc_id
+                        file_path = metadata_file
+                        file_size = os.path.getsize(file_path)
+                        logger.info(f"[Phased Job {job_id}] Found {actual_doc_id} PDF (no metadata): {file_path}")
+                    else:
+                        logger.error(f"Document {doc_id} not found in phased DB or Document Store (tried exact match)")
+                        continue
+                elif len(metadata_files) > 1:
+                    # This should NEVER happen with full doc_id, but validate anyway
+                    logger.error(
+                        f"Document {doc_id} matched {len(metadata_files)} metadata files (unexpected!): "
+                        f"{[os.path.basename(f) for f in metadata_files[:5]]}. "
+                        f"This indicates a bug - full doc_id should be unique."
+                    )
+                    continue
+                else:
+                    # Exactly one match - perfect!
                     metadata_file = metadata_files[0]
                     with open(metadata_file, 'r') as f:
                         metadata = json.load(f)
@@ -352,8 +370,19 @@ def create_job_from_docstore():
                     if not file_path:
                         # Fallback to PDF path even if it doesn't exist
                         file_path = os.path.join(doc_dir, f"{actual_doc_id}.pdf")
-                    
-                    # Create a mock document object
+
+                    logger.info(f"[Phased Job {job_id}] Loaded {actual_doc_id} from Document Store: {file_path}")
+
+                    # Verify the doc_id matches what we expected
+                    if actual_doc_id != doc_id:
+                        logger.warning(
+                            f"[Phased Job {job_id}] Document ID mismatch: "
+                            f"expected {doc_id}, found {actual_doc_id}. "
+                            f"This may indicate stale metadata or filesystem inconsistency."
+                        )
+
+                # Create mock document if we found a file
+                if file_path:
                     class MockDocument:
                         def __init__(self, metadata, file_path, file_size):
                             self.original_filename = metadata.get('original_filename', f"{actual_doc_id}.pdf")
@@ -365,11 +394,11 @@ def create_job_from_docstore():
                             self.source_website = metadata.get('source_website', '')
                             self.extraction_method = None
                             self.chunk_count = 0
-                    
+
                     existing_doc = MockDocument(metadata, file_path, file_size)
-                    logger.info(f"[Phased Job {job_id}] Loaded {actual_doc_id} from Document Store: {file_path}")
-                    
+
                     # Update doc_id to the actual_doc_id for document creation
+                    # (should match since we're using exact match now)
                     doc_id = actual_doc_id
                 else:
                     logger.warning(f"Document {doc_id} not found in phased DB or Document Store")
@@ -1614,21 +1643,26 @@ def process_phased_job_background(job):
                         try:
                             # Read extracted text - handle various file types
                             file_path_lower = doc.file_path.lower()
-                            
+
                             # Determine the text file path based on original file type
                             if file_path_lower.endswith('.pdf'):
-                                # PDF file - look for extracted .txt or .md
+                                # PDF file - prefer cleaned .txt over .md
                                 text_path = doc.file_path.replace('.pdf', '.txt')
                                 if not os.path.exists(text_path):
                                     text_path = doc.file_path.replace('.pdf', '.md')
                             elif file_path_lower.endswith('.md'):
-                                # Already a markdown file - use it directly
-                                text_path = doc.file_path
+                                # Markdown file - prefer cleaned .txt (LaTeX converted) over .md
+                                txt_path = doc.file_path[:-3] + '.txt'
+                                if os.path.exists(txt_path):
+                                    text_path = txt_path
+                                    logger.info(f"[Phased Job {job_id}] Using cleaned .txt file: {text_path}")
+                                else:
+                                    text_path = doc.file_path
                             elif file_path_lower.endswith('.txt'):
                                 # Already a text file - use it directly
                                 text_path = doc.file_path
                             else:
-                                # Try common extensions
+                                # Try common extensions - prefer cleaned .txt
                                 base_path = doc.file_path.rsplit('.', 1)[0]
                                 if os.path.exists(f"{base_path}.txt"):
                                     text_path = f"{base_path}.txt"
@@ -1702,6 +1736,18 @@ def process_phased_job_background(job):
                                 jq.update_job(current_job)
 
                             if success:
+                                # Check for coverage warning (stored in first chunk metadata by validator)
+                                coverage_warning = None
+                                if llm_chunks and '_coverage_warning' in llm_chunks[0]:
+                                    coverage_warning = llm_chunks[0].pop('_coverage_warning')  # Extract and remove from chunk
+                                    logger.warning(f"[Phased Job {job_id}] Coverage warning: {coverage_warning}")
+                                
+                                # Also check error field for warnings (success=True but error field has text = warning)
+                                chunking_warning = error if success and error else None
+                                
+                                # Combine warnings
+                                final_warning = coverage_warning or chunking_warning
+                                
                                 # Convert LLM chunks to our Chunk format
                                 from backend.services.rag.phased_processing_models import Chunk
                                 chunks = []
@@ -1717,8 +1763,14 @@ def process_phased_job_background(job):
                                         chunk_type='text',
                                         token_count=c.get('token_count', 0),
                                     ))
-                                logger.info(f"[Phased Job {job_id}] LLM generated {len(chunks)} chunks")
+                                logger.info(
+                                    f"[Phased Job {job_id}] LLM generated {len(chunks)} chunks "
+                                    f"(total content: {sum(c.content_length for c in chunks)} chars)"
+                                )
                                 
+                                if final_warning:
+                                    logger.warning(f"[Phased Job {job_id}] WARNING: {final_warning}")
+
                                 # Store cleaning method in metadata for UI notification
                                 if cleaning_method == "latex_converted":
                                     chunking_metadata = {
@@ -1735,6 +1787,10 @@ def process_phased_job_background(job):
                                         'cleaning_method': cleaning_method,
                                         'warning': None
                                     }
+                                
+                                # Add coverage warning to metadata if present
+                                if final_warning:
+                                    chunking_metadata['coverage_warning'] = final_warning
                             else:
                                 logger.error(f"[Phased Job {job_id}] LLM chunking failed: {error}")
                                 # NO FALLBACK - mark document as failed
@@ -1788,6 +1844,31 @@ def process_phased_job_background(job):
                                 doc.doc_id, 'chunk', PhaseStatus.COMPLETED,
                                 metadata=chunking_metadata if success else None
                             )
+                            
+                            # Store warning in job parameters for UI display
+                            if final_warning:
+                                try:
+                                    from backend.services.rag.job_queue import job_queue as jq
+                                    current_job = jq.get_job(job_id)
+                                    if current_job:
+                                        # Initialize warnings list if not exists
+                                        if 'warnings' not in current_job.parameters:
+                                            current_job.parameters['warnings'] = []
+                                        
+                                        # Add warning with context
+                                        current_job.parameters['warnings'].append({
+                                            'type': 'chunking_coverage',
+                                            'doc_id': doc.doc_id,
+                                            'message': final_warning,
+                                            'timestamp': datetime.utcnow().isoformat(),
+                                            'severity': 'warning'  # Could be 'error' in future
+                                        })
+                                        
+                                        # Save updated job
+                                        jq.update_job(current_job)
+                                        logger.info(f"[Phased Job {job_id}] Warning saved to job parameters")
+                                except Exception as e:
+                                    logger.error(f"[Phased Job {job_id}] Failed to save warning: {e}")
                         except Exception as e:
                             logger.error(f"[Phased Job {job_id}] Chunk failed for {doc.doc_id}: {e}")
                             phased_db.update_document_phase_status(
@@ -1990,9 +2071,32 @@ def get_job_status(job_id: str):
         failed_docs = [d for d in all_docs if d.overall_status == DocumentStatus.FAILED]
         processing_docs = [d for d in all_docs if d.overall_status == DocumentStatus.PROCESSING]
 
-        # Note: chunking_metadata warning checks removed - metadata not currently persisted to DB
-        # Warnings would be shown here if we stored chunking_metadata in the database
-        warnings = None
+        # Collect warnings from job parameters
+        warnings_list = []
+        
+        try:
+            from backend.services.rag.job_queue import job_queue
+            job = job_queue.get_job(job_id)
+            if job and job.parameters:
+                # Check for warnings stored in job parameters
+                job_warnings = job.parameters.get('warnings', [])
+                if job_warnings:
+                    warnings_list.extend(job_warnings)
+                
+                # Also check heartbeat for coverage warnings
+                heartbeat = job.parameters.get('heartbeat', {})
+                if heartbeat.get('coverage_warning'):
+                    warnings_list.append({
+                        'type': 'chunking_coverage',
+                        'message': heartbeat['coverage_warning'],
+                        'timestamp': heartbeat.get('timestamp'),
+                        'severity': 'warning'
+                    })
+        except Exception as e:
+            logger.debug(f"Could not check job warnings: {e}")
+        
+        # Format warnings for response
+        warnings = warnings_list if warnings_list else None
 
         return jsonify({
             'success': True,
@@ -2005,7 +2109,7 @@ def get_job_status(job_id: str):
                 'processing': len(processing_docs),
             },
             'failed_document_ids': [d.doc_id for d in failed_docs],
-            'warnings': warnings if warnings else None
+            'warnings': warnings
         })
         
     except Exception as e:

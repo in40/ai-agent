@@ -323,16 +323,32 @@ class RAGOrchestrator:
             # Import required components
             from models.dedicated_mcp_model import DedicatedMCPModel
             from rag_component.config import RERANK_TOP_K_RESULTS
-            from config.settings import str_to_bool
             import os
+            import sys
             import concurrent.futures
             from functools import partial
+            from pathlib import Path
+
+            # Import from project root config.settings
+            project_root = Path(__file__).resolve().parent.parent
+            if str(project_root) not in sys.path:
+                sys.path.insert(0, str(project_root))
+            try:
+                import config.settings as settings
+                str_to_bool = settings.str_to_bool
+                MCP_REGISTRY_URL = settings.MCP_REGISTRY_URL
+            except (ImportError, ModuleNotFoundError):
+                import importlib.util
+                spec = importlib.util.spec_from_file_location("settings", project_root / "config" / "settings.py")
+                settings = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(settings)
+                str_to_bool = settings.str_to_bool
+                MCP_REGISTRY_URL = settings.MCP_REGISTRY_URL
 
             mcp_model = DedicatedMCPModel()
 
             # Get available download services
             from registry.registry_client import ServiceRegistryClient
-            from config.settings import MCP_REGISTRY_URL
             registry_client = ServiceRegistryClient(MCP_REGISTRY_URL)
             download_services = [s for s in registry_client.discover_services() if s.type == "mcp_download"]
 

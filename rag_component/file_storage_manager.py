@@ -5,9 +5,25 @@ Handles storing and retrieving original files with preserved filenames.
 import os
 import shutil
 import uuid
+import sys
 from pathlib import Path
 from typing import List, Optional
-from config.settings import RAG_FILE_STORAGE_DIR
+
+# Get project root for config imports
+project_root = Path(__file__).resolve().parent.parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
+
+# Import from project root config.settings
+try:
+    import config.settings as settings
+    RAG_FILE_STORAGE_DIR = settings.RAG_FILE_STORAGE_DIR
+except (ImportError, ModuleNotFoundError):
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("settings", project_root / "config" / "settings.py")
+    settings = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(settings)
+    RAG_FILE_STORAGE_DIR = settings.RAG_FILE_STORAGE_DIR
 
 
 class FileStorageManager:

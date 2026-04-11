@@ -5,24 +5,48 @@ Handles conversion of text to vector embeddings using various models.
 from typing import List
 import numpy as np
 import requests
+import sys
+from pathlib import Path
 from langchain_core.embeddings import Embeddings
 from langchain_openai import OpenAIEmbeddings as LangChainOpenAIEmbeddings
 from langchain_huggingface import HuggingFaceEmbeddings
 from transformers import AutoTokenizer, AutoModel
 import torch
-from config.settings import (
-    EMBEDDING_PROVIDER,
-    EMBEDDING_MODEL,
-    EMBEDDING_HOSTNAME,
-    EMBEDDING_PORT,
-    EMBEDDING_API_PATH,
-    OPENAI_API_KEY,
-    DEEPSEEK_API_KEY,
-    GIGACHAT_CREDENTIALS,
-    GIGACHAT_SCOPE,
-    GIGACHAT_ACCESS_TOKEN,
-    GIGACHAT_VERIFY_SSL_CERTS
-)
+
+# Import from project root config.settings
+project_root = Path(__file__).resolve().parent.parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
+try:
+    import config.settings as settings
+    EMBEDDING_PROVIDER = settings.EMBEDDING_PROVIDER
+    EMBEDDING_MODEL = settings.EMBEDDING_MODEL
+    EMBEDDING_HOSTNAME = settings.EMBEDDING_HOSTNAME
+    EMBEDDING_PORT = settings.EMBEDDING_PORT
+    EMBEDDING_API_PATH = settings.EMBEDDING_API_PATH
+    OPENAI_API_KEY = settings.OPENAI_API_KEY
+    DEEPSEEK_API_KEY = settings.DEEPSEEK_API_KEY
+    GIGACHAT_CREDENTIALS = settings.GIGACHAT_CREDENTIALS
+    GIGACHAT_SCOPE = settings.GIGACHAT_SCOPE
+    GIGACHAT_ACCESS_TOKEN = settings.GIGACHAT_ACCESS_TOKEN
+    GIGACHAT_VERIFY_SSL_CERTS = settings.GIGACHAT_VERIFY_SSL_CERTS
+except (ImportError, ModuleNotFoundError):
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("settings", project_root / "config" / "settings.py")
+    settings = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(settings)
+    EMBEDDING_PROVIDER = settings.EMBEDDING_PROVIDER
+    EMBEDDING_MODEL = settings.EMBEDDING_MODEL
+    EMBEDDING_HOSTNAME = settings.EMBEDDING_HOSTNAME
+    EMBEDDING_PORT = settings.EMBEDDING_PORT
+    EMBEDDING_API_PATH = settings.EMBEDDING_API_PATH
+    OPENAI_API_KEY = settings.OPENAI_API_KEY
+    DEEPSEEK_API_KEY = settings.DEEPSEEK_API_KEY
+    GIGACHAT_CREDENTIALS = settings.GIGACHAT_CREDENTIALS
+    GIGACHAT_SCOPE = settings.GIGACHAT_SCOPE
+    GIGACHAT_ACCESS_TOKEN = settings.GIGACHAT_ACCESS_TOKEN
+    GIGACHAT_VERIFY_SSL_CERTS = settings.GIGACHAT_VERIFY_SSL_CERTS
+
 from .config import RAG_EMBEDDING_PROVIDER, RAG_EMBEDDING_MODEL
 
 
