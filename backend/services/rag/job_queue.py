@@ -407,10 +407,11 @@ def get_job_status(job_id):
         try:
             from database.utils.database import get_db_connection
             conn = get_db_connection()
+            files = []
             if conn:
                 with conn.cursor() as cur:
                     cur.execute("""
-                        SELECT 
+                        SELECT
                             id, original_filename, file_format, file_size_bytes,
                             status, extraction_method, extraction_time_seconds,
                             text_length, cyrillic_ratio, encoding_was_fixed,
@@ -419,8 +420,7 @@ def get_job_status(job_id):
                         WHERE job_id = %s
                         ORDER BY id
                     """, (job_id,))
-                    
-                    files = []
+
                     for row in cur.fetchall():
                         files.append({
                             'id': row[0],
@@ -436,13 +436,22 @@ def get_job_status(job_id):
                             'chunks_created': row[11],
                             'error': row[12]
                         })
-                    
-                    response_data['files'] = files
-                    response_data['files_count'] = len(files)
+
+            # If no files from DB, try job.parameters.files (for phased_processing jobs)
+            if not files and job.parameters and 'files' in job.parameters:
+                files = job.parameters['files']
+
+            response_data['files'] = files
+            response_data['files_count'] = len(files)
         except Exception as e:
             logger.debug(f"Could not load job files: {e}")
-            response_data['files'] = []
-            response_data['files_count'] = 0
+            # Fallback to parameters.files
+            if job.parameters and 'files' in job.parameters:
+                response_data['files'] = job.parameters['files']
+                response_data['files_count'] = len(job.parameters['files'])
+            else:
+                response_data['files'] = []
+                response_data['files_count'] = 0
 
         return jsonify(response_data), 200
         
@@ -831,18 +840,57 @@ def restart_job(job_id):
     if old_job.status not in [JobStatus.COMPLETED.value, JobStatus.FAILED.value, JobStatus.CANCELLED.value]:
         return jsonify({'error': 'Can only restart completed/failed/cancelled jobs'}), 400
 
+    # Clean up old parameters that shouldn't be copied to new job
+    clean_params = dict(old_job.parameters)
+    for key in ['worker_started_at', 'worker_pid', 'heartbeat', 'current_doc', 'total_docs',
+                'warnings', 'auto_retry_failed']:
+        clean_params.pop(key, None)
+
+    # For phased_processing jobs, clean up old documents so they can be re-created
+    if old_job.job_type == 'phased_processing':
+        doc_ids = old_job.parameters.get('document_ids', [])
+        phases = old_job.parameters.get('phases', ['chunk'])
+        if doc_ids:
+            try:
+                from .phased_processing_db import phased_db
+                from sqlalchemy import text
+                from database.utils.database import get_db_manager
+                db_mgr = get_db_manager()
+                for doc_id in doc_ids:
+                    with db_mgr.engine.connect() as conn:
+                        # Deactivate old chunks
+                        conn.execute(text("""
+                            UPDATE chunks_cache
+                            SET is_active = FALSE
+                            WHERE doc_id = :doc_id
+                        """), {'doc_id': doc_id})
+                        # Delete old document records so they'll be recreated
+                        conn.execute(text("""
+                            DELETE FROM document_processing
+                            WHERE doc_id = :doc_id
+                        """), {'doc_id': doc_id})
+                        conn.commit()
+                logger.info(f"Deleted {len(doc_ids)} old document records for restart")
+            except Exception as e:
+                logger.warning(f"Could not clean up documents for restart: {e}")
+
     # Create new job with same parameters
     try:
         new_job = job_queue.create_job(
             user_id=old_job.user_id,
             job_type=old_job.job_type,
-            parameters=old_job.parameters,
+            parameters=clean_params,
             ingestion_mode=old_job.ingestion_mode,
             processing_mode=old_job.processing_mode,
             chunking_strategy=old_job.chunking_strategy,
             source_url=old_job.source_url,
             document_urls=old_job.document_urls
         )
+
+        # Re-add auto_retry_failed if it was enabled
+        if old_job.parameters.get('auto_retry_failed', False):
+            new_job.parameters['auto_retry_failed'] = True
+            job_queue.update_job(new_job)
 
         logger.info(f"Job {job_id} restarted as {new_job.job_id}")
 

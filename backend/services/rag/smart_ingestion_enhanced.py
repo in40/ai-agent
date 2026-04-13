@@ -629,83 +629,216 @@ def _extract_sections(lines: list, prefix: str) -> list:
     return sections
 
 
-async def _chunk_section_with_llm(section_content: str, section_heading: str, prompt_template: str, llm, filename: str, section_idx: int, total_sections: int) -> Tuple[bool, List[Dict], str]:
-    """Chunk a single section of the document."""
+def _recover_missing_content(section_content: str, valid_chunks: List[Dict], section_heading: str, section_idx: int) -> List[Dict]:
+    """
+    Compare original section text with chunked content and create recovery chunks
+    for any missing segments.
+    """
+    import difflib
+
+    # Build the concatenated chunked content
+    chunked_text = ''.join(c.get('content', '') for c in valid_chunks)
+
+    # Use line-level diff to find missing regions
+    orig_lines = section_content.split('\n')
+    chunked_lines = set(chunked_text.split('\n'))
+
+    # Find missing line groups using SequenceMatcher
+    matcher = difflib.SequenceMatcher(None, orig_lines, chunked_text.split('\n'))
+    missing_blocks = []
+
+    for tag, i1, i2, j1, j2 in matcher.get_opcodes():
+        if tag == 'delete':
+            missing_lines = orig_lines[i1:i2]
+            missing_text = '\n'.join(l for l in missing_lines if l.strip())
+            if len(missing_text.strip()) > 20:  # Only recover meaningful blocks
+                missing_blocks.append({
+                    'start_line': i1,
+                    'end_line': i2,
+                    'text': missing_text.strip(),
+                })
+
+    if not missing_blocks:
+        return []
+
+    recovery_chunks = []
+    for i, block in enumerate(missing_blocks):
+        chunk_id = f"{section_heading.replace(' ', '_')}_recovery_{i}"
+        recovery_chunks.append({
+            'chunk_id': chunk_id,
+            'chunk_index': len(valid_chunks) + i,
+            'content': block['text'],
+            'section': section_heading,
+            'title': f"[RECOVERED] {section_heading} (lines {block['start_line']+1}-{block['end_line']+1})",
+            'chunk_type': 'recovered',
+            'token_count': len(block['text']) // 4,
+            '_recovered': True,
+        })
+
+    logger.info(
+        f"[SECTION {section_idx + 1}] Recovered {len(recovery_chunks)} missing blocks "
+        f"({sum(len(b['text']) for b in missing_blocks)} chars)"
+    )
+    return recovery_chunks
+
+
+async def _chunk_section_with_llm(section_content: str, section_heading: str, prompt_template: str, llm, filename: str, section_idx: int, total_sections: int, heartbeat_cb=None, max_retries: int = 1) -> Tuple[bool, List[Dict], str]:
+    """Chunk a single section of the document, with automatic retry and content recovery."""
     import asyncio
     import re as _re
 
-    section_prompt = prompt_template.format(input_text=section_content)
-    if total_sections > 1:
-        section_prefix = f"You are processing section {section_idx + 1} of {total_sections}: \"{section_heading}\"\n\n"
-        section_prompt = section_prefix + section_prompt
+    best_chunks = []
+    last_error = None
 
-    logger.info(f"[SECTION {section_idx + 1}/{total_sections}] Calling LLM for section: {section_heading} ({len(section_content)} chars)")
+    for attempt in range(max_retries + 1):
+        if attempt > 0:
+            logger.warning(f"[SECTION {section_idx + 1}/{total_sections}] Retry attempt {attempt} for: {section_heading}")
 
-    try:
-        response = await asyncio.wait_for(llm.ainvoke(section_prompt), timeout=LLM_CHUNKING_TIMEOUT)
-        response_content = response.content if hasattr(response, 'content') else str(response)
-    except asyncio.TimeoutError:
-        logger.error(f"[SECTION {section_idx + 1}/{total_sections}] LLM call timed out")
-        return False, [], f"LLM call timed out for section: {section_heading}"
-    except Exception as e:
-        logger.error(f"[SECTION {section_idx + 1}/{total_sections}] LLM call failed: {type(e).__name__}: {str(e)}")
-        return False, [], f"LLM call failed for section {section_heading}: {str(e)}"
+        if heartbeat_cb:
+            action = 'section_retry' if attempt > 0 else 'section_start'
+            heartbeat_cb(action=action, section=section_idx + 1, total_sections=total_sections, heading=section_heading, attempt=attempt)
 
-    logger.info(f"[SECTION {section_idx + 1}/{total_sections}] LLM response: {len(response_content)} chars")
+        section_prompt = prompt_template.format(input_text=section_content)
+        if total_sections > 1:
+            retry_note = f" REATTEMPT #{attempt} — previous attempt returned insufficient coverage. You MUST process ALL content." if attempt > 0 else ""
+            section_prefix = (
+                f"Document: {filename}\n"
+                f"Processing section {section_idx + 1} of {total_sections}: \"{section_heading}\"\n"
+                f"IMPORTANT: In your JSON output, set the \"section\" field to the EXACT heading text: \"{section_heading}\". "
+                f"Do NOT use a number or index — use the full heading text exactly as shown above.\n"
+                f"CRITICAL: You MUST chunk ALL content in this section. Do NOT skip any text.{retry_note}\n\n"
+            )
+            section_prompt = section_prefix + section_prompt
 
-    cleaned_response = _re.sub(r'\[THINK\][\s\S]*?\[/THINK\]', '', response_content)
-    cleaned_response = _re.sub(r'<think>[\s\S]*?</think>', '', cleaned_response, flags=_re.IGNORECASE)
-    if '[THINK]' in cleaned_response and '[/THINK]' not in cleaned_response:
-        think_idx = cleaned_response.index('[THINK]')
-        cleaned_response = cleaned_response[:think_idx]
-    cleaned_response = cleaned_response.strip()
+        logger.info(f"[SECTION {section_idx + 1}/{total_sections}] Calling LLM for section: {section_heading} ({len(section_content)} chars)")
 
-    if cleaned_response.startswith('```json'):
-        cleaned_response = cleaned_response[7:]
-    elif cleaned_response.startswith('```'):
-        cleaned_response = cleaned_response[3:]
-    if cleaned_response.endswith('```'):
-        cleaned_response = cleaned_response[:-3]
-    cleaned_response = cleaned_response.strip()
+        try:
+            response = await asyncio.wait_for(llm.ainvoke(section_prompt), timeout=LLM_CHUNKING_TIMEOUT)
+            response_content = response.content if hasattr(response, 'content') else str(response)
+        except asyncio.TimeoutError:
+            logger.error(f"[SECTION {section_idx + 1}/{total_sections}] LLM call timed out")
+            last_error = f"LLM call timed out for section: {section_heading}"
+            if attempt < max_retries:
+                continue
+            # Try to recover from original content even on timeout
+            return False, [], last_error
+        except Exception as e:
+            logger.error(f"[SECTION {section_idx + 1}/{total_sections}] LLM call failed: {type(e).__name__}: {str(e)}")
+            last_error = f"LLM call failed for section {section_heading}: {str(e)}"
+            if attempt < max_retries:
+                continue
+            return False, [], last_error
 
-    try:
-        from .json_utils import parse_json_robust
+        logger.info(f"[SECTION {section_idx + 1}/{total_sections}] LLM response: {len(response_content)} chars")
+        logger.info(f"[SECTION {section_idx + 1}/{total_sections}] LLM response preview: {repr(response_content[:500])}")
 
-        json_match = _re.search(r'\{[\s\S]*\}', cleaned_response)
-        if not json_match:
-            json_match = _re.search(r'\[[\s\S]*\]', cleaned_response)
+        cleaned_response = _re.sub(r'\[THINK\][\s\S]*?\[/THINK\]', '', response_content)
+        cleaned_response = _re.sub(r'<think>[\s\S]*?</think>', '', cleaned_response, flags=_re.IGNORECASE)
+        if '[THINK]' in cleaned_response and '[/THINK]' not in cleaned_response:
+            think_idx = cleaned_response.index('[THINK]')
+            cleaned_response = cleaned_response[:think_idx]
+        cleaned_response = cleaned_response.strip()
 
-        if not json_match:
-            logger.error(f"[SECTION {section_idx + 1}/{total_sections}] No JSON found")
-            return False, [], f"No JSON found in LLM response for section: {section_heading}"
+        if cleaned_response.startswith('```json'):
+            cleaned_response = cleaned_response[7:]
+        elif cleaned_response.startswith('```'):
+            cleaned_response = cleaned_response[3:]
+        if cleaned_response.endswith('```'):
+            cleaned_response = cleaned_response[:-3]
+        cleaned_response = cleaned_response.strip()
 
-        json_str = json_match.group(0)
-        chunking_result = parse_json_robust(json_str, default_on_error={'chunks': []})
+        try:
+            from .json_utils import parse_json_robust
 
-        if isinstance(chunking_result, dict):
-            if 'chunks' in chunking_result:
-                chunks = chunking_result['chunks']
-            elif 'chunk_id' in chunking_result and 'content' in chunking_result:
-                chunks = [chunking_result]
-            elif any(k in chunking_result for k in ['section', 'title', 'text']):
-                chunks = [chunking_result]
+            json_match = _re.search(r'\{[\s\S]*\}', cleaned_response)
+            if not json_match:
+                json_match = _re.search(r'\[[\s\S]*\]', cleaned_response)
+
+            if not json_match:
+                logger.error(f"[SECTION {section_idx + 1}/{total_sections}] No JSON found")
+                last_error = f"No JSON found in LLM response for section: {section_heading}"
+                if attempt < max_retries:
+                    continue
+                # Try recovery
+                break
+
+            json_str = json_match.group(0)
+            chunking_result = parse_json_robust(json_str, default_on_error={'chunks': []})
+
+            if isinstance(chunking_result, dict):
+                if 'chunks' in chunking_result:
+                    chunks = chunking_result['chunks']
+                elif 'chunk_id' in chunking_result and 'content' in chunking_result:
+                    chunks = [chunking_result]
+                elif any(k in chunking_result for k in ['section', 'title', 'text']):
+                    chunks = [chunking_result]
+                else:
+                    chunks = []
+            elif isinstance(chunking_result, list):
+                chunks = chunking_result
             else:
                 chunks = []
-        elif isinstance(chunking_result, list):
-            chunks = chunking_result
-        else:
-            chunks = []
 
-        valid_chunks = [c for c in chunks if isinstance(c, dict) and 'chunk_id' in c and 'content' in c]
-        logger.info(f"[SECTION {section_idx + 1}/{total_sections}] Extracted {len(valid_chunks)} valid chunks")
-        return True, valid_chunks, ""
+            valid_chunks = [c for c in chunks if isinstance(c, dict) and 'chunk_id' in c and 'content' in c]
 
-    except Exception as e:
-        logger.error(f"[SECTION {section_idx + 1}/{total_sections}] Failed to parse LLM response: {str(e)}")
-        return False, [], f"Failed to parse LLM response for section {section_heading}: {str(e)}"
+            if not valid_chunks:
+                last_error = f"No valid chunks parsed from LLM response for section: {section_heading}"
+                if attempt < max_retries:
+                    continue
+                break
+
+            # Check coverage and try to recover missing parts
+            total_chunked = sum(len(c.get('content', '')) for c in valid_chunks)
+            coverage = total_chunked / len(section_content) if section_content else 0
+
+            if coverage < 0.85:
+                # Some content is missing — try to recover
+                logger.warning(
+                    f"[SECTION {section_idx + 1}/{total_sections}] Coverage {coverage:.1%} "
+                    f"({total_chunked}/{len(section_content)} chars) — recovering missing content"
+                )
+                recovery = _recover_missing_content(section_content, valid_chunks, section_heading, section_idx)
+                valid_chunks.extend(recovery)
+                # Re-check coverage after recovery
+                total_after = sum(len(c.get('content', '')) for c in valid_chunks)
+                logger.info(
+                    f"[SECTION {section_idx + 1}/{total_sections}] After recovery: "
+                    f"{len(valid_chunks)} chunks, {total_after} chars ({total_after/len(section_content)*100:.1f}%)"
+                )
+
+            logger.info(f"[SECTION {section_idx + 1}/{total_sections}] Extracted {len(valid_chunks)} valid chunks")
+            return True, valid_chunks, ""
+
+        except Exception as e:
+            logger.error(f"[SECTION {section_idx + 1}/{total_sections}] Failed to parse LLM response: {str(e)}")
+            last_error = f"Failed to parse LLM response for section {section_heading}: {str(e)}"
+            if attempt < max_retries:
+                continue
+            break
+
+    # All retries exhausted — try recovery on whatever we got
+    if best_chunks:
+        recovery = _recover_missing_content(section_content, best_chunks, section_heading, section_idx)
+        best_chunks.extend(recovery)
+        return True, best_chunks, ""
+
+    # Final recovery attempt from original content
+    logger.warning(f"[SECTION {section_idx + 1}/{total_sections}] All LLM attempts failed — using raw content as single chunk")
+    recovery_chunk = {
+        'chunk_id': f"{section_heading.replace(' ', '_')}_fallback",
+        'chunk_index': 0,
+        'content': section_content,
+        'section': section_heading,
+        'title': f"[FALLBACK] {section_heading}",
+        'chunk_type': 'raw',
+        'token_count': len(section_content) // 4,
+        '_recovered': True,
+    }
+    return True, [recovery_chunk], f"LLM failed, used fallback raw content"
 
 
-async def chunk_document_with_llm(file_path: str, prompt: str, filename: str = "", timeout: int = None) -> Tuple[bool, List[Dict], str]:
+
+async def chunk_document_with_llm(file_path: str, prompt: str, filename: str = "", timeout: int = None, heartbeat_cb=None) -> Tuple[bool, List[Dict], str]:
     """
     Chunk a document using LLM (async version with proper timeout).
 
@@ -773,7 +906,8 @@ async def chunk_document_with_llm(file_path: str, prompt: str, filename: str = "
                     llm=llm,
                     filename=filename or file_path,
                     section_idx=section_idx,
-                    total_sections=total_sections
+                    total_sections=total_sections,
+                    heartbeat_cb=heartbeat_cb
                 )
 
                 if not success:
@@ -913,7 +1047,7 @@ async def chunk_document_with_llm(file_path: str, prompt: str, filename: str = "
         return False, [], str(e)
 
 
-def chunk_document_with_llm_sync(file_path: str, prompt: str, filename: str = "", timeout: int = None) -> Tuple[bool, List[Dict], str]:
+def chunk_document_with_llm_sync(file_path: str, prompt: str, filename: str = "", timeout: int = None, heartbeat_cb=None) -> Tuple[bool, List[Dict], str]:
     """
     Synchronous wrapper for async chunk_document_with_llm.
     Use this when calling from synchronous code.
@@ -921,7 +1055,7 @@ def chunk_document_with_llm_sync(file_path: str, prompt: str, filename: str = ""
     logger.info(f"[DEBUG] === chunk_document_with_llm_sync STARTED ===")
     logger.info(f"[DEBUG] file_path={file_path}, filename={filename}")
     import asyncio
-    result = asyncio.run(chunk_document_with_llm(file_path, prompt, filename, timeout))
+    result = asyncio.run(chunk_document_with_llm(file_path, prompt, filename, timeout, heartbeat_cb))
     logger.info(f"[DEBUG] === chunk_document_with_llm_sync COMPLETED ===")
     return result
 

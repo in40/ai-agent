@@ -254,6 +254,9 @@ def create_job_from_docstore():
                 'error': 'No document IDs provided'
             }), 400
 
+        auto_retry = data.get('auto_retry_failed', True)
+        logger.info(f"[create_job_from_docstore] Auto-retry failed: {auto_retry}")
+
         # FIRST: Create job in job queue to get job_id
         # We need the job_id BEFORE creating documents so they match
         try:
@@ -268,7 +271,8 @@ def create_job_from_docstore():
                     'source': 'docstore',
                     'total_documents': 0,  # Will update after creating documents
                     'files': [],  # Track files
-                    'extraction_config': extraction_config  # Store extraction config
+                    'extraction_config': extraction_config,  # Store extraction config
+                    'auto_retry_failed': auto_retry
                 },
                 ingestion_mode='docstore',
                 processing_mode='vector_db',
@@ -1383,7 +1387,7 @@ def process_phased_job_background(job):
         logger.info(f"[Phased Job {job_id}] Phases: {phases}")
         
         # Import PhaseStatus early for use in fallback and error handling
-        from backend.services.rag.phased_processing_models import PhaseStatus
+        from backend.services.rag.phased_processing_models import PhaseStatus, DocumentStatus
         
         # Get documents for this job
         all_docs = phased_db.get_documents_by_job(job_id)
@@ -1416,7 +1420,7 @@ def process_phased_job_background(job):
                     phase_vector=PhaseStatus.PENDING if 'vector' in phases else PhaseStatus.SKIPPED,
                     phase_graph=PhaseStatus.PENDING if 'graph' in phases else PhaseStatus.SKIPPED,
                     current_phase='chunk' if 'chunk' in phases else 'vector' if 'vector' in phases else 'graph',
-                    overall_status='PROCESSING',
+                    overall_status=DocumentStatus.PROCESSING,
                     extraction_method=None,
                     chunk_count=0,
                 )
@@ -1589,6 +1593,7 @@ def process_phased_job_background(job):
                         job_queue.update_job(job)
 
                     docs = get_documents_ready_for_phase(job_id, 'chunk')
+                    total_docs = len(docs)
                     if not docs:
                         logger.warning(f"[Phased Job {job_id}] No documents found ready for chunking, attempting fallback from Document Store")
                         for doc_id in document_ids:
@@ -1596,13 +1601,25 @@ def process_phased_job_background(job):
                             if existing_doc:
                                 docs.append(existing_doc)
                                 continue
-                            import glob as glob_mod
-                            base_dir = "/root/qwen/ai_agent/document-store-mcp-server/data/ingested"
-                            matches = glob_mod.glob(f"{base_dir}/**/{doc_id}.pdf", recursive=True)
-                            if not matches:
-                                logger.warning(f"Document {doc_id} not found in Document Store")
+                            # Try using job.files paths first (from original job creation)
+                            file_path = None
+                            if job.parameters and 'files' in job.parameters:
+                                for f in job.parameters['files']:
+                                    fname = f.get('filename', '')
+                                    fpath = f.get('path', '')
+                                    if fname.startswith(doc_id) and os.path.exists(fpath):
+                                        file_path = fpath
+                                        break
+                            # Fallback to glob search
+                            if not file_path:
+                                import glob as glob_mod
+                                base_dir = "/root/qwen/ai_agent/document-store-mcp-server/data/ingested"
+                                matches = glob_mod.glob(f"{base_dir}/**/{doc_id}.pdf", recursive=True)
+                                if matches:
+                                    file_path = matches[0]
+                            if not file_path:
+                                logger.warning(f"Document {doc_id} not found in Document Store or job files")
                                 continue
-                            file_path = matches[0]
                             class MockDoc:
                                 def __init__(self, doc_id, path):
                                     self.doc_id = doc_id
@@ -1619,7 +1636,7 @@ def process_phased_job_background(job):
                             doc_record = DocumentProcessing(
                                 doc_id=mock_doc.doc_id,
                                 job_id=job_id,
-                                user_id=user_id,
+                                user_id=job.user_id,
                                 original_filename=mock_doc.original_filename,
                                 display_name=mock_doc.display_name,
                                 file_path=mock_doc.file_path,
@@ -1633,14 +1650,22 @@ def process_phased_job_background(job):
                                 phase_vector=PhaseStatus.PENDING,
                                 phase_graph=PhaseStatus.PENDING,
                                 current_phase='chunk',
-                                overall_status='PROCESSING',
+                                overall_status=DocumentStatus.PROCESSING,
                                 extraction_method=None,
                                 chunk_count=0,
                             )
                             if phased_db.create_document(doc_record):
                                 docs.append(doc_record)
-                    for doc in docs:
+                    for doc_idx, doc in enumerate(docs):
                         try:
+                            # Update job-level progress: current file
+                            from backend.services.rag.job_queue import job_queue as jq
+                            current_job = jq.get_job(job_id)
+                            if current_job:
+                                current_job.parameters['current_doc'] = doc_idx + 1
+                                current_job.parameters['total_docs'] = total_docs
+                                jq.update_job(current_job)
+
                             # Read extracted text - handle various file types
                             file_path_lower = doc.file_path.lower()
 
@@ -1697,18 +1722,26 @@ def process_phased_job_background(job):
 
                             # Use LLM-based smart chunking with async timeout
                             logger.info(f"[Phased Job {job_id}] Calling LLM for smart chunking...")
-                            
-                            # Update heartbeat before LLM chunking (can take minutes)
-                            from backend.services.rag.job_queue import job_queue as jq
-                            current_job = jq.get_job(job_id)
-                            if current_job:
-                                current_job.parameters['heartbeat'] = {
-                                    'timestamp': datetime.utcnow().isoformat(),
-                                    'phase': 'chunk',
-                                    'doc_id': doc.doc_id,
-                                    'action': 'llm_chunking_starting'
-                                }
-                                jq.update_job(current_job)
+
+                            # Heartbeat callback - updates section progress
+                            def heartbeat_cb(action=None, section=None, total_sections=None, heading=None, attempt=None):
+                                try:
+                                    j = jq.get_job(job_id)
+                                    if j:
+                                        hb = j.parameters.get('heartbeat', {})
+                                        hb.update({
+                                            'timestamp': datetime.utcnow().isoformat(),
+                                            'phase': 'chunk',
+                                            'doc_id': doc.doc_id,
+                                            'action': action or 'section_progress',
+                                            'current_section': section,
+                                            'total_sections': total_sections,
+                                            'section_heading': heading,
+                                        })
+                                        j.parameters['heartbeat'] = hb
+                                        jq.update_job(j)
+                                except Exception as e:
+                                    logger.debug(f"Heartbeat update failed: {e}")
 
                             from .smart_ingestion_enhanced import chunk_document_with_llm_sync
 
@@ -1719,7 +1752,8 @@ def process_phased_job_background(job):
                                 file_path=text_path,
                                 prompt="",  # Use default prompt
                                 filename=doc.original_filename,
-                                timeout=LLM_CHUNKING_TIMEOUT  # Pass timeout from .env
+                                timeout=LLM_CHUNKING_TIMEOUT,  # Pass timeout from .env
+                                heartbeat_cb=heartbeat_cb
                             )
                             logger.info(f"[Phased Job {job_id}] chunk_document_with_llm_sync returned: success={success}, chunks_count={len(llm_chunks) if llm_chunks else 0}, error={repr(error)[:500]}")
                             
@@ -1979,17 +2013,192 @@ def process_phased_job_background(job):
 
             # Count total chunks generated (from successful docs only)
             total_chunks = 0
+            per_file_chunks = {}
             for doc in successful_docs:
                 chunks = phased_db.get_chunks_for_document(doc.doc_id)
                 logger.info(f"[Phased Job {job_id}] Doc {doc.doc_id[:20]} has {len(chunks)} chunks")
                 total_chunks += len(chunks)
+                per_file_chunks[doc.doc_id] = len(chunks)
             job.chunks_generated = total_chunks
+
+            # Update per-file chunk counts in job parameters
+            if job.parameters and 'files' in job.parameters:
+                for f in job.parameters['files']:
+                    fname = f.get('filename', '').replace('.pdf', '').replace('.md', '').replace('.txt', '')
+                    matched = False
+                    for doc_id, cnt in per_file_chunks.items():
+                        if doc_id.startswith(fname) or fname.startswith(doc_id.split('_')[0]):
+                            f['chunks_created'] = cnt
+                            f['status'] = 'success'
+                            matched = True
+                            break
+                    if not matched:
+                        # This file was not in successful_docs, check if it failed
+                        for failed_doc in failed_docs:
+                            if failed_doc.original_filename == f.get('filename', ''):
+                                f['status'] = 'failed'
+                                f['error'] = f.get('error', 'Chunking failed')
+                                break
 
             logger.info(f"[Phased Job {job_id}] Updating job with {len(job_docs)} docs ({len(successful_docs)} success, {len(failed_docs)} failed), {total_chunks} chunks")
 
             # Save updated job
             job_queue.update_job(job)
             logger.info(f"[Phased Job {job_id}] Job updated successfully")
+
+            # Auto-retry failed documents
+            if failed_docs and job.parameters.get('auto_retry_failed', True):
+                logger.info(f"[Phased Job {job_id}] Auto-retry enabled, reprocessing {len(failed_docs)} failed document(s)")
+                for failed_doc in failed_docs:
+                    logger.info(f"[Phased Job {job_id}] Retrying document: {failed_doc.doc_id}")
+                    try:
+                        # Reset the document status
+                        phased_db.update_document_phase_status(
+                            failed_doc.doc_id, 'chunk', PhaseStatus.PENDING,
+                            error_message=None
+                        )
+
+                        # Read extracted text
+                        file_path_lower = failed_doc.file_path.lower()
+                        if file_path_lower.endswith('.pdf'):
+                            text_path = failed_doc.file_path.replace('.pdf', '.txt')
+                            if not os.path.exists(text_path):
+                                text_path = failed_doc.file_path.replace('.pdf', '.md')
+                        elif file_path_lower.endswith('.md'):
+                            txt_path = failed_doc.file_path[:-3] + '.txt'
+                            if os.path.exists(txt_path):
+                                text_path = txt_path
+                            else:
+                                text_path = failed_doc.file_path
+                        elif file_path_lower.endswith('.txt'):
+                            text_path = failed_doc.file_path
+                        else:
+                            base_path = failed_doc.file_path.rsplit('.', 1)[0]
+                            if os.path.exists(f"{base_path}.txt"):
+                                text_path = f"{base_path}.txt"
+                            elif os.path.exists(f"{base_path}.md"):
+                                text_path = f"{base_path}.md"
+                            else:
+                                text_path = failed_doc.file_path
+
+                        if not os.path.exists(text_path):
+                            raise Exception(f"Extracted text not found at: {text_path}")
+
+                        with open(text_path, 'r', encoding='utf-8') as f:
+                            text = f.read()
+
+                        from .smart_ingestion_enhanced import chunk_document_with_llm_sync
+
+                        success, llm_chunks, error = chunk_document_with_llm_sync(
+                            file_path=text_path,
+                            prompt="",
+                            filename=failed_doc.original_filename,
+                            timeout=LLM_CHUNKING_TIMEOUT
+                        )
+
+                        if success:
+                            from backend.services.rag.phased_processing_models import Chunk
+                            chunks = []
+                            for i, c in enumerate(llm_chunks):
+                                chunks.append(Chunk(
+                                    doc_id=failed_doc.doc_id,
+                                    chunk_id=f"{failed_doc.doc_id}_chunk_{i:04d}",
+                                    chunk_index=i,
+                                    content=c.get('content', ''),
+                                    content_length=len(c.get('content', '')),
+                                    section=c.get('section', ''),
+                                    title=c.get('title', ''),
+                                    chunk_type='text',
+                                    token_count=c.get('token_count', 0),
+                                ))
+
+                            phased_db.deactivate_chunks(failed_doc.doc_id)
+                            phased_db.save_chunks(chunks)
+
+                            if text_path.endswith('.md'):
+                                chunks_file = text_path.replace('.md', '.chunks.json')
+                            elif text_path.endswith('.txt'):
+                                chunks_file = text_path.replace('.txt', '.chunks.json')
+                            else:
+                                chunks_file = text_path + '.chunks.json'
+                            chunks_data = {
+                                'doc_id': failed_doc.doc_id,
+                                'filename': failed_doc.original_filename,
+                                'total_chunks': len(chunks),
+                                'chunking_strategy': 'smart_llm',
+                                'chunks': [
+                                    {
+                                        'chunk_id': c.chunk_id,
+                                        'chunk_index': c.chunk_index,
+                                        'content': c.content,
+                                        'section': c.section,
+                                        'title': c.title,
+                                        'token_count': c.token_count
+                                    } for c in chunks
+                                ]
+                            }
+                            with open(chunks_file, 'w', encoding='utf-8') as f:
+                                json.dump(chunks_data, f, indent=2, ensure_ascii=False)
+
+                            phased_db.update_document_metadata(failed_doc.doc_id, {
+                                'chunk_count': len(chunks),
+                                'chunking_strategy': 'smart_llm'
+                            })
+                            phased_db.update_document_phase_status(
+                                failed_doc.doc_id, 'chunk', PhaseStatus.COMPLETED
+                            )
+                            logger.info(f"[Phased Job {job_id}] Retry SUCCESS for {failed_doc.doc_id}: {len(chunks)} chunks")
+
+                            # Update file status in job parameters
+                            if job.parameters and 'files' in job.parameters:
+                                for f_entry in job.parameters['files']:
+                                    fname = f_entry.get('filename', '')
+                                    doc_base = failed_doc.doc_id.rsplit('_', 1)[0] if '_' in failed_doc.doc_id else failed_doc.doc_id
+                                    if fname.startswith(doc_base) or failed_doc.original_filename == fname:
+                                        f_entry['chunks_created'] = len(chunks)
+                                        f_entry['retry_status'] = 'success'
+                                        f_entry['retry_chunks'] = len(chunks)
+                                        f_entry.pop('error', None)
+                                        break
+                        else:
+                            logger.warning(f"[Phased Job {job_id}] Retry FAILED for {failed_doc.doc_id}: {error}")
+                    except Exception as e:
+                        logger.error(f"[Phased Job {job_id}] Retry ERROR for {failed_doc.doc_id}: {e}")
+
+                # Update job status after retries
+                job_docs = phased_db.get_documents_by_job(job_id)
+                failed_after_retry = [d for d in job_docs if d.overall_status == DocumentStatus.FAILED]
+                successful_after_retry = [d for d in job_docs if d.overall_status == DocumentStatus.COMPLETED]
+
+                if failed_after_retry:
+                    job.status = JobStatus.FAILED.value
+                    job.current_stage = 'failed'
+                    job.error = f"{len(failed_after_retry)} document(s) failed after retry"
+                    logger.error(f"[Phased Job {job_id}] Job still FAILED after retry: {len(failed_after_retry)} documents")
+                else:
+                    job.status = JobStatus.COMPLETED.value
+                    job.current_stage = 'completed'
+                    job.error = None
+                    logger.info(f"[Phased Job {job_id}] Job COMPLETED after retry - all documents succeeded")
+
+                # Update chunk counts after retry
+                total_chunks = 0
+                per_file_chunks = {}
+                for doc in successful_after_retry:
+                    chunks = phased_db.get_chunks_for_document(doc.doc_id)
+                    total_chunks += len(chunks)
+                    per_file_chunks[doc.doc_id] = len(chunks)
+                job.chunks_generated = total_chunks
+
+                if job.parameters and 'files' in job.parameters:
+                    for f in job.parameters['files']:
+                        fname = f.get('filename', '').replace('.pdf', '').replace('.md', '').replace('.txt', '')
+                        for doc_id, cnt in per_file_chunks.items():
+                            if doc_id.startswith(fname) or fname.startswith(doc_id.split('_')[0]):
+                                f['chunks_created'] = cnt
+                                break
+
+                job_queue.update_job(job)
         else:
             logger.warning(f"[Phased Job {job_id}] Job not found for final update")
         

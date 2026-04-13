@@ -186,10 +186,18 @@ def remove_page_markers(content: str) -> str:
     # <!-- Page X -->
     content = re.sub(r'<!--\s*Page\s+\d+\s*-->', '', content)
 
-    # Repeated document title headers like "# P 1323565.1.013—2017"
-    # These appear at the top of every extracted page
+    # Repeated document title headers with # prefix
     content = re.sub(r'\n#\s*P\s+[\d.\u2014—]+\s*\n', '\n', content)
     content = re.sub(r'\n#\s*Р\s+[\d.\u2014—]+\s*\n', '\n', content)  # Cyrillic P
+
+    # Bare page headers (no # prefix) - standalone lines like "P 1323565.1.013—2017"
+    content = re.sub(r'^P\s+[\d.\u2014—]+\s*$', '', content, flags=re.MULTILINE)
+    content = re.sub(r'^Р\s+[\d.\u2014—]+\s*$', '', content, flags=re.MULTILINE)  # Cyrillic P
+
+    # Cross-reference lines: "1323565.1.010—2017 Информационная технология..."
+    # These are header/footer artifacts from PDF extraction
+    content = re.sub(r'^[\d.\u2014—]+\s+Информационная технология.*$', '', content, flags=re.MULTILINE)
+    content = re.sub(r'^БЗ\s+[\d—]+/[\d]+\s*$', '', content, flags=re.MULTILINE)  # "БЗ 1—2018/153"
 
     return content
 

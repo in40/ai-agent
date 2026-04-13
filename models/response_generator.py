@@ -119,7 +119,6 @@ class ResponseGenerator:
             from utils.gigachat_integration import GigaChatModel
             self.llm = GigaChatModel(
                 model=model,
-                temperature=0.7,  # Slightly higher temperature for more natural responses
                 credentials=GIGACHAT_CREDENTIALS,
                 scope=GIGACHAT_SCOPE,
                 access_token=GIGACHAT_ACCESS_TOKEN,
@@ -152,7 +151,6 @@ class ResponseGenerator:
             # Create the LLM with the determined base URL
             self.llm = ChatOpenAI(
                 model=model,
-                temperature=0.7,  # Slightly higher temperature for more natural responses
                 api_key=api_key,
                 base_url=base_url,
                 request_timeout=120  # 2 minute timeout
@@ -302,7 +300,6 @@ class ResponseGenerator:
                 from utils.gigachat_integration import GigaChatModel
                 return GigaChatModel(
                     model=actual_model,
-                    temperature=0.7,
                     credentials=GIGACHAT_CREDENTIALS,
                     scope=GIGACHAT_SCOPE,
                     access_token=GIGACHAT_ACCESS_TOKEN,
@@ -346,7 +343,6 @@ class ResponseGenerator:
 
                 return ChatOpenAI(
                     model=actual_model,
-                    temperature=0.7,
                     api_key=api_key,
                     base_url=base_url,
                     request_timeout=LLM_CHUNKING_TIMEOUT,

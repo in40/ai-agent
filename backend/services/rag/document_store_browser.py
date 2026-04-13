@@ -112,6 +112,9 @@ def list_documents():
                         # If the result ends with .metadata, strip that too
                         if full_doc_id.endswith('.metadata'):
                             full_doc_id = full_doc_id[:-9]
+                        # If the result ends with .chunks, strip that too (so chunks.json groups with parent)
+                        if full_doc_id.endswith('.chunks'):
+                            full_doc_id = full_doc_id[:-7]
 
                     # Extract group_base_id by removing hex suffix (for display grouping ONLY)
                     group_base_id = full_doc_id

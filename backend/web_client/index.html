@@ -790,7 +790,7 @@
                                                 <i class="fas fa-file-alt"></i> Text
                                             </button>
                                             <button type="button" class="btn btn-sm btn-outline-primary" onclick="filterDocstoreByType('md')" id="filter-md-btn">
-                                                <i class="fab fa-markdown"></i> Markdown
+                                                <i class="fab fa-markdown"></i> Markdown + Chunks
                                             </button>
                                             <button type="button" class="btn btn-sm btn-outline-info" onclick="filterDocstoreByType('chunks')" id="filter-chunks-btn">
                                                 <i class="fas fa-th-large"></i> Chunks
@@ -863,6 +863,13 @@
                                         <label class="form-check-label" for="ingest-chunks-checkbox">
                                             Ingest chunks into database(s) after processing
                                         </label>
+                                    </div>
+                                    <div class="form-check mt-2">
+                                        <input class="form-check-input" type="checkbox" id="auto-retry-failed-checkbox" checked>
+                                        <label class="form-check-label" for="auto-retry-failed-checkbox">
+                                            Auto-retry failed documents after job completes
+                                        </label>
+                                        <small class="text-muted d-block">If any documents fail, automatically reprocess them at the end</small>
                                     </div>
                                 </div>
                             </div>
@@ -4646,6 +4653,10 @@
                 if (docstoreFileTypeFilter !== 'all') {
                     filteredDocs = docstoreDocuments.filter(doc => {
                         if (!doc.file_type) return false;
+                        // When filtering by md, also show chunks.json so users can see which docs were chunked
+                        if (docstoreFileTypeFilter === 'md') {
+                            return doc.file_type === 'md' || doc.file_type === 'chunks';
+                        }
                         return doc.file_type === docstoreFileTypeFilter;
                     });
                 }
@@ -4706,14 +4717,22 @@
                                               currentFilename.toLowerCase().endsWith('.md') ? '.md' :
                                               currentFilename.toLowerCase().endsWith('.json') ? '.json' : '';
                             let currentBase = currentExt ? currentFilename.slice(0, -currentExt.length) : currentFilename;
-                            
+                            // Strip .chunks suffix so chunks.json matches with parent doc
+                            if (currentBase.endsWith('.chunks')) {
+                                currentBase = currentBase.slice(0, -7);
+                            }
+
                             // Find matching file with same base ID
                             fileInfo = doc.group_files_info.find(f => {
                                 const fileExt = f.filename.toLowerCase().endsWith('.pdf') ? '.pdf' :
                                                f.filename.toLowerCase().endsWith('.txt') ? '.txt' :
                                                f.filename.toLowerCase().endsWith('.md') ? '.md' :
                                                f.filename.toLowerCase().endsWith('.json') ? '.json' : '';
-                                const fileBase = fileExt ? f.filename.slice(0, -fileExt.length) : f.filename;
+                                let fileBase = fileExt ? f.filename.slice(0, -fileExt.length) : f.filename;
+                                // Strip .chunks suffix so chunks.json matches with parent doc
+                                if (fileBase.endsWith('.chunks')) {
+                                    fileBase = fileBase.slice(0, -7);
+                                }
                                 return f.file_type === ft && fileBase === currentBase;
                             });
                         }
@@ -4798,6 +4817,10 @@
                 if (docstoreFileTypeFilter !== 'all') {
                     docsToToggle = docstoreDocuments.filter(doc => {
                         if (!doc.file_type) return false;
+                        // When filtering by md, also match chunks
+                        if (docstoreFileTypeFilter === 'md') {
+                            return doc.file_type === 'md' || doc.file_type === 'chunks';
+                        }
                         return doc.file_type === docstoreFileTypeFilter;
                     });
                 }
@@ -5015,6 +5038,7 @@ delimiters: [
                         document_ids: selectedDocs.map(d => d.doc_id),
                         phases: selectedPhases,
                         user_id: 'web_user',
+                        auto_retry_failed: document.getElementById('auto-retry-failed-checkbox').checked,
                         extraction_config: {
                             method: extractionMethod,
                             page_range: pageRangeAll ? 'all' : {
@@ -5175,14 +5199,33 @@ delimiters: [
                             if (selectedPhases.includes('chunk')) completedCount += phases.chunk?.completed || 0;
                             if (selectedPhases.includes('vector')) completedCount += phases.vector?.completed || 0;
                             if (selectedPhases.includes('graph')) completedCount += phases.graph?.completed || 0;
-                            
+
                             const totalDocs = progress.documents_total || 1;
                             const overallProgress = Math.round((completedCount / (totalDocs * totalPhases)) * 100);
-                            
+
+                            // Build per-file/section progress details
+                            let progressDetails = '';
+                            if (jobData.parameters) {
+                                const hb = jobData.parameters.heartbeat || {};
+                                const curDoc = jobData.parameters.current_doc;
+                                const totDocs = jobData.parameters.total_docs;
+                                if (curDoc && totDocs) {
+                                    progressDetails += `<div class="mt-2"><strong>File:</strong> ${curDoc} of ${totDocs}</div>`;
+                                }
+                                if (hb.phase === 'chunk' && hb.current_section && hb.total_sections) {
+                                    const heading = hb.section_heading ? `"${hb.section_heading}"` : '';
+                                    progressDetails += `<div><strong>Section:</strong> ${hb.current_section} of ${hb.total_sections} ${heading}</div>`;
+                                }
+                                if (hb.action) {
+                                    progressDetails += `<div class="text-muted"><small>Action: ${hb.action}</small></div>`;
+                                }
+                            }
+
                             // Update status with phase progress
                             statusDiv.innerHTML = `
                                 <strong>Processing Job:</strong> ${jobId}<br>
                                 <strong>Overall Progress:</strong> ${overallProgress}%<br>
+                                ${progressDetails}
                                 <div class="row mt-2">
                                     ${selectedPhases.includes('extract') ? `
                                     <div class="col-md-3">
@@ -5261,12 +5304,28 @@ delimiters: [
                             const stage = job.current_stage || 'Initializing...';
                             const docsProcessed = job.documents_processed || 0;
 
+                            // Build per-file/section progress details
+                            let progressDetails = '';
+                            if (job.parameters) {
+                                const hb = job.parameters.heartbeat || {};
+                                const curDoc = job.parameters.current_doc;
+                                const totDocs = job.parameters.total_docs;
+                                if (curDoc && totDocs) {
+                                    progressDetails += `<br><strong>File:</strong> ${curDoc} of ${totDocs}`;
+                                }
+                                if (hb.phase === 'chunk' && hb.current_section && hb.total_sections) {
+                                    const heading = hb.section_heading ? `"${hb.section_heading}"` : '';
+                                    progressDetails += `<br><strong>Section:</strong> ${hb.current_section} of ${hb.total_sections} ${heading}`;
+                                }
+                            }
+
                             statusDiv.innerHTML = `
                                 <strong>Processing Job:</strong> ${jobId}<br>
                                 <strong>Status:</strong> ${job.status || 'pending'}<br>
                                 <strong>Progress:</strong> ${progress}%<br>
                                 <strong>Stage:</strong> ${stage}<br>
                                 <strong>Documents Processed:</strong> ${docsProcessed}
+                                ${progressDetails}
                             `;
 
                             // Update progress bar
@@ -6000,9 +6059,9 @@ delimiters: [
                                         ${job.status === 'pending' ? `<button class="btn btn-sm btn-primary" onclick="startJob('${job.job_id}')"><i class="fas fa-play"></i> Start</button>` : ''}
                                         ${job.status === 'failed' || job.status === 'cancelled' ? `
                                             <button class="btn btn-sm btn-warning" onclick="resumeJob('${job.job_id}')"><i class="fas fa-forward"></i> Resume</button>
-                                            <button class="btn btn-sm btn-info" onclick="restartJob('${job.job_id}')"><i class="fas fa-sync"></i> Restart</button>
+                                            <button class="btn btn-sm btn-info" onclick="restartJob('${job.job_id}')" title="Re-run with same files and settings"><i class="fas fa-redo"></i> Re-run</button>
                                         ` : ''}
-                                        ${job.status === 'completed' ? `<button class="btn btn-sm btn-info" onclick="restartJob('${job.job_id}')"><i class="fas fa-sync"></i> Restart</button>` : ''}
+                                        ${job.status === 'completed' ? `<button class="btn btn-sm btn-info" onclick="restartJob('${job.job_id}')" title="Re-run with same files and settings"><i class="fas fa-redo"></i> Re-run</button>` : ''}
                                         ${job.status === 'processing' ? `<button class="btn btn-sm btn-danger" onclick="cancelJob('${job.job_id}')"><i class="fas fa-stop"></i> Cancel</button>` : ''}
                                         <button class="btn btn-sm btn-outline-info" onclick="viewJobFiles('${job.job_id}')"><i class="fas fa-file-alt"></i> View Files</button>
                                         <button class="btn btn-sm btn-outline-danger" onclick="deleteJob('${job.job_id}')"><i class="fas fa-trash"></i> Delete</button>
@@ -6053,22 +6112,38 @@ delimiters: [
 
             window.viewJobFiles = async (jobId) => {
                 try {
-                    // Fetch job details including files
                     const response = await fetch(`${API_BASE_URL}/jobs/${jobId}`, {
                         headers: {
                             'Authorization': `Bearer ${AUTH_TOKEN}`
                         }
                     });
-                    
+
                     if (response.ok) {
                         const job = await response.json();
                         const files = job.files || [];
-                        
+                        const hb = job.parameters?.heartbeat || {};
+                        const curDoc = job.parameters?.current_doc;
+                        const totDocs = job.parameters?.total_docs;
+
                         // Show modal with files
                         showModal('Job Files', `
                             <div class="mb-3">
                                 <h6>Job: ${job.job_id}</h6>
-                                <p class="text-muted">Files processed: ${files.length}</p>
+                                <p class="text-muted">Files: ${files.length}${job.documents_total ? ` / ${job.documents_total} total` : ''}</p>
+                                ${job.status === 'processing' && curDoc && totDocs ? `
+                                    <div class="alert alert-info py-2">
+                                        <i class="fas fa-spinner fa-spin"></i>
+                                        <strong>Currently processing:</strong> File ${curDoc} of ${totDocs}
+                                        ${hb.current_section && hb.total_sections ? ` — Section ${hb.current_section} of ${hb.total_sections}` : ''}
+                                        ${hb.section_heading ? `: "${hb.section_heading.substring(0, 60)}"` : ''}
+                                    </div>
+                                ` : ''}
+                                ${job.status === 'completed' && job.error ? `
+                                    <div class="alert alert-warning py-2">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        <strong>Completed with issues:</strong> ${job.error}
+                                    </div>
+                                ` : ''}
                             </div>
                             ${files.length === 0 ? `
                                 <div class="alert alert-info">
@@ -6076,48 +6151,54 @@ delimiters: [
                                 </div>
                             ` : `
                                 <div class="list-group">
-                                    ${files.map(file => `
+                                    ${files.map(file => {
+                                        const status = file.retry_status || file.status || 'pending';
+                                        const chunks = file.retry_chunks || file.chunks_created || 0;
+                                        let statusBadge = 'secondary';
+                                        let statusText = status;
+                                        if (status === 'success') { statusBadge = 'success'; statusText = 'Success'; }
+                                        else if (status === 'failed') { statusBadge = 'danger'; statusText = 'Failed'; }
+                                        else if (status === 'retry') { statusBadge = 'warning'; statusText = 'Retrying...'; }
+
+                                        return `
                                         <div class="list-group-item list-group-item-action">
-                                            <div class="d-flex w-100 justify-content-between">
+                                            <div class="d-flex w-100 justify-content-between align-items-center">
                                                 <h6 class="mb-1">
-                                                    <i class="fas fa-file-${getFileIcon(file.format)} text-primary"></i>
+                                                    <i class="fas fa-file-${getFileIcon(file.format || 'pdf')} text-primary"></i>
                                                     ${file.filename}
                                                 </h6>
-                                                <span class="badge bg-${getFileStatusBadge(file.status)}">${file.status}</span>
+                                                <span class="badge bg-${statusBadge}">${statusText}</span>
                                             </div>
                                             <div class="mb-1">
                                                 <small class="text-muted">
-                                                    ${file.format ? `<i class="fas fa-file-code"></i> ${file.format.toUpperCase()} | ` : ''}
-                                                    ${file.size_bytes ? `<i class="fas fa-hdd"></i> ${formatFileSize(file.size_bytes)} | ` : ''}
-                                                    ${file.text_length ? `<i class="fas fa-text-height"></i> ${file.text_length.toLocaleString()} chars | ` : ''}
-                                                    ${file.extraction_method ? `<i class="fas fa-cog"></i> ${file.extraction_method}` : ''}
+                                                    ${file.size ? `<i class="fas fa-hdd"></i> ${formatFileSize(file.size)} | ` : ''}
+                                                    ${chunks > 0 ? `<i class="fas fa-th-large text-success"></i> Chunks: ${chunks}` : '<i class="fas fa-th-large text-muted"></i> Chunks: 0'}
                                                 </small>
                                             </div>
-                                            ${file.extraction_time ? `
-                                                <div class="mb-1">
-                                                    <small class="text-muted">
-                                                        <i class="fas fa-clock"></i> Extraction: ${file.extraction_time.toFixed(2)}s
-                                                        ${file.cyrillic_ratio !== null ? ` | <i class="fas fa-language"></i> Cyrillic: ${(file.cyrillic_ratio * 100).toFixed(1)}%` : ''}
-                                                        ${file.encoding_fixed ? ` | <i class="fas fa-check-circle text-success"></i> Encoding fixed` : ''}
+                                            ${file.retry_status === 'success' ? `
+                                                <div class="mt-1">
+                                                    <small class="text-success">
+                                                        <i class="fas fa-check-circle"></i> Retry succeeded
                                                     </small>
                                                 </div>
                                             ` : ''}
-                                            ${file.chunks_created ? `
-                                                <div>
-                                                    <small class="text-muted">
-                                                        <i class="fas fa-th-large"></i> Chunks created: ${file.chunks_created}
+                                            ${file.retry_status === 'failed' ? `
+                                                <div class="mt-1">
+                                                    <small class="text-danger">
+                                                        <i class="fas fa-times-circle"></i> Retry failed
                                                     </small>
                                                 </div>
                                             ` : ''}
-                                            ${file.error ? `
-                                                <div class="mt-2">
+                                            ${file.error && status === 'failed' ? `
+                                                <div class="mt-1">
                                                     <small class="text-danger">
                                                         <i class="fas fa-exclamation-circle"></i> ${file.error}
                                                     </small>
                                                 </div>
                                             ` : ''}
                                         </div>
-                                    `).join('')}
+                                        `;
+                                    }).join('')}
                                 </div>
                             `}
                             <div class="mt-3 text-end">
@@ -6168,7 +6249,7 @@ delimiters: [
             };
 
             window.restartJob = async (jobId) => {
-                if (confirm('Restart this job? This will create a new job with the same parameters.')) {
+                if (confirm('Re-run this job? This will create a new job with the same files and settings.')) {
                     try {
                         const response = await fetch(`${API_BASE_URL}/jobs/${jobId}/restart`, {
                             method: 'POST',
