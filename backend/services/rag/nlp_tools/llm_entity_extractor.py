@@ -4,6 +4,7 @@ Uses LM Studio for intelligent entity extraction with custom prompts
 """
 import requests
 import json
+import os
 from typing import Dict, List, Any, Optional
 import re
 
@@ -14,8 +15,8 @@ class LLMEntityExtractor:
     """
     
     def __init__(self, 
-                 base_url: str = "http://192.168.51.237:1234/v1",
-                 model: str = "qwen3-4b",
+                 base_url: str = os.getenv("LM_STUDIO_URL", "http://192.168.51.237:1234/v1"),
+                 model: str = os.getenv("ENTITY_EXTRACT_LLM_MODEL", "qwen3-4b"),
                  api_key: Optional[str] = None):
         """
         Initialize LLM entity extractor

@@ -1,0 +1,63 @@
+{
+  "doc_name": "gost-r-59453_18a844fc",
+  "chunks_processed": 10,
+  "pattern_count": 52,
+  "validated_count": 11,
+  "entities": [
+    {
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "НАЦИОНАЛЬНЫЙ СТАНДАРТ РОССИЙСКОЙ ФЕДЕРАЦИИ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 59453.2—2021",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Федеральная служба по техническому и экспортному контролю",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ООО РусБИТех-Астра",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ИСП РАН",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Технический комитет по стандартизации ТК 362",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Приказ Федерального агентства по техническому регулированию и метрологии от 22 апреля 2021 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "Национальные стандарты",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "www.gost.ru",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 59453.1—2021",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

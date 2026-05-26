@@ -1,0 +1,58 @@
+{
+  "doc_name": "r-1323565.1_1f95a701",
+  "chunks_processed": 10,
+  "pattern_count": 115,
+  "validated_count": 10,
+  "entities": [
+    {
+      "text": "FINAL REMINDER",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "BEFORE YOU RESPOND",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "⚠️",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "THE",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "\"content\"",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "FIELD IS",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "MANDATORY",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "FOR",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "EVERY",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "CHUNK",
+      "type": "CONCEPT",
+      "source": "llm"
+    }
+  ]
+}

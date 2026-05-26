@@ -1,0 +1,29 @@
+{
+  "document": "ГСТ Р_1323565.1.016-2018",
+  "total_chunks": 1,
+  "overlap_strategy": "none",
+  "chunks": [
+    {
+      "chunk_id": 1,
+      "section": "КРИПТОГРАФИЧЕСКАЯ ЗАЩИТА ИНФОРМАЦИИ",
+      "title": "Р 1323565.1.016—2018: Информационная технология (Глава 4)",
+      "chunk_type": "header_and_scope",
+      "contains_formula": false,
+      "contains_table": true,
+      "formula_id": null,
+      "formula_reference": null,
+      "trust_level": "full",
+      "testing_scenario": "medium_db",
+      "overlap_source": null,
+      "overlap_tokens": 0,
+      "token_count": 1450,
+      "content": "# РЕКОМЕНДАЦИИ ПО СТАНДАРТИЗАЦИИ\\nР 1323565.1.016—2018\\n\\n## Информационная технология\\n### КРИПТОГРАФИЧЕСКАЯ ЗАЩИТА ИНФОРМАЦИИ\\n\\nИспользование режимов алгоритма блочного шифрования, алгоритмов электронной подписи и функции хэширования в процедуре оффлайн-аутентификации платежного приложения\\n\\n**Издание официальное**\\n---\\n\\nМосква\\nСтандартинформ\\n2018"
+    }
+  ],
+  "embedding_recommendations": {
+    "model": "text-embedding-3-large",
+    "chunk_size_target": "200-450 tokens",
+    "overlap_strategy": "Apply overlaps ONLY at procedural boundaries to preserve algorithmic continuity",
+    "metadata_indexing": "Index section, chunk_type, contains_formula fields for hybrid search"
+  }
+}

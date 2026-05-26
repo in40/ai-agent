@@ -1,0 +1,78 @@
+{
+  "doc_name": "gost-r-59709-2022_3e823926",
+  "chunks_processed": 10,
+  "pattern_count": 34,
+  "validated_count": 14,
+  "entities": [
+    {
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 59709-2022",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Национальный стандарт Российской Федерации",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Российский институт стандартизации",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "text": "2022",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Войсковая часть 43753",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Общество с ограниченной ответственностью \"Центр безопасности информации\"",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ТК 362",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "162-ФЗ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "www.rst.gov.ru",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 59709—2022",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 59709—2022",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

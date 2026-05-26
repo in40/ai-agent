@@ -1,0 +1,41 @@
+{
+  "doc_name": "gost-r-53111-2008=edt2018_a9334210",
+  "formulas": [
+    {
+      "text": "k",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-53111-2008=edt2018_a9334210",
+      "chunk_index": 9
+    },
+    {
+      "text": "q_a",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-53111-2008=edt2018_a9334210",
+      "chunk_index": 9
+    },
+    {
+      "text": "_ij",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-53111-2008=edt2018_a9334210",
+      "chunk_index": 9
+    },
+    {
+      "text": "max",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-53111-2008=edt2018_a9334210",
+      "chunk_index": 9
+    },
+    {
+      "text": "_ij",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-53111-2008=edt2018_a9334210",
+      "chunk_index": 9
+    },
+    {
+      "text": "max",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-53111-2008=edt2018_a9334210",
+      "chunk_index": 9
+    }
+  ]
+}

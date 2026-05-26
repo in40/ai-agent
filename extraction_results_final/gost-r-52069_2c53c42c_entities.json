@@ -1,0 +1,88 @@
+{
+  "doc_name": "gost-r-52069_2c53c42c",
+  "chunks_processed": 10,
+  "pattern_count": 76,
+  "validated_count": 16,
+  "entities": [
+    {
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 52069.0-2013",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "text": "Стандартинформ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "28 февраля 2013 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Государственный научно-исследовательский испытательный институт проблем технической защиты информации Федеральной службы по техническому и экспортному контролю",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Технический комитет по стандартизации ТК 362",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "162-ФЗ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Декабрь 2018",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 52069.0—2013",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 52069.0—2003",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 52069.0—2013",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ 1.1",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ 1.2",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ 1.5",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

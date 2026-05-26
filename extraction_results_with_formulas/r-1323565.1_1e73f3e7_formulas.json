@@ -1,0 +1,161 @@
+{
+  "doc_name": "r-1323565.1_1e73f3e7",
+  "formulas": [
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_1e73f3e7",
+      "chunk_index": 4
+    },
+    {
+      "text": "CSU",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_1e73f3e7",
+      "chunk_index": 4
+    },
+    {
+      "text": "D",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_1e73f3e7",
+      "chunk_index": 4
+    },
+    {
+      "text": "D",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_1e73f3e7",
+      "chunk_index": 4
+    },
+    {
+      "text": "D",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_1e73f3e7",
+      "chunk_index": 5
+    },
+    {
+      "text": "AAC",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_1e73f3e7",
+      "chunk_index": 5
+    },
+    {
+      "text": "TC",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_1e73f3e7",
+      "chunk_index": 5
+    },
+    {
+      "text": "ARQC",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_1e73f3e7",
+      "chunk_index": 5
+    },
+    {
+      "text": "ARQC",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_1e73f3e7",
+      "chunk_index": 6
+    },
+    {
+      "text": "ARPC",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_1e73f3e7",
+      "chunk_index": 6
+    },
+    {
+      "text": "CSU",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_1e73f3e7",
+      "chunk_index": 6
+    },
+    {
+      "text": "D",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_1e73f3e7",
+      "chunk_index": 6
+    },
+    {
+      "text": "D",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_1e73f3e7",
+      "chunk_index": 6
+    },
+    {
+      "text": "D",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_1e73f3e7",
+      "chunk_index": 6
+    },
+    {
+      "text": "AAC",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_1e73f3e7",
+      "chunk_index": 6
+    },
+    {
+      "text": "TC",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_1e73f3e7",
+      "chunk_index": 6
+    },
+    {
+      "text": "ARQC",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_1e73f3e7",
+      "chunk_index": 6
+    },
+    {
+      "text": "ARPC",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_1e73f3e7",
+      "chunk_index": 6
+    },
+    {
+      "text": "CSU",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_1e73f3e7",
+      "chunk_index": 7
+    },
+    {
+      "text": "D",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_1e73f3e7",
+      "chunk_index": 7
+    },
+    {
+      "text": "D",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_1e73f3e7",
+      "chunk_index": 7
+    },
+    {
+      "text": "D",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_1e73f3e7",
+      "chunk_index": 7
+    },
+    {
+      "text": "AAC",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_1e73f3e7",
+      "chunk_index": 9
+    },
+    {
+      "text": "TC",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_1e73f3e7",
+      "chunk_index": 9
+    },
+    {
+      "text": "ARQC",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_1e73f3e7",
+      "chunk_index": 9
+    },
+    {
+      "text": "ARPC",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_1e73f3e7",
+      "chunk_index": 10
+    }
+  ]
+}

@@ -1,0 +1,182 @@
+[THINK]The user has provided the first few pages of a Russian technical standard document (GOST R 1323565.1.016—2018) about cryptographic protection in information technology. The task is to split this document into search-optimized chunks while preserving semantic integrity.
+
+First, I need to identify the natural semantic boundaries:
+- Page 1: Title page with standard identifier
+- Page 2-3: Foreword section
+- Page 4: Content section (table of contents)
+
+Let me analyze what needs to be chunked:
+
+Page 1 content:
+- Document title/identifier: "Р 1323565.1.016—2018"
+- This is the title page, so it contains metadata about the document itself
+
+Page 2-3 content (Foreword):
+- Information about development organizations
+- Committee information
+- Approval details with date and reference to law
+- Rules for application of recommendations
+- Copyright notice
+
+Page 4 content:
+- Table of contents listing sections
+
+Based on my principles, I should:
+1. Never split complete concepts like the title page or foreword - these are semantic units
+2. For the foreword, include the section header and all explanatory text
+3. The table of contents should be chunked separately as a whole
+4. Preserve any formulas or mathematical notation intact with their context
+5. Apply overlap only where procedural continuity requires it (none visible in this content yet)
+6. Include section headers at the start of chunks
+
+Looking at the content provided, I can see:
+- Page 1 is mostly administrative metadata and document identifier
+- Pages 2-3 contain the foreword text which appears to be continuous
+- Page 4 contains a table of contents listing sections
+
+Let me structure this:
+
+Chunk 1: Title page information (document identifier line)
+This should include the standard code "Р 1323565.1.016—2018" and any key title elements that form a semantic unit.
+
+Actually, looking more carefully at Page 1:
+```
+# РЕКОМЕНДАЦИИ ПО СТАНДАРТИЗАЦИИ
+
+Р 1323565.1.016—2018
+
+## Информационная технология
+
+### КРИПТОГРАФИЧЕСКАЯ ЗАЩИТА ИНФОРМАЦИИ
+
+Использование режимов алгоритма блочного шифрования, алгоритмов электронной подписи и функции хэширования в процедуре оффлайн-аутентификации платежного приложения
+```
+
+This forms a semantic unit that includes:
+1. Document type: "РЕКОМЕНДАЦИИ ПО СТАНДАРТИЗАЦИИ"
+2. Standard identifier: "Р 1323565.1.016—2018"
+3. Title category: "Информационная технология"
+4. Subcategory: "КРИПТОГРАФИЧЕСКАЯ ЗАЩИТА ИНФОРМАЦИИ" (which seems to be the main title)
+5. The actual document title about using block cipher modes, digital signature algorithms, and hash functions in offline authentication procedures
+
+So this should be one chunk with semantic integrity.
+
+Page 2-3 Foreword:
+This is a continuous section starting with "Предисловие" (Foreword) and contains multiple paragraphs that form explanatory context. This should be preserved as part of the same chunk because it's all introductory/explanatory text about the standard itself.
+
+Page 4 Table of contents:
+The table of contents listing sections should be kept intact as a complete table + caption in a single chunk. I need to include the entire table of contents listing.
+
+Now let me check if there are any formulas, tables, or procedural boundaries that require special handling:
+
+From what I can see so far:
+- No mathematical formulas yet
+- The table of contents is a table that needs to be preserved intact
+- The foreword text appears to be continuous explanatory text
+
+Let me process the entire document as provided in the TEXT TO CHUNK section. The user has given pages 1-4 content.
+
+For chunking:
+1. Title page information should be one chunk (Chunk 1)
+2. Foreword sections (pages 2-3) should be one chunk (Chunk 2) since it's all continuous explanatory text
+3. Table of contents (page 4) should be one chunk (Chunk 3)
+
+Wait, I need to re-read the principles more carefully:
+
+"CONTEXT ANCHORING: Always include section headers/subheaders at chunk start"
+
+So for a section like "Предисловие", I should start my chunk with that header.
+
+Also:
+- "PRESERVE SEMANTIC UNITS: Never split complete concepts"
+- The foreword seems to be one continuous semantic unit
+- Tables must never be split
+
+Let me structure the chunks properly:
+
+Chunk 1 (Title page):
+Starts at the top of Page 1 with all the administrative metadata forming a single semantic unit. The standard identifier "Р 1323565.1.016—2018" is critical to include intact.
+
+Content for Chunk 1:
+The first chunk should include the document title line, the standard code, and the category/subcategory information that forms a complete semantic unit - essentially everything on Page 1 except the actual numbered content.
+
+Chunk 2 (Foreword):
+Starts with "Предисловие" section header, includes all the continuous explanatory text about development, approval, rules, etc. This appears to be one cohesive section.
+
+Content for Chunk 2:
+All of Pages 2-3 content starting from "Предисловие" section header through to the end of the page (the reference to www.gost.ru).
+
+Chunk 3 (Table of contents):
+Starts with "Содержание" section header and includes the entire table of contents listing.
+
+Since the user said "Process ENTIRE document, create ALL needed chunks" and I've only seen Pages 1-4 so far, these three chunks cover what's provided.
+
+Let me verify:
+- total_chunks should be 3
+- Every content element is covered in at least one chunk
+- No formulas or tables are split (though we haven't seen them yet)
+- Overlap strategy: None so far since there are no procedural sequences that feed into each other
+
+Now let me format the response according to the schema requirements.[/THINK]```json
+{
+  "document": "Р 1323565.1.016—2018",
+  "total_chunks": 3,
+  "overlap_strategy": "targeted_procedural_only",
+  "chunks": [
+    {
+      "chunk_id": 1,
+      "section": null,
+      "title": "Рекомендации по стандартизации. Информационная технология. Криптографическая защита информации",
+      "chunk_type": "header_and_scope",
+      "contains_formula": false,
+      "contains_table": false,
+      "formula_id": null,
+      "formula_reference": null,
+      "trust_level": "null",
+      "testing_scenario": "null",
+      "overlap_source": null,
+      "overlap_tokens": 0,
+      "token_count": 150,
+      "content": "# РЕКОМЕНДАЦИИ ПО СТАНДАРТИЗАЦИИ\n\nР 1323565.1.016—2018\n\n## Информационная технология\n\n### КРИПТОГРАФИЧЕСКАЯ ЗАЩИТА ИНФОРМАЦИИ\n\nИспользование режимов алгоритма блочного шифрования, алгоритмов электронной подписи и функции хэширования в процедуре оффлайн-аутентификации платежного приложения"
+    },
+    {
+      "chunk_id": 2,
+      "section": null,
+      "title": "Предисловие",
+      "chunk_type": "header_and_scope",
+      "contains_formula": false,
+      "contains_table": false,
+      "formula_id": null,
+      "formula_reference": null,
+      "trust_level": "null",
+      "testing_scenario": "null",
+      "overlap_source": null,
+      "overlap_tokens": 0,
+      "token_count": 350,
+      "content": "# Предисловие\n\n1. РАЗРАБОТАНЫ Обществом с ограниченной ответственностью «Системы практической безопасности» (ООО «СПБ») совместно с Открытым акционерным обществом «Информационные технологии и коммуникационные системы» (ОАО «ИнфоТеКС») и Обществом с ограниченной ответственностью «КРИПТО-ПРО» (ООО «КРИПТО-ПРО»)\n\n2. ВНЕСЕНЫ Техническим комитетом по стандартизации ТК 26 «Криптографическая защита информации»\n\n3. УТВЕРЖДЕНЫ И ВВЕДЕНЫ В ДЕЙСТВИЕ Приказом Федерального агентства по техническому регулированию и метрологии от 5 марта 2018 г. № 117-ст\n\n4. ВВЕДЕНЫ ВПЕРВЫЕ\n\nПравила применения настоящих рекомендаций установлены в статье 26 Федерального закона от 29 июня 2015 г. № 162-ФЗ «О стандартизации в Российской Федерации». Информация об изменениях к настоящим рекомендациям публикуется в ежегодном (по состоянию на 1 января текущего года) информационном указателе «Национальные стандарты», а официальный текст изменений и поправок — в ежемесячном информационном указателе «Национальные стандарты». В случае пересмотра (замены) или отмены настоящих рекомендаций соответствующее уведомление будет опубликовано в ближайшем выпуске ежемесячного информационного указателя «Национальные стандарты». Соответствующая информация, уведомление и тексты размещаются также в информационной системе общего пользования — на официальном сайте Федерального агентства по техническому регулированию и метрологии в сети Интернет (www.gost.ru)"
+    },
+    {
+      "chunk_id": 3,
+      "section": null,
+      "title": "Содержание",
+      "chunk_type": "reference_table",
+      "contains_formula": false,
+      "contains_table": true,
+      "formula_id": null,
+      "formula_reference": null,
+      "trust_level": "null",
+      "testing_scenario": "null",
+      "overlap_source": null,
+      "overlap_tokens": 0,
+      "token_count": 180,
+      "content": "# Содержание\n\n1 Область применения . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 3\n2 Нормативные ссылки . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 4\n3 Термины, определения и обозначения . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 5\n4 Сокращения . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 6\n5 Требования к стойкости . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 7\n6 Использование режимов алгоритма блочного шифрования . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 8\n7 Формулы и вычислительные процедуры . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 9\n8 Примеры применения криптографических алгоритмов . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 10"
+    }
+  ],
+  "embedding_recommendations": {
+    "model": "text-embedding-3-large",
+    "chunk_size_target": "200-450 tokens",
+    "overlap_strategy": "Apply overlaps ONLY at procedural boundaries to preserve algorithmic continuity",
+    "metadata_indexing": "Index section, chunk_type, contains_formula fields for hybrid search"
+  }
+}
+```

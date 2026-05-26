@@ -1,0 +1,58 @@
+{
+  "doc_name": "gost-r-iso-iec-27002-2021_a33a8fa4",
+  "chunks_processed": 5,
+  "pattern_count": 124,
+  "validated_count": 10,
+  "entities": [
+    {
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "НАЦИОНАЛЬНЫЙ СТАНДАРТ РОССИЙСКОЙ ФЕДЕРАЦИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р ИСО/МЭК 27002—2021",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Информационные технологии",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "МЕТОДЫ И СРЕДСТВА ОБЕСПЕЧЕНИЯ БЕЗОПАСНОСТИ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ISO/IEC 27002:2013",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Москва Стандартинформ 2021",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ФГБУ «Институт стандартизации» – федеральный информационный фонд стандартов для федерального агентства по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "IEC 27002",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

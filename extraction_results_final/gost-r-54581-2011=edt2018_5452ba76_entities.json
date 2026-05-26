@@ -1,0 +1,53 @@
+{
+  "doc_name": "gost-r-54581-2011=edt2018_5452ba76",
+  "chunks_processed": 10,
+  "pattern_count": 17,
+  "validated_count": 9,
+  "entities": [
+    {
+      "text": "ГОСТ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "П",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "54581—2011",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "ISO/IEC/TR 15443-1:2005",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Государственный научно-исследовательский испытательный институт проблем технической защиты информации Федерального службы по техническому и экспортному контролю",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Центр безопасности информации",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 54581—2011",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 54581—2011",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

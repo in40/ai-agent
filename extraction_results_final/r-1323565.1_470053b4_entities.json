@@ -1,0 +1,73 @@
+{
+  "doc_name": "r-1323565.1_470053b4",
+  "chunks_processed": 10,
+  "pattern_count": 63,
+  "validated_count": 13,
+  "entities": [
+    {
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "РЕКОМЕНДАЦИИ ПО СТАНДАРТИЗАЦИИ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "КРИПТОГРАФИЧЕСКАЯ ЗАЩИТА ИНФОРМАЦИИ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "аутентификации в контрольных устройствах",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "автотранспорта",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Издание официальное",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "АО «РамЭК-ВС»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ТК 026 «Криптографическая защита информации»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Приказом Федерального агентства по техническому регулированию и метрологии от 24 апреля 2018 г. № 207-ст",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "29 июня 2015 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "162-ФЗ «О стандартизации в Российской Федерации»",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Национальные стандарты",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "www.gost.ru",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    }
+  ]
+}

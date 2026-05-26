@@ -1,0 +1,68 @@
+{
+  "doc_name": "gost-r-53114-2008=edt2018_40f53e83",
+  "chunks_processed": 10,
+  "pattern_count": 40,
+  "validated_count": 12,
+  "entities": [
+    {
+      "text": "Государственная Дума Российской Федерации",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "27.05.2018",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "53114",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 53114-2008",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ФГУ «ГНИИИ ПТЗИ ФСТЭК России»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ООО «НПФ «Кристалл»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "18 декабря 2008",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "162-ФЗ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 53114-2008",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 53114—2088",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 53114—2008",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

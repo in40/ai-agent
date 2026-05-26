@@ -1,0 +1,641 @@
+{
+  "doc_name": "r-1-1323565.1_9e608c52",
+  "formulas": [
+    {
+      "text": "CS",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 1
+    },
+    {
+      "text": "CS",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 1
+    },
+    {
+      "text": "bigcup_i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 5
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 5
+    },
+    {
+      "text": "bigcup_i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 5
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 5
+    },
+    {
+      "text": "l",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 5
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 5
+    },
+    {
+      "text": "X",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 5
+    },
+    {
+      "text": "nExternalKeyFlag",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 8
+    },
+    {
+      "text": "ExternalKeyFlag",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 8
+    },
+    {
+      "text": "Version",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 8
+    },
+    {
+      "text": "ExternalKeyIdFlag",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 11
+    },
+    {
+      "text": "CS",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 13
+    },
+    {
+      "text": "s",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 13
+    },
+    {
+      "text": "s",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 13
+    },
+    {
+      "text": "IV",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 13
+    },
+    {
+      "text": "s",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 13
+    },
+    {
+      "text": "Label",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 13
+    },
+    {
+      "text": "aL",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 13
+    },
+    {
+      "text": "SN",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 13
+    },
+    {
+      "text": "Node",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 13
+    },
+    {
+      "text": "cL",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 13
+    },
+    {
+      "text": "OutputLength",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 13
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 13
+    },
+    {
+      "text": "K_i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 13
+    },
+    {
+      "text": "K_MAC",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 13
+    },
+    {
+      "text": "K_ENC",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 13
+    },
+    {
+      "text": "CS",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 13
+    },
+    {
+      "text": "s",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 13
+    },
+    {
+      "text": "s",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 13
+    },
+    {
+      "text": "Label",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 13
+    },
+    {
+      "text": "SN",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 13
+    },
+    {
+      "text": "Node",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 13
+    },
+    {
+      "text": "OutputLength",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 13
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 13
+    },
+    {
+      "text": "K_i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 13
+    },
+    {
+      "text": "K_MAC",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 13
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 13
+    },
+    {
+      "text": "CS",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 13
+    },
+    {
+      "text": "ExternalKeyIdFlag",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 13
+    },
+    {
+      "text": "Version",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 13
+    },
+    {
+      "text": "CS",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 13
+    },
+    {
+      "text": "d",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 13
+    },
+    {
+      "text": "r",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 13
+    },
+    {
+      "text": "K",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 13
+    },
+    {
+      "text": "K_MAC",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 13
+    },
+    {
+      "text": "K_ENC",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 13
+    },
+    {
+      "text": "ICV",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 13
+    },
+    {
+      "text": "CS",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 13
+    },
+    {
+      "text": "ExternalKeyIdFlag",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 13
+    },
+    {
+      "text": "Version",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 13
+    },
+    {
+      "text": "CS",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 13
+    },
+    {
+      "text": "KeyId",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 13
+    },
+    {
+      "text": "SeqNum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 13
+    },
+    {
+      "text": "Sourseldentifier",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 13
+    },
+    {
+      "text": "K",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 13
+    },
+    {
+      "text": "K_MAC",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 13
+    },
+    {
+      "text": "ICV",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 13
+    },
+    {
+      "text": "CS",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 13
+    },
+    {
+      "text": "CS",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 13
+    },
+    {
+      "text": "CS",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 13
+    },
+    {
+      "text": "s",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 13
+    },
+    {
+      "text": "s",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 13
+    },
+    {
+      "text": "IV",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 13
+    },
+    {
+      "text": "s",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 14
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 14
+    },
+    {
+      "text": "K_i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 14
+    },
+    {
+      "text": "K_MAC",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 14
+    },
+    {
+      "text": "K_ENC",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 14
+    },
+    {
+      "text": "CS",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 15
+    },
+    {
+      "text": "s",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 16
+    },
+    {
+      "text": "s",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 17
+    },
+    {
+      "text": "s",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 17
+    },
+    {
+      "text": "Label",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 17
+    },
+    {
+      "text": "aL",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 17
+    },
+    {
+      "text": "SN",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 17
+    },
+    {
+      "text": "Node",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 17
+    },
+    {
+      "text": "cL",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 17
+    },
+    {
+      "text": "OutputLength",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 17
+    },
+    {
+      "text": "oL",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 17
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 17
+    },
+    {
+      "text": "K_i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 17
+    },
+    {
+      "text": "K_MAC",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 17
+    },
+    {
+      "text": "K_MAC",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 17
+    },
+    {
+      "text": "K_MAC",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 17
+    },
+    {
+      "text": "CS",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 17
+    },
+    {
+      "text": "ExternalKeyIdFlag",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 17
+    },
+    {
+      "text": "Version",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 17
+    },
+    {
+      "text": "CS",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 17
+    },
+    {
+      "text": "KeyId",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 17
+    },
+    {
+      "text": "SeqNum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 17
+    },
+    {
+      "text": "Sourseldifier",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 17
+    },
+    {
+      "text": "K",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 17
+    },
+    {
+      "text": "PayloadData",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 17
+    },
+    {
+      "text": "CS",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 17
+    },
+    {
+      "text": "ExternalKeyIdFlag",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 17
+    },
+    {
+      "text": "Version",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 17
+    },
+    {
+      "text": "CS",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 17
+    },
+    {
+      "text": "KeyId",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 17
+    },
+    {
+      "text": "SeqNum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 17
+    },
+    {
+      "text": "Sourseldentifier",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 17
+    },
+    {
+      "text": "K",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 17
+    },
+    {
+      "text": "PayloadData",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 17
+    },
+    {
+      "text": "K_MAC",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 17
+    },
+    {
+      "text": "ICV",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1-1323565.1_9e608c52",
+      "chunk_index": 17
+    }
+  ]
+}

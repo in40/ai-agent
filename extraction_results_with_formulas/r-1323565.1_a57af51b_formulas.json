@@ -1,0 +1,191 @@
+{
+  "doc_name": "r-1323565.1_a57af51b",
+  "formulas": [
+    {
+      "text": "A",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a57af51b",
+      "chunk_index": 2
+    },
+    {
+      "text": "B",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a57af51b",
+      "chunk_index": 2
+    },
+    {
+      "text": "B",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a57af51b",
+      "chunk_index": 2
+    },
+    {
+      "text": "Block_2",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a57af51b",
+      "chunk_index": 2
+    },
+    {
+      "text": "Block_2",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a57af51b",
+      "chunk_index": 3
+    },
+    {
+      "text": "Block_1",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a57af51b",
+      "chunk_index": 4
+    },
+    {
+      "text": "Block_2",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a57af51b",
+      "chunk_index": 4
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a57af51b",
+      "chunk_index": 6
+    },
+    {
+      "text": "PIN",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a57af51b",
+      "chunk_index": 7
+    },
+    {
+      "text": "PAN",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a57af51b",
+      "chunk_index": 7
+    },
+    {
+      "text": "YYMM",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a57af51b",
+      "chunk_index": 7
+    },
+    {
+      "text": "SVC",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a57af51b",
+      "chunk_index": 7
+    },
+    {
+      "text": "PVKI",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a57af51b",
+      "chunk_index": 7
+    },
+    {
+      "text": "CVP",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a57af51b",
+      "chunk_index": 7
+    },
+    {
+      "text": "PVV",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a57af51b",
+      "chunk_index": 7
+    },
+    {
+      "text": "M",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a57af51b",
+      "chunk_index": 8
+    },
+    {
+      "text": "C",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a57af51b",
+      "chunk_index": 8
+    },
+    {
+      "text": "CVP",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a57af51b",
+      "chunk_index": 8
+    },
+    {
+      "text": "PVV",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a57af51b",
+      "chunk_index": 8
+    },
+    {
+      "text": "M",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a57af51b",
+      "chunk_index": 9
+    },
+    {
+      "text": "SVC",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a57af51b",
+      "chunk_index": 9
+    },
+    {
+      "text": "PVKI",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a57af51b",
+      "chunk_index": 9
+    },
+    {
+      "text": "CVK",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a57af51b",
+      "chunk_index": 9
+    },
+    {
+      "text": "PVK",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a57af51b",
+      "chunk_index": 9
+    },
+    {
+      "text": "Block1",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a57af51b",
+      "chunk_index": 9
+    },
+    {
+      "text": "_10",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a57af51b",
+      "chunk_index": 9
+    },
+    {
+      "text": "Block2",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a57af51b",
+      "chunk_index": 9
+    },
+    {
+      "text": "_10",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a57af51b",
+      "chunk_index": 9
+    },
+    {
+      "text": "CVP",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a57af51b",
+      "chunk_index": 9
+    },
+    {
+      "text": "_10",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a57af51b",
+      "chunk_index": 9
+    },
+    {
+      "text": "PVV",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a57af51b",
+      "chunk_index": 9
+    }
+  ]
+}

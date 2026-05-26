@@ -1,0 +1,300 @@
+{
+  "document_id": "r-50.1_9cdb3670",
+  "document_title": "П 50.1.114-2016 Параметры эллиптических кривых для криптографических алгоритмов и протоколов",
+  "extraction_method": "manual_comprehensive_reading",
+  "entities": [
+    {
+      "name": "П 50.1.114-2016",
+      "type": "STANDARD",
+      "category": "recommendation",
+      "description": "Рекомендации по стандартизации, параметры эллиптических кривых"
+    },
+    {
+      "name": "Р 50.1.114-2016",
+      "type": "STANDARD",
+      "category": "recommendation",
+      "synonyms": ["П 50.1.114-2016"],
+      "description": "Английское обозначение стандарта"
+    },
+    {
+      "name": "ТК 26",
+      "type": "ORGANIZATION",
+      "full_name": "Технический комитет по стандартизации ТК 26",
+      "synonyms": ["Технический комитет 26"],
+      "description": "Технический комитет по стандартизации «Криптографическая защита информации»"
+    },
+    {
+      "name": "Подкомитет № 1 ТК 26",
+      "type": "ORGANIZATION",
+      "description": "Подкомитет № 1 Технического комитета по стандартизации ТК 26"
+    },
+    {
+      "name": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "synonyms": ["Росстандарт"],
+      "description": "Государственный орган, утвердивший стандарт"
+    },
+    {
+      "name": "ГОСТ Р 34.10-2012",
+      "type": "STANDARD",
+      "category": "normative_reference",
+      "description": "Информационная технология. Криптографическая защита информации. Процессы формирования и проверки электронной подписи"
+    },
+    {
+      "name": "ГОСТ 28147-89",
+      "type": "STANDARD",
+      "category": "normative_reference",
+      "description": "Система обработки информации. Защита криптографическая. Алгоритм криптографического преобразования"
+    },
+    {
+      "name": "ГОСТ Р 34.10-94",
+      "type": "STANDARD",
+      "category": "normative_reference",
+      "description": "Устаревшая версия стандарта электронной подписи"
+    },
+    {
+      "name": "ГОСТ Р 34.10-2001",
+      "type": "STANDARD",
+      "category": "normative_reference",
+      "description": "Предыдущая версия стандарта электронной подписи"
+    },
+    {
+      "name": "ГОСТ Р 34.11-94",
+      "type": "STANDARD",
+      "category": "normative_reference",
+      "description": "Функция хеширования"
+    },
+    {
+      "name": "ФЗ-162",
+      "type": "LAW",
+      "full_name": "Федеральный закон от 29 июня 2015 г. № 162-ФЗ",
+      "description": "О стандартизации в Российской Федерации"
+    },
+    {
+      "name": "Приказ № 1829-ст",
+      "type": "DOCUMENT",
+      "date": "2016-11-28",
+      "issuer": "Федеральное агентство по техническому регулированию и метрологии",
+      "description": "Приказ об утверждении стандарта П 50.1.114-2016"
+    },
+    {
+      "name": "эллиптическая кривая",
+      "type": "TECHNICAL_TERM",
+      "category": "cryptographic_concept",
+      "description": "Математическая структура, используемая в криптографии"
+    },
+    {
+      "name": "каноническая форма эллиптической кривой",
+      "type": "TECHNICAL_TERM",
+      "category": "mathematical_form",
+      "description": "Стандартное представление уравнения эллиптической кривой"
+    },
+    {
+      "name": "форма скрученных кривых Эдвардса",
+      "type": "TECHNICAL_TERM",
+      "category": "mathematical_form",
+      "description": "Альтернативное представление эллиптических кривых"
+    },
+    {
+      "name": "кривые Эдвардса",
+      "type": "TECHNICAL_TERM",
+      "category": "mathematical_form",
+      "synonyms": ["скрученные кривые Эдвардса"]
+    },
+    {
+      "name": "электронная подпись",
+      "type": "TECHNICAL_TERM",
+      "category": "cryptographic_primitive",
+      "description": "Криптографический механизм аутентификации"
+    },
+    {
+      "name": "параметры эллиптической кривой",
+      "type": "TECHNICAL_TERM",
+      "category": "cryptographic_parameter",
+      "description": "Набор параметров, определяющих эллиптическую кривую"
+    },
+    {
+      "name": "модуль эллиптической кривой (p)",
+      "type": "TECHNICAL_TERM",
+      "category": "cryptographic_parameter",
+      "description": "Простое число, определяющее поле над которым задана кривая"
+    },
+    {
+      "name": "коэффициент a",
+      "type": "TECHNICAL_TERM",
+      "category": "cryptographic_parameter",
+      "description": "Первый коэффициент уравнения эллиптической кривой"
+    },
+    {
+      "name": "коэффициент b",
+      "type": "TECHNICAL_TERM",
+      "category": "cryptographic_parameter",
+      "description": "Второй коэффициент уравнения эллиптической кривой"
+    },
+    {
+      "name": "коэффициент e",
+      "type": "TECHNICAL_TERM",
+      "category": "cryptographic_parameter",
+      "description": "Первый коэффициент уравнения в форме Эдвардса"
+    },
+    {
+      "name": "коэффициент d",
+      "type": "TECHNICAL_TERM",
+      "category": "cryptographic_parameter",
+      "description": "Второй коэффициент уравнения в форме Эдвардса"
+    },
+    {
+      "name": "порядок группы (m)",
+      "type": "TECHNICAL_TERM",
+      "category": "cryptographic_parameter",
+      "description": "Количество точек на эллиптической кривой"
+    },
+    {
+      "name": "порядок подгруппы (q)",
+      "type": "TECHNICAL_TERM",
+      "category": "cryptographic_parameter",
+      "description": "Порядок циклической подгруппы"
+    },
+    {
+      "name": "точка основания (P)",
+      "type": "TECHNICAL_TERM",
+      "category": "cryptographic_parameter",
+      "description": "Генератор циклической подгруппы"
+    },
+    {
+      "name": "координаты точки (x, y)",
+      "type": "TECHNICAL_TERM",
+      "category": "cryptographic_parameter",
+      "description": "Координаты точки на эллиптической кривой в канонической форме"
+    },
+    {
+      "name": "координаты точки (u, v)",
+      "type": "TECHNICAL_TERM",
+      "category": "cryptographic_parameter",
+      "description": "Координаты точки на скрученной кривой Эдвардса"
+    },
+    {
+      "name": "id-tc26-gost-3410-2012-256-paramSetA",
+      "type": "PARAMETER_SET",
+      "oid": "1.2.643.7.1.2.1.1.1",
+      "description": "Набор параметров для 256-битной кривой"
+    },
+    {
+      "name": "id-tc26-gost-3410-2012-512-paramSetC",
+      "type": "PARAMETER_SET",
+      "oid": "1.2.643.7.1.2.1.2.3",
+      "description": "Набор параметров для 512-битной кривой"
+    },
+    {
+      "name": "id-tc26-gost-3410-12-512-paramSetA",
+      "type": "PARAMETER_SET",
+      "description": "Набор параметров эллиптической кривой из приложения А"
+    },
+    {
+      "name": "id-tc26-gost-3410-12-512-paramSetB",
+      "type": "PARAMETER_SET",
+      "description": "Набор параметров эллиптической кривой из приложения А"
+    },
+    {
+      "name": "id-tc26-gost-3410-2012-256-paramSetA",
+      "type": "PARAMETER_SET",
+      "description": "Набор параметров эллиптической кривой 256 бит"
+    },
+    {
+      "name": "id-tc26-gost-3410-2012-512-paramSetC",
+      "type": "PARAMETER_SET",
+      "description": "Набор параметров эллиптической кривой 512 бит"
+    },
+    {
+      "name": "ASN.1",
+      "type": "TECHNICAL_TERM",
+      "category": "data_representation",
+      "description": "Abstract Syntax Notation One - стандарт описания структур данных"
+    },
+    {
+      "name": "SEQUENCE",
+      "type": "TECHNICAL_TERM",
+      "category": "asn1_type",
+      "description": "Тип ASN.1 для последовательности полей"
+    },
+    {
+      "name": "INTEGER",
+      "type": "TECHNICAL_TERM",
+      "category": "asn1_type",
+      "description": "Тип ASN.1 для целых чисел"
+    },
+    {
+      "name": "OBJECT IDENTIFIER",
+      "type": "TECHNICAL_TERM",
+      "category": "asn1_type",
+      "description": "Тип ASN.1 для идентификаторов объектов"
+    },
+    {
+      "name": "протокол ключевого обмена",
+      "type": "TECHNICAL_TERM",
+      "category": "cryptographic_protocol",
+      "description": "Протокол для безопасного обмена ключами"
+    },
+    {
+      "name": "простой модуль",
+      "type": "TECHNICAL_TERM",
+      "category": "mathematical_concept",
+      "description": "Простое число, используемое как модуль"
+    },
+    {
+      "name": "длина 256 бит",
+      "type": "PARAMETER",
+      "category": "key_length",
+      "description": "Длина модуля эллиптической кривой"
+    },
+    {
+      "name": "длина 512 бит",
+      "type": "PARAMETER",
+      "category": "key_length",
+      "description": "Длина модуля эллиптической кривой"
+    },
+    {
+      "name": "криптографическая защита информации",
+      "type": "CONCEPT",
+      "category": "domain",
+      "description": "Область применения стандарта"
+    },
+    {
+      "name": "информационная технология",
+      "type": "CONCEPT",
+      "category": "domain",
+      "description": "Категория стандарта"
+    },
+    {
+      "name": "www.gost.ru",
+      "type": "WEBSITE",
+      "description": "Официальный сайт Росстандарта"
+    },
+    {
+      "name": "Научные стандарты",
+      "type": "PUBLICATION",
+      "description": "Ежегодный информационный указатель"
+    },
+    {
+      "name": "Приложение А",
+      "type": "DOCUMENT_SECTION",
+      "description": "Обязательное приложение со значениями параметров эллиптических кривых"
+    }
+  ],
+  "summary": {
+    "total_entities": 45,
+    "by_type": {
+      "STANDARD": 7,
+      "ORGANIZATION": 3,
+      "TECHNICAL_TERM": 24,
+      "PARAMETER_SET": 5,
+      "CONCEPT": 3,
+      "LAW": 1,
+      "DOCUMENT": 1,
+      "PARAMETER": 2,
+      "WEBSITE": 1,
+      "PUBLICATION": 1,
+      "DOCUMENT_SECTION": 1
+    }
+  }
+}

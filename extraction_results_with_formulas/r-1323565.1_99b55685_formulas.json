@@ -1,0 +1,1493 @@
+{
+  "doc_name": "r-1323565.1_99b55685",
+  "formulas": [
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 6
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 6
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 6
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 6
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 6
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 6
+    },
+    {
+      "text": "b",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 8
+    },
+    {
+      "text": "s",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 8
+    },
+    {
+      "text": "a",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 8
+    },
+    {
+      "text": "b",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 8
+    },
+    {
+      "text": "c",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 8
+    },
+    {
+      "text": "s",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 8
+    },
+    {
+      "text": "b",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 8
+    },
+    {
+      "text": "b",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 8
+    },
+    {
+      "text": "r",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 8
+    },
+    {
+      "text": "r",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 8
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 12
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 12
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 14
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 14
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 14
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 14
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 15
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 15
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 15
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 15
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 15
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 15
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 15
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 15
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 22
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 22
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 23
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 23
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 25
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 25
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 28
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 28
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 29
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 30
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 30
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 30
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 30
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 30
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 30
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 30
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 30
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 30
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 30
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 30
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 31
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 31
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 31
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 31
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 31
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 31
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 31
+    },
+    {
+      "text": "legacy_version",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 32
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 32
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 32
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 32
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 32
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 32
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 34
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 34
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 35
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 35
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 35
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 35
+    },
+    {
+      "text": "legacy_version",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 36
+    },
+    {
+      "text": "legacy_compression_method",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 36
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 36
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 36
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 36
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 36
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 36
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 37
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 37
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 37
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 37
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 37
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 37
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 37
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 37
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 37
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 37
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 37
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 37
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 37
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 37
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 38
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 38
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 38
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 38
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 38
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 39
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 39
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 39
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 39
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 39
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 39
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 39
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 39
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 42
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 42
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 43
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 43
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 43
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 43
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 43
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 44
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 44
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 44
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 44
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 44
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 44
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 44
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 44
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 44
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 44
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 44
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 44
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 44
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 44
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 44
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 45
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 45
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 46
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 46
+    },
+    {
+      "text": "Transcript-Hash",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 47
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 47
+    },
+    {
+      "text": "Q",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 47
+    },
+    {
+      "text": "binder",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 47
+    },
+    {
+      "text": "_key",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 47
+    },
+    {
+      "text": "Messages",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 47
+    },
+    {
+      "text": "Messages",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 47
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 47
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 47
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 47
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 47
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 47
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 47
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 47
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 47
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 47
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 47
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 47
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 47
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 47
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 47
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 47
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 47
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 47
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 47
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 47
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 47
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 47
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 47
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 47
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 47
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 47
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 47
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 47
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 47
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 47
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 47
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 47
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 47
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 47
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 47
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 47
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 47
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 47
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 47
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 47
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 47
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 47
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 48
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 49
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 50
+    },
+    {
+      "text": "Transcript-Hash",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 52
+    },
+    {
+      "text": "sgn",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 52
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 52
+    },
+    {
+      "text": "Transcript-Hash",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 53
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 53
+    },
+    {
+      "text": "_finished_key",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 53
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 55
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 56
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 58
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 58
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 61
+    },
+    {
+      "text": "opaque_type",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 62
+    },
+    {
+      "text": "legacy_record_version",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 62
+    },
+    {
+      "text": "nENCrecord",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 65
+    },
+    {
+      "text": "nnonce",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 65
+    },
+    {
+      "text": "nadditional_data",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 65
+    },
+    {
+      "text": "nplaintext",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 66
+    },
+    {
+      "text": "nnnonce",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 66
+    },
+    {
+      "text": "HKDF-Extract",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 72
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 72
+    },
+    {
+      "text": "Derive-Secret",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 72
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 72
+    },
+    {
+      "text": "Transcript-Hash",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 72
+    },
+    {
+      "text": "length",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 72
+    },
+    {
+      "text": "Messages",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 72
+    },
+    {
+      "text": "n",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 72
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 73
+    },
+    {
+      "text": "EarlySecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 73
+    },
+    {
+      "text": "HandshakeSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 73
+    },
+    {
+      "text": "MasterSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 73
+    },
+    {
+      "text": "CHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 73
+    },
+    {
+      "text": "SHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 73
+    },
+    {
+      "text": "CATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 73
+    },
+    {
+      "text": "SATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 73
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 74
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 74
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 75
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 75
+    },
+    {
+      "text": "r",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 76
+    },
+    {
+      "text": "i_c",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 76
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 76
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 76
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 76
+    },
+    {
+      "text": "ECDHE",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 77
+    },
+    {
+      "text": "ENCrecord",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 80
+    },
+    {
+      "text": "HLen",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 83
+    },
+    {
+      "text": "sgn",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 85
+    },
+    {
+      "text": "I",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 85
+    },
+    {
+      "text": "I",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 85
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 87
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 88
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 88
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 88
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 88
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 88
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 88
+    },
+    {
+      "text": "TLS_FALLBACK_SCSV",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 89
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 89
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 89
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 89
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 89
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 89
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 89
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 89
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 89
+    },
+    {
+      "text": "color",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 94
+    },
+    {
+      "text": "color",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 94
+    },
+    {
+      "text": "f1",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_99b55685",
+      "chunk_index": 96
+    }
+  ]
+}

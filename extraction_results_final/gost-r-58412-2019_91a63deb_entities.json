@@ -1,0 +1,43 @@
+{
+  "doc_name": "gost-r-58412-2019_91a63deb",
+  "chunks_processed": 10,
+  "pattern_count": 31,
+  "validated_count": 7,
+  "entities": [
+    {
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "НАЦИОНАЛЬНЫЙ СТАНДАРТ РОССИЙСКОЙ ФЕДЕРАЦИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 58412—2019",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "2019",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "text": "Стандартинформ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р\n58412—\n2019",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

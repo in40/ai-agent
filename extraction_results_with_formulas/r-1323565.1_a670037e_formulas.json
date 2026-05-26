@@ -1,0 +1,383 @@
+{
+  "doc_name": "r-1323565.1_a670037e",
+  "formulas": [
+    {
+      "text": "Type",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 21
+    },
+    {
+      "text": "Length",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 21
+    },
+    {
+      "text": "Type",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 21
+    },
+    {
+      "text": "CS",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 30
+    },
+    {
+      "text": "CS",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 31
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 34
+    },
+    {
+      "text": "Label",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 34
+    },
+    {
+      "text": "aL",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 34
+    },
+    {
+      "text": "LabelByteLength",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 34
+    },
+    {
+      "text": "IV_KDF",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 34
+    },
+    {
+      "text": "SN",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 34
+    },
+    {
+      "text": "Node",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 34
+    },
+    {
+      "text": "cL",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 34
+    },
+    {
+      "text": "oL",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 34
+    },
+    {
+      "text": "OutputBitLength",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 34
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 34
+    },
+    {
+      "text": "Label",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 34
+    },
+    {
+      "text": "aL",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 34
+    },
+    {
+      "text": "LabelByteLength",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 34
+    },
+    {
+      "text": "TIV_KDF",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 34
+    },
+    {
+      "text": "SN",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 34
+    },
+    {
+      "text": "Node",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 34
+    },
+    {
+      "text": "cL",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 34
+    },
+    {
+      "text": "oL",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 34
+    },
+    {
+      "text": "OutputBitLength",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 34
+    },
+    {
+      "text": "IV_ENC",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 34
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 36
+    },
+    {
+      "text": "K_master",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 39
+    },
+    {
+      "text": "_master",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 39
+    },
+    {
+      "text": "oL",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 41
+    },
+    {
+      "text": "oL",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 41
+    },
+    {
+      "text": "oL",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 41
+    },
+    {
+      "text": "oL",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 41
+    },
+    {
+      "text": "K_1",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 41
+    },
+    {
+      "text": "K_2",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 41
+    },
+    {
+      "text": "K_3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 41
+    },
+    {
+      "text": "K_4",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 41
+    },
+    {
+      "text": "InitValue",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 42
+    },
+    {
+      "text": "NextHeader",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 42
+    },
+    {
+      "text": "IV_AED",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 42
+    },
+    {
+      "text": "EncryptedIPlrBody",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 42
+    },
+    {
+      "text": "IntegrityCheckValue",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 42
+    },
+    {
+      "text": "TransitInitValue",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 43
+    },
+    {
+      "text": "IV_TMAC",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 43
+    },
+    {
+      "text": "TransitIntegrityCheckValue",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 43
+    },
+    {
+      "text": "oL",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 45
+    },
+    {
+      "text": "oL",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 45
+    },
+    {
+      "text": "oL",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 45
+    },
+    {
+      "text": "oL",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 45
+    },
+    {
+      "text": "K_1",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 45
+    },
+    {
+      "text": "K_2",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 45
+    },
+    {
+      "text": "K_3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 45
+    },
+    {
+      "text": "K_4",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 45
+    },
+    {
+      "text": "TransitIdentifier",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 46
+    },
+    {
+      "text": "master",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 46
+    },
+    {
+      "text": "oL",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 46
+    },
+    {
+      "text": "K_1",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 46
+    },
+    {
+      "text": "K_2",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 46
+    },
+    {
+      "text": "K_3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 46
+    },
+    {
+      "text": "K_4",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 46
+    },
+    {
+      "text": "oL",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 47
+    },
+    {
+      "text": "IntegrityCheckValue",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 47
+    },
+    {
+      "text": "M_4",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_a670037e",
+      "chunk_index": 47
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "doc_name": "gost-r-52633_b385163d",
+  "chunks_processed": 10,
+  "pattern_count": 51,
+  "validated_count": 6,
+  "entities": [
+    {
+      "text": "ГОСТ Р 52633.4-2011",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "text": "Стандартинформ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "2019",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 52633.4—2011",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 52633.4—2011",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

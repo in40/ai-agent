@@ -1,0 +1,1308 @@
+================================================================================
+HYBRID ENTITY EXTRACTION - ALL DOCUMENTS
+Output: /root/qwen/ai_agent/extraction_results_final
+================================================================================
+
+Loading entity extractor...
+Loaded spaCy English model: en_core_web_sm
+Loaded spaCy Russian model: ru_core_news_sm
+Added 23 custom entity patterns to Russian model
+Added 23 custom entity patterns to English model
+Loaded 8 custom entity types
+Found 112 documents
+
+[1/112] gost-r-56546-2015=edt2018_6d040aec
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 18, Validated: 2
+[2/112] gost-r-70262_4fe87085
+Auto-detected language: Russian
+Auto-detected language: English
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 54, Validated: 13
+[3/112] gost-34_bdb2abdc
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 77, Validated: 9
+[4/112] r-1323565.1_523e31d7
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 46, Validated: 16
+[5/112] gost-r-59453_3b8321db
+Auto-detected language: English
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 36, Validated: 10
+[6/112] gost-r-56103-2014=edt2018_323b8286
+Auto-detected language: Russian
+Auto-detected language: English
+Auto-detected language: Russian
+    Pattern: 59, Validated: 8
+[7/112] r-1323565.1_7cc8c08f
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 58, Validated: 6
+[8/112] gost-r-53109-2008=edt2018_68ad1b8b
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 69, Validated: 9
+[9/112] r-50.1_4cd22315
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 61, Validated: 3
+[10/112] r-1323565.1_dc753eb4
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 44, Validated: 6
+[11/112] r-1323565.1_84a0d6fb
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 48, Validated: 13
+[12/112] gost-r-52447-2005=edt2020_e832d8dd
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 28, Validated: 6
+[13/112] gost-r-53111-2008=edt2018_a9334210
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 28, Validated: 5
+[14/112] r-1323565.1_6d81409d
+Auto-detected language: Russian
+Auto-detected language: English
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 59, Validated: 7
+[15/112] gost-r-71753-2024_e6ab5a68
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 42, Validated: 8
+[16/112] r-1323565.1_2f0dfbb1
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 50, Validated: 3
+[17/112] r-1323565.1_3aa7acab
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: English
+    Pattern: 224, Validated: 18
+[18/112] gost-r-53115-2008=edt2018_0c4b93a9
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: English
+Auto-detected language: Russian
+    Pattern: 593, Validated: 16
+[19/112] r-1323565.1_470053b4
+Auto-detected language: Russian
+Auto-detected language: English
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 63, Validated: 13
+[20/112] gost-r-58142-2018_56b74ed2
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 33, Validated: 16
+[21/112] r-1323565.1_3ac5d65d
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: English
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 65, Validated: 9
+[22/112] r-1323565.1_881b0329
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 45, Validated: 7
+[23/112] r-50.1_4bd380de
+Auto-detected language: English
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 16, Validated: 8
+[24/112] gost-r-50739-1995=edt2006_c56e9b4d
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 29, Validated: 3
+[25/112] gost-r-71207-2024_cea1d441
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 23, Validated: 16
+[26/112] gost-r-54582-2011=edt2019_c6add81e
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: English
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 60, Validated: 8
+[27/112] gost-r-57628-2017_850edf8c
+Auto-detected language: Russian
+Auto-detected language: English
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 63, Validated: 6
+[28/112] gost-r-71206-2024_29f4ead1
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 19, Validated: 8
+[29/112] r-1323565.1_ab155d71
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 62, Validated: 10
+[30/112] gost-r-56938-2016=edt2018_86a0c3ab
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 78, Validated: 22
+[31/112] r-1323565.1_7204943a
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 62, Validated: 12
+[32/112] gost-r-52448-2005=edt2018_b4632665
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 45, Validated: 8
+[33/112] gost-r-52633_8de4b632
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 55, Validated: 9
+[34/112] r-1323565.1_ca600c45
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 49, Validated: 12
+[35/112] gost-r-72118-2025_4e3f6075
+Auto-detected language: English
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 38, Validated: 11
+[36/112] gost-r-54583-2011_db7936db
+Auto-detected language: Russian
+Auto-detected language: English
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 69, Validated: 16
+[37/112] gost-r-59711-2022_7d087333
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: English
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 89, Validated: 4
+[38/112] gost-r-34_e48d9adb
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: English
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 70, Validated: 6
+[39/112] gost-r-52069_2c53c42c
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 76, Validated: 16
+[40/112] r-1323565.1_78b35e61
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: English
+Auto-detected language: English
+Auto-detected language: English
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 67, Validated: 11
+[41/112] r-1323565.1_a245d888
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 72, Validated: 15
+[42/112] gost-r-50922-2006_00dc836a
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: English
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 36, Validated: 14
+[43/112] r-50.1_9cdb3670
+Auto-detected language: Russian
+Auto-detected language: English
+Auto-detected language: Russian
+Auto-detected language: English
+    Pattern: 273, Validated: 5
+[44/112] gost-r-34_7d202354
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 53, Validated: 6
+[45/112] gost-34_43a10467
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: English
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 109, Validated: 14
+[46/112] r-1323565.1_8a84396d
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 60, Validated: 8
+[47/112] gost-r-59547-2021_c84a5a4d
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 36, Validated: 6
+[48/112] gost-r-53113_b6054df6
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 59, Validated: 11
+[49/112] r-1323565.1_8e67ba17
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 52, Validated: 5
+[50/112] gost-r-59712-2022_b2ef0841
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 35, Validated: 10
+[51/112] gost-r-52633_e8c083d2
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 25, Validated: 4
+[52/112] r-1323565.1_37a65fe4
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 52, Validated: 5
+[53/112] gost-r-iso-iec-27002-2021_a33a8fa4
+Auto-detected language: English
+Auto-detected language: English
+Auto-detected language: English
+Auto-detected language: Russian
+Auto-detected language: English
+    Pattern: 124, Validated: 10
+[54/112] gost-r-51275-2006=edt2018_62b9bb2c
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 38, Validated: 10
+[55/112] r-1-1323565.1_9e608c52
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 58, Validated: 15
+[56/112] gost-r-51583-2014=edt2018_6b5b0f74
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 80, Validated: 8
+[57/112] r-1323565.1_a57af51b
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 63, Validated: 8
+[58/112] r-1323565.1_9868b0c8
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: English
+Auto-detected language: English
+Auto-detected language: English
+    Pattern: 56, Validated: 11
+[59/112] r-1323565.1_6667160c
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 69, Validated: 14
+[60/112] r-1323565.1_e5fca2b3
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: English
+    Pattern: 30, Validated: 8
+[61/112] gost-r-52633_4f3addc8
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: English
+    Pattern: 45, Validated: 10
+[62/112] r-1323565.1_d7994952
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: English
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 52, Validated: 12
+[63/112] r-1323565.1_1c653cc5
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 23, Validated: 4
+[64/112] gost-r-59548-2022_c17ad04a
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 30, Validated: 3
+[65/112] gost-r-53131-2008_f47922b6
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 38, Validated: 11
+[66/112] r-1323565.1_1f95a701
+Auto-detected language: English
+Auto-detected language: English
+Auto-detected language: English
+Auto-detected language: English
+Auto-detected language: English
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 115, Validated: 10
+[67/112] gost-r-34_51200256
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    ERROR: Expecting ',' delimiter: line 1 column 481 (char 480)
+[68/112] r-50.1_b0c52905
+Auto-detected language: Russian
+Auto-detected language: English
+Auto-detected language: Russian
+Auto-detected language: English
+Auto-detected language: English
+Auto-detected language: English
+Auto-detected language: English
+Auto-detected language: English
+Auto-detected language: English
+Auto-detected language: English
+    Pattern: 89, Validated: 8
+[69/112] gost-r-53114-2008=edt2018_40f53e83
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 40, Validated: 12
+[70/112] r-1323565.1_0cdebced
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 19, Validated: 11
+[71/112] gost-r-70262_d3c5b513
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 24, Validated: 12
+[72/112] gost-r-56115-2014_dbb121ac
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 16, Validated: 8
+[73/112] gost-r-58256-2018_4321085a
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: English
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 72, Validated: 11
+[74/112] r-1323565.1_98e6f026
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 43, Validated: 13
+[75/112] gost-r-54581-2011=edt2018_5452ba76
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 17, Validated: 9
+[76/112] r-1323565.1_05c4d8ef
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 44, Validated: 8
+[77/112] r-1323565.1_386f7d01
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 18, Validated: 11
+[78/112] r-1323565.1_395de1a8
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: English
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 84, Validated: 5
+[79/112] gost-r-59710-2022_11db7995
+Auto-detected language: Russian
+Auto-detected language: English
+Auto-detected language: English
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: English
+    Pattern: 32, Validated: 14
+[80/112] r-50.1_15f58fa0
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 37, Validated: 12
+[81/112] gost-r-56545-2015=edt2018_0efaf655
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 43, Validated: 8
+[82/112] gost-r-52633_b385163d
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: English
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 51, Validated: 6
+[83/112] gost-r-53112-2008=edt2018_30426e30
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 34, Validated: 12
+[84/112] gost-r-58143-2018_f7def8e8
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 48, Validated: 9
+[85/112] gost-r-59162-2020_115cf792
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 60, Validated: 10
+[86/112] gost-r-59453_33943f8d
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 43, Validated: 9
+[87/112] gost-r-52863-2007=edt2020_17cabea1
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 55, Validated: 11
+[88/112] r-1323565.1_1e73f3e7
+Auto-detected language: Russian
+Auto-detected language: English
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: English
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 54, Validated: 11
+[89/112] gost-r-59453_18a844fc
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: English
+    Pattern: 52, Validated: 11
+[90/112] r-1323565.1_29d67cd9
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 58, Validated: 18
+[91/112] gost-r-58412-2019_91a63deb
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 31, Validated: 7
+[92/112] r-50.1_b35ec6fa
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: English
+Auto-detected language: English
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 46, Validated: 13
+[93/112] r-1323565.1_2dad0d33
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 40, Validated: 4
+[94/112] gost-r-52633_d3d73e47
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 54, Validated: 13
+[95/112] gost-r-56093-2014=edt2018_9288520f
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 96, Validated: 6
+[96/112] gost-34_cb3ee5c9
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 89, Validated: 13
+[97/112] r-1323565.1_a670037e
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 18, Validated: 4
+[98/112] r-1323565.1_e3edeca4
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: English
+Auto-detected language: Russian
+Auto-detected language: English
+Auto-detected language: Russian
+    Pattern: 179, Validated: 4
+[99/112] gost-34_35cf3ed7
+Auto-detected language: Russian
+Auto-detected language: English
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    ERROR: Invalid control character at: line 4 column 216 (char 235)
+[100/112] gost-r-53113_9f37aa3e
+Auto-detected language: Russian
+Auto-detected language: English
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: English
+    Pattern: 288, Validated: 8
+[101/112] r-50.1_197a15b3
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 28, Validated: 9
+[102/112] gost-r-58833-2020_e8fe6d3e
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 49, Validated: 12
+[103/112] gost-r-53110-2008=edt2020_0608256d
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 35, Validated: 12
+[104/112] r-1323565.1_99b55685
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: English
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 124, Validated: 7
+[105/112] r-1323565.1_58194614
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: English
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 93, Validated: 9
+[106/112] gost-r-71252-2024_93fbdd23
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: English
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 28, Validated: 5
+[107/112] r-1323565.1_12ff4b7a
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 76, Validated: 3
+[108/112] gost-r-59709-2022_3e823926
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 34, Validated: 14
+[109/112] gost-r-34_e022c4bb
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 92, Validated: 9
+[110/112] gost-r-56939-2016=edt2018_da505e3e
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 44, Validated: 17
+[111/112] gost-r-34_a0b478df
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 54, Validated: 15
+[112/112] gost-r-52633_7a42a2e5
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+Auto-detected language: Russian
+    Pattern: 32, Validated: 10
+
+================================================================================
+COMPLETE
+================================================================================
+Processed: 110 documents
+Failed: 2 documents
+Pattern entities: 7016
+Validated entities: 1059
+
+Results saved to: /root/qwen/ai_agent/extraction_results_final/
+================================================================================

@@ -1,0 +1,6359 @@
+{
+  "total": 1059,
+  "entities": [
+    {
+      "doc": "gost-r-56546-2015=edt2018_6d040aec",
+      "text": "ГОСТ Р 56546—2015",
+      "type": "STANDARD",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-56546-2015=edt2018_6d040aec",
+      "text": "2016-04-01",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-70262_4fe87085",
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-70262_4fe87085",
+      "text": "НАЦИОНАЛЬНЫЙ СТАНДАРТ РОССИЙСКОЙ ФЕДЕРАЦИИ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-70262_4fe87085",
+      "text": "ГОСТ Р 70262.2—2025",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-70262_4fe87085",
+      "text": "ИЗДАНИЕ ОФИЦИАЛЬНОЕ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-70262_4fe87085",
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-70262_4fe87085",
+      "text": "Российский институт стандартизации",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-70262_4fe87085",
+      "text": "2025",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-70262_4fe87085",
+      "text": "ФСТЭК России",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-70262_4fe87085",
+      "text": "ФАУ «ГНИИИ ПТЗИ ФСТЭК России»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-70262_4fe87085",
+      "text": "АО «Аладдин Р.Д.»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-70262_4fe87085",
+      "text": "ТК 362",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-70262_4fe87085",
+      "text": "Федеральный закон от 29 июня 2015 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-70262_4fe87085",
+      "text": "№ 162-ФЗ",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-34_bdb2abdc",
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-34_bdb2abdc",
+      "text": "ГОСТ Р ИСО/МЭК 27033-1—",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-34_bdb2abdc",
+      "text": "ISO/IEC 27033-1:2009",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-34_bdb2abdc",
+      "text": "IDT",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-34_bdb2abdc",
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-34_bdb2abdc",
+      "text": "Стандартинформ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-34_bdb2abdc",
+      "text": "IEC 27033-1",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-34_bdb2abdc",
+      "text": "ГОСТ Р 1.0—2004",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-34_bdb2abdc",
+      "text": "IEC 27033-1",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_523e31d7",
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_523e31d7",
+      "text": "P 1323565.1.022—2018",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_523e31d7",
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_523e31d7",
+      "text": "Стандартинформ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_523e31d7",
+      "text": "2018",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_523e31d7",
+      "text": "Центр защиты информации и специальной связи ФСБ России",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_523e31d7",
+      "text": "ОАО «ИнфофоКС»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_523e31d7",
+      "text": "ТК 026",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_523e31d7",
+      "text": "Приказом Федерального агентства по техническому регулированию и метрологии от 14 декабря 2018 г. № 1103-ст",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_523e31d7",
+      "text": "162-ФЗ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_523e31d7",
+      "text": "Национальные стандарты",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_523e31d7",
+      "text": "www.gost.ru",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_523e31d7",
+      "text": "ГОСТ Р 34.11—2012",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_523e31d7",
+      "text": "ГОСТ Р 34.12—2015",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_523e31d7",
+      "text": "ГОСТ Р 34.13—2015",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_523e31d7",
+      "text": "ГОСТ Р 34.11—2012",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-59453_3b8321db",
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59453_3b8321db",
+      "text": "НАЦИОНАЛЬНЫЙ СТАНДАРТ РОССИЙСКОЙ ФЕДЕРАЦИИ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59453_3b8321db",
+      "text": "ГОСТ Р 59453.1-2021",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59453_3b8321db",
+      "text": "Федеральная служба по техническому и экспортному контролю (ФСТЭК России)",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59453_3b8321db",
+      "text": "ООО «РусБИТех-Астра»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59453_3b8321db",
+      "text": "Технический комитет по стандартизации ТК 362 «Защита информации»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59453_3b8321db",
+      "text": "Приказом Федерального агентства по техническому регулированию и метрологии от 22 апреля 2021 г. № 270-ст",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59453_3b8321db",
+      "text": "Федеральный закон от 29 июня 2015 г. № 162-ФЗ «О стандартизации в Российской Федерации»",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59453_3b8321db",
+      "text": "www.gost.ru",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59453_3b8321db",
+      "text": "ГОСТ Р 59453.1—2021",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-56103-2014=edt2018_323b8286",
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-56103-2014=edt2018_323b8286",
+      "text": "ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-56103-2014=edt2018_323b8286",
+      "text": "НАЦИОНАЛЬНЫЙ СТАНДАРТ РОССИЙСКОЙ ФЕДЕРАЦИИ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-56103-2014=edt2018_323b8286",
+      "text": "ГОСТ Р 56103—2014",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-56103-2014=edt2018_323b8286",
+      "text": "Защита информации",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-56103-2014=edt2018_323b8286",
+      "text": "АВТОМАТИЗИРОВАННЫЕ СИСТЕМЫ В ЗАЩИЩЕННОМ ИСПОЛНЕНИИ. ОРГАНИЗАЦИЯ И СОДЕРЖАНИЕ РАБОТ ПО ЗАЩИТЕ ОТ ПРЕДНАМЕРЕННЫХ СИЛОВЫХ ЭЛЕКТРОМАГНИТНЫХ ВОЗДЕЙСТВИЙ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-56103-2014=edt2018_323b8286",
+      "text": "Общие положения",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-56103-2014=edt2018_323b8286",
+      "text": "Издание официальное",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_7cc8c08f",
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_7cc8c08f",
+      "text": "П1323565.1.061—2024",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_7cc8c08f",
+      "text": "АО «ИнфофКС»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_7cc8c08f",
+      "text": "Технический комитет по стандартизации ТК 26",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_7cc8c08f",
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_7cc8c08f",
+      "text": "Российский институт стандартизации",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53109-2008=edt2018_68ad1b8b",
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53109-2008=edt2018_68ad1b8b",
+      "text": "НАЦИОНАЛЬНЫЙ СТАНДАРТ РОССИЙСКОЙ ФЕДЕРАЦИИ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53109-2008=edt2018_68ad1b8b",
+      "text": "ГОСТ Р53109-2008",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53109-2008=edt2018_68ad1b8b",
+      "text": "СИСТЕМА ОБЕСПЕЧЕНИЯ ИНФОРМАЦИОННОЙ БЕЗОПАСНОСТИ СЕТИ СВЯЗИ ОБЩЕГО ПОЛЬЗОВАНИЯ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53109-2008=edt2018_68ad1b8b",
+      "text": "Паспорт организации связи по информационной безопасности",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53109-2008=edt2018_68ad1b8b",
+      "text": "Дата введения — 2009—10-01",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53109-2008=edt2018_68ad1b8b",
+      "text": "ГОСТ Р 53109-2008",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-53109-2008=edt2018_68ad1b8b",
+      "text": "ГОСТ Р 53109—2008",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-53109-2008=edt2018_68ad1b8b",
+      "text": "ГОСТ Р 53110—2008",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-50.1_4cd22315",
+      "text": "П 50.1.110-2016",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-50.1_4cd22315",
+      "text": "МOSCВА",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-50.1_4cd22315",
+      "text": "СТАНДАРТНИФОРМ 2017",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_dc753eb4",
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_dc753eb4",
+      "text": "2022",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_dc753eb4",
+      "text": "15 ноября 2022",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_dc753eb4",
+      "text": "№ 1285-ст",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_dc753eb4",
+      "text": "29 июня 2015",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_dc753eb4",
+      "text": "162-ФЗ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_84a0d6fb",
+      "text": "РЕКОМЕНДАЦИИ ПО СТАНДАРТИЗАЦИИ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_84a0d6fb",
+      "text": "Информационная технология",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_84a0d6fb",
+      "text": "Криптографическая защита информации",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_84a0d6fb",
+      "text": "Общество с ограниченной ответственностью «Системы практической безопасности» (ООО «СПБ»)",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_84a0d6fb",
+      "text": "Открытый акционерное общество «Информационные технологии и коммуникационные системы» (АОО «ИнфоTeКС»)",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_84a0d6fb",
+      "text": "Общество с ограниченной ответственностью «КРИПТО-ПРО» (ООО «КРИПТО-ПРО»)",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_84a0d6fb",
+      "text": "Технический комитет по стандартизации ТК 26",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_84a0d6fb",
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_84a0d6fb",
+      "text": "Стандартинформ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_84a0d6fb",
+      "text": "ФЗ «О стандартизации в Российской Федерации» (№ 162-ФЗ)",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_84a0d6fb",
+      "text": "Межбанковская система обработки данных (ЗОС)",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_84a0d6fb",
+      "text": "Область применения",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_84a0d6fb",
+      "text": "ГОСТ Р 34.11—2012",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-52447-2005=edt2020_e832d8dd",
+      "text": "ГОСТ Р 52447—2005",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52447-2005=edt2020_e832d8dd",
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52447-2005=edt2020_e832d8dd",
+      "text": "Стандартинформ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52447-2005=edt2020_e832d8dd",
+      "text": "2020",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52447-2005=edt2020_e832d8dd",
+      "text": "Россия",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52447-2005=edt2020_e832d8dd",
+      "text": "ГОСТ Р 52447-2005",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-53111-2008=edt2018_a9334210",
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53111-2008=edt2018_a9334210",
+      "text": "ГОСТ Р 53111—2008",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53111-2008=edt2018_a9334210",
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53111-2008=edt2018_a9334210",
+      "text": "ГОСТ 30804.4",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-53111-2008=edt2018_a9334210",
+      "text": "IEC 61000-4",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_6d81409d",
+      "text": "ОАО «Информационные технологии и коммуникационные системы»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_6d81409d",
+      "text": "Технический комитет по стандартизации ТК 26 «Криптографическая защита информации»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_6d81409d",
+      "text": "Приказ Федерального агентства по техническому регулированию и метрологии от 28 декабря 2017 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_6d81409d",
+      "text": "№ 2116-ст",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_6d81409d",
+      "text": "Федеральный закон от 29 июня 2015 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_6d81409d",
+      "text": "№ 162-ФЗ «О стандартизации в Российской Федерации»",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_6d81409d",
+      "text": "Стандартинформ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-71753-2024_e6ab5a68",
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-71753-2024_e6ab5a68",
+      "text": "ГОСТ Р 71753—2024",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-71753-2024_e6ab5a68",
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-71753-2024_e6ab5a68",
+      "text": "Российский институт стандартизации",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-71753-2024_e6ab5a68",
+      "text": "30 октября 2024 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-71753-2024_e6ab5a68",
+      "text": "№ 1558-ст",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-71753-2024_e6ab5a68",
+      "text": "ГОСТ Р\n71753—\n2024",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-71753-2024_e6ab5a68",
+      "text": "ГОСТ Р 71753—2044",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_2f0dfbb1",
+      "text": "ПФРА",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_2f0dfbb1",
+      "text": "ГОСТ Р 34.13-2015",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_2f0dfbb1",
+      "text": "ГОСТ Р 34.13—2015",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_3aa7acab",
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_3aa7acab",
+      "text": "ПР 1323565.010-2017",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_3aa7acab",
+      "text": "Информационная технология",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_3aa7acab",
+      "text": "КРИПТОГРАФИЧЕСКАЯ ЗАЩИТА ИНФОРМАЦИИ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_3aa7acab",
+      "text": "ДIVERSификации",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_3aa7acab",
+      "text": "ПРОИЗВОДНЫЕ КЛУЧЕ ПЛАТЕЖНОГО ПРИЛОЖЕНИЯ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_3aa7acab",
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_3aa7acab",
+      "text": "Стандартинформ 2018",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_3aa7acab",
+      "text": "ООО «СПБ»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_3aa7acab",
+      "text": "ОАО «ИнфофКС»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_3aa7acab",
+      "text": "ООО «КРИПТО-ПРО»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_3aa7acab",
+      "text": "Технический комитет по стандартизации ТК 26",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_3aa7acab",
+      "text": "Приказом Федерального агентства по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_3aa7acab",
+      "text": "19 декабря 2017 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_3aa7acab",
+      "text": "№ 208-ст",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_3aa7acab",
+      "text": "Федеральный закон от 29 июня 2015 г.",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_3aa7acab",
+      "text": "162-ФЗ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_3aa7acab",
+      "text": "МИР",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53115-2008=edt2018_0c4b93a9",
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТОРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53115-2008=edt2018_0c4b93a9",
+      "text": "НАЦИОНАЛЬНЫЙ СТАНДАРТ РОССИЙСКОЙ ФЕДЕРАЦИИ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53115-2008=edt2018_0c4b93a9",
+      "text": "ГОСТ Р 53115-2008",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53115-2008=edt2018_0c4b93a9",
+      "text": "ЗАЩИТА ИНФОРМАЦИИ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53115-2008=edt2018_0c4b93a9",
+      "text": "ИСПЫТАНИЕ ТЕХНИЧЕСКИХ СРЕДСТВ ОБРАБОТКИ ИНФОРМАЦИИ НА СООТВЕТСТВИЕ ПРЕДОПОЛАГАЕМЫМ ЗАЩИЩЕННОСТИ ОТ НЕСАНКЦИОНОВАННОГО ДОСТУПА",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53115-2008=edt2018_0c4b93a9",
+      "text": "Методы и средства",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53115-2008=edt2018_0c4b93a9",
+      "text": "Издание официальное",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53115-2008=edt2018_0c4b93a9",
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53115-2008=edt2018_0c4b93a9",
+      "text": "Приказ Федерального агентства по техническому регулированию и метрологии от 18 декабря 2008 г. №534-ст",
+      "type": "ORGANIZATION|DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53115-2008=edt2018_0c4b93a9",
+      "text": "Федеральный закон от 29 июня 2015 г. №162-ФЗ",
+      "type": "CONCEPT|ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53115-2008=edt2018_0c4b93a9",
+      "text": "Стандартинформ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53115-2008=edt2018_0c4b93a9",
+      "text": "2018",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53115-2008=edt2018_0c4b93a9",
+      "text": "ГОСТ Р 53115—2008",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-53115-2008=edt2018_0c4b93a9",
+      "text": "ГОСТ Р 53115—2008",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-53115-2008=edt2018_0c4b93a9",
+      "text": "IEC 60050-161",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-53115-2008=edt2018_0c4b93a9",
+      "text": "ГОСТ 30805.22",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_470053b4",
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_470053b4",
+      "text": "РЕКОМЕНДАЦИИ ПО СТАНДАРТИЗАЦИИ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_470053b4",
+      "text": "КРИПТОГРАФИЧЕСКАЯ ЗАЩИТА ИНФОРМАЦИИ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_470053b4",
+      "text": "аутентификации в контрольных устройствах",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_470053b4",
+      "text": "автотранспорта",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_470053b4",
+      "text": "Издание официальное",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_470053b4",
+      "text": "АО «РамЭК-ВС»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_470053b4",
+      "text": "ТК 026 «Криптографическая защита информации»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_470053b4",
+      "text": "Приказом Федерального агентства по техническому регулированию и метрологии от 24 апреля 2018 г. № 207-ст",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_470053b4",
+      "text": "29 июня 2015 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_470053b4",
+      "text": "162-ФЗ «О стандартизации в Российской Федерации»",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_470053b4",
+      "text": "Национальные стандарты",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_470053b4",
+      "text": "www.gost.ru",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-58142-2018_56b74ed2",
+      "text": "ГОСТ Р 58142—2018",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-58142-2018_56b74ed2",
+      "text": "ИСО/МЭК 15408",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-58142-2018_56b74ed2",
+      "text": "ИСО/МЭК 18045",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-58142-2018_56b74ed2",
+      "text": "ГОСТ Р ИСО/МЭК 15408",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-58142-2018_56b74ed2",
+      "text": "ГОСТ Р ИСО/МЭК 18045",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-58142-2018_56b74ed2",
+      "text": "ISO/IEC TR 2004:2015",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-58142-2018_56b74ed2",
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-58142-2018_56b74ed2",
+      "text": "Технический комитет по стандартизации ТК 362",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-58142-2018_56b74ed2",
+      "text": "ООО «Центр безопасности информации»,",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-58142-2018_56b74ed2",
+      "text": "Приказом Федерального агентства по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-58142-2018_56b74ed2",
+      "text": "24 мая 2018 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-58142-2018_56b74ed2",
+      "text": "ГОСТ Р 58142—2028",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-58142-2018_56b74ed2",
+      "text": "IEC 15408",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-58142-2018_56b74ed2",
+      "text": "IEC 18045",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-58142-2018_56b74ed2",
+      "text": "IEC 15408",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-58142-2018_56b74ed2",
+      "text": "IEC 18045",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_3ac5d65d",
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_3ac5d65d",
+      "text": "П 1323565.1.026—2019",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_3ac5d65d",
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_3ac5d65d",
+      "text": "Стандартинформ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_3ac5d65d",
+      "text": "2019",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_3ac5d65d",
+      "text": "1323565.1.026",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_3ac5d65d",
+      "text": "ТК 26",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_3ac5d65d",
+      "text": "162-ФЗ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_3ac5d65d",
+      "text": "www.gost.ru",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_881b0329",
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_881b0329",
+      "text": "П 1323565.1.003—",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_881b0329",
+      "text": "Криптографическая защита информации",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_881b0329",
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_881b0329",
+      "text": "Российский институт стандартизации",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_881b0329",
+      "text": "2024",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_881b0329",
+      "text": "Радиотелефонная связь",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-50.1_4bd380de",
+      "text": "ГНИИПТЗИ ФСТЭК России",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-50.1_4bd380de",
+      "text": "Технический комитет по стандартизации ТК 362",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-50.1_4bd380de",
+      "text": "Публичная оферта 2006",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-50.1_4bd380de",
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-50.1_4bd380de",
+      "text": "Стандартинформ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-50.1_4bd380de",
+      "text": "2005",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-50.1_4bd380de",
+      "text": "P 50.1.056-2005",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-50.1_4bd380de",
+      "text": "Приказом Федерального агентства по техническому регулированию и метрологии от 29 декабря 2005 г.",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-50739-1995=edt2006_c56e9b4d",
+      "text": "ГОСТ Р 50739—95",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-50739-1995=edt2006_c56e9b4d",
+      "text": "ГОСУДАРСТВЕННЫЙ СТАНДАРТ РОССИЙСКОЙ ФЕДЕРАЦИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-50739-1995=edt2006_c56e9b4d",
+      "text": "1996—01—01",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-71207-2024_cea1d441",
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-71207-2024_cea1d441",
+      "text": "НАЦИОНАЛЬНЫЙ СТАНДАРТ РОССИЙСКОЙ ФЕДЕРАЦИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-71207-2024_cea1d441",
+      "text": "ГОСТ Р 71207-2024",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-71207-2024_cea1d441",
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-71207-2024_cea1d441",
+      "text": "Российский институт стандартизации",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-71207-2024_cea1d441",
+      "text": "2024",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-71207-2024_cea1d441",
+      "text": "ФСТЭК России",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-71207-2024_cea1d441",
+      "text": "ИСП РАН",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-71207-2024_cea1d441",
+      "text": "Технический комитет по стандартизации ТК 362",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-71207-2024_cea1d441",
+      "text": "18 января 2024 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-71207-2024_cea1d441",
+      "text": "Федеральный закон от 29 июня 2015 г.",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-71207-2024_cea1d441",
+      "text": "№ 162-ФЗ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-71207-2024_cea1d441",
+      "text": "www.rst.gov.ru",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-71207-2024_cea1d441",
+      "text": "ГОСТ Р 71207—2024",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-71207-2024_cea1d441",
+      "text": "ГОСТ Р 71207—2024",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-71207-2024_cea1d441",
+      "text": "ГОСТ Р 71207—2024",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-54582-2011=edt2019_c6add81e",
+      "text": "ГОСТ Р 54582-2011",
+      "type": "STANDARD",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-54582-2011=edt2019_c6add81e",
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-54582-2011=edt2019_c6add81e",
+      "text": "ГОСТ Р 54582-2011",
+      "type": "STANDARD",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-54582-2011=edt2019_c6add81e",
+      "text": "Россия",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-54582-2011=edt2019_c6add81e",
+      "text": "ГОСТ Р 71002-1997",
+      "type": "STANDARD",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-54582-2011=edt2019_c6add81e",
+      "text": "ГОСТ Р 54582—2011",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-54582-2011=edt2019_c6add81e",
+      "text": "ГОСТ Р 54582—2011",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-54582-2011=edt2019_c6add81e",
+      "text": "ГОСТ Р 54581—2011",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-57628-2017_850edf8c",
+      "text": "Федеральное Агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-57628-2017_850edf8c",
+      "text": "НАЦИОНАЛЬНЫЙ СТАНДАРТ РОССИЙСКОЙ ФЕДЕРАЦИИ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-57628-2017_850edf8c",
+      "text": "ISO/IEC TR 15446:2009",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-57628-2017_850edf8c",
+      "text": "NEQ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-57628-2017_850edf8c",
+      "text": "Руководство по разработке профилей защиты и заданий по безопасности",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-57628-2017_850edf8c",
+      "text": "ГОСТ Р 57628—2017",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-71206-2024_29f4ead1",
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-71206-2024_29f4ead1",
+      "text": "Российский институт стандартизации",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-71206-2024_29f4ead1",
+      "text": "2024",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-71206-2024_29f4ead1",
+      "text": "ГОСТ Р 71206—2024",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-71206-2024_29f4ead1",
+      "text": "Федеральным государственным бюджетным учреждением науки «Институт системного программирования имени В.П. Ивановой Российской академии наук» (ИСП РАН)",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-71206-2024_29f4ead1",
+      "text": "Технический комитет по стандартизации ТК 362 «Защита информации»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-71206-2024_29f4ead1",
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-71206-2024_29f4ead1",
+      "text": "ГОСТ Р 58412—2019",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_ab155d71",
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_ab155d71",
+      "text": "СТАНДАРТИНФОРМ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_ab155d71",
+      "text": "2018",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_ab155d71",
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_ab155d71",
+      "text": "СОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"СИСТЕМЫ ПРАКТИЧЕСКОЙ БЕЗОПАСНОСТИ\"",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_ab155d71",
+      "text": "Открытый акционерное общество \"Информационные технологии и коммуникационные системы\"",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_ab155d71",
+      "text": "ООО \"КРИПТО-ПРО\"",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_ab155d71",
+      "text": "ГОСТ Р 34.10—2012",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_ab155d71",
+      "text": "ГОСТ Р 34.13—2015",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_ab155d71",
+      "text": "ГОСТ Р 34.11—2012",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-56938-2016=edt2018_86a0c3ab",
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-56938-2016=edt2018_86a0c3ab",
+      "text": "ГОСТ Р 56938-2016",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-56938-2016=edt2018_86a0c3ab",
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-56938-2016=edt2018_86a0c3ab",
+      "text": "2018",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-56938-2016=edt2018_86a0c3ab",
+      "text": "Федеральное Агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-56938-2016=edt2018_86a0c3ab",
+      "text": "Научно-исследовательский институт ПЦР",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-56938-2016=edt2018_86a0c3ab",
+      "text": "г. Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-56938-2016=edt2018_86a0c3ab",
+      "text": "г. Санкт-Петербург",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-56938-2016=edt2018_86a0c3ab",
+      "text": "2016",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-56938-2016=edt2018_86a0c3ab",
+      "text": "Технический комитет по стандартизации",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-56938-2016=edt2018_86a0c3ab",
+      "text": "Федеральный закон от 29 июня 2015 г.",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-56938-2016=edt2018_86a0c3ab",
+      "text": "ГОСТ Р 56938—2016",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-56938-2016=edt2018_86a0c3ab",
+      "text": "ГОСТ Р 51594-2005",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-56938-2016=edt2018_86a0c3ab",
+      "text": "ГОСТ Р 51595-2005",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-56938-2016=edt2018_86a0c3ab",
+      "text": "ГОСТ Р 51596-2005",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-56938-2016=edt2018_86a0c3ab",
+      "text": "ГОСТ Р 51597-2005",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-56938-2016=edt2018_86a0c3ab",
+      "text": "ГОСТ Р 51598-2005",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-56938-2016=edt2018_86a0c3ab",
+      "text": "ГОСТ Р 51599-2005",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-56938-2016=edt2018_86a0c3ab",
+      "text": "ГОСТ Р 51600-2005",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-56938-2016=edt2018_86a0c3ab",
+      "text": "ГОСТ Р 51601-2005",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-56938-2016=edt2018_86a0c3ab",
+      "text": "ГОСТ Р 51602-2005",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-56938-2016=edt2018_86a0c3ab",
+      "text": "ГОСТ Р 51603-2005",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_7204943a",
+      "text": "Федеральное Агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_7204943a",
+      "text": "2018",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_7204943a",
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_7204943a",
+      "text": "РамЭК-ВС",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_7204943a",
+      "text": "Технический комитет по стандартизации ТК 026",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_7204943a",
+      "text": "Приказ Федерального агентства по техническому регулированию и метрологии от 29 мая 2018 г. № 282-ст",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_7204943a",
+      "text": "162-ФЗ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_7204943a",
+      "text": "ГОСТ Р 34.12—2015",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_7204943a",
+      "text": "ГОСТ Р 34.13—2015",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_7204943a",
+      "text": "ГОСТ Р 34.11—2012",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_7204943a",
+      "text": "ГОСТ Р 34.12—2015",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_7204943a",
+      "text": "ГОСТ Р 34.13—2015",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-52448-2005=edt2018_b4632665",
+      "text": "ГОСТ Р 52448—2005",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52448-2005=edt2018_b4632665",
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52448-2005=edt2018_b4632665",
+      "text": "ГНИИИ ПТЗИ ФСТЭК России",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52448-2005=edt2018_b4632665",
+      "text": "Технический комитет по стандартизации ТК 362",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52448-2005=edt2018_b4632665",
+      "text": "Федеральная служба по техническому и экспортному контролю",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52448-2005=edt2018_b4632665",
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52448-2005=edt2018_b4632665",
+      "text": "Стандартинформ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52448-2005=edt2018_b4632665",
+      "text": "2019",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52633_8de4b632",
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52633_8de4b632",
+      "text": "ГОСТ Р 52633.0-2006",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52633_8de4b632",
+      "text": "Техника защиты информации",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52633_8de4b632",
+      "text": "Высоконадежная биометрическая аутентификация",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52633_8de4b632",
+      "text": "Стандарт",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52633_8de4b632",
+      "text": "ГОСТ Р\n52633.0-\n2006",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-52633_8de4b632",
+      "text": "ГОСТ Р 52633.0—2006",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-52633_8de4b632",
+      "text": "ГОСТ 34.311",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-52633_8de4b632",
+      "text": "ГОСТ Р 52633.0—2006",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_ca600c45",
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_ca600c45",
+      "text": "ТК 026",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_ca600c45",
+      "text": "ООО «КРИПОТО-ПРО»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_ca600c45",
+      "text": "18 декабря 2020",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_ca600c45",
+      "text": "1327-ст",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_ca600c45",
+      "text": "Р 1323565.1.020—2018",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_ca600c45",
+      "text": "29 июня 2015",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_ca600c45",
+      "text": "www.gost.ru",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_ca600c45",
+      "text": "ГОСТ Р 34.10—2012",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_ca600c45",
+      "text": "ГОСТ Р 34.12—2015",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_ca600c45",
+      "text": "ГОСТ Р 34.13—2015",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_ca600c45",
+      "text": "ГОСТ Р 34.11—2012",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-72118-2025_4e3f6075",
+      "text": "ГОСТ Р 72118-2025",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-72118-2025_4e3f6075",
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-72118-2025_4e3f6075",
+      "text": "Российский институт стандартизации",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-72118-2025_4e3f6075",
+      "text": "ФСТЭК России",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-72118-2025_4e3f6075",
+      "text": "ФАУ ГИНИИ ПТЗИ ФСТЭК России",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-72118-2025_4e3f6075",
+      "text": "АО Лаборатория Касперского",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-72118-2025_4e3f6075",
+      "text": "ИСП РАН",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-72118-2025_4e3f6075",
+      "text": "Технический комитет по стандартизации ТК 362",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-72118-2025_4e3f6075",
+      "text": "Федеральный закон от 29 июня 2015 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-72118-2025_4e3f6075",
+      "text": "Россия",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-72118-2025_4e3f6075",
+      "text": "ГОСТ Р 72118—2025",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-54583-2011_db7936db",
+      "text": "Федеральное Агентство ПО Техническому Регулированию и Метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-54583-2011_db7936db",
+      "text": "ГОСТ P 54583-2011/ISO/IEC/TR 15443-3:2007",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-54583-2011_db7936db",
+      "text": "Информационная технология",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-54583-2011_db7936db",
+      "text": "МЕТОДЫ И СРЕДСТВА ОБЕСПЕЧЕНИЯ БЕЗОПАСНОСТИ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-54583-2011_db7936db",
+      "text": "Основы доверия к безопасности информационных технологий",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-54583-2011_db7936db",
+      "text": "Часть 3",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-54583-2011_db7936db",
+      "text": "Анализ методов доверия",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-54583-2011_db7936db",
+      "text": "ISO/IEC TR 15443-3:2007",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-54583-2011_db7936db",
+      "text": "ФГУ «ГНИИИ ПТЗИ ФСТЭК России»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-54583-2011_db7936db",
+      "text": "ООО «ЦБИ»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-54583-2011_db7936db",
+      "text": "Стандартизация в Российской Федерации. Основные положения",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-54583-2011_db7936db",
+      "text": "Федеральный закон от 27 декабря 2002 г. № 184-ФЗ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-54583-2011_db7936db",
+      "text": "ГОСТ Р 1.0—2004",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-54583-2011_db7936db",
+      "text": "Приказом Федерального агентства по техническому регулированию и метрологии от 1 декабря 2011 г. № 691-ст",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-54583-2011_db7936db",
+      "text": "Стандартинформ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-54583-2011_db7936db",
+      "text": "ГОСТ Р 54583—2011",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-59711-2022_7d087333",
+      "text": "ГОСТ Р 59711—2022",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59711-2022_7d087333",
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59711-2022_7d087333",
+      "text": "Российский институт стандартизации",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59711-2022_7d087333",
+      "text": "29 ноября 2022",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-34_e48d9adb",
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-34_e48d9adb",
+      "text": "ГОСТ Р 34.11—2012",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-34_e48d9adb",
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-34_e48d9adb",
+      "text": "Стандартинформ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-34_e48d9adb",
+      "text": "ГОСТ Р\n34.11—\n2012",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-34_e48d9adb",
+      "text": "ГОСТ Р 1.0—2004",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-52069_2c53c42c",
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52069_2c53c42c",
+      "text": "ГОСТ Р 52069.0-2013",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52069_2c53c42c",
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52069_2c53c42c",
+      "text": "Стандартинформ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52069_2c53c42c",
+      "text": "28 февраля 2013 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52069_2c53c42c",
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52069_2c53c42c",
+      "text": "Государственный научно-исследовательский испытательный институт проблем технической защиты информации Федеральной службы по техническому и экспортному контролю",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52069_2c53c42c",
+      "text": "Технический комитет по стандартизации ТК 362",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52069_2c53c42c",
+      "text": "162-ФЗ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52069_2c53c42c",
+      "text": "Декабрь 2018",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52069_2c53c42c",
+      "text": "ГОСТ Р 52069.0—2013",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-52069_2c53c42c",
+      "text": "ГОСТ Р 52069.0—2003",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-52069_2c53c42c",
+      "text": "ГОСТ Р 52069.0—2013",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-52069_2c53c42c",
+      "text": "ГОСТ 1.1",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-52069_2c53c42c",
+      "text": "ГОСТ 1.2",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-52069_2c53c42c",
+      "text": "ГОСТ 1.5",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_78b35e61",
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_78b35e61",
+      "text": "Российский институт стандартизации",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_78b35e61",
+      "text": "2022",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_78b35e61",
+      "text": "Общество с ограниченной ответственностью «Код Безопасности»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_78b35e61",
+      "text": "ООО «КИПТО-ПРО»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_78b35e61",
+      "text": "Федеральное государственное универсальное предприятие «Научно-технический центр «Атлас»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_78b35e61",
+      "text": "ФГУП «НТЦ «Атлас»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_78b35e61",
+      "text": "АО «ИнфоТеКС»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_78b35e61",
+      "text": "2015",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_78b35e61",
+      "text": "162-ФЗ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_78b35e61",
+      "text": "www.rst.gov.ru",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_a245d888",
+      "text": "Российский институт стандартизации",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_a245d888",
+      "text": "2022",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_a245d888",
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_a245d888",
+      "text": "2015",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_a245d888",
+      "text": "Национальные стандарты",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_a245d888",
+      "text": "www.rst.gov.ru",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_a245d888",
+      "text": "ISO 8000",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_a245d888",
+      "text": "ISO 10118",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_a245d888",
+      "text": "ISO 31114",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_a245d888",
+      "text": "ISO 22301",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_a245d888",
+      "text": "ISO 2999",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_a245d888",
+      "text": "ISO 27001",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_a245d888",
+      "text": "ISO 28000",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_a245d888",
+      "text": "ISO 9001",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_a245d888",
+      "text": "ISO 31000",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-50922-2006_00dc836a",
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-50922-2006_00dc836a",
+      "text": "ГОСТ Р 50922-2006",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-50922-2006_00dc836a",
+      "text": "ФГУ «ГНИИПИ ПТСЗИ ФСТЭК России»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-50922-2006_00dc836a",
+      "text": "27 декабря 2002 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-50922-2006_00dc836a",
+      "text": "№ 184-ФЗ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-50922-2006_00dc836a",
+      "text": "27 июля 2006 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-50922-2006_00dc836a",
+      "text": "№ 98-ФЗ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-50922-2006_00dc836a",
+      "text": "27 декабря 2006 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-50922-2006_00dc836a",
+      "text": "№ 373-ст",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-50922-2006_00dc836a",
+      "text": "ГОСТ Р\n50922-\n2006",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-50922-2006_00dc836a",
+      "text": "ГОСТ Р 50922—2006",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-50922-2006_00dc836a",
+      "text": "ГОСТ Р 1.0—2004",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-50922-2006_00dc836a",
+      "text": "ГОСТ Р 50922—2006",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-50922-2006_00dc836a",
+      "text": "ГОСТ Р 50922—2006",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-50.1_9cdb3670",
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-50.1_9cdb3670",
+      "text": "П 50.1.114-2016",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-50.1_9cdb3670",
+      "text": "28 ноября 2016 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-50.1_9cdb3670",
+      "text": "162-ФЗ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-50.1_9cdb3670",
+      "text": "ТК 26",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-34_7d202354",
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-34_7d202354",
+      "text": "РОССИЙСКОЙ ФЕДЕРАЦИИ",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-34_7d202354",
+      "text": "ГОСТ Р 34.12-2015",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-34_7d202354",
+      "text": "Информационная технология КРИПТОГРАФИЧЕСКАЯ ЗАЩИТА ИНФОРМАЦИИ БЛОЧНЫЕ ШИФРЫ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-34_7d202354",
+      "text": "ГОСТ Р\n34.12-2015",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-34_7d202354",
+      "text": "ГОСТ Р 34.12—2015",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-34_43a10467",
+      "text": "МЕЖГОСУДАРСТВЕННЫЙ СОВЕТ ПО СТАНДАРТИЗАЦИИ, МЕТРОЛОГИИ И СЕРТИФИКАЦИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-34_43a10467",
+      "text": "МГС",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-34_43a10467",
+      "text": "ГОСТ 34.12—2018",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-34_43a10467",
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-34_43a10467",
+      "text": "Стандартинформ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-34_43a10467",
+      "text": "ОАО «ИнфофKС»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-34_43a10467",
+      "text": "ГОСТ\n34.12",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-34_43a10467",
+      "text": "ГОСТ\n34.12—\n2018",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-34_43a10467",
+      "text": "ГОСТ 34.12",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-34_43a10467",
+      "text": "ГОСТ 1.0",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-34_43a10467",
+      "text": "ГОСТ 1.0—2015",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-34_43a10467",
+      "text": "ГОСТ 1.2",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-34_43a10467",
+      "text": "ГОСТ 1.2—2015",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-34_43a10467",
+      "text": "ГОСТ 34.12",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_8a84396d",
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_8a84396d",
+      "text": "2024",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_8a84396d",
+      "text": "P 1323565.1.060—2024",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_8a84396d",
+      "text": "АО «ИнфофоКС»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_8a84396d",
+      "text": "ТК 26",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_8a84396d",
+      "text": "13 декабря 2024 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_8a84396d",
+      "text": "№ 1896-ст",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_8a84396d",
+      "text": "www.rst.gov.ru",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59547-2021_c84a5a4d",
+      "text": "Федеральное Агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59547-2021_c84a5a4d",
+      "text": "ГОСТ Р 59547—2021",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59547-2021_c84a5a4d",
+      "text": "Российский институт стандартизации",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59547-2021_c84a5a4d",
+      "text": "ФСТЭК России",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59547-2021_c84a5a4d",
+      "text": "Центр безопасности информации",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59547-2021_c84a5a4d",
+      "text": "ГОСТ Р 59547-2021",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-53113_b6054df6",
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53113_b6054df6",
+      "text": "ГОСТ Р 53113.1 — 2008",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53113_b6054df6",
+      "text": "НАЦИОНАЛЬНЫЙ СТАНДАРТ РОССИЙСКОЙ ФЕДЕРАЦИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53113_b6054df6",
+      "text": "Москва Стандартинформ 2018",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53113_b6054df6",
+      "text": "Криптоком",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53113_b6054df6",
+      "text": "Федеральный закон от 29 июня 2015 г. № 162-ФЗ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53113_b6054df6",
+      "text": "18 декабря 2008 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53113_b6054df6",
+      "text": "ГОСТ Р 53113.1—2088",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-53113_b6054df6",
+      "text": "ГОСТ Р 53113.1-2008",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-53113_b6054df6",
+      "text": "ГОСТ Р 53113.1—2008",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-53113_b6054df6",
+      "text": "ГОСТ Р 53113.1—2008",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_8e67ba17",
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_8e67ba17",
+      "text": "2023",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_8e67ba17",
+      "text": "162-ФЗ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_8e67ba17",
+      "text": "ГОСТ Р 34.12—2015",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_8e67ba17",
+      "text": "ГОСТ Р 34.13—2015",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-59712-2022_b2ef0841",
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59712-2022_b2ef0841",
+      "text": "НАЦИОНАЛЬНЫЙ СТАНДРТ РОССИЙСКОЙ ФЕДЕРАЦИИ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59712-2022_b2ef0841",
+      "text": "ГОСТ Р 59712—2022",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59712-2022_b2ef0841",
+      "text": "УПРАВЛЕНИЕ КОМПЬЮТЕРНЫМИ ИНЦИДЕНТАМИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59712-2022_b2ef0841",
+      "text": "Российский институт стандартизации",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59712-2022_b2ef0841",
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59712-2022_b2ef0841",
+      "text": "2022",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59712-2022_b2ef0841",
+      "text": "29 ноября 2022 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59712-2022_b2ef0841",
+      "text": "ГОСТ Р 59712—\n2022",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-59712-2022_b2ef0841",
+      "text": "ГОСТ Р 59711—2022",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-52633_e8c083d2",
+      "text": "ГОСТ Р 52633.3—2011",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52633_e8c083d2",
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52633_e8c083d2",
+      "text": "ГОСУДАРСТВЕННОЕ ОБРАЗОВАТЕЛЬНОЕ УЧРЕЖДЕНИЕ ВЫСШЕГО ОБРАЗОВАНИЯ РОССИЙСКОЙ ФЕДЕРАЦИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52633_e8c083d2",
+      "text": "2011",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_37a65fe4",
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_37a65fe4",
+      "text": "П 1323565.1.003-2017",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_37a65fe4",
+      "text": "Москвы",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_37a65fe4",
+      "text": "2017 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_37a65fe4",
+      "text": "СДТГ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-iso-iec-27002-2021_a33a8fa4",
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-iso-iec-27002-2021_a33a8fa4",
+      "text": "ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-iso-iec-27002-2021_a33a8fa4",
+      "text": "НАЦИОНАЛЬНЫЙ СТАНДАРТ РОССИЙСКОЙ ФЕДЕРАЦИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-iso-iec-27002-2021_a33a8fa4",
+      "text": "ГОСТ Р ИСО/МЭК 27002—2021",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-iso-iec-27002-2021_a33a8fa4",
+      "text": "Информационные технологии",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-iso-iec-27002-2021_a33a8fa4",
+      "text": "МЕТОДЫ И СРЕДСТВА ОБЕСПЕЧЕНИЯ БЕЗОПАСНОСТИ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-iso-iec-27002-2021_a33a8fa4",
+      "text": "ISO/IEC 27002:2013",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-iso-iec-27002-2021_a33a8fa4",
+      "text": "Москва Стандартинформ 2021",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-iso-iec-27002-2021_a33a8fa4",
+      "text": "ФГБУ «Институт стандартизации» – федеральный информационный фонд стандартов для федерального агентства по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-iso-iec-27002-2021_a33a8fa4",
+      "text": "IEC 27002",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-51275-2006=edt2018_62b9bb2c",
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-51275-2006=edt2018_62b9bb2c",
+      "text": "ГОСТ Р 51275—2006",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-51275-2006=edt2018_62b9bb2c",
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-51275-2006=edt2018_62b9bb2c",
+      "text": "Стандартинформ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-51275-2006=edt2018_62b9bb2c",
+      "text": "2018",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-51275-2006=edt2018_62b9bb2c",
+      "text": "ФГУ «ГИНИИ ПТЗИ ФСТЭК России»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-51275-2006=edt2018_62b9bb2c",
+      "text": "Федеральному государственному учреждению",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-51275-2006=edt2018_62b9bb2c",
+      "text": "Федеральная служба по техническому и экспортному контролю",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-51275-2006=edt2018_62b9bb2c",
+      "text": "ГОСТ Р 51275—99",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-51275-2006=edt2018_62b9bb2c",
+      "text": "ГОСТ Р 51275-2006",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1-1323565.1_9e608c52",
+      "text": "2019",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1-1323565.1_9e608c52",
+      "text": "Федеральное Агентство по Техническому Регулированию и Метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1-1323565.1_9e608c52",
+      "text": "5-7380-4633-2",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1-1323565.1_9e608c52",
+      "text": "ПР 1323565.1.029—2019",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1-1323565.1_9e608c52",
+      "text": "30 декабря 2019 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1-1323565.1_9e608c52",
+      "text": "№ 1504-ст",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1-1323565.1_9e608c52",
+      "text": "ОАО \"ИнфофоКС\"",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1-1323565.1_9e608c52",
+      "text": "ТК 26",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1-1323565.1_9e608c52",
+      "text": "2015 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1-1323565.1_9e608c52",
+      "text": "№ 162-ФЗ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1-1323565.1_9e608c52",
+      "text": "29 июня 2015 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1-1323565.1_9e608c52",
+      "text": "www.gost.ru",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1-1323565.1_9e608c52",
+      "text": "Стандартинформ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1-1323565.1_9e608c52",
+      "text": "ГОСТ Р 34.12—2015",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1-1323565.1_9e608c52",
+      "text": "ГОСТ Р 34.13—2015",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-51583-2014=edt2018_6b5b0f74",
+      "text": "Федеральное Агентство по Техническому Регулированию и Метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-51583-2014=edt2018_6b5b0f74",
+      "text": "ГОСТ Р 51583—2046",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-51583-2014=edt2018_6b5b0f74",
+      "text": "2014",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-51583-2014=edt2018_6b5b0f74",
+      "text": "Федеральная служба по техническому и экспортному контролю",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-51583-2014=edt2018_6b5b0f74",
+      "text": "Технический комитет по стандартизации ТК 362",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-51583-2014=edt2018_6b5b0f74",
+      "text": "Приказ Федерального агентства по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-51583-2014=edt2018_6b5b0f74",
+      "text": "ГОСТ 51583\n2014",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-51583-2014=edt2018_6b5b0f74",
+      "text": "ГОСТ Р 51583—2014",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_a57af51b",
+      "text": "2018",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_a57af51b",
+      "text": "2017",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_a57af51b",
+      "text": "2015",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_a57af51b",
+      "text": "ТК 26",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_a57af51b",
+      "text": "ИСПОЛЬЗОВАНИЕ АЛГОРИТМОВ БЛОЧНОГО ШИБРОВАНИЯ ПРИ ФОРМИРОВАНИИ ПРОВЕРЧНОГО ПАРАМЕТРА ПЛАТЕЖНОЙ КАРТЫ И ПРОВЕРЧНОГО ЗНАЧЕНИЯ PIN",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_a57af51b",
+      "text": "ПЛАТЕЖНАЯ КАРТА",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_a57af51b",
+      "text": "PIN",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_a57af51b",
+      "text": "www.gost.ru",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_9868b0c8",
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_9868b0c8",
+      "text": "КРИПТО-ПРО",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_9868b0c8",
+      "text": "Технический комитет по стандартизации ТК 26",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_9868b0c8",
+      "text": "15 мая 2019 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_9868b0c8",
+      "text": "№ 190-ст",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_9868b0c8",
+      "text": "29 июня 2015 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_9868b0c8",
+      "text": "№ 162-ФЗ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_9868b0c8",
+      "text": "Национальные стандарты",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_9868b0c8",
+      "text": "www.gost.ru",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_9868b0c8",
+      "text": "ГОСТ Р 34.10—2012",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_9868b0c8",
+      "text": "ГОСТ Р 34.10—2012",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_6667160c",
+      "text": "ОАО «Инфофекс»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_6667160c",
+      "text": "Технический комитет по стандартизации ТК 26 «Криптография защиты информации»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_6667160c",
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_6667160c",
+      "text": "ОКТЯБРЬ 2024",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_6667160c",
+      "text": "ГОСТ 34.10",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_6667160c",
+      "text": "ГОСТ 34.10—2018",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_6667160c",
+      "text": "ГОСТ 34.11",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_6667160c",
+      "text": "ГОСТ 34.11—2018",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_6667160c",
+      "text": "ГОСТ 34.12",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_6667160c",
+      "text": "ГОСТ 34.12—2018",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_6667160c",
+      "text": "ГОСТ 34.13",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_6667160c",
+      "text": "ГОСТ 34.13—2018",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_6667160c",
+      "text": "ГОСТ Р 34.10–2012",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_6667160c",
+      "text": "ГОСТ Р 34.11—2012",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_e5fca2b3",
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_e5fca2b3",
+      "text": "ПР-1323565.1.017-2018",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_e5fca2b3",
+      "text": "Общество с ограниченной ответственностью «КРИПТО-ПРО»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_e5fca2b3",
+      "text": "Технический комитет по стандартизации ТК 26",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_e5fca2b3",
+      "text": "Приказ Федерального агентства по техническому регулированию и метрологии от 24 апреля 2018 г. № 206-ст",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_e5fca2b3",
+      "text": "Федеральный закон от 29 июня 2015 г. № 162-ФЗ",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_e5fca2b3",
+      "text": "ГОСТ Р 34.12-2015",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_e5fca2b3",
+      "text": "ГОСТ Р 34.13-2015",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-52633_4f3addc8",
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52633_4f3addc8",
+      "text": "НАЦИОНАЛЬНЫЙ СТАНДАРТ РОССИЙСКОЙ ФЕДЕРАЦИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52633_4f3addc8",
+      "text": "ГОСТ Р 52633.6—2012",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52633_4f3addc8",
+      "text": "ФГУП «ПНИЭИ»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52633_4f3addc8",
+      "text": "ТК 362",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52633_4f3addc8",
+      "text": "Приказом Федерального агентства по техническому регулированию и метрологии от 13 сентября 2012 г. № 294-ст",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52633_4f3addc8",
+      "text": "13 сентября 2012",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52633_4f3addc8",
+      "text": "29 июня 2015",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52633_4f3addc8",
+      "text": "ГОСТ Р 52633.5 — 2011",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-52633_4f3addc8",
+      "text": "ГОСТ Р 52633.0—2006",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_d7994952",
+      "text": "ПФТРМ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_d7994952",
+      "text": "1323565.1.033—2020",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_d7994952",
+      "text": "КРИПТО-ПРО",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_d7994952",
+      "text": "ТК 26",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_d7994952",
+      "text": "17 ноября 2020",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_d7994952",
+      "text": "162-ФЗ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_d7994952",
+      "text": "29 июня 2015",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_d7994952",
+      "text": "ГОСТ Р 34.10—2012",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_d7994952",
+      "text": "ГОСТ Р 34.10—2001",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_d7994952",
+      "text": "ГОСТ Р 34.10—2012",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_d7994952",
+      "text": "ГОСТ Р 34.10—2001",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_d7994952",
+      "text": "ГОСТ Р 34.11—2012",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_1c653cc5",
+      "text": "Российский институт стандартизации",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_1c653cc5",
+      "text": "2024",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_1c653cc5",
+      "text": "10 октября 2024 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_1c653cc5",
+      "text": "162-ФЗ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59548-2022_c17ad04a",
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59548-2022_c17ad04a",
+      "text": "ГОСТ Р 59548—2022",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59548-2022_c17ad04a",
+      "text": "ГОСТ Р 59548-2022",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-53131-2008_f47922b6",
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53131-2008_f47922b6",
+      "text": "ГОСТ Р 53131 — 2008",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53131-2008_f47922b6",
+      "text": "ISO/IEC TR 24762:2008",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53131-2008_f47922b6",
+      "text": "ИСО/МЕК ТО 24762:2008",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53131-2008_f47922b6",
+      "text": "Общество с ограниченной ответственностью «Научно-производственная фирма «Кристалл» (ООО «НПФ «Кристалл»)",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53131-2008_f47922b6",
+      "text": "ФГУ «ГИНИИ ПТЗИ ФСТЭК России\"",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53131-2008_f47922b6",
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53131-2008_f47922b6",
+      "text": "2011",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53131-2008_f47922b6",
+      "text": "ГОСТ Р 53131—2008",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-53131-2008_f47922b6",
+      "text": "ГОСТ Р 1.0—2004",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-53131-2008_f47922b6",
+      "text": "ГОСТ Р 53131—2008",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_1f95a701",
+      "text": "FINAL REMINDER",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_1f95a701",
+      "text": "BEFORE YOU RESPOND",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_1f95a701",
+      "text": "⚠️",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_1f95a701",
+      "text": "THE",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_1f95a701",
+      "text": "\"content\"",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_1f95a701",
+      "text": "FIELD IS",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_1f95a701",
+      "text": "MANDATORY",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_1f95a701",
+      "text": "FOR",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_1f95a701",
+      "text": "EVERY",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_1f95a701",
+      "text": "CHUNK",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-50.1_b0c52905",
+      "text": "П 50.1.112—2016",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-50.1_b0c52905",
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-50.1_b0c52905",
+      "text": "Министерство информации и коммуникаций РФ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-50.1_b0c52905",
+      "text": "ФГУ «Министерство информации и коммуникаций» РФ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-50.1_b0c52905",
+      "text": "IEC 50.1:112:2016",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-50.1_b0c52905",
+      "text": "IEC 50",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-50.1_b0c52905",
+      "text": "IEC 50",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-50.1_b0c52905",
+      "text": "IEC 50",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-53114-2008=edt2018_40f53e83",
+      "text": "Государственная Дума Российской Федерации",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53114-2008=edt2018_40f53e83",
+      "text": "27.05.2018",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53114-2008=edt2018_40f53e83",
+      "text": "53114",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53114-2008=edt2018_40f53e83",
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53114-2008=edt2018_40f53e83",
+      "text": "ГОСТ Р 53114-2008",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53114-2008=edt2018_40f53e83",
+      "text": "ФГУ «ГНИИИ ПТЗИ ФСТЭК России»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53114-2008=edt2018_40f53e83",
+      "text": "ООО «НПФ «Кристалл»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53114-2008=edt2018_40f53e83",
+      "text": "18 декабря 2008",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53114-2008=edt2018_40f53e83",
+      "text": "162-ФЗ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53114-2008=edt2018_40f53e83",
+      "text": "ГОСТ Р 53114-2008",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-53114-2008=edt2018_40f53e83",
+      "text": "ГОСТ Р 53114—2088",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-53114-2008=edt2018_40f53e83",
+      "text": "ГОСТ Р 53114—2008",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_0cdebced",
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_0cdebced",
+      "text": "Российский институт стандартизации",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_0cdebced",
+      "text": "20 октября 2022 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_0cdebced",
+      "text": "№ 1161-ст",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_0cdebced",
+      "text": "29 июня 2015 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_0cdebced",
+      "text": "ТК 26",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_0cdebced",
+      "text": "ТК 026",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_0cdebced",
+      "text": "www.rst.gov.ru",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_0cdebced",
+      "text": "ГОСТ Р 34.10—2012",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_0cdebced",
+      "text": "ГОСТ Р 34.10—2012",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_0cdebced",
+      "text": "ГОСТ Р 34.10—2012",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-70262_d3c5b513",
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-70262_d3c5b513",
+      "text": "ГОСТ Р 70262.1—2022",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-70262_d3c5b513",
+      "text": "Дата введения — 2023—01—01",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-70262_d3c5b513",
+      "text": "IEC 24760-2",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-70262_d3c5b513",
+      "text": "ГОСТ Р 58833—2020",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-70262_d3c5b513",
+      "text": "ГОСТ Р 54581—2011",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-70262_d3c5b513",
+      "text": "ГОСТ Р 58833—2020",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-70262_d3c5b513",
+      "text": "ГОСТ Р 54581—2011",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-70262_d3c5b513",
+      "text": "ГОСТ Р 58833—2020",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-70262_d3c5b513",
+      "text": "ГОСТ Р 53114—2008",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-70262_d3c5b513",
+      "text": "ГОСТ Р 58833—2020",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-70262_d3c5b513",
+      "text": "ГОСТ Р 54581—2011",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-56115-2014_dbb121ac",
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВанию И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-56115-2014_dbb121ac",
+      "text": "ГОСТ Р 56115—2014",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-56115-2014_dbb121ac",
+      "text": "ГОСТ Р 56115-2014",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-56115-2014_dbb121ac",
+      "text": "ГОСТ Р 56115-2014",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-56115-2014_dbb121ac",
+      "text": "ГОСТ Р 56115-2014",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-56115-2014_dbb121ac",
+      "text": "ГОСТ Р 56115-2014",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-56115-2014_dbb121ac",
+      "text": "ГОСТ Р 56115-2014",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-56115-2014_dbb121ac",
+      "text": "ГОСТ Р 56115-2014",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-58256-2018_4321085a",
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-58256-2018_4321085a",
+      "text": "НАЦИОНАЛЬНЫЙ СТАНДАРТ РОССИЙСКОЙ ФЕДЕРАЦИИ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-58256-2018_4321085a",
+      "text": "ГОСТ Р 58256-2018",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-58256-2018_4321085a",
+      "text": "УПРАВЛЕНИЕ ПОТОКАМИ ИНФОРМАЦИИ В ИНФОРМАЦИОННОЙ СИСТЕМЕ. ФОРМАТ КЛАССИФИКАЦИОННЫХ МЕТОК",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-58256-2018_4321085a",
+      "text": "Издание официальное",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-58256-2018_4321085a",
+      "text": "26 октября 2018 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-58256-2018_4321085a",
+      "text": "№ 849-ст",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-58256-2018_4321085a",
+      "text": "29 июня 2015 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-58256-2018_4321085a",
+      "text": "www.gost.ru",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-58256-2018_4321085a",
+      "text": "ГОСТ Р 58256—2018",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-58256-2018_4321085a",
+      "text": "ГОСТ Р 53114—2008",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_98e6f026",
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_98e6f026",
+      "text": "P 132365.1.004-2017",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_98e6f026",
+      "text": "Технический комитет по стандартизации",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_98e6f026",
+      "text": "Правила применения",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_98e6f026",
+      "text": "Предисловие",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_98e6f026",
+      "text": "Разработанный Центром защиты информации и специальной связи ФСБ России",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_98e6f026",
+      "text": "ОАО «Информационные технологии и коммуникационные системы»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_98e6f026",
+      "text": "Технический комитет по стандартизации ТК 26",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_98e6f026",
+      "text": "Приказом Федерального агентства по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_98e6f026",
+      "text": "Федеральный закон от 29 июня 2015 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_98e6f026",
+      "text": "Национальные стандарты",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_98e6f026",
+      "text": "www.gost.ru",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_98e6f026",
+      "text": "ГОСТ Р 34.10-2012",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-54581-2011=edt2018_5452ba76",
+      "text": "ГОСТ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-54581-2011=edt2018_5452ba76",
+      "text": "П",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-54581-2011=edt2018_5452ba76",
+      "text": "54581—2011",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-54581-2011=edt2018_5452ba76",
+      "text": "ISO/IEC/TR 15443-1:2005",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-54581-2011=edt2018_5452ba76",
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-54581-2011=edt2018_5452ba76",
+      "text": "Государственный научно-исследовательский испытательный институт проблем технической защиты информации Федерального службы по техническому и экспортному контролю",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-54581-2011=edt2018_5452ba76",
+      "text": "Центр безопасности информации",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-54581-2011=edt2018_5452ba76",
+      "text": "ГОСТ Р 54581—2011",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-54581-2011=edt2018_5452ba76",
+      "text": "ГОСТ Р 54581—2011",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_05c4d8ef",
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАННИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_05c4d8ef",
+      "text": "P 1323565.1.035–2021",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_05c4d8ef",
+      "text": "АО «ЭЛВИС-ПЛЮС»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_05c4d8ef",
+      "text": "ООО «Фактор-ТС»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_05c4d8ef",
+      "text": "ООО «КРИПТО-ПРО»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_05c4d8ef",
+      "text": "ООО «С-Терра СиЭспи»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_05c4d8ef",
+      "text": "ТК 026 «Криптографическая защита информации»",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_05c4d8ef",
+      "text": "ГОСТ Р 34.12-2015",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_386f7d01",
+      "text": "РЕКОМЕНДАЦИИ ПО СТАНДАРТИЗАЦИИ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_386f7d01",
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТОРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_386f7d01",
+      "text": "ГОСТ Р 34.10—2012",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_386f7d01",
+      "text": "ГОСТ Р 34.11—2012",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_386f7d01",
+      "text": "PKCS #10",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_386f7d01",
+      "text": "X.509",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_386f7d01",
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_386f7d01",
+      "text": "Российский институт стандартизации",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_386f7d01",
+      "text": "2022",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_386f7d01",
+      "text": "АО «ИнфофоКС»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_386f7d01",
+      "text": "ТК 26",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_395de1a8",
+      "text": "2018",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_395de1a8",
+      "text": "Общество с ограниченной ответственностью «Системы практической безопасности»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_395de1a8",
+      "text": "Открытый акционерное общество «Информационные технологии и коммуникационные системы»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_395de1a8",
+      "text": "ООО «КРИПТО-ПРО»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_395de1a8",
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59710-2022_11db7995",
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59710-2022_11db7995",
+      "text": "ГОСТ Р 59710—2022",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59710-2022_11db7995",
+      "text": "МЕТРОЛОГИИ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59710-2022_11db7995",
+      "text": "РОССИЙСКОЙ ФЕДЕРАЦИИ",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59710-2022_11db7995",
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59710-2022_11db7995",
+      "text": "Российский институт стандартизации",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59710-2022_11db7995",
+      "text": "2022",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59710-2022_11db7995",
+      "text": "Войсковая часть 43753",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59710-2022_11db7995",
+      "text": "Общество с ограниченной ответственностью \"Центр безопасности информации\"",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59710-2022_11db7995",
+      "text": "ООО \"ЦБИ\"",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59710-2022_11db7995",
+      "text": "Технический комитет по стандартизации ТК 362",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59710-2022_11db7995",
+      "text": "Статья 26 Федерального закона от 29 июня 2015 г.",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59710-2022_11db7995",
+      "text": "ГОСТ Р\n59710—2022",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-59710-2022_11db7995",
+      "text": "ГОСТ Р 59711-2022",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-50.1_15f58fa0",
+      "text": "Федеральное Агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-50.1_15f58fa0",
+      "text": "П Р 50.1.115—2016",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-50.1_15f58fa0",
+      "text": "Технический комитет по стандартизации ТК 26",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-50.1_15f58fa0",
+      "text": "Приказом Федерального агентства по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-50.1_15f58fa0",
+      "text": "28 ноября 2016 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-50.1_15f58fa0",
+      "text": "№ 1830-ст",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-50.1_15f58fa0",
+      "text": "29 января 2015 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-50.1_15f58fa0",
+      "text": "№ 162-ФЗ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-50.1_15f58fa0",
+      "text": "Национальные стандарты",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-50.1_15f58fa0",
+      "text": "www.gost.ru",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-50.1_15f58fa0",
+      "text": "ГОСТ Р 34.10—2012",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-50.1_15f58fa0",
+      "text": "ГОСТ Р 34.11—2012",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-56545-2015=edt2018_0efaf655",
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-56545-2015=edt2018_0efaf655",
+      "text": "ГОСТ Р 56545-2015",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-56545-2015=edt2018_0efaf655",
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-56545-2015=edt2018_0efaf655",
+      "text": "Стандартинформ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-56545-2015=edt2018_0efaf655",
+      "text": "2018",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-56545-2015=edt2018_0efaf655",
+      "text": "ГОСТ Р 56545—2015",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-56545-2015=edt2018_0efaf655",
+      "text": "ГОСТ Р 56545—2015",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-56545-2015=edt2018_0efaf655",
+      "text": "ГОСТ Р 56545—2015",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-52633_b385163d",
+      "text": "ГОСТ Р 52633.4-2011",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52633_b385163d",
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52633_b385163d",
+      "text": "Стандартинформ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52633_b385163d",
+      "text": "2019",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52633_b385163d",
+      "text": "ГОСТ Р 52633.4—2011",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-52633_b385163d",
+      "text": "ГОСТ Р 52633.4—2011",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-53112-2008=edt2018_30426e30",
+      "text": "ГОСТ Р 53112-2008",
+      "type": "STANDARD",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53112-2008=edt2018_30426e30",
+      "text": "ФГУ \"32 ГНИИ МИНОБОРОНЫ РОССИИ\"",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53112-2008=edt2018_30426e30",
+      "text": "ФГУ \"ГНИИ ПТЗИ ФСТЭК России\"",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53112-2008=edt2018_30426e30",
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53112-2008=edt2018_30426e30",
+      "text": "2018",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53112-2008=edt2018_30426e30",
+      "text": "2008",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53112-2008=edt2018_30426e30",
+      "text": "ГОСТ Р\n53112-2008",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-53112-2008=edt2018_30426e30",
+      "text": "ГОСТ 12.2",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-53112-2008=edt2018_30426e30",
+      "text": "IEC 61010-1",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-53112-2008=edt2018_30426e30",
+      "text": "IEC 60050-161",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-53112-2008=edt2018_30426e30",
+      "text": "ГОСТ Р 53112—2088",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-53112-2008=edt2018_30426e30",
+      "text": "ГОСТ Р 53112—2088",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-58143-2018_f7def8e8",
+      "text": "ГОСТ Р 58143—2018",
+      "type": "STANDARD",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-58143-2018_f7def8e8",
+      "text": "ISO/IEC TR 20004:2015",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-58143-2018_f7def8e8",
+      "text": "IEC 15408",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-58143-2018_f7def8e8",
+      "text": "IEC 18045",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-58143-2018_f7def8e8",
+      "text": "IEC 15408",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-58143-2018_f7def8e8",
+      "text": "IEC 18045",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-58143-2018_f7def8e8",
+      "text": "ГОСТ Р 56545—2015",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-58143-2018_f7def8e8",
+      "text": "ГОСТ Р 56546—2015",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-58143-2018_f7def8e8",
+      "text": "ГОСТ Р 58142—2018",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-59162-2020_115cf792",
+      "text": "ГОСТ Р 59162—2020",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59162-2020_115cf792",
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59162-2020_115cf792",
+      "text": "ФИЦ ИУ РАН",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59162-2020_115cf792",
+      "text": "ООО ИАВЦ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59162-2020_115cf792",
+      "text": "ТК 22",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59162-2020_115cf792",
+      "text": "ISO/IEC 27033-6:2016",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59162-2020_115cf792",
+      "text": "NEQ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59162-2020_115cf792",
+      "text": "10 ноября 2020 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59162-2020_115cf792",
+      "text": "IEC 27033-6",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-59162-2020_115cf792",
+      "text": "IEC 27033-6",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-59453_33943f8d",
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАННИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59453_33943f8d",
+      "text": "ГОСТ Р 59453.4—2025",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59453_33943f8d",
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59453_33943f8d",
+      "text": "Российский институт стандартизации",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59453_33943f8d",
+      "text": "2025",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59453_33943f8d",
+      "text": "ФГБУ «Институт стандартизации»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59453_33943f8d",
+      "text": "ГОСТ Р 59453.1—2021",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-59453_33943f8d",
+      "text": "ГОСТ Р 59453.2—2021",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-59453_33943f8d",
+      "text": "ГОСТ Р 59453.3—2025",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-52863-2007=edt2020_17cabea1",
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52863-2007=edt2020_17cabea1",
+      "text": "ГОСТ Р 52863—2007",
+      "type": "STANDARD",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52863-2007=edt2020_17cabea1",
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52863-2007=edt2020_17cabea1",
+      "text": "2020",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52863-2007=edt2020_17cabea1",
+      "text": "СПБФ ФГУП «НТЦ «Атлас»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52863-2007=edt2020_17cabea1",
+      "text": "ФГУГ «ГНИИПИ ПТЗИ ФСТЭК России»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52863-2007=edt2020_17cabea1",
+      "text": "ФГУП «ВНИОФИ»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52863-2007=edt2020_17cabea1",
+      "text": "ЗАО «ЭМСКОТЕХ»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52863-2007=edt2020_17cabea1",
+      "text": "ФГУП НИИТИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52863-2007=edt2020_17cabea1",
+      "text": "ФГУП «Проектный институт» ФСБ России",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52863-2007=edt2020_17cabea1",
+      "text": "ЗАО «НПО «ФИД-Техника»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_1e73f3e7",
+      "text": "Сообщество с ограниченной ответственностью «Системы практической безопасности»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_1e73f3e7",
+      "text": "ООО «СПБ»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_1e73f3e7",
+      "text": "Открытый акционерное общество «Информационные технологии и коммуникационные системы»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_1e73f3e7",
+      "text": "ОАО «ИнфофоКС»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_1e73f3e7",
+      "text": "Общество с ограниченной ответственностью «КРИПТО-ПРО»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_1e73f3e7",
+      "text": "ООО «КРИПТО-ПРО»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_1e73f3e7",
+      "text": "Технический комитет по стандартизации ТК 26 «Криптографическая защита информации»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_1e73f3e7",
+      "text": "Приказ Федерального агентства по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_1e73f3e7",
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_1e73f3e7",
+      "text": "Федеральный закон от 29 июня 2015 г. № 162-ФЗ «О стандартизации в Российской Федерации»",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_1e73f3e7",
+      "text": "Стандартинформ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59453_18a844fc",
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59453_18a844fc",
+      "text": "НАЦИОНАЛЬНЫЙ СТАНДАРТ РОССИЙСКОЙ ФЕДЕРАЦИИ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59453_18a844fc",
+      "text": "ГОСТ Р 59453.2—2021",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59453_18a844fc",
+      "text": "Федеральная служба по техническому и экспортному контролю",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59453_18a844fc",
+      "text": "ООО РусБИТех-Астра",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59453_18a844fc",
+      "text": "ИСП РАН",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59453_18a844fc",
+      "text": "Технический комитет по стандартизации ТК 362",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59453_18a844fc",
+      "text": "Приказ Федерального агентства по техническому регулированию и метрологии от 22 апреля 2021 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59453_18a844fc",
+      "text": "Национальные стандарты",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59453_18a844fc",
+      "text": "www.gost.ru",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59453_18a844fc",
+      "text": "ГОСТ Р 59453.1—2021",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_29d67cd9",
+      "text": "П 1323565.1.025-2019",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_29d67cd9",
+      "text": "Открытым акционерным обществом",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_29d67cd9",
+      "text": "«Информационные технологии и коммуникационные системы»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_29d67cd9",
+      "text": "ОАО «Инфофекс»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_29d67cd9",
+      "text": "Технический комитет по стандартизации ТК 26",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_29d67cd9",
+      "text": "Криптографическая защита информации",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_29d67cd9",
+      "text": "Приказом Федерального агентства по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_29d67cd9",
+      "text": "29 августа 2019 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_29d67cd9",
+      "text": "№ 593-ст",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_29d67cd9",
+      "text": "29 июня 2015 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_29d67cd9",
+      "text": "№ 162-ФЗ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_29d67cd9",
+      "text": "Стандартинформ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_29d67cd9",
+      "text": "ГОСТ Р 34.10",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_29d67cd9",
+      "text": "ГОСТ Р 34.11",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_29d67cd9",
+      "text": "ГОСТ Р 34.12",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_29d67cd9",
+      "text": "ГОСТ Р 34.13",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_29d67cd9",
+      "text": "ГОСТ Р ИСО/МЭК 8824-1",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_29d67cd9",
+      "text": "ГОСТ Р 34.11—2012",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-58412-2019_91a63deb",
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-58412-2019_91a63deb",
+      "text": "НАЦИОНАЛЬНЫЙ СТАНДАРТ РОССИЙСКОЙ ФЕДЕРАЦИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-58412-2019_91a63deb",
+      "text": "ГОСТ Р 58412—2019",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-58412-2019_91a63deb",
+      "text": "2019",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-58412-2019_91a63deb",
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-58412-2019_91a63deb",
+      "text": "Стандартинформ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-58412-2019_91a63deb",
+      "text": "ГОСТ Р\n58412—\n2019",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-50.1_b35ec6fa",
+      "text": "ГОСТ Р 1.0—92",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-50.1_b35ec6fa",
+      "text": "ГОСТ Р 1.2—92",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-50.1_b35ec6fa",
+      "text": "ПР 50.1.053—2005",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-50.1_b35ec6fa",
+      "text": "ТК 362",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-50.1_b35ec6fa",
+      "text": "Приказ Федерального агентства по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-50.1_b35ec6fa",
+      "text": "ГОСТ Р 1.0—92",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-50.1_b35ec6fa",
+      "text": "ГОСТ Р 1.2—92",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-50.1_b35ec6fa",
+      "text": "Стандартинформ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-50.1_b35ec6fa",
+      "text": "2005",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-50.1_b35ec6fa",
+      "text": "ГОСТ 1.1",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-50.1_b35ec6fa",
+      "text": "ГОСТ 1.1—2002",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-50.1_b35ec6fa",
+      "text": "ГОСТ 34.003",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-50.1_b35ec6fa",
+      "text": "ГОСТ Р 51898—2002",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_2dad0d33",
+      "text": "РФ",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_2dad0d33",
+      "text": "2017",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_2dad0d33",
+      "text": "2018",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_2dad0d33",
+      "text": "ГОСТ Р 34.11—2012",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-52633_d3d73e47",
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52633_d3d73e47",
+      "text": "ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАННИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52633_d3d73e47",
+      "text": "НАЦИОНАЛЬНЫЙ СТАНДАРТ РОССИЙСКОЙ ФЕДЕРАЦИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52633_d3d73e47",
+      "text": "ГОСТ Р 52633.5—2011",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52633_d3d73e47",
+      "text": "ФГУП \"ГНИИПТЗИ ФСТЭК России\"",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52633_d3d73e47",
+      "text": "ФГУП \"ПНИЗИ\"",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52633_d3d73e47",
+      "text": "Техника защиты информации",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52633_d3d73e47",
+      "text": "Автоматическое обучение нейросетевых преобразователей биометрия-код доступа",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52633_d3d73e47",
+      "text": "ГОСТ Р 52633.0—2011",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-52633_d3d73e47",
+      "text": "ГОСТ Р 52633.0—2006",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-52633_d3d73e47",
+      "text": "ГОСТ Р 52633.3—2011",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-52633_d3d73e47",
+      "text": "ГОСТ Р 52633.5-2011",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-52633_d3d73e47",
+      "text": "ГОСТ Р 52633.0-2006",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-56093-2014=edt2018_9288520f",
+      "text": "ГОСТ Р 56093",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-56093-2014=edt2018_9288520f",
+      "text": "2014",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-56093-2014=edt2018_9288520f",
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-56093-2014=edt2018_9288520f",
+      "text": "www.gost.ru",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-56093-2014=edt2018_9288520f",
+      "text": "ГОСТ Р 56093—2014",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-56093-2014=edt2018_9288520f",
+      "text": "ГОСТ 12.1",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-34_cb3ee5c9",
+      "text": "МЕЖГОСУДАРСТВЕННЫЙ СОВЕТ ПО СТАНДАРТИЗАЦИИ, МЕТРОЛОГИИ И СЕРТИФИКАЦИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-34_cb3ee5c9",
+      "text": "МГС",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-34_cb3ee5c9",
+      "text": "ГОСТ 34.13—2018",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-34_cb3ee5c9",
+      "text": "Межгосударственная система стандартизации",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-34_cb3ee5c9",
+      "text": "2018",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-34_cb3ee5c9",
+      "text": "ГОСТ 34.13",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-34_cb3ee5c9",
+      "text": "ГОСТ 34.13",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-34_cb3ee5c9",
+      "text": "ГОСТ 34.13—2018",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-34_cb3ee5c9",
+      "text": "ГОСТ 1.0",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-34_cb3ee5c9",
+      "text": "ГОСТ 1.0—2015",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-34_cb3ee5c9",
+      "text": "ГОСТ 1.2",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-34_cb3ee5c9",
+      "text": "ГОСТ 1.2—2015",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-34_cb3ee5c9",
+      "text": "ГОСТ 34.13",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_a670037e",
+      "text": "Федеральное Агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_a670037e",
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_a670037e",
+      "text": "2021",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_a670037e",
+      "text": "АО «Информационные технологии и коммуникационные системы» (АО «ИнфофекС»)",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_e3edeca4",
+      "text": "Правила применения",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_e3edeca4",
+      "text": "Стандарты",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_e3edeca4",
+      "text": "ГОСТ Р 34.10—2012",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_e3edeca4",
+      "text": "ГОСТ Р 34.11—2012",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-53113_9f37aa3e",
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53113_9f37aa3e",
+      "text": "НАЦИОНАЛЬНЫЙ СТАНДАРТ РОССИЙСКОЙ ФЕДЕРАЦИИ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53113_9f37aa3e",
+      "text": "ГОСТ Р 53113.2—2009",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53113_9f37aa3e",
+      "text": "Информационная технология",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53113_9f37aa3e",
+      "text": "Часть 2",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53113_9f37aa3e",
+      "text": "Рекомендации по организации защиты информации, информационных технологий и автоматизированных систем от атак с использованием скрытых каналов",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53113_9f37aa3e",
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53113_9f37aa3e",
+      "text": "Стандартинформ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-50.1_197a15b3",
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-50.1_197a15b3",
+      "text": "Технический комитет по стандартизации ТК 26",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-50.1_197a15b3",
+      "text": "Приказ Федерального агентства по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-50.1_197a15b3",
+      "text": "2016",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-50.1_197a15b3",
+      "text": "1828-ст",
+      "type": "NUMBER",
+      "source": "llm"
+    },
+    {
+      "doc": "r-50.1_197a15b3",
+      "text": "ГОСТ Р 34.10",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-50.1_197a15b3",
+      "text": "ГОСТ Р 34.10—2012",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-50.1_197a15b3",
+      "text": "ГОСТ Р 34.11—2012",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-50.1_197a15b3",
+      "text": "ГОСТ Р 34.11—2012",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-58833-2020_e8fe6d3e",
+      "text": "ГОСТ Р",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-58833-2020_e8fe6d3e",
+      "text": "58833—2020",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-58833-2020_e8fe6d3e",
+      "text": "ФСТЭК России",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-58833-2020_e8fe6d3e",
+      "text": "ЗАО «Аладдин Р.Д.»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-58833-2020_e8fe6d3e",
+      "text": "ООО «НПФ «КРИСТАЛЛ»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-58833-2020_e8fe6d3e",
+      "text": "Технический комитет по стандартизации ТК 362",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-58833-2020_e8fe6d3e",
+      "text": "Технический комитет по стандартизации ТК 26",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-58833-2020_e8fe6d3e",
+      "text": "Приказом Федерального агентства по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-58833-2020_e8fe6d3e",
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-58833-2020_e8fe6d3e",
+      "text": "www.gost.ru",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-58833-2020_e8fe6d3e",
+      "text": "ГОСТ Р 58833—2020",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-58833-2020_e8fe6d3e",
+      "text": "ГОСТ Р 58833-2020",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-53110-2008=edt2020_0608256d",
+      "text": "ГОСТ Р 53110-2008",
+      "type": "STANDARD",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53110-2008=edt2020_0608256d",
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53110-2008=edt2020_0608256d",
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53110-2008=edt2020_0608256d",
+      "text": "Стандартинформ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53110-2008=edt2020_0608256d",
+      "text": "2020",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53110-2008=edt2020_0608256d",
+      "text": "ЗАО «Компания ТТК»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53110-2008=edt2020_0608256d",
+      "text": "ОАО «Межрегиональный ТранзитТелеком»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53110-2008=edt2020_0608256d",
+      "text": "ФГУП «ЦНИИС»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53110-2008=edt2020_0608256d",
+      "text": "ФГУ «ГНИИИ ПТЗИ ФСТЭК России»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53110-2008=edt2020_0608256d",
+      "text": "18 декабря 2008 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-53110-2008=edt2020_0608256d",
+      "text": "ГОСТ Р 53110—2008",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-53110-2008=edt2020_0608256d",
+      "text": "ГОСТ Р 52448—2005",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_99b55685",
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_99b55685",
+      "text": "Р 1323565.1.030—2020",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_99b55685",
+      "text": "Общество с ограниченной ответственностью «КРИПТО-ПРО»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_99b55685",
+      "text": "Технический комитет по стандартизации ТК 26",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_99b55685",
+      "text": "27 февраля 2020 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_99b55685",
+      "text": "162-ФЗ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_99b55685",
+      "text": "Национальные стандарты",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_58194614",
+      "text": "2018",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_58194614",
+      "text": "Технический комитет по стандартизации ТК 26",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_58194614",
+      "text": "2 марта 2018",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_58194614",
+      "text": "№ 116-ст",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_58194614",
+      "text": "29 июня 2015",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_58194614",
+      "text": "№ 162-ФЗ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_58194614",
+      "text": "Мир",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_58194614",
+      "text": "ГОСТ Р 34.10—2012",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_58194614",
+      "text": "ГОСТ Р 34.11—2012",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-71252-2024_93fbdd23",
+      "text": "ГОСТ Р 71252-2024",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-71252-2024_93fbdd23",
+      "text": "ФГБУ \"Институт стандартизации\"",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-71252-2024_93fbdd23",
+      "text": "www.rst.gov.ru",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-71252-2024_93fbdd23",
+      "text": "ГОСТ Р 71252—2044",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-71252-2024_93fbdd23",
+      "text": "ГОСТ Р 71252—2024",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "r-1323565.1_12ff4b7a",
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_12ff4b7a",
+      "text": "2018",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "r-1323565.1_12ff4b7a",
+      "text": "Правил применения настоящих рекомендаций установлены в статье 26 Федерального закона от 29 июня 2015 г. № 162-ФЗ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59709-2022_3e823926",
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59709-2022_3e823926",
+      "text": "ГОСТ Р 59709-2022",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59709-2022_3e823926",
+      "text": "Национальный стандарт Российской Федерации",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59709-2022_3e823926",
+      "text": "Российский институт стандартизации",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59709-2022_3e823926",
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59709-2022_3e823926",
+      "text": "2022",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59709-2022_3e823926",
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59709-2022_3e823926",
+      "text": "Войсковая часть 43753",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59709-2022_3e823926",
+      "text": "Общество с ограниченной ответственностью \"Центр безопасности информации\"",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59709-2022_3e823926",
+      "text": "ТК 362",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59709-2022_3e823926",
+      "text": "162-ФЗ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59709-2022_3e823926",
+      "text": "www.rst.gov.ru",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-59709-2022_3e823926",
+      "text": "ГОСТ Р 59709—2022",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-59709-2022_3e823926",
+      "text": "ГОСТ Р 59709—2022",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-34_e022c4bb",
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-34_e022c4bb",
+      "text": "НАЦИОНАЛЬНЫЙ СТАНДАРТ РОССИЙСКОЙ ФЕДЕРАЦИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-34_e022c4bb",
+      "text": "ГОСТ Р 34.14—2025",
+      "type": "STANDARD",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-34_e022c4bb",
+      "text": "Информационная технология",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-34_e022c4bb",
+      "text": "КРИПТОГРАФИЧЕСКАЯ ЗАЩИТА ИНФОРМАЦИИ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-34_e022c4bb",
+      "text": "Российский институт стандартизации",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-34_e022c4bb",
+      "text": "17 сентября 2025 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-34_e022c4bb",
+      "text": "ТК 26",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-34_e022c4bb",
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-56939-2016=edt2018_da505e3e",
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-56939-2016=edt2018_da505e3e",
+      "text": "ГОСТ Р 56939—2016",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-56939-2016=edt2018_da505e3e",
+      "text": "Технический комитет по стандартизации ТК 362",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-56939-2016=edt2018_da505e3e",
+      "text": "Закрытым акционерным обществом «Научно‑производственное объединение «Эшелон»», ЗАО «НПО «Эшелон»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-56939-2016=edt2018_da505e3e",
+      "text": "1 июня 2016 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-56939-2016=edt2018_da505e3e",
+      "text": "№ 458‑ст",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-56939-2016=edt2018_da505e3e",
+      "text": "Октябрь 2018 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-56939-2016=edt2018_da505e3e",
+      "text": "Федеральный закон от 29 июня 2015 г. № 162‑ФЗ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-56939-2016=edt2018_da505e3e",
+      "text": "www.gost.ru",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-56939-2016=edt2018_da505e3e",
+      "text": "ГОСТ Р\n56939—\n2016",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-56939-2016=edt2018_da505e3e",
+      "text": "ГОСТ 2.001",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-56939-2016=edt2018_da505e3e",
+      "text": "ГОСТ 19.101",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-56939-2016=edt2018_da505e3e",
+      "text": "ГОСТ 19.201",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-56939-2016=edt2018_da505e3e",
+      "text": "ГОСТ 19.402",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-56939-2016=edt2018_da505e3e",
+      "text": "ГОСТ 19.404",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-56939-2016=edt2018_da505e3e",
+      "text": "ГОСТ Р 50922—2006",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-56939-2016=edt2018_da505e3e",
+      "text": "ГОСТ Р 51904—2002",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-34_a0b478df",
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-34_a0b478df",
+      "text": "ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-34_a0b478df",
+      "text": "НАЦИОНАЛЬНЫЙ СТАНДАРТ РОССИЙСКОЙ ФЕДЕРАЦИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-34_a0b478df",
+      "text": "ГОСТ Р 34.10-2012",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-34_a0b478df",
+      "text": "ФСБ России",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-34_a0b478df",
+      "text": "Открытое акционерное общество «Информационные технологии и коммуникационные системы»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-34_a0b478df",
+      "text": "Технический комитет по стандартизации ТК 26",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-34_a0b478df",
+      "text": "Приказом Федерального агентства по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-34_a0b478df",
+      "text": "7 августа 2012 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-34_a0b478df",
+      "text": "Национальные стандарты",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-34_a0b478df",
+      "text": "www.gost.ru",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-34_a0b478df",
+      "text": "ГОСТ Р 34.10—2012",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-34_a0b478df",
+      "text": "ГОСТ Р 34.10—2001",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-34_a0b478df",
+      "text": "ГОСТ Р 34.10—2012",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-34_a0b478df",
+      "text": "ГОСТ Р 34.11–2012",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-52633_7a42a2e5",
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52633_7a42a2e5",
+      "text": "ГОСТ Р 52633.2—2010",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52633_7a42a2e5",
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52633_7a42a2e5",
+      "text": "Стандартинформ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52633_7a42a2e5",
+      "text": "2018",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52633_7a42a2e5",
+      "text": "ФГУП «Пензенский научно-исследовательский электротехнический институт»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52633_7a42a2e5",
+      "text": "ФГУП «ГНИИИ ПТЗИ ФСТЭК России»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "doc": "gost-r-52633_7a42a2e5",
+      "text": "ГОСТ Р 50779.10—2000",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-52633_7a42a2e5",
+      "text": "ГОСТ Р 52633.0—2006",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "doc": "gost-r-52633_7a42a2e5",
+      "text": "ГОСТ Р 52633.1—2009",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

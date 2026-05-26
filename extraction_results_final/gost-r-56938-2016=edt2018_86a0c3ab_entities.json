@@ -1,0 +1,118 @@
+{
+  "doc_name": "gost-r-56938-2016=edt2018_86a0c3ab",
+  "chunks_processed": 10,
+  "pattern_count": 78,
+  "validated_count": 22,
+  "entities": [
+    {
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 56938-2016",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "text": "2018",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "Федеральное Агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Научно-исследовательский институт ПЦР",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "г. Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "text": "г. Санкт-Петербург",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "text": "2016",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "Технический комитет по стандартизации",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Федеральный закон от 29 июня 2015 г.",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 56938—2016",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 51594-2005",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 51595-2005",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 51596-2005",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 51597-2005",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 51598-2005",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 51599-2005",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 51600-2005",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 51601-2005",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 51602-2005",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 51603-2005",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

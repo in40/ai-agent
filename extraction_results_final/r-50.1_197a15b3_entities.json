@@ -1,0 +1,53 @@
+{
+  "doc_name": "r-50.1_197a15b3",
+  "chunks_processed": 8,
+  "pattern_count": 28,
+  "validated_count": 9,
+  "entities": [
+    {
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Технический комитет по стандартизации ТК 26",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Приказ Федерального агентства по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "2016",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "1828-ст",
+      "type": "NUMBER",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 34.10",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 34.10—2012",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 34.11—2012",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 34.11—2012",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

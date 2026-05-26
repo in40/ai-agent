@@ -1,0 +1,48 @@
+{
+  "doc_name": "gost-r-71206-2024_29f4ead1",
+  "chunks_processed": 10,
+  "pattern_count": 19,
+  "validated_count": 8,
+  "entities": [
+    {
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "text": "Российский институт стандартизации",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "2024",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 71206—2024",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Федеральным государственным бюджетным учреждением науки «Институт системного программирования имени В.П. Ивановой Российской академии наук» (ИСП РАН)",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Технический комитет по стандартизации ТК 362 «Защита информации»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 58412—2019",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

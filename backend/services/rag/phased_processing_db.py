@@ -134,7 +134,8 @@ class PhasedProcessingDB:
                 result = conn.execute(text("""
                     SELECT * FROM document_processing
                     WHERE job_id = :job_id
-                    AND overall_status IN ('PENDING', 'PROCESSING')
+                    AND (overall_status IN ('PENDING', 'PROCESSING') 
+                         OR :phase = 'graph')
                     AND CASE
                         WHEN :phase = 'extract' THEN phase_upload = 'COMPLETED' AND phase_extract IN ('PENDING', 'FAILED')
                         WHEN :phase = 'chunk' THEN (phase_extract = 'COMPLETED' OR phase_extract = 'SKIPPED') AND phase_chunk IN ('PENDING', 'FAILED')
@@ -442,6 +443,24 @@ class PhasedProcessingDB:
             logger.error(f"Failed to deactivate chunks: {e}")
             return False
     
+    def activate_chunks(self, doc_id: str, version: str = 'v1') -> bool:
+        """Activate chunks (for re-processing)"""
+        if not self.db_available:
+            return False
+
+        try:
+            with db_manager.engine.connect() as conn:
+                conn.execute(text("""
+                    UPDATE chunks_cache 
+                    SET is_active = TRUE 
+                    WHERE doc_id = :doc_id AND version = :version
+                """), {'doc_id': doc_id, 'version': version})
+                conn.commit()
+                return True
+        except Exception as e:
+            logger.error(f"Failed to activate chunks: {e}")
+            return False
+
     # ========================================================================
     # HELPER METHODS
     # ========================================================================

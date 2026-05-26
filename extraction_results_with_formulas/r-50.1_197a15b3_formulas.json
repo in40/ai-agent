@@ -1,0 +1,65 @@
+{
+  "doc_name": "r-50.1_197a15b3",
+  "formulas": [
+    {
+      "text": "W",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-50.1_197a15b3",
+      "chunk_index": 6
+    },
+    {
+      "text": "r",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-50.1_197a15b3",
+      "chunk_index": 6
+    },
+    {
+      "text": "W",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-50.1_197a15b3",
+      "chunk_index": 6
+    },
+    {
+      "text": "n",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-50.1_197a15b3",
+      "chunk_index": 7
+    },
+    {
+      "text": "U",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-50.1_197a15b3",
+      "chunk_index": 7
+    },
+    {
+      "text": "n",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-50.1_197a15b3",
+      "chunk_index": 7
+    },
+    {
+      "text": "W",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-50.1_197a15b3",
+      "chunk_index": 7
+    },
+    {
+      "text": "A",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-50.1_197a15b3",
+      "chunk_index": 7
+    },
+    {
+      "text": "B",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-50.1_197a15b3",
+      "chunk_index": 7
+    },
+    {
+      "text": "B",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-50.1_197a15b3",
+      "chunk_index": 7
+    }
+  ]
+}

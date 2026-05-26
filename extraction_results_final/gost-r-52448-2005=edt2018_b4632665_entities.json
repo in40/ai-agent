@@ -1,0 +1,48 @@
+{
+  "doc_name": "gost-r-52448-2005=edt2018_b4632665",
+  "chunks_processed": 10,
+  "pattern_count": 45,
+  "validated_count": 8,
+  "entities": [
+    {
+      "text": "ГОСТ Р 52448—2005",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГНИИИ ПТЗИ ФСТЭК России",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Технический комитет по стандартизации ТК 362",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Федеральная служба по техническому и экспортному контролю",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "text": "Стандартинформ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "2019",
+      "type": "DATE",
+      "source": "llm"
+    }
+  ]
+}

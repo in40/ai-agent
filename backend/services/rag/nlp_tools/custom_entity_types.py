@@ -5,11 +5,21 @@ Define your own entity types for domain-specific extraction
 
 # Custom entity patterns for Russian technical standards
 CUSTOM_ENTITY_PATTERNS = {
-    # GOST-specific entity types
+    # GOST-specific entity types - Enhanced patterns for actual document formats
     "GOST_STANDARD": {
         "patterns": [
-            [{"TEXT": {"REGEX": r"ГОСТ\s*[Рр]?\s*\d+[\s\-–—]+\d{4}"}}],
-            [{"TEXT": {"REGEX": r"GOST\s*[Rr]?\s*\d+[\s\-–—]+\d{4}"}}],
+            # ГОСТ Р 52069.0-2013 (with decimal point and year)
+            [{"TEXT": {"REGEX": r"ГОСТ\s+Р\s+\d+\.\d+[\s\-–—]+\d{4}"}}],
+            # ГОСТ Р 52633-2014 (without decimal point)
+            [{"TEXT": {"REGEX": r"ГОСТ\s+Р\s+\d+[\s\-–—]+\d{4}"}}],
+            # ГОСТ 1.1 (simpler format without year, with decimal)
+            [{"TEXT": {"REGEX": r"ГОСТ\s+\d+\.\d+(?!\d)"}}],
+            # ГОСТ 50922-2006 (without Р, with decimal in number)
+            [{"TEXT": {"REGEX": r"ГОСТ\s+\d+\.\d+[\s\-–—]+\d{4}"}}],
+            # GOST R format (English)
+            [{"TEXT": {"REGEX": r"GOST\s+R\s+\d+[\s\-–—]+\d{4}"}}],
+            # GOST format (English, no R)
+            [{"TEXT": {"REGEX": r"GOST\s+\d+[\s\-–—]+\d{4}"}}],
         ],
         "description": "GOST standards (Russian national standards)"
     },

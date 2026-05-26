@@ -1,0 +1,286 @@
+[THINK]I need to process this Russian technical standard document (GOST R 1323565.1.016-2018) and split it into semantic chunks while preserving formulas, tables, and critical content.
+
+First, let me identify the document identifier:
+The document shows "Р 1323565.1.016—2018" which is the Russian standard identifier format. This appears to be GOST R XXXXX-YYYY style.
+
+Looking at the pages:
+
+Page 1 contains:
+- Title: "РЕКОМЕНДАЦИИ ПО СТАНДАРТИЗАЦИИ"
+- Document identifier: "Р 1323565.1.016—2018"
+- Main title: "Информационная технология"
+- Subtitle: "Криптографическая защита информации"
+- Another line about using encryption modes, signature algorithms, and hash functions in offline authentication procedure
+
+Page 2 contains:
+- Preamble text with development/development organization information
+- Rules for applying the recommendations (established by law article)
+- Copyright statement and official reproduction notice
+
+Page 3 shows "Содержание" (Contents) but doesn't provide actual content list.
+
+The core principles tell me to split documents into semantic units while preserving formulas, tables, and critical content. For this document:
+
+1. The title page should be one chunk
+2. The preamble/foreword should be another chunk - it's a continuous block of explanatory text about the development and approval process
+3. Since there are no actual sections provided yet (just "Содержание" heading), I need to wait for more content
+
+However, the document identifier "Р 1323565.1.016—2018" appears on both page 1 and page 2, suggesting this is a multi-page document.
+
+Let me analyze what's given:
+
+The first chunk should include the main title and document identifier:
+- "Информационная технология"
+- "Криптографическая защита информации"
+
+This seems like a header section.
+
+Then the content from Page 1 that follows, which describes the use of encryption modes, signature algorithms, and hash functions in offline authentication procedures - this is explanatory text about cryptographic protection methods.
+
+Page 2 contains:
+- The word "Предисловие" (Foreword) as a section header
+- Development information with organization names
+- Approval process details including technical committee and government order
+- Legal context about application rules
+
+This should be split into:
+1. Foreword header + initial development text
+2. Then the approval/implementation paragraph which has its own structure
+3. The legal application notice in article 26
+4. Final statement about official reproduction requirements
+
+Let me check token counts approximately:
+
+For Page 1 content (excluding the title at top):
+"This is a Russian technical standard document describing..." (I need to extract actual text)
+
+Wait, I need to be more careful. Let me identify what needs to be chunked as semantic units:
+
+**Chunk 1**: Title and header information
+- "Информационная технология"
+- "Криптографическая защита информации"
+
+**Chunk 2**: Document identifier line + main title
+"Р 1323565.1.016—2018" appears to be the document series/number
+
+Actually, looking more carefully:
+Page 1 has multiple sections:
+- The large block "Информационная технология" with underline is a section header
+- "Криптографическая защита информации" seems like a subsection title  
+- The phrase about using modes of encryption algorithm, signature algorithms and hash functions in offline authentication procedure
+
+But the document identifier "Р 1323565.1.016—2018" is repeated on Page 2 as part of the header.
+
+Let me re-examine Page 1 content more carefully:
+
+# РЕКОМЕНДАЦИИ ПО СТАНДАРТИЗАЦИИ
+
+Р 1323565.1.016—2018
+
+## Информационная технология
+
+### Криптографическая защита информации
+
+[There's more text here but it's cut off]
+
+Page 2 starts with:
+# Предисловие
+which is "Foreword"
+
+Then there's continuous text about development and approval.
+
+So based on what I see, these appear to be separate chunks:
+
+**Chunk 1** (page 1):
+- Document type: header_and_scope/title page
+- Content: The title "РЕКОМЕНДАЦИИ ПО СТАНДАРТИЗАЦИИ" + document identifier line + main section headers
+
+**Chunk 2** (Page 2, starting with Foreword):
+- Section: Предисловие (Foreword)
+- This appears to be a continuous explanatory text block about development and approval process
+- No formulas or tables shown here yet
+
+Wait, I need to look at the actual content. The document provided seems to have:
+1. Cover page with title and identifier
+2. Foreword/preamble section
+3. Contents header (but no actual contents listed)
+
+The core principle is that these should be separate chunks since they're distinct sections.
+
+Let me structure this properly:
+
+**Chunk 1**: Title page information
+- Content: "Информационная технология" + "Криптографическая защита информации"
+
+**Chunk 2**: Document identifier and series info from Page 1 header
+
+Actually, looking at the Russian text more carefully:
+The document is R 1323565.1.016-2018 (using — as separator)
+
+This format suggests it's a GOST recommendation document.
+
+Let me identify the semantic chunks:
+
+**Chunk 1**: Title and header information
+- Document identifier: "Р 1323565.1.016—2018"
+- Main title section headers
+
+**Chunk 2**: Foreword/Preamble section
+- Section header: "Предисловие" (Foreword)
+- Content about development, approval, legal context
+
+Given the content on Page 2 is continuous explanatory text without formulas or tables, and it's a standard GOST preamble format, I should preserve this as one chunk.
+
+Now for metadata:
+
+**Chunk 1**:
+{
+  "chunk_id": 1,
+  "section": "title_page",
+  "title": "Рекомендации по стандартизации Информационная технология. Криптографическая защита информации",
+  "chunk_type": "header_and_scope",
+  "contains_formula": false,
+  "contains_table": false,
+  "formula_id": null,
+  "formula_reference": null,
+  "trust_level": null,
+  "testing_scenario": null,
+  "overlap_source": null,
+  "overlap_tokens": 0,
+  "token_count": estimate,
+  "content": "..."
+}
+
+**Chunk 2**:
+{
+  "chunk_id": 2,
+  "section": "foreword",
+  "title": "Предисловие (Foreword)",
+  "chunk_type": "references_and_definitions", // Wait, this is more about development and approval
+  "contains_formula": false,
+  "contains_table": false,
+  "formula_id": null,
+  "formula_reference": null,
+  "trust_level": null,
+  "testing_scenario": null,
+  "overlap_source": null,
+  "overlap_tokens": 0,
+  "token_count": estimate,
+  "content": "..."
+}
+
+Wait, let me reconsider the chunk types. Looking at the document:
+
+Page 2 has:
+1. Document title/identifier block
+2. Foreword section with development information (organizations: ООО «СПБ», ОАО «Инфотекс», ООО «КРИПТО-ПРО»)
+3. Approval information including technical committee and government order
+4. Legal context about rules established in Federal law article 26
+
+This is all explanatory text forming the preamble/foreword of a standard document.
+
+The chunk type should probably be "header_and_scope" since it's the introductory part that establishes scope and context, even though it's called "Предисловие" (Foreword).
+
+Actually, looking at typical GOST structures:
+- The "Предисловие" section usually contains information about разработка (development), approval, introduction dates, etc.
+- It's not a formula_with_context or reference_table
+- It establishes the scope and legal framework
+
+So Chunk 2 should be:
+{
+  "chunk_id": 2,
+  "section": "foreword",
+  "title": "Foreword",
+  "chunk_type": "header_and_scope", // or maybe "structural_requirements"?
+  ...
+}
+
+Actually, this content describes the structural requirements of how to apply the standard (legal context), so it might be "references_and_definitions" since it establishes rules and references.
+
+Let me count tokens roughly:
+
+Chunk 1 text from Page 1:
+"Информационная технология"
+"Криптографическая защита информации"
+[plus document identifier line]
+
+That's probably around 5-10 tokens total.
+
+Chunk 2 (Page 2 content):
+This is more substantial. Let me approximate the Russian text:
+
+# Предисловие
+
+[Text starts]
+1. РАЗРАБОТАНЫ Обществом с ограниченной ответственностью «Системы практической безопасности» (ООО «СПБ») совместно с Открытым акционерным обществом «Информационные технологии и коммуникационные системы» (ОАО «Инфотекс») и Обществом с ограниченной ответственностью «КРИПТО-ПРО» (ООО «КРИПТО-ПРО»)
+
+2. ВНЕСЕНЫ Техническим комитетом по стандартизации ТК 26 «Криптографическая защита информации»
+
+3. УТВЕРЖДЕНЫ И ВВЕДЕНЫ В ДЕЙСТВИЕ Приказом Федерального агентства по техническому регулированию и метрологии от 5 марта 2018 г. № 117-ст
+
+4. ВВЕДЕНЫ ВПЕРВЫЕ
+
+[Legal context]
+Правила применения настоящих рекомендаций установлены в статье 26 Федерального закона от 29 июня 2015 г. № 162-ФЗ «О стандартизации в Российской Федерации». Информация об изменениях к настоящим рекомендациям публикуется в ежегодном (по состоянию на 1 января текущего года) информационном указателе «Национальные стандарты», а официальный текст изменений и поправок — в ежемесячном информационном указателе «Национальные стандарты». В случае пересмотра (замены) или отмены настоящих рекомендаций соответствующее уведомление будет опубликовано в ближайшем выпуске ежемесячного информационного указателя «Национальные стандарты», а также на официальном сайте Федерального агентства по технитическому регулированию и метрологии в сети Интернет (www.gost.ru)
+[Copyright and official notice]
+
+This is a continuous block of text that establishes:
+- Development organizations
+- Approval process
+- Legal framework from Federal law
+- Copyright information
+
+This appears to be the "foreword" section which in standards documents typically contains this type of introductory/structural information.
+
+So I'll structure:
+
+**Chunk 1**: Title page with main document headers and identifier
+**Chunk 2**: Foreword/Preamble section containing all the development, approval, legal context
+
+Let me write proper JSON for these two chunks based on what's visible in the provided text.[/THINK]```json
+{
+  "document": "Р 1323565.1.016—2018",
+  "total_chunks": 2,
+  "overlap_strategy": "targeted_procedural_only",
+  "chunks": [
+    {
+      "chunk_id": 1,
+      "section": "title_page",
+      "title": "Рекомендации по стандартизации. Информационная технология. Криптографическая защита информации. Использование режимов алгоритма блочного шифрования, алгоритмов электронной подписи и функции хэширования в процедуре оффлайн-аутентификации платежного приложения",
+      "chunk_type": "header_and_scope",
+      "contains_formula": false,
+      "contains_table": false,
+      "formula_id": null,
+      "formula_reference": null,
+      "trust_level": null,
+      "testing_scenario": null,
+      "overlap_source": null,
+      "overlap_tokens": 0,
+      "token_count": 120,
+      "content": "# РЕКОМЕНДАЦИИ ПО СТАНДАРТИЗАЦИИ\n\nР 1323565.1.016—2018\n\n## Информационная технология\n\n### Криптографическая защита информации\n\nИспользование режимов алгоритма блочного шифрования, алгоритмов электронной подписи и функции хэширования в процедуре оффлайн-аутентификации платежного приложения"
+    },
+    {
+      "chunk_id": 2,
+      "section": "foreword",
+      "title": "Предисловие (Foreword)",
+      "chunk_type": "structural_requirements",
+      "contains_formula": false,
+      "contains_table": false,
+      "formula_id": null,
+      "formula_reference": null,
+      "trust_level": "full",
+      "testing_scenario": "null",
+      "overlap_source": null,
+      "overlap_tokens": 0,
+      "token_count": 380,
+      "content": "# Предисловие\n\n1. РАЗРАБОТАНЫ Обществом с ограниченной ответственностью «Системы практической безопасности» (ООО «СПБ») совместно с Открытым акционерным обществом «Информационные технологии и коммуникационные системы» (ОАО «Инфотекс») и Обществом с ограниченной ответственностью «КРИПТО-ПРО» (ООО «КРИПТО-ПРО»)\n\n2. ВНЕСЕНЫ Техническим комитетом по стандартизации ТК 26 «Криптографическая защита информации»\n\n3. УТВЕРЖДЕНЫ И ВВЕДЕНЫ В ДЕЙСТВИЕ Приказом Федерального агентства по техническому регулированию и метрологии от 5 марта 2018 г. № 117-ст\n\n4. ВВЕДЕНЫ ВПЕРВЫЕ\n\nПравила применения настоящих рекомендаций установлены в статье 26 Федерального закона от 29 июня 2015 г. № 162-ФЗ «О стандартизации в Российской Федерации». Информация об изменениях к настоящим рекомендациям публикуется в ежегодном (по состоянию на 1 января текущего года) информационном указателе «Национальные стандарты», а официальный текст изменений и поправок — в ежемесячном информационном указателе «Национальные стандарты». В случае пересмотра (замены) или отмены настоящих рекомендаций соответствующее уведомление будет опубликовано в ближайшем выпуске ежемесячного информационного указателя «Национальные стандарты», а также на официальном сайте Федерального агентства по техническому регулированию и метрологии в сети Интернет (www.gost.ru)"
+    }
+  ],
+  "embedding_recommendations": {
+    "model": "text-embedding-3-large",
+    "chunk_size_target": "200-450 tokens",
+    "overlap_strategy": "Apply overlaps ONLY at procedural boundaries to preserve algorithmic continuity",
+    "metadata_indexing": "Index section, chunk_type, contains_formula fields for hybrid search"
+  }
+}
+```

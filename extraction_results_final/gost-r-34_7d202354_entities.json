@@ -1,0 +1,38 @@
+{
+  "doc_name": "gost-r-34_7d202354",
+  "chunks_processed": 10,
+  "pattern_count": 53,
+  "validated_count": 6,
+  "entities": [
+    {
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "РОССИЙСКОЙ ФЕДЕРАЦИИ",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 34.12-2015",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Информационная технология КРИПТОГРАФИЧЕСКАЯ ЗАЩИТА ИНФОРМАЦИИ БЛОЧНЫЕ ШИФРЫ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р\n34.12-2015",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 34.12—2015",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

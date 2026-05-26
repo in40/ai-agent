@@ -1,0 +1,48 @@
+{
+  "doc_name": "r-1323565.1_8a84396d",
+  "chunks_processed": 10,
+  "pattern_count": 60,
+  "validated_count": 8,
+  "entities": [
+    {
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "2024",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "P 1323565.1.060—2024",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "АО «ИнфофоКС»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ТК 26",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "13 декабря 2024 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "№ 1896-ст",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "www.rst.gov.ru",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    }
+  ]
+}

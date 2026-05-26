@@ -1,0 +1,48 @@
+{
+  "doc_name": "gost-r-56545-2015=edt2018_0efaf655",
+  "chunks_processed": 10,
+  "pattern_count": 43,
+  "validated_count": 8,
+  "entities": [
+    {
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 56545-2015",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "text": "Стандартинформ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "2018",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 56545—2015",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 56545—2015",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 56545—2015",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "doc_name": "gost-r-53131-2008_f47922b6",
+  "chunks_processed": 10,
+  "pattern_count": 38,
+  "validated_count": 11,
+  "entities": [
+    {
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 53131 — 2008",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ISO/IEC TR 24762:2008",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ИСО/МЕК ТО 24762:2008",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Общество с ограниченной ответственностью «Научно-производственная фирма «Кристалл» (ООО «НПФ «Кристалл»)",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ФГУ «ГИНИИ ПТЗИ ФСТЭК России\"",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "text": "2011",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 53131—2008",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 1.0—2004",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 53131—2008",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

@@ -1,0 +1,98 @@
+{
+  "doc_name": "r-1323565.1_29d67cd9",
+  "chunks_processed": 10,
+  "pattern_count": 58,
+  "validated_count": 18,
+  "entities": [
+    {
+      "text": "П 1323565.1.025-2019",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "Открытым акционерным обществом",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "«Информационные технологии и коммуникационные системы»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ОАО «Инфофекс»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Технический комитет по стандартизации ТК 26",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Криптографическая защита информации",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Приказом Федерального агентства по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "29 августа 2019 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "№ 593-ст",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "29 июня 2015 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "№ 162-ФЗ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Стандартинформ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 34.10",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 34.11",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 34.12",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 34.13",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р ИСО/МЭК 8824-1",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 34.11—2012",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

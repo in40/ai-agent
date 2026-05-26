@@ -1,0 +1,83 @@
+{
+  "doc_name": "r-1323565.1_a245d888",
+  "chunks_processed": 10,
+  "pattern_count": 72,
+  "validated_count": 15,
+  "entities": [
+    {
+      "text": "Российский институт стандартизации",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "2022",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "2015",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "Национальные стандарты",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "www.rst.gov.ru",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ISO 8000",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ISO 10118",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ISO 31114",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ISO 22301",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ISO 2999",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ISO 27001",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ISO 28000",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ISO 9001",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ISO 31000",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

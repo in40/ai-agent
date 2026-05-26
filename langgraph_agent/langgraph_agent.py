@@ -393,8 +393,81 @@ def parallel_execution_node(state: AgentState) -> AgentState:
         logger.info(f"[PARALLEL_EXECUTION] Executing {len(tool_calls)} tool calls in parallel")
 
         if not tool_calls:
-            logger.info("[PARALLEL_EXECUTION] No tool calls to execute, returning original state")
-            return state
+            logger.info("[PARALLEL_EXECUTION] No tool calls to execute from LLM decision")
+            
+            # Check if we should auto-trigger RAG query when skip_final_response_generation is set
+            skip_final_response = state.get("skip_final_response_generation", False)
+            user_request = state.get("user_request", "")
+            
+            if skip_final_response and user_request:
+                logger.info("[PARALLEL_EXECUTION] Skip response generation enabled - attempting auto RAG query")
+                
+                # Find RAG service in mcp_servers
+                rag_service = None
+                for server in mcp_servers:
+                    if server.get("type") == "rag" or "rag" in server.get("id", "").lower():
+                        rag_service = server
+                        break
+                
+                if rag_service:
+                    logger.info(f"[PARALLEL_EXECUTION] Auto-triggering RAG query with service: {rag_service.get('id')}")
+                    
+                    # Create a RAG tool call automatically
+                    auto_tool_call = {
+                        "service_id": rag_service.get("id"),
+                        "method": "query_documents",
+                        "params": {
+                            "query": user_request,
+                            "top_k": 5
+                        }
+                    }
+                    
+                    # Execute the auto RAG query
+                    try:
+                        from models.dedicated_mcp_model import DedicatedMCPModel
+                        mcp_model = DedicatedMCPModel()
+                        
+                        # RAG MCP server expects action + parameters format
+                        rag_params = {
+                            "action": "query_documents",
+                            "parameters": {
+                                "query": user_request,
+                                "top_k": 5
+                            }
+                        }
+                        
+                        rag_result = mcp_model._call_mcp_service(
+                            rag_service,
+                            "",  # Empty action to use base URL, action is in payload
+                            rag_params
+                        )
+                        
+                        # Wrap the result in the expected structure
+                        auto_result = {
+                            "result": rag_result,
+                            "auto_triggered": True,
+                            "type": "rag_auto_query"
+                        }
+                        
+                        # Extract results count - check nested structure
+                        results_count = len(rag_result.get('results', rag_result.get('result', {}).get('results', [])))
+                        logger.info(f"[PARALLEL_EXECUTION] Auto RAG query completed, got {results_count} results")
+                        
+                        # Return state with the auto-triggered RAG result
+                        return {
+                            **state,
+                            "mcp_results": [auto_result],
+                            "auto_rag_triggered": True
+                        }
+                    except Exception as e:
+                        logger.error(f"[PARALLEL_EXECUTION] Auto RAG query failed: {str(e)}")
+                        return state
+                else:
+                    logger.warning("[PARALLEL_EXECUTION] No RAG service found for auto-query")
+                    return state
+            else:
+                logger.info("[PARALLEL_EXECUTION] No tool calls to execute, returning original state")
+                return state
 
         # Define enhancement functions for different MCP tool types
         def enhance_sql_result(result):
@@ -973,9 +1046,34 @@ def enhanced_results_collection_node(state: AgentState) -> AgentState:
         # Get the original user query and enhanced results from the state
         user_query = state.get("user_request", "")
         # Now that enhancement happens in parallel execution, the results are in mcp_results
-        enhanced_results = state.get("mcp_results", [])
+        mcp_results = state.get("mcp_results", [])
+        
+        # Extract enhanced_results from MCP results if they exist
+        # The enhance_search_result returns {'enhanced_results': [...], ...}
+        # We need to extract the actual RAG results for the direct response
+        enhanced_results = []
+        for result in mcp_results:
+            if isinstance(result, dict) and 'enhanced_results' in result:
+                # This is an enhanced search result - extract the actual RAG results
+                if isinstance(result['enhanced_results'], list):
+                    enhanced_results.extend(result['enhanced_results'])
+                else:
+                    enhanced_results.append(result['enhanced_results'])
+            elif isinstance(result, dict) and result.get('auto_triggered') and result.get('type') == 'rag_auto_query':
+                # Auto-triggered RAG query result - extract the RAG results from the nested structure
+                rag_inner_result = result.get('result', {})
+                if isinstance(rag_inner_result, dict) and 'results' in rag_inner_result:
+                    rag_docs = rag_inner_result['results']
+                    if isinstance(rag_docs, list):
+                        enhanced_results.extend(rag_docs)
+                        logger.info(f"[ENHANCED_RESULTS_COLLECTION] Extracted {len(rag_docs)} docs from auto-triggered RAG query")
+            else:
+                # Regular MCP result - keep as is
+                enhanced_results.append(result)
 
         logger.info(f"[ENHANCED_RESULTS_COLLECTION] User query: '{user_query}'")
+        logger.info(f"[ENHANCED_RESULTS_COLLECTION] MCP results count: {len(mcp_results)}")
+        logger.info(f"[ENHANCED_RESULTS_COLLECTION] Extracted enhanced results count: {len(enhanced_results)}")
         logger.info(f"[ENHANCED_RESULTS_COLLECTION] Enhanced results count: {len(enhanced_results)}")
         logger.info(f"[ENHANCED_RESULTS_COLLECTION] Response generation disabled: {disable_response_generation}")
         logger.info(f"[ENHANCED_RESULTS_COLLECTION] Skip final response generation flag: {skip_final_response_generation}")

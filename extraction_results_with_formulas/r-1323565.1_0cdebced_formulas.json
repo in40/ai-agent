@@ -1,0 +1,47 @@
+{
+  "doc_name": "r-1323565.1_0cdebced",
+  "formulas": [
+    {
+      "text": "b",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_0cdebced",
+      "chunk_index": 13
+    },
+    {
+      "text": "c",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_0cdebced",
+      "chunk_index": 13
+    },
+    {
+      "text": "K_M",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_0cdebced",
+      "chunk_index": 20
+    },
+    {
+      "text": "K",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_0cdebced",
+      "chunk_index": 20
+    },
+    {
+      "text": "I",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_0cdebced",
+      "chunk_index": 20
+    },
+    {
+      "text": "k",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_0cdebced",
+      "chunk_index": 20
+    },
+    {
+      "text": "K_M",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_0cdebced",
+      "chunk_index": 20
+    }
+  ]
+}

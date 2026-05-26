@@ -1,0 +1,13 @@
+{
+  "statistics": {
+    "processed": 63,
+    "total_formulas": 4275
+  },
+  "by_type": {
+    "VARIABLE_ASSIGNMENT": 3407,
+    "KEY_MATERIAL": 594,
+    "CRYPTO_FUNCTION": 161,
+    "TRAFFIC_SECRET": 113
+  },
+  "unique_formulas": 652
+}

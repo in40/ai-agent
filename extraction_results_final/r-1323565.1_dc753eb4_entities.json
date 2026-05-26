@@ -1,0 +1,38 @@
+{
+  "doc_name": "r-1323565.1_dc753eb4",
+  "chunks_processed": 9,
+  "pattern_count": 44,
+  "validated_count": 6,
+  "entities": [
+    {
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "2022",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "15 ноября 2022",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "№ 1285-ст",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "29 июня 2015",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "162-ФЗ",
+      "type": "CONCEPT",
+      "source": "llm"
+    }
+  ]
+}

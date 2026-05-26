@@ -1,0 +1,53 @@
+{
+  "doc_name": "r-1323565.1_3ac5d65d",
+  "chunks_processed": 10,
+  "pattern_count": 65,
+  "validated_count": 9,
+  "entities": [
+    {
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "П 1323565.1.026—2019",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "text": "Стандартинформ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "2019",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "1323565.1.026",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ТК 26",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "162-ФЗ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "www.gost.ru",
+      "type": "LOCATION",
+      "source": "llm"
+    }
+  ]
+}

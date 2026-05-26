@@ -1,0 +1,269 @@
+{
+  "doc_name": "r-1323565.1_84a0d6fb",
+  "formulas": [
+    {
+      "text": "A",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_84a0d6fb",
+      "chunk_index": 6
+    },
+    {
+      "text": "B",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_84a0d6fb",
+      "chunk_index": 6
+    },
+    {
+      "text": "B",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_84a0d6fb",
+      "chunk_index": 6
+    },
+    {
+      "text": "IM",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_84a0d6fb",
+      "chunk_index": 7
+    },
+    {
+      "text": "X",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_84a0d6fb",
+      "chunk_index": 7
+    },
+    {
+      "text": "Y",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_84a0d6fb",
+      "chunk_index": 7
+    },
+    {
+      "text": "Block1",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_84a0d6fb",
+      "chunk_index": 9
+    },
+    {
+      "text": "block",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_84a0d6fb",
+      "chunk_index": 9
+    },
+    {
+      "text": "Block2",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_84a0d6fb",
+      "chunk_index": 10
+    },
+    {
+      "text": "SK_COUNTER",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_84a0d6fb",
+      "chunk_index": 10
+    },
+    {
+      "text": "Counters",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_84a0d6fb",
+      "chunk_index": 10
+    },
+    {
+      "text": "SK_COUNTER",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_84a0d6fb",
+      "chunk_index": 10
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_84a0d6fb",
+      "chunk_index": 11
+    },
+    {
+      "text": "Counter",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_84a0d6fb",
+      "chunk_index": 12
+    },
+    {
+      "text": "Counter",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_84a0d6fb",
+      "chunk_index": 12
+    },
+    {
+      "text": "Counter",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_84a0d6fb",
+      "chunk_index": 12
+    },
+    {
+      "text": "Authentication",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_84a0d6fb",
+      "chunk_index": 12
+    },
+    {
+      "text": "IM",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_84a0d6fb",
+      "chunk_index": 13
+    },
+    {
+      "text": "block",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_84a0d6fb",
+      "chunk_index": 14
+    },
+    {
+      "text": "PIN",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_84a0d6fb",
+      "chunk_index": 16
+    },
+    {
+      "text": "P2",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_84a0d6fb",
+      "chunk_index": 16
+    },
+    {
+      "text": "MSG",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_84a0d6fb",
+      "chunk_index": 16
+    },
+    {
+      "text": "Counter",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_84a0d6fb",
+      "chunk_index": 16
+    },
+    {
+      "text": "Counter",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_84a0d6fb",
+      "chunk_index": 16
+    },
+    {
+      "text": "Counter",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_84a0d6fb",
+      "chunk_index": 16
+    },
+    {
+      "text": "Authentication",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_84a0d6fb",
+      "chunk_index": 16
+    },
+    {
+      "text": "IM",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_84a0d6fb",
+      "chunk_index": 16
+    },
+    {
+      "text": "block",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_84a0d6fb",
+      "chunk_index": 16
+    },
+    {
+      "text": "SK_Counters",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_84a0d6fb",
+      "chunk_index": 16
+    },
+    {
+      "text": "Counters",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_84a0d6fb",
+      "chunk_index": 16
+    },
+    {
+      "text": "PIN",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_84a0d6fb",
+      "chunk_index": 16
+    },
+    {
+      "text": "P2",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_84a0d6fb",
+      "chunk_index": 16
+    },
+    {
+      "text": "MSG",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_84a0d6fb",
+      "chunk_index": 16
+    },
+    {
+      "text": "Counter",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_84a0d6fb",
+      "chunk_index": 16
+    },
+    {
+      "text": "Counter",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_84a0d6fb",
+      "chunk_index": 16
+    },
+    {
+      "text": "Counter",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_84a0d6fb",
+      "chunk_index": 16
+    },
+    {
+      "text": "Authentication",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_84a0d6fb",
+      "chunk_index": 16
+    },
+    {
+      "text": "SK_SMI",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_84a0d6fb",
+      "chunk_index": 16
+    },
+    {
+      "text": "SK_SMC",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_84a0d6fb",
+      "chunk_index": 16
+    },
+    {
+      "text": "SK_AC",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_84a0d6fb",
+      "chunk_index": 16
+    },
+    {
+      "text": "IM",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_84a0d6fb",
+      "chunk_index": 16
+    },
+    {
+      "text": "block",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_84a0d6fb",
+      "chunk_index": 16
+    },
+    {
+      "text": "SK_Counters",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_84a0d6fb",
+      "chunk_index": 17
+    },
+    {
+      "text": "Counters",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_84a0d6fb",
+      "chunk_index": 17
+    }
+  ]
+}

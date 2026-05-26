@@ -1,0 +1,53 @@
+{
+  "doc_name": "gost-r-56545-2015=edt2018_0efaf655",
+  "formulas": [
+    {
+      "text": "check_existence",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-56545-2015=edt2018_0efaf655",
+      "chunk_index": 10
+    },
+    {
+      "text": "check",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-56545-2015=edt2018_0efaf655",
+      "chunk_index": 10
+    },
+    {
+      "text": "check_existence",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-56545-2015=edt2018_0efaf655",
+      "chunk_index": 10
+    },
+    {
+      "text": "check",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-56545-2015=edt2018_0efaf655",
+      "chunk_index": 10
+    },
+    {
+      "text": "check_existence",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-56545-2015=edt2018_0efaf655",
+      "chunk_index": 11
+    },
+    {
+      "text": "check",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-56545-2015=edt2018_0efaf655",
+      "chunk_index": 11
+    },
+    {
+      "text": "check_existence",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-56545-2015=edt2018_0efaf655",
+      "chunk_index": 11
+    },
+    {
+      "text": "check",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-56545-2015=edt2018_0efaf655",
+      "chunk_index": 11
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "doc_name": "gost-r-34_e022c4bb",
+  "chunks_processed": 10,
+  "pattern_count": 92,
+  "validated_count": 9,
+  "entities": [
+    {
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "НАЦИОНАЛЬНЫЙ СТАНДАРТ РОССИЙСКОЙ ФЕДЕРАЦИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 34.14—2025",
+      "type": "STANDARD",
+      "source": "llm"
+    },
+    {
+      "text": "Информационная технология",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "КРИПТОГРАФИЧЕСКАЯ ЗАЩИТА ИНФОРМАЦИИ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Российский институт стандартизации",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "17 сентября 2025 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "ТК 26",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    }
+  ]
+}

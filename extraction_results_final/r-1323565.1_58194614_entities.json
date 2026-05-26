@@ -1,0 +1,53 @@
+{
+  "doc_name": "r-1323565.1_58194614",
+  "chunks_processed": 10,
+  "pattern_count": 93,
+  "validated_count": 9,
+  "entities": [
+    {
+      "text": "2018",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "Технический комитет по стандартизации ТК 26",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "2 марта 2018",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "№ 116-ст",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "29 июня 2015",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "№ 162-ФЗ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Мир",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 34.10—2012",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 34.11—2012",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

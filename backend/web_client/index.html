@@ -586,6 +586,11 @@
                                 <i class="fas fa-project-diagram"></i> Graph Explorer
                             </button>
                         </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="pipeline-explorer-tab" data-bs-toggle="tab" data-bs-target="#pipeline-explorer-panel" type="button">
+                                <i class="fas fa-water"></i> Pipeline Explorer
+                            </button>
+                        </li>
                     </ul>
 
                     <div class="tab-content p-3 bg-white border-start border-end border-bottom mt-2">
@@ -848,7 +853,8 @@
                                         <div class="col-md-6">
                                             <label for="chunking-strategy" class="form-label">Chunking Strategy</label>
                                             <select class="form-select" id="chunking-strategy">
-                                                <option value="smart_chunking" selected>Smart Chunking (LLM)</option>
+                                                <option value="recursive_semantic" selected>Recursive Semantic (Recommended - Best for GOST)</option>
+                                                <option value="smart_chunking">Smart Chunking (LLM)</option>
                                                 <option value="naive_chunking">Naive Chunking</option>
                                                 <option value="section_based">Section-Based</option>
                                             </select>
@@ -871,6 +877,13 @@
                                         </label>
                                         <small class="text-muted d-block">If any documents fail, automatically reprocess them at the end</small>
                                     </div>
+                                    <div class="form-check mt-2">
+                                        <input class="form-check-input" type="checkbox" id="enable-regex-entities-checkbox">
+                                        <label class="form-check-label" for="enable-regex-entities-checkbox">
+                                            Enable regex entity extraction (fallback)
+                                        </label>
+                                        <small class="text-muted d-block">If disabled, only LLM-extracted entities are used. Regex adds more entities but includes noise</small>
+                                    </div>
                                 </div>
                             </div>
 
@@ -885,9 +898,18 @@
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="form-check mb-2">
+                                                <input class="form-check-input phase-checkbox" type="checkbox" value="upload" id="phase-upload" checked>
+                                                <label class="form-check-label" for="phase-upload">
+                                                    <i class="fas fa-upload"></i> Upload & Store
+                                                </label>
+                                                <small class="text-muted d-block">Upload files and store metadata</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-check">
                                                 <input class="form-check-input phase-checkbox" type="checkbox" value="extract" id="phase-extract" checked onchange="toggleExtractionOptions()">
                                                 <label class="form-check-label" for="phase-extract">
-                                                    <i class="fas fa-file-alt"></i> Phase 2: Text Extraction
+                                                    <i class="fas fa-file-export"></i> Extract Text
                                                 </label>
                                                 <small class="text-muted d-block">Extract text from PDFs</small>
                                             </div>
@@ -1593,6 +1615,65 @@
             </div>
         </div>
     </div>
+
+                        <!-- Pipeline Explorer Panel -->
+                        <div class="tab-pane fade" id="pipeline-explorer-panel" role="tabpanel">
+                            <h5><i class="fas fa-water"></i> Document Pipeline Explorer</h5>
+                            <p class="text-muted">Track each document through the full pipeline: extraction → chunks → vector DB → graph DB</p>
+
+                            <div class="row mb-3">
+                                <div class="col-md-5">
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                        <input type="text" class="form-control" id="pipeline-doc-search" placeholder="Search document by name or doc_id...">
+                                        <button class="btn btn-outline-secondary" onclick="searchPipelineDocument()">
+                                            <i class="fas fa-arrow-right"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <select class="form-select" id="pipeline-source-select">
+                                        <option value="job">From Job</option>
+                                        <option value="docstore">From Document Store</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <div id="pipeline-source-job">
+                                        <div class="input-group">
+                                            <select class="form-select" id="pipeline-job-select">
+                                                <option value="">— Select a job —</option>
+                                            </select>
+                                            <button class="btn btn-outline-primary" onclick="loadPipelineDocuments()">
+                                                <i class="fas fa-list"></i> Load
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div id="pipeline-source-docstore" style="display:none">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="pipeline-ds-search" placeholder="Filter filenames...">
+                                            <button class="btn btn-outline-primary" onclick="loadPipelineDocStore()">
+                                                <i class="fas fa-folder-open"></i> Browse
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="pipeline-loading" class="text-center py-4" style="display: none;">
+                                <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>
+                                <p class="mt-2">Loading documents...</p>
+                            </div>
+                            <div id="pipeline-error" class="alert alert-danger" style="display: none;"></div>
+                            <div id="pipeline-results"></div>
+                            <div id="pipeline-doc-selector" style="display: none;">
+                                <div class="mb-2">
+                                    <strong id="pipeline-doc-list-title">Documents:</strong>
+                                    <div id="pipeline-doc-list" class="list-group mt-2"></div>
+                                </div>
+                            </div>
+
+                            <div id="pipeline-results"></div>
+                        </div>
 
     <!-- D3.js and Force Graph for graph visualization -->
     <script src="https://d3js.org/d3.v7.min.js"></script>
@@ -4378,6 +4459,25 @@
                 return true;
             }
 
+            // Restore Smart Ingestion job status when tab becomes visible
+            document.getElementById('smart-ingest-tab')?.addEventListener('shown.bs.tab', () => {
+                const activeJobJson = localStorage.getItem('activeSmartIngestJob');
+                if (activeJobJson) {
+                    try {
+                        const activeJob = JSON.parse(activeJobJson);
+                        const now = Date.now();
+                        // Only restore if job was started in the last 24 hours
+                        if (activeJob.jobId && (now - activeJob.startedAt < 24 * 60 * 60 * 1000)) {
+                            pollJobStatus(activeJob.jobId, true);
+                        } else {
+                            localStorage.removeItem('activeSmartIngestJob');
+                        }
+                    } catch (e) {
+                        localStorage.removeItem('activeSmartIngestJob');
+                    }
+                }
+            });
+
             // Add event listeners to phase checkboxes
             document.querySelectorAll('.phase-checkbox').forEach(checkbox => {
                 checkbox.addEventListener('change', () => {
@@ -4995,8 +5095,8 @@ delimiters: [
                 let selectedDocs = [];  // Track selected documents for status display
 
                 if (selectedMode === 'files') {
-                    // File mode - use phased processing endpoint
-                    endpoint = '/api/rag/phased/upload';
+                    // File mode - use smart_ingest_files endpoint (supports async + chunking strategy)
+                    endpoint = '/api/rag/smart_ingest_files';
                     console.log('[SmartIngest] Adding files to FormData...');
                     smartSelectedFilesArray.forEach((file, index) => {
                         console.log(`[SmartIngest] File ${index}:`, file.name, file.size, file.type);
@@ -5021,7 +5121,8 @@ delimiters: [
                         chunking_strategy: document.getElementById('chunking-strategy').value,
                         ingest_chunks: document.getElementById('ingest-chunks-checkbox').checked,
                         process_mode: processMode,
-                        custom_prompt: document.getElementById('custom-chunking-prompt').value || undefined
+                        custom_prompt: document.getElementById('custom-chunking-prompt').value || undefined,
+                        enable_regex_entities: document.getElementById('enable-regex-entities-checkbox').checked
                     });
                 } else if (selectedMode === 'docstore') {
                     // Use phased processing endpoint
@@ -5039,6 +5140,8 @@ delimiters: [
                         phases: selectedPhases,
                         user_id: 'web_user',
                         auto_retry_failed: document.getElementById('auto-retry-failed-checkbox').checked,
+                        enable_regex_entities: document.getElementById('enable-regex-entities-checkbox').checked,
+                        chunking_strategy: document.getElementById('chunking-strategy').value,
                         extraction_config: {
                             method: extractionMethod,
                             page_range: pageRangeAll ? 'all' : {
@@ -5054,6 +5157,7 @@ delimiters: [
                     body.append('chunking_strategy', document.getElementById('chunking-strategy').value);
                     body.append('ingest_chunks', document.getElementById('ingest-chunks-checkbox').checked);
                     body.append('process_mode', processMode);
+                    body.append('enable_regex_entities', document.getElementById('enable-regex-entities-checkbox').checked);
                     const customPrompt = document.getElementById('custom-chunking-prompt').value;
                     if (customPrompt) body.append('custom_prompt', customPrompt);
                 }
@@ -5150,12 +5254,31 @@ delimiters: [
             
             // Poll job status for async operations
             let jobPollInterval = null;
-            async function pollJobStatus(jobId) {
+            async function pollJobStatus(jobId, isRestore = false) {
                 const statusDiv = document.getElementById('smart-ingest-status');
                 const resultDiv = document.getElementById('smart-ingest-result');
                 const errorDiv = document.getElementById('smart-ingest-error');
                 const spinner = document.getElementById('smart-ingest-spinner');
                 const progressDiv = document.getElementById('smart-ingest-progress');
+
+                // Save active job to localStorage for tab-switch persistence
+                if (!isRestore) {
+                    localStorage.setItem('activeSmartIngestJob', JSON.stringify({
+                        jobId: jobId,
+                        startedAt: Date.now()
+                    }));
+                }
+
+                // Show the status UI immediately when restoring
+                if (isRestore) {
+                    statusDiv.style.display = 'block';
+                    resultDiv.style.display = 'none';
+                    errorDiv.style.display = 'none';
+                    spinner.classList.remove('d-none');
+                    progressDiv.style.display = 'flex';
+                    smartIngestBtn.disabled = true;
+                    statusDiv.innerHTML = `<strong>Restoring Job:</strong> ${jobId}<br><em>Checking status...</em>`;
+                }
 
                 jobPollInterval = setInterval(async () => {
                     try {
@@ -5191,10 +5314,11 @@ delimiters: [
                             
                             // Get selected phases from UI (only count phases that were requested)
                             const selectedPhases = getSelectedPhases();
-                            const totalPhases = selectedPhases.length || 4; // Use selected phases count
-                            
-                            // Calculate progress based on SELECTED phases only
+                            const totalPhases = selectedPhases.length || 5; // Use selected phases count
+
+                            // Calculate progress based on SELECTED phases only (all 5 phases)
                             let completedCount = 0;
+                            if (selectedPhases.includes('upload')) completedCount += phases.upload?.completed || 0;
                             if (selectedPhases.includes('extract')) completedCount += phases.extract?.completed || 0;
                             if (selectedPhases.includes('chunk')) completedCount += phases.chunk?.completed || 0;
                             if (selectedPhases.includes('vector')) completedCount += phases.vector?.completed || 0;
@@ -5227,29 +5351,36 @@ delimiters: [
                                 <strong>Overall Progress:</strong> ${overallProgress}%<br>
                                 ${progressDetails}
                                 <div class="row mt-2">
+                                    ${selectedPhases.includes('upload') ? `
+                                    <div class="col-md">
+                                        <small>Upload: ${phases.upload?.completed || 0}/${totalDocs}</small>
+                                        <div class="progress" style="height: 4px;">
+                                            <div class="progress-bar bg-secondary" style="width: ${(phases.upload?.completed || 0) / totalDocs * 100}%"></div>
+                                        </div>
+                                    </div>` : ''}
                                     ${selectedPhases.includes('extract') ? `
-                                    <div class="col-md-3">
+                                    <div class="col-md">
                                         <small>Extract: ${phases.extract?.completed || 0}/${totalDocs}</small>
                                         <div class="progress" style="height: 4px;">
                                             <div class="progress-bar bg-success" style="width: ${(phases.extract?.completed || 0) / totalDocs * 100}%"></div>
                                         </div>
                                     </div>` : ''}
                                     ${selectedPhases.includes('chunk') ? `
-                                    <div class="col-md-3">
+                                    <div class="col-md">
                                         <small>Chunk: ${phases.chunk?.completed || 0}/${totalDocs}</small>
                                         <div class="progress" style="height: 4px;">
                                             <div class="progress-bar bg-info" style="width: ${(phases.chunk?.completed || 0) / totalDocs * 100}%"></div>
                                         </div>
                                     </div>` : ''}
                                     ${selectedPhases.includes('vector') ? `
-                                    <div class="col-md-3">
+                                    <div class="col-md">
                                         <small>Vector: ${phases.vector?.completed || 0}/${totalDocs}</small>
                                         <div class="progress" style="height: 4px;">
                                             <div class="progress-bar bg-primary" style="width: ${(phases.vector?.completed || 0) / totalDocs * 100}%"></div>
                                         </div>
                                     </div>` : ''}
                                     ${selectedPhases.includes('graph') ? `
-                                    <div class="col-md-3">
+                                    <div class="col-md">
                                         <small>Graph: ${phases.graph?.completed || 0}/${totalDocs}</small>
                                         <div class="progress" style="height: 4px;">
                                             <div class="progress-bar bg-warning" style="width: ${(phases.graph?.completed || 0) / totalDocs * 100}%"></div>
@@ -5269,6 +5400,7 @@ delimiters: [
                             // Check if all documents are completed or failed
                             if ((docs.completed || 0) + (docs.failed || 0) >= totalDocs) {
                                 clearInterval(jobPollInterval);
+                                localStorage.removeItem('activeSmartIngestJob');
                                 spinner.classList.add('d-none');
                                 progressDiv.style.display = 'none';
                                 statusDiv.style.display = 'none';
@@ -5337,6 +5469,7 @@ delimiters: [
                             // Check if job is complete
                             if (job.status === 'completed') {
                                 clearInterval(jobPollInterval);
+                                localStorage.removeItem('activeSmartIngestJob');
                                 spinner.classList.add('d-none');
                                 progressDiv.style.display = 'none';
                                 statusDiv.style.display = 'none';
@@ -6112,24 +6245,62 @@ delimiters: [
 
             window.viewJobFiles = async (jobId) => {
                 try {
-                    const response = await fetch(`${API_BASE_URL}/jobs/${jobId}`, {
-                        headers: {
-                            'Authorization': `Bearer ${AUTH_TOKEN}`
-                        }
-                    });
+                    // Fetch job info and per-document details in parallel
+                    const [jobResponse, docsResponse] = await Promise.all([
+                        fetch(`${API_BASE_URL}/jobs/${jobId}`, {
+                            headers: { 'Authorization': `Bearer ${AUTH_TOKEN}` }
+                        }),
+                        fetch(`${API_BASE_URL}/api/rag/phased/job/${jobId}/documents`, {
+                            headers: { 'Authorization': `Bearer ${AUTH_TOKEN}` }
+                        }).catch(() => null)
+                    ]);
 
-                    if (response.ok) {
-                        const job = await response.json();
-                        const files = job.files || [];
+                    if (jobResponse.ok || (docsResponse && docsResponse.ok)) {
+                        const job = jobResponse.ok ? await jobResponse.json() : { job_id: jobId };
+                        let perDocStatus = {};
+                        if (docsResponse && docsResponse.ok) {
+                            const docsData = await docsResponse.json();
+                            docsData.documents.forEach(d => {
+                                perDocStatus[d.filename || d.doc_id] = d;
+                            });
+                        }
+
                         const hb = job.parameters?.heartbeat || {};
                         const curDoc = job.parameters?.current_doc;
                         const totDocs = job.parameters?.total_docs;
+
+                        // Get files list from job parameters
+                        const files = job.files || [];
+                        const filesToShow = files.length > 0 ? files :
+                            Object.values(perDocStatus).map(d => ({
+                                filename: d.filename || d.doc_id,
+                                doc_id: d.doc_id
+                            }));
+
+                        // Phase badge colors and icons
+                        const phaseConfig = {
+                            'upload': { bg: 'secondary', icon: 'fa-upload' },
+                            'extract': { bg: 'success', icon: 'fa-file-export' },
+                            'chunk': { bg: 'info', icon: 'fa-scissors' },
+                            'vector': { bg: 'primary', icon: 'fa-database' },
+                            'graph': { bg: 'warning', icon: 'fa-project-diagram' }
+                        };
+
+                        function phaseBadge(status) {
+                            const badges = {
+                                'completed': 'bg-success',
+                                'failed': 'bg-danger',
+                                'processing': 'bg-primary',
+                                'pending': 'bg-secondary'
+                            };
+                            return badges[status] || 'bg-secondary';
+                        }
 
                         // Show modal with files
                         showModal('Job Files', `
                             <div class="mb-3">
                                 <h6>Job: ${job.job_id}</h6>
-                                <p class="text-muted">Files: ${files.length}${job.documents_total ? ` / ${job.documents_total} total` : ''}</p>
+                                <p class="text-muted">Files: ${filesToShow.length}${job.documents_total ? ` / ${job.documents_total} total` : ''}</p>
                                 ${job.status === 'processing' && curDoc && totDocs ? `
                                     <div class="alert alert-info py-2">
                                         <i class="fas fa-spinner fa-spin"></i>
@@ -6145,55 +6316,58 @@ delimiters: [
                                     </div>
                                 ` : ''}
                             </div>
-                            ${files.length === 0 ? `
+                            ${filesToShow.length === 0 ? `
                                 <div class="alert alert-info">
                                     <i class="fas fa-info-circle"></i> No files tracked for this job yet.
                                 </div>
                             ` : `
-                                <div class="list-group">
-                                    ${files.map(file => {
-                                        const status = file.retry_status || file.status || 'pending';
-                                        const chunks = file.retry_chunks || file.chunks_created || 0;
+                                <div class="list-group" style="max-height: 400px; overflow-y: auto;">
+                                    ${filesToShow.map(file => {
+                                        const filename = file.filename || file.doc_id || 'Unknown';
+                                        const docInfo = perDocStatus[filename] || perDocStatus[file.doc_id] || {};
+                                        const phases = docInfo.phases || {};
+                                        const status = docInfo.overall_status || file.retry_status || file.status || 'pending';
+                                        const chunks = docInfo.chunk_count || file.retry_chunks || file.chunks_created || 0;
+
                                         let statusBadge = 'secondary';
                                         let statusText = status;
-                                        if (status === 'success') { statusBadge = 'success'; statusText = 'Success'; }
-                                        else if (status === 'failed') { statusBadge = 'danger'; statusText = 'Failed'; }
-                                        else if (status === 'retry') { statusBadge = 'warning'; statusText = 'Retrying...'; }
+                                        if (status === 'completed' || status === 'COMPLETED' || status === 'success') { statusBadge = 'success'; statusText = 'Done'; }
+                                        else if (status === 'failed' || status === 'FAILED') { statusBadge = 'danger'; statusText = 'Failed'; }
+                                        else if (status === 'processing' || status === 'PROCESSING') { statusBadge = 'primary'; statusText = 'Processing...'; }
+
+                                        // Build per-phase status badges
+                                        const phaseBars = ['upload', 'extract', 'chunk', 'vector', 'graph'].map(p => {
+                                            const ps = phases[p] || 'pending';
+                                            const cfg = phaseConfig[p] || { bg: 'secondary', icon: '' };
+                                            return `
+                                                <span class="badge ${phaseBadge(ps)} me-1" title="${p}: ${ps}" style="font-size: 10px;">
+                                                    ${ps === 'completed' ? '✓' : ps === 'failed' ? '✗' : ps === 'processing' ? '⟳' : '○'} ${p}
+                                                </span>`;
+                                        }).join('');
 
                                         return `
                                         <div class="list-group-item list-group-item-action">
                                             <div class="d-flex w-100 justify-content-between align-items-center">
-                                                <h6 class="mb-1">
+                                                <h6 class="mb-1" style="font-size: 14px;">
                                                     <i class="fas fa-file-${getFileIcon(file.format || 'pdf')} text-primary"></i>
-                                                    ${file.filename}
+                                                    ${filename}
                                                 </h6>
                                                 <span class="badge bg-${statusBadge}">${statusText}</span>
                                             </div>
                                             <div class="mb-1">
-                                                <small class="text-muted">
-                                                    ${file.size ? `<i class="fas fa-hdd"></i> ${formatFileSize(file.size)} | ` : ''}
-                                                    ${chunks > 0 ? `<i class="fas fa-th-large text-success"></i> Chunks: ${chunks}` : '<i class="fas fa-th-large text-muted"></i> Chunks: 0'}
+                                                ${file.size ? `<small class="text-muted me-2"><i class="fas fa-hdd"></i> ${formatFileSize(file.size)}</small>` : ''}
+                                                <small class="${chunks > 0 ? 'text-success' : 'text-muted'} me-2">
+                                                    <i class="fas fa-th-large"></i> Chunks: ${chunks}
                                                 </small>
+                                                ${docInfo.entity_count > 0 ? `<small class="text-warning me-2"><i class="fas fa-tags"></i> Entities: ${docInfo.entity_count}</small>` : ''}
+                                                ${docInfo.vector_chunk_count > 0 ? `<small class="text-primary"><i class="fas fa-database"></i> Vector: ${docInfo.vector_chunk_count}</small>` : ''}
                                             </div>
-                                            ${file.retry_status === 'success' ? `
+                                            <div class="mt-1">
+                                                ${phaseBars}
+                                            </div>
+                                            ${docInfo.error ? `
                                                 <div class="mt-1">
-                                                    <small class="text-success">
-                                                        <i class="fas fa-check-circle"></i> Retry succeeded
-                                                    </small>
-                                                </div>
-                                            ` : ''}
-                                            ${file.retry_status === 'failed' ? `
-                                                <div class="mt-1">
-                                                    <small class="text-danger">
-                                                        <i class="fas fa-times-circle"></i> Retry failed
-                                                    </small>
-                                                </div>
-                                            ` : ''}
-                                            ${file.error && status === 'failed' ? `
-                                                <div class="mt-1">
-                                                    <small class="text-danger">
-                                                        <i class="fas fa-exclamation-circle"></i> ${file.error}
-                                                    </small>
+                                                    <small class="text-danger"><i class="fas fa-exclamation-circle"></i> ${docInfo.error.substring(0, 100)}</small>
                                                 </div>
                                             ` : ''}
                                         </div>
@@ -6201,12 +6375,9 @@ delimiters: [
                                     }).join('')}
                                 </div>
                             `}
-                            <div class="mt-3 text-end">
-                                <button class="btn btn-primary" data-bs-dismiss="modal">Close</button>
-                            </div>
                         `);
                     } else {
-                        throw new Error(`HTTP ${response.status}`);
+                        throw new Error(`HTTP ${jobResponse.status}`);
                     }
                 } catch (error) {
                     alert(`Failed to load job files: ${error.message}`);
@@ -6679,6 +6850,390 @@ delimiters: [
                 }
             }
         });
+
+        // ===== Pipeline Explorer =====
+        let pipelineDocData = []; // Cache doc data from selected job
+
+        // Load jobs into pipeline job selector
+        async function loadPipelineJobs() {
+            try {
+                const resp = await fetch(`${API_BASE_URL}/jobs?limit=50`, {
+                    headers: { 'Authorization': `Bearer ${AUTH_TOKEN}` }
+                });
+                if (resp.ok) {
+                    const data = await resp.json();
+                    const sel = document.getElementById('pipeline-job-select');
+                    const currentVal = sel.value;
+                    sel.innerHTML = '<option value="">— Select a job —</option>';
+                    (data.jobs || []).forEach(j => {
+                        sel.innerHTML += `<option value="${j.job_id}">${j.job_id.substring(0, 20)}… (${j.status || '?'})</option>`;
+                    });
+                    if (currentVal) sel.value = currentVal;
+                }
+            } catch(e) { /* ignore */ }
+        }
+
+        // Load documents from selected job
+        async function loadPipelineDocuments() {
+            const jobId = document.getElementById('pipeline-job-select').value;
+            if (!jobId) return;
+
+            const loading = document.getElementById('pipeline-loading');
+            const error = document.getElementById('pipeline-error');
+            const docSelector = document.getElementById('pipeline-doc-selector');
+            const results = document.getElementById('pipeline-results');
+
+            loading.style.display = 'block';
+            error.style.display = 'none';
+            docSelector.style.display = 'none';
+            results.innerHTML = '';
+
+            try {
+                const resp = await fetch(`${API_BASE_URL}/api/rag/phased/job/${jobId}/documents`, {
+                    headers: { 'Authorization': `Bearer ${AUTH_TOKEN}` }
+                });
+                if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+
+                const data = await resp.json();
+                pipelineDocData = data.documents || [];
+
+                loading.style.display = 'none';
+
+                if (pipelineDocData.length === 0) {
+                    results.innerHTML = '<div class="alert alert-info">No documents found for this job.</div>';
+                    return;
+                }
+
+                // Show doc selector
+                const list = document.getElementById('pipeline-doc-list');
+                list.innerHTML = pipelineDocData.map((d, i) => pipelineListItemHtml({
+                    docId: d.doc_id,
+                    label: d.filename || d.doc_id,
+                    badge: d.overall_status,
+                    badgeColors: {completed:'success',failed:'danger',processing:'primary',pending:'secondary'},
+                    extra: ''
+                })).join('');
+                docSelector.style.display = 'block';
+
+                // Click handler for doc items
+                document.querySelectorAll('#pipeline-doc-list .pipeline-doc-item').forEach(el => {
+                    el.addEventListener('click', () => {
+                        const docId = el.dataset.docid;
+                        const docInfo = pipelineDocData.find(d => d.doc_id === docId);
+                        if (docInfo) {
+                            expandPipelineItem(el, docInfo.doc_id, docInfo.filename);
+                        }
+                    });
+                });
+
+            } catch (e) {
+                loading.style.display = 'none';
+                error.textContent = `Failed to load documents: ${e.message}`;
+                error.style.display = 'block';
+            }
+        }
+
+        // Search document by name
+        async function searchPipelineDocument() {
+            const query = document.getElementById('pipeline-doc-search').value.trim();
+            if (!query) return;
+
+            // Check if we have cached docs to search
+            const match = pipelineDocData.find(d => 
+                (d.filename && d.filename.toLowerCase().includes(query.toLowerCase())) ||
+                (d.doc_id && d.doc_id.toLowerCase().includes(query.toLowerCase()))
+            );
+            if (match) {
+                showPipelineDocument(match.doc_id, match.filename);
+                return;
+            }
+
+            // Otherwise try to load directly
+            showPipelineDocument(query, query);
+        }
+
+        // Helper: render a list item for a pipeline document
+        function pipelineListItemHtml({docId, label, badge, badgeColors, extra}) {
+            const badges = badge ? badge.split(' ').map(b => {
+                const color = (badgeColors || {})[b] || 'secondary';
+                return `<span class="badge bg-${color} me-1">${b}</span>`;
+            }).join('') : '';
+            return `
+            <div class="list-group-item list-group-item-action pipeline-doc-item" data-docid="${docId}" style="cursor:pointer;">
+                <div class="d-flex w-100 justify-content-between align-items-center">
+                    <span>${label}</span>
+                    <span>${badges}</span>
+                </div>
+                ${extra ? `<div class="mt-1">${extra}</div>` : ''}
+            </div>`;
+        }
+
+        // Expand a pipeline item inline after the clicked element
+        async function expandPipelineItem(el, docId, displayName) {
+            // Check if already expanded
+            const existing = document.getElementById(`pipeline-expand-${docId}`);
+            if (existing) { collapsePipelineItem(el); return; }
+
+            // Collapse any other open item
+            document.querySelectorAll('.pipeline-expand-card').forEach(c => collapsePipelineItem(c.previousElementSibling));
+
+            // Insert expand card right after the clicked item
+            const card = document.createElement('div');
+            card.id = `pipeline-expand-${docId}`;
+            card.className = 'list-group-item p-3 pipeline-expand-card';
+            card.innerHTML = '<div class="text-center py-3"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div><p class="mt-2">Loading pipeline data...</p></div>';
+            el.parentNode.insertBefore(card, el.nextSibling);
+            el.classList.add('active');
+
+            try {
+                const resp = await fetch(`${API_BASE_URL}/api/rag/phased/document/${docId}/pipeline`, {
+                    headers: { 'Authorization': `Bearer ${AUTH_TOKEN}` }
+                });
+                if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+                const data = await resp.json();
+                if (!data.success) throw new Error(data.error || 'Unknown error');
+
+                card.innerHTML = buildPipelineCardHtml(data, displayName);
+            } catch (e) {
+                card.innerHTML = `<div class="alert alert-danger mb-0">Failed to load pipeline: ${e.message}</div>`;
+            }
+        }
+
+        function collapsePipelineItem(el) {
+            const docId = el.dataset.docid;
+            const card = document.getElementById(`pipeline-expand-${docId}`);
+            if (card) card.remove();
+            el.classList.remove('active');
+        }
+
+        // Build the pipeline card HTML from API data
+        function buildPipelineCardHtml(data, displayName) {
+            const doc = data.document;
+            const ext = data.extraction;
+            const chunks = data.chunks;
+            const graph = data.graph;
+            const docTitle = doc.title || '';
+
+            function phaseBadge(status) {
+                const map = { completed: 'bg-success', failed: 'bg-danger', processing: 'bg-primary', pending: 'bg-secondary' };
+                return map[status] || 'bg-secondary';
+            }
+            function phaseIcon(status) {
+                if (status === 'completed') return '✓';
+                if (status === 'failed') return '✗';
+                if (status === 'processing') return '⟳';
+                return '○';
+            }
+
+            let html = `
+            <div class="card mb-0">
+                <div class="card-header d-flex justify-content-between align-items-center py-2">
+                    <div>
+                        <strong><i class="fas fa-file-${displayName?.endsWith('.pdf') ? 'pdf' : 'file-alt'} text-primary"></i> ${displayName || doc.filename || doc.doc_id}</strong>
+                        ${docTitle ? `<br><small class="text-muted"><i class="fas fa-bookmark"></i> ${docTitle}</small>` : ''}
+                    </div>
+                    <div>
+                        <span class="badge bg-${({completed:'success',failed:'danger',processing:'primary',pending:'secondary'})[doc.overall_status] || 'secondary'} me-2">${doc.overall_status}</span>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="this.closest('.pipeline-expand-card').previousElementSibling.click()"><i class="fas fa-times"></i></button>
+                    </div>
+                </div>
+                <div class="card-body py-2">
+                    <div class="mb-2">
+                        <strong>Pipeline Progress:</strong>
+                        <div class="d-flex gap-2 mt-1 flex-wrap">
+                            ${['upload','extract','chunk','vector','graph'].map(p =>
+                                `<span class="badge ${phaseBadge(doc.phases[p])}">${phaseIcon(doc.phases[p])} ${p}</span>`
+                            ).join('')}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <table class="table table-sm table-borderless mb-0">
+                                <tr><td>Method:</td><td>${ext.method || 'N/A'}</td></tr>
+                                <tr><td>Pages:</td><td>${ext.page_count || '?'}</td></tr>
+                                <tr><td>Chars:</td><td>${ext.extracted_char_count ? ext.extracted_char_count.toLocaleString() : '?'}</td></tr>
+                                <tr><td>.md:</td><td>${ext.md_exists ? `✅ ${(ext.md_size/1024).toFixed(1)} KB` : '❌'}</td></tr>
+                                <tr><td>.txt:</td><td>${ext.txt_exists ? `✅ ${(ext.txt_size/1024).toFixed(1)} KB` : '❌'}</td></tr>
+                            </table>
+                        </div>
+                        <div class="col-md-4">
+                            <table class="table table-sm table-borderless mb-0">
+                                <tr><td>Chunks:</td><td>${chunks.stats.total}</td></tr>
+                                <tr><td>Min/Avg/Max:</td><td>${chunks.stats.min_size} / ${chunks.stats.avg_size} / ${chunks.stats.max_size}</td></tr>
+                                <tr><td>In Vector DB:</td><td>${chunks.in_vector_db} / ${chunks.stats.total}</td></tr>
+                            </table>
+                        </div>
+                        <div class="col-md-4">
+                            <table class="table table-sm table-borderless mb-0">
+                                <tr><td>Entities:</td><td>${graph.entity_count}</td></tr>
+                                <tr><td>Relationships:</td><td>${graph.relationship_total}</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                    ${chunks.list.length > 0 ? `
+                    <div class="mt-2">
+                        <strong>Chunks</strong> <small class="text-muted">(${chunks.list.length})</small>
+                        <div class="table-responsive mt-1" style="max-height: 200px; overflow-y: auto;">
+                            <table class="table table-sm table-hover mb-0">
+                                <thead class="bg-light"><tr><th>#</th><th>Preview</th><th>Size</th><th>Vec</th></tr></thead>
+                                <tbody>${chunks.list.map(c =>
+                                    `<tr><td>${c.index}</td><td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${c.preview}</td><td>${c.size}</td><td>${c.in_vector_db ? '✅' : '❌'}</td></tr>`
+                                ).join('')}</tbody>
+                            </table>
+                        </div>
+                    </div>` : ''}
+                    ${graph.entities.length > 0 ? `
+                    <div class="mt-2">
+                        <strong>Entities</strong> <small class="text-muted">(${graph.entity_count})</small>
+                        <div class="table-responsive mt-1" style="max-height: 150px; overflow-y: auto;">
+                            <table class="table table-sm table-hover mb-0">
+                                <thead class="bg-light"><tr><th>Entity</th><th>Type</th><th>Rel</th></tr></thead>
+                                <tbody>${graph.entities.map(e =>
+                                    `<tr><td>${e.name}</td><td><span class="badge bg-info">${e.type}</span></td><td>${e.relationship_count}</td></tr>`
+                                ).join('')}</tbody>
+                            </table>
+                        </div>
+                    </div>` : ''}
+                </div>
+            </div>`;
+            return html;
+        }
+
+        // Show pipeline data (for search — expands inline if item exists in list, otherwise shows at bottom)
+        async function showPipelineDocument(docId, displayName) {
+            // Try to find and expand existing list item first
+            const item = document.querySelector(`#pipeline-doc-list .pipeline-doc-item[data-docid="${docId}"]`);
+            if (item) {
+                expandPipelineItem(item, docId, displayName);
+                item.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                return;
+            }
+            // Fallback: show inline card at bottom of list
+            const list = document.getElementById('pipeline-doc-list');
+            const card = document.createElement('div');
+            card.id = `pipeline-expand-${docId}`;
+            card.className = 'list-group-item p-3 pipeline-expand-card';
+            card.innerHTML = '<div class="text-center py-3"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div><p class="mt-2">Loading pipeline data...</p></div>';
+            list.appendChild(card);
+            try {
+                const resp = await fetch(`${API_BASE_URL}/api/rag/phased/document/${docId}/pipeline`, {
+                    headers: { 'Authorization': `Bearer ${AUTH_TOKEN}` }
+                });
+                if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+                const data = await resp.json();
+                if (!data.success) throw new Error(data.error || 'Unknown error');
+                card.innerHTML = buildPipelineCardHtml(data, displayName);
+                card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } catch (e) {
+                card.innerHTML = `<div class="alert alert-danger mb-0">Failed to load pipeline: ${e.message}</div>`;
+            }
+        }
+
+        // Toggle job vs docstore source
+        document.getElementById('pipeline-source-select')?.addEventListener('change', (e) => {
+            const isJob = e.target.value === 'job';
+            document.getElementById('pipeline-source-job').style.display = isJob ? 'block' : 'none';
+            document.getElementById('pipeline-source-docstore').style.display = isJob ? 'none' : 'block';
+        });
+
+        // Browse Document Store files
+        let dsDocuments = [];
+
+        async function loadPipelineDocStore() {
+            const loading = document.getElementById('pipeline-loading');
+            const error = document.getElementById('pipeline-error');
+            const docSelector = document.getElementById('pipeline-doc-selector');
+            const results = document.getElementById('pipeline-results');
+
+            loading.style.display = 'block';
+            error.style.display = 'none';
+            docSelector.style.display = 'none';
+            results.innerHTML = '';
+
+            try {
+                const filter = document.getElementById('pipeline-ds-search').value.trim();
+                let url = `${API_BASE_URL}/api/rag/document-store/documents?limit=200`;
+                if (filter) url += `&search=${encodeURIComponent(filter)}`;
+
+                const resp = await fetch(url, {
+                    headers: { 'Authorization': `Bearer ${AUTH_TOKEN}` }
+                });
+                if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+
+                const data = await resp.json();
+                dsDocuments = data.documents || [];
+
+                loading.style.display = 'none';
+
+                if (dsDocuments.length === 0) {
+                    results.innerHTML = '<div class="alert alert-info">No documents found in Document Store.</div>';
+                    return;
+                }
+
+                // Deduplicate by doc_id (show each doc once)
+                const seen = new Set();
+                const uniqueDocs = dsDocuments.filter(d => {
+                    if (seen.has(d.doc_id)) return false;
+                    seen.add(d.doc_id);
+                    return true;
+                });
+
+                // Show doc list
+                const list = document.getElementById('pipeline-doc-list');
+                list.innerHTML = uniqueDocs.map((d, i) => {
+                    const files = d.group_files_info || [];
+                    const fileBadges = [
+                        files.some(f => f.file_type === 'pdf') ? 'PDF' : null,
+                        files.some(f => f.file_type === 'md') ? 'MD' : null,
+                        files.some(f => f.file_type === 'txt') ? 'TXT' : null,
+                        files.some(f => f.file_type === 'chunks') ? 'CHUNKS' : null,
+                    ].filter(Boolean).join(' ');
+                    const extra = `<small class="text-muted">${files.length} files · ${d.size ? (d.size/1024).toFixed(1) + ' KB' : ''}</small>`;
+                    const label = `${d.display_name || d.group_base_id || d.doc_id}${d.title ? `<br><small class="text-muted"><i class="fas fa-bookmark"></i> ${d.title.substring(0, 80)}</small>` : ''}`;
+                    return pipelineListItemHtml({
+                        docId: d.doc_id,
+                        label: label,
+                        badge: fileBadges,
+                        badgeColors: {PDF:'danger',MD:'success',TXT:'secondary',CHUNKS:'info'},
+                        extra: extra
+                    });
+                }).join('');
+                docSelector.style.display = 'block';
+
+                // Click handler
+                document.querySelectorAll('#pipeline-doc-list .pipeline-doc-item').forEach(el => {
+                    el.addEventListener('click', () => {
+                        const docId = el.dataset.docid;
+                        if (document.getElementById(`pipeline-expand-${docId}`)) {
+                            collapsePipelineItem(el);
+                        } else {
+                            const docInfo = uniqueDocs.find(d => d.doc_id === docId) || dsDocuments.find(d => d.doc_id === docId);
+                            if (docInfo) {
+                                expandPipelineItem(el, docInfo.doc_id, docInfo.display_name || docInfo.group_base_id || docInfo.doc_id);
+                            }
+                        }
+                    });
+                });
+
+            } catch (e) {
+                loading.style.display = 'none';
+                error.textContent = `Failed to load documents: ${e.message}`;
+                error.style.display = 'block';
+            }
+        }
+
+        // Load jobs into pipeline selector when tab is shown
+        document.getElementById('pipeline-explorer-tab')?.addEventListener('shown.bs.tab', () => {
+            loadPipelineJobs();
+        });
+
+        // Enter key on search field
+        document.getElementById('pipeline-doc-search')?.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') searchPipelineDocument();
+        });
+        document.getElementById('pipeline-ds-search')?.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') loadPipelineDocStore();
+        });
     </script>
     
     <!-- Generic Modal -->
@@ -6691,9 +7246,6 @@ delimiters: [
                 </div>
                 <div class="modal-body" id="genericModalBody">
                     <!-- Content will be inserted here -->
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
@@ -6714,9 +7266,6 @@ delimiters: [
                         </div>
                         <p class="mt-3">Loading file...</p>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>

@@ -1,0 +1,48 @@
+{
+  "doc_name": "gost-r-56115-2014_dbb121ac",
+  "chunks_processed": 10,
+  "pattern_count": 16,
+  "validated_count": 8,
+  "entities": [
+    {
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВанию И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 56115—2014",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 56115-2014",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 56115-2014",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 56115-2014",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 56115-2014",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 56115-2014",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 56115-2014",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

@@ -1,0 +1,83 @@
+{
+  "doc_name": "r-1-1323565.1_9e608c52",
+  "chunks_processed": 10,
+  "pattern_count": 58,
+  "validated_count": 15,
+  "entities": [
+    {
+      "text": "2019",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "Федеральное Агентство по Техническому Регулированию и Метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "5-7380-4633-2",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ПР 1323565.1.029—2019",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "30 декабря 2019 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "№ 1504-ст",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ОАО \"ИнфофоКС\"",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ТК 26",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "2015 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "№ 162-ФЗ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "29 июня 2015 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "www.gost.ru",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Стандартинформ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 34.12—2015",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 34.13—2015",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

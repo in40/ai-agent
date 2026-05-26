@@ -1,0 +1,48 @@
+{
+  "doc_name": "r-1323565.1_05c4d8ef",
+  "chunks_processed": 10,
+  "pattern_count": 44,
+  "validated_count": 8,
+  "entities": [
+    {
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАННИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "P 1323565.1.035–2021",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "АО «ЭЛВИС-ПЛЮС»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ООО «Фактор-ТС»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ООО «КРИПТО-ПРО»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ООО «С-Терра СиЭспи»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ТК 026 «Криптографическая защита информации»",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 34.12-2015",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

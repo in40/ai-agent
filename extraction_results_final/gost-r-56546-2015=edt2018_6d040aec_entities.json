@@ -1,0 +1,18 @@
+{
+  "doc_name": "gost-r-56546-2015=edt2018_6d040aec",
+  "chunks_processed": 4,
+  "pattern_count": 18,
+  "validated_count": 2,
+  "entities": [
+    {
+      "text": "ГОСТ Р 56546—2015",
+      "type": "STANDARD",
+      "source": "llm"
+    },
+    {
+      "text": "2016-04-01",
+      "type": "DATE",
+      "source": "llm"
+    }
+  ]
+}

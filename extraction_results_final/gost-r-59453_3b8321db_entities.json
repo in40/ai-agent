@@ -1,0 +1,58 @@
+{
+  "doc_name": "gost-r-59453_3b8321db",
+  "chunks_processed": 10,
+  "pattern_count": 36,
+  "validated_count": 10,
+  "entities": [
+    {
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "НАЦИОНАЛЬНЫЙ СТАНДАРТ РОССИЙСКОЙ ФЕДЕРАЦИИ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 59453.1-2021",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Федеральная служба по техническому и экспортному контролю (ФСТЭК России)",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ООО «РусБИТех-Астра»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Технический комитет по стандартизации ТК 362 «Защита информации»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Приказом Федерального агентства по техническому регулированию и метрологии от 22 апреля 2021 г. № 270-ст",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "Федеральный закон от 29 июня 2015 г. № 162-ФЗ «О стандартизации в Российской Федерации»",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "www.gost.ru",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 59453.1—2021",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

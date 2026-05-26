@@ -1,0 +1,77 @@
+{
+  "doc_name": "gost-r-52863-2007=edt2020_17cabea1",
+  "formulas": [
+    {
+      "text": "A_m",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52863-2007=edt2020_17cabea1",
+      "chunk_index": 14
+    },
+    {
+      "text": "U",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52863-2007=edt2020_17cabea1",
+      "chunk_index": 34
+    },
+    {
+      "text": "I",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52863-2007=edt2020_17cabea1",
+      "chunk_index": 34
+    },
+    {
+      "text": "R",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52863-2007=edt2020_17cabea1",
+      "chunk_index": 34
+    },
+    {
+      "text": "V",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52863-2007=edt2020_17cabea1",
+      "chunk_index": 34
+    },
+    {
+      "text": "L",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52863-2007=edt2020_17cabea1",
+      "chunk_index": 34
+    },
+    {
+      "text": "C",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52863-2007=edt2020_17cabea1",
+      "chunk_index": 34
+    },
+    {
+      "text": "V",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52863-2007=edt2020_17cabea1",
+      "chunk_index": 34
+    },
+    {
+      "text": "I",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52863-2007=edt2020_17cabea1",
+      "chunk_index": 34
+    },
+    {
+      "text": "R",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52863-2007=edt2020_17cabea1",
+      "chunk_index": 34
+    },
+    {
+      "text": "L",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52863-2007=edt2020_17cabea1",
+      "chunk_index": 34
+    },
+    {
+      "text": "C",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52863-2007=edt2020_17cabea1",
+      "chunk_index": 34
+    }
+  ]
+}

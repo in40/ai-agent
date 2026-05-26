@@ -1,0 +1,521 @@
+{
+  "doc_name": "r-1323565.1_05c4d8ef",
+  "formulas": [
+    {
+      "text": "b",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 10
+    },
+    {
+      "text": "s",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 10
+    },
+    {
+      "text": "b",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 10
+    },
+    {
+      "text": "r",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 10
+    },
+    {
+      "text": "a",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 11
+    },
+    {
+      "text": "b",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 11
+    },
+    {
+      "text": "c",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 11
+    },
+    {
+      "text": "Packet",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 15
+    },
+    {
+      "text": "R_l",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 21
+    },
+    {
+      "text": "R_h",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 21
+    },
+    {
+      "text": "L_l",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 21
+    },
+    {
+      "text": "L_h",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 21
+    },
+    {
+      "text": "L_l",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 21
+    },
+    {
+      "text": "S_h",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 21
+    },
+    {
+      "text": "S_h",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 21
+    },
+    {
+      "text": "L_l",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 21
+    },
+    {
+      "text": "S_h",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 21
+    },
+    {
+      "text": "S_h",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 21
+    },
+    {
+      "text": "Packet",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 27
+    },
+    {
+      "text": "Header",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 27
+    },
+    {
+      "text": "Data",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 28
+    },
+    {
+      "text": "Data",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 28
+    },
+    {
+      "text": "Trailer",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 29
+    },
+    {
+      "text": "ICV",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 29
+    },
+    {
+      "text": "Packet",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 30
+    },
+    {
+      "text": "Packet",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 35
+    },
+    {
+      "text": "S",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 37
+    },
+    {
+      "text": "MGMnonce",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 37
+    },
+    {
+      "text": "MGMnonce",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 37
+    },
+    {
+      "text": "res",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 37
+    },
+    {
+      "text": "res",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 37
+    },
+    {
+      "text": "klen",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 38
+    },
+    {
+      "text": "klen",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 38
+    },
+    {
+      "text": "salt",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 38
+    },
+    {
+      "text": "i_1",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 39
+    },
+    {
+      "text": "i_2",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 39
+    },
+    {
+      "text": "i_3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 39
+    },
+    {
+      "text": "IV",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 40
+    },
+    {
+      "text": "I_2",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 40
+    },
+    {
+      "text": "I_3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 40
+    },
+    {
+      "text": "PNUM",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 40
+    },
+    {
+      "text": "IV",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 40
+    },
+    {
+      "text": "K_msg",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 41
+    },
+    {
+      "text": "nonce",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 42
+    },
+    {
+      "text": "m",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 45
+    },
+    {
+      "text": "i1",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 48
+    },
+    {
+      "text": "i2",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 48
+    },
+    {
+      "text": "i3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 48
+    },
+    {
+      "text": "pnum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 48
+    },
+    {
+      "text": "i1",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 49
+    },
+    {
+      "text": "i2",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 49
+    },
+    {
+      "text": "i3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 49
+    },
+    {
+      "text": "pnum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 49
+    },
+    {
+      "text": "i1",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 49
+    },
+    {
+      "text": "i2",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 49
+    },
+    {
+      "text": "i3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 49
+    },
+    {
+      "text": "pnum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 49
+    },
+    {
+      "text": "i1",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 50
+    },
+    {
+      "text": "i2",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 50
+    },
+    {
+      "text": "i3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 50
+    },
+    {
+      "text": "pnum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 50
+    },
+    {
+      "text": "ni1",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 53
+    },
+    {
+      "text": "i2",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 53
+    },
+    {
+      "text": "i3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 53
+    },
+    {
+      "text": "pnum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 53
+    },
+    {
+      "text": "Sh",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 55
+    },
+    {
+      "text": "Rl",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 55
+    },
+    {
+      "text": "h",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 55
+    },
+    {
+      "text": "Sh",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 55
+    },
+    {
+      "text": "Rl",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 55
+    },
+    {
+      "text": "h",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 55
+    },
+    {
+      "text": "Sh",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 55
+    },
+    {
+      "text": "Sh",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 55
+    },
+    {
+      "text": "Sh",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 55
+    },
+    {
+      "text": "Sh",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 55
+    },
+    {
+      "text": "Sh",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 55
+    },
+    {
+      "text": "Sh",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 55
+    },
+    {
+      "text": "Sh",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 55
+    },
+    {
+      "text": "Sh",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 55
+    },
+    {
+      "text": "Sh",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 55
+    },
+    {
+      "text": "Sh",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 55
+    },
+    {
+      "text": "Sh",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 55
+    },
+    {
+      "text": "Sh",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 55
+    },
+    {
+      "text": "Sh",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 55
+    },
+    {
+      "text": "Sh",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 55
+    },
+    {
+      "text": "Sh",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_05c4d8ef",
+      "chunk_index": 55
+    }
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "doc_name": "gost-r-70262_4fe87085",
+  "chunks_processed": 10,
+  "pattern_count": 54,
+  "validated_count": 13,
+  "entities": [
+    {
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "НАЦИОНАЛЬНЫЙ СТАНДАРТ РОССИЙСКОЙ ФЕДЕРАЦИИ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 70262.2—2025",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ИЗДАНИЕ ОФИЦИАЛЬНОЕ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "text": "Российский институт стандартизации",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "2025",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "ФСТЭК России",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ФАУ «ГНИИИ ПТЗИ ФСТЭК России»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "АО «Аладдин Р.Д.»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ТК 362",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Федеральный закон от 29 июня 2015 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "№ 162-ФЗ",
+      "type": "DATE",
+      "source": "llm"
+    }
+  ]
+}

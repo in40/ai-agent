@@ -1,0 +1,33 @@
+{
+  "doc_name": "gost-r-71252-2024_93fbdd23",
+  "chunks_processed": 10,
+  "pattern_count": 28,
+  "validated_count": 5,
+  "entities": [
+    {
+      "text": "ГОСТ Р 71252-2024",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "ФГБУ \"Институт стандартизации\"",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "www.rst.gov.ru",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 71252—2044",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 71252—2024",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

@@ -1,0 +1,1829 @@
+{
+  "doc_name": "r-1323565.1_ca600c45",
+  "formulas": [
+    {
+      "text": "label",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "leftmargin",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "itemsep",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "label",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "leftmargin",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "itemsep",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "b",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "s",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "a",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "b",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "c",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "b",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "s",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "a",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "b",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "c",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "b",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "s",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "a",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "b",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "c",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "b",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "s",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "a",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "b",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "c",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "b",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "s",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "a",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "b",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "c",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "b",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "s",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "a",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "b",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "c",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "b",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "s",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "a",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "b",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "c",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "b",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "s",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "a",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "b",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "c",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "b",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "s",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "a",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "b",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "c",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "b",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "s",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "a",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "b",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "c",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "b",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "s",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "a",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "b",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "c",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "b",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "s",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "a",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "b",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "c",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "b",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "s",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "a",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "b",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "c",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "b",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "s",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "a",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "b",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "c",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "b",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "s",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "a",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "b",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "b",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "b",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "r",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "r",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "b",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 4
+    },
+    {
+      "text": "version",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 10
+    },
+    {
+      "text": "version",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 12
+    },
+    {
+      "text": "width",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 13
+    },
+    {
+      "text": "width",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 13
+    },
+    {
+      "text": "Q_EPH",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 16
+    },
+    {
+      "text": "H",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 16
+    },
+    {
+      "text": "_ENC",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 16
+    },
+    {
+      "text": "H",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 16
+    },
+    {
+      "text": "_ENC",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 16
+    },
+    {
+      "text": "IV",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 16
+    },
+    {
+      "text": "PSExp",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 16
+    },
+    {
+      "text": "IV",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 16
+    },
+    {
+      "text": "PS",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 16
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 16
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 16
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 16
+    },
+    {
+      "text": "sgn_C",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 17
+    },
+    {
+      "text": "MS",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 17
+    },
+    {
+      "text": "MS",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 17
+    },
+    {
+      "text": "IVread",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 17
+    },
+    {
+      "text": "IVwrite",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 17
+    },
+    {
+      "text": "client_verify_data",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 17
+    },
+    {
+      "text": "server_verify_data",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 17
+    },
+    {
+      "text": "server_verify_data",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 17
+    },
+    {
+      "text": "nclient_verify_data",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 17
+    },
+    {
+      "text": "server_verify_data",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 17
+    },
+    {
+      "text": "server_verify_data",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 17
+    },
+    {
+      "text": "client_verify_data",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 17
+    },
+    {
+      "text": "IVread",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 17
+    },
+    {
+      "text": "IVwrite",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 17
+    },
+    {
+      "text": "server_verify_data",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 17
+    },
+    {
+      "text": "client_verify_data",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 17
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 17
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 17
+    },
+    {
+      "text": "server_verify_data",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 18
+    },
+    {
+      "text": "client_verify_data",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 18
+    },
+    {
+      "text": "IVread",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 18
+    },
+    {
+      "text": "IVwrite",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 18
+    },
+    {
+      "text": "server_verify_data",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 18
+    },
+    {
+      "text": "client_verify_data",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 18
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 18
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 18
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 20
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 20
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 20
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 21
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 21
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 22
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 22
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 22
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 22
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 22
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 23
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 23
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 23
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 23
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 24
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 24
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 24
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 24
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 24
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 24
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 24
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 24
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 25
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 25
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 26
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 27
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 28
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 28
+    },
+    {
+      "text": "server_verify_data",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 33
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 35
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 35
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 35
+    },
+    {
+      "text": "T",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 37
+    },
+    {
+      "text": "seqnum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 37
+    },
+    {
+      "text": "C",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 38
+    },
+    {
+      "text": "seqnum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 38
+    },
+    {
+      "text": "seqnum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 38
+    },
+    {
+      "text": "C_1",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 39
+    },
+    {
+      "text": "C_2",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 39
+    },
+    {
+      "text": "C_3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 39
+    },
+    {
+      "text": "C_1",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 39
+    },
+    {
+      "text": "C_2",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 39
+    },
+    {
+      "text": "C_3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 39
+    },
+    {
+      "text": "sgnnC",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 41
+    },
+    {
+      "text": "I",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 41
+    },
+    {
+      "text": "I",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 41
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 41
+    },
+    {
+      "text": "seqnum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 44
+    },
+    {
+      "text": "seqnum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 44
+    },
+    {
+      "text": "seqnum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 44
+    },
+    {
+      "text": "seqnum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 44
+    },
+    {
+      "text": "seqnum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 44
+    },
+    {
+      "text": "seqnum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 45
+    },
+    {
+      "text": "seqnum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 45
+    },
+    {
+      "text": "seqnum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 45
+    },
+    {
+      "text": "seqnum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 45
+    },
+    {
+      "text": "seqnum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 45
+    },
+    {
+      "text": "seqnum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 46
+    },
+    {
+      "text": "seqnum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 46
+    },
+    {
+      "text": "seqnum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 46
+    },
+    {
+      "text": "seqnum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 46
+    },
+    {
+      "text": "seqnum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 46
+    },
+    {
+      "text": "seqnum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 48
+    },
+    {
+      "text": "seqnum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 48
+    },
+    {
+      "text": "seqnum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 48
+    },
+    {
+      "text": "seqnum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 48
+    },
+    {
+      "text": "sequim",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 49
+    },
+    {
+      "text": "seqnum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 49
+    },
+    {
+      "text": "seqnum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 49
+    },
+    {
+      "text": "seqnum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 49
+    },
+    {
+      "text": "seqnum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 49
+    },
+    {
+      "text": "sequim",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 50
+    },
+    {
+      "text": "seqnum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 50
+    },
+    {
+      "text": "seqnum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 50
+    },
+    {
+      "text": "seqnum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 50
+    },
+    {
+      "text": "seqnum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 50
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 53
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 53
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 54
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 54
+    },
+    {
+      "text": "x",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 56
+    },
+    {
+      "text": "y",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 56
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 56
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 56
+    },
+    {
+      "text": "x",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 88
+    },
+    {
+      "text": "y",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 88
+    },
+    {
+      "text": "x",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 88
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 88
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 88
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 88
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 88
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 126
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 126
+    },
+    {
+      "text": "x",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 130
+    },
+    {
+      "text": "y",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 130
+    },
+    {
+      "text": "x",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 140
+    },
+    {
+      "text": "y",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 140
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 140
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 140
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 140
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 140
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 140
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 145
+    },
+    {
+      "text": "x",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 146
+    },
+    {
+      "text": "y",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 146
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 146
+    },
+    {
+      "text": "color",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 161
+    },
+    {
+      "text": "x",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 163
+    },
+    {
+      "text": "exl",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 163
+    },
+    {
+      "text": "f1",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 163
+    },
+    {
+      "text": "f2",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ca600c45",
+      "chunk_index": 163
+    }
+  ]
+}

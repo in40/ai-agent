@@ -1,0 +1,88 @@
+{
+  "doc_name": "gost-r-71207-2024_cea1d441",
+  "chunks_processed": 10,
+  "pattern_count": 23,
+  "validated_count": 16,
+  "entities": [
+    {
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "НАЦИОНАЛЬНЫЙ СТАНДАРТ РОССИЙСКОЙ ФЕДЕРАЦИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 71207-2024",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "text": "Российский институт стандартизации",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "2024",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "ФСТЭК России",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ИСП РАН",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Технический комитет по стандартизации ТК 362",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "18 января 2024 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "Федеральный закон от 29 июня 2015 г.",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "№ 162-ФЗ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "www.rst.gov.ru",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 71207—2024",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 71207—2024",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 71207—2024",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

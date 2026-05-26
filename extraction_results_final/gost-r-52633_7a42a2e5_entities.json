@@ -1,0 +1,58 @@
+{
+  "doc_name": "gost-r-52633_7a42a2e5",
+  "chunks_processed": 10,
+  "pattern_count": 32,
+  "validated_count": 10,
+  "entities": [
+    {
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 52633.2—2010",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "text": "Стандартинформ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "2018",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "ФГУП «Пензенский научно-исследовательский электротехнический институт»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ФГУП «ГНИИИ ПТЗИ ФСТЭК России»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 50779.10—2000",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 52633.0—2006",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 52633.1—2009",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

@@ -1,0 +1,197 @@
+{
+  "doc_name": "gost-r-34_7d202354",
+  "formulas": [
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_7d202354",
+      "chunk_index": 9
+    },
+    {
+      "text": "z",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_7d202354",
+      "chunk_index": 9
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_7d202354",
+      "chunk_index": 9
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_7d202354",
+      "chunk_index": 9
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_7d202354",
+      "chunk_index": 10
+    },
+    {
+      "text": "K",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_7d202354",
+      "chunk_index": 14
+    },
+    {
+      "text": "K_1",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_7d202354",
+      "chunk_index": 14
+    },
+    {
+      "text": "K_2",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_7d202354",
+      "chunk_index": 14
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_7d202354",
+      "chunk_index": 14
+    },
+    {
+      "text": "K_1",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_7d202354",
+      "chunk_index": 14
+    },
+    {
+      "text": "K_2",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_7d202354",
+      "chunk_index": 14
+    },
+    {
+      "text": "K_3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_7d202354",
+      "chunk_index": 14
+    },
+    {
+      "text": "K_4",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_7d202354",
+      "chunk_index": 14
+    },
+    {
+      "text": "K_5",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_7d202354",
+      "chunk_index": 14
+    },
+    {
+      "text": "K_6",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_7d202354",
+      "chunk_index": 14
+    },
+    {
+      "text": "K_7",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_7d202354",
+      "chunk_index": 14
+    },
+    {
+      "text": "K_8",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_7d202354",
+      "chunk_index": 14
+    },
+    {
+      "text": "K_9",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_7d202354",
+      "chunk_index": 14
+    },
+    {
+      "text": "K_10",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_7d202354",
+      "chunk_index": 14
+    },
+    {
+      "text": "K",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_7d202354",
+      "chunk_index": 17
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_7d202354",
+      "chunk_index": 17
+    },
+    {
+      "text": "a",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_7d202354",
+      "chunk_index": 18
+    },
+    {
+      "text": "b",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_7d202354",
+      "chunk_index": 19
+    },
+    {
+      "text": "b",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_7d202354",
+      "chunk_index": 19
+    },
+    {
+      "text": "a",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_7d202354",
+      "chunk_index": 19
+    },
+    {
+      "text": "n",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_7d202354",
+      "chunk_index": 19
+    },
+    {
+      "text": "K",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_7d202354",
+      "chunk_index": 19
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_7d202354",
+      "chunk_index": 19
+    },
+    {
+      "text": "a",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_7d202354",
+      "chunk_index": 19
+    },
+    {
+      "text": "b",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_7d202354",
+      "chunk_index": 20
+    },
+    {
+      "text": "b",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_7d202354",
+      "chunk_index": 20
+    },
+    {
+      "text": "a",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_7d202354",
+      "chunk_index": 20
+    }
+  ]
+}

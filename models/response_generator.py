@@ -123,7 +123,7 @@ class ResponseGenerator:
                 scope=GIGACHAT_SCOPE,
                 access_token=GIGACHAT_ACCESS_TOKEN,
                 verify_ssl_certs=GIGACHAT_VERIFY_SSL_CERTS,
-                request_timeout=120  # 2 minute timeout
+                request_timeout=1800  # 30 minute timeout for slower models
             )
         else:
             # Construct the base URL based on provider configuration for other providers
@@ -153,7 +153,7 @@ class ResponseGenerator:
                 model=model,
                 api_key=api_key,
                 base_url=base_url,
-                request_timeout=120  # 2 minute timeout
+                request_timeout=1800  # 30 minute timeout for slower models
             )
 
         # Create the output parser (keeping it for potential future use)

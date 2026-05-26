@@ -1,0 +1,23 @@
+{
+  "doc_name": "gost-r-59548-2022_c17ad04a",
+  "chunks_processed": 10,
+  "pattern_count": 30,
+  "validated_count": 3,
+  "entities": [
+    {
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 59548—2022",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 59548-2022",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

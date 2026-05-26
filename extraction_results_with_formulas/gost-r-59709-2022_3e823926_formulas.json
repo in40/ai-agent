@@ -1,0 +1,11 @@
+{
+  "doc_name": "gost-r-59709-2022_3e823926",
+  "formulas": [
+    {
+      "text": "margin",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-59709-2022_3e823926",
+      "chunk_index": 49
+    }
+  ]
+}

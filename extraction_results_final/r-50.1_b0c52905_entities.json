@@ -1,0 +1,48 @@
+{
+  "doc_name": "r-50.1_b0c52905",
+  "chunks_processed": 10,
+  "pattern_count": 89,
+  "validated_count": 8,
+  "entities": [
+    {
+      "text": "П 50.1.112—2016",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Министерство информации и коммуникаций РФ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ФГУ «Министерство информации и коммуникаций» РФ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "IEC 50.1:112:2016",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "IEC 50",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "IEC 50",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "IEC 50",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

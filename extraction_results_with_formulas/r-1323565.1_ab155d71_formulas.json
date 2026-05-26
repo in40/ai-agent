@@ -1,0 +1,167 @@
+{
+  "doc_name": "r-1323565.1_ab155d71",
+  "formulas": [
+    {
+      "text": "A",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ab155d71",
+      "chunk_index": 6
+    },
+    {
+      "text": "B",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ab155d71",
+      "chunk_index": 6
+    },
+    {
+      "text": "B",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ab155d71",
+      "chunk_index": 6
+    },
+    {
+      "text": "UKM",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ab155d71",
+      "chunk_index": 6
+    },
+    {
+      "text": "IV",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ab155d71",
+      "chunk_index": 8
+    },
+    {
+      "text": "IV",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ab155d71",
+      "chunk_index": 8
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ab155d71",
+      "chunk_index": 9
+    },
+    {
+      "text": "y",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ab155d71",
+      "chunk_index": 10
+    },
+    {
+      "text": "yP",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ab155d71",
+      "chunk_index": 10
+    },
+    {
+      "text": "KEK_VKO",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ab155d71",
+      "chunk_index": 10
+    },
+    {
+      "text": "block",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ab155d71",
+      "chunk_index": 11
+    },
+    {
+      "text": "PIN",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ab155d71",
+      "chunk_index": 11
+    },
+    {
+      "text": "IUN",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ab155d71",
+      "chunk_index": 11
+    },
+    {
+      "text": "x",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ab155d71",
+      "chunk_index": 11
+    },
+    {
+      "text": "xP",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ab155d71",
+      "chunk_index": 11
+    },
+    {
+      "text": "y",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ab155d71",
+      "chunk_index": 11
+    },
+    {
+      "text": "yP",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ab155d71",
+      "chunk_index": 11
+    },
+    {
+      "text": "KEK_VKO",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ab155d71",
+      "chunk_index": 11
+    },
+    {
+      "text": "block",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ab155d71",
+      "chunk_index": 12
+    },
+    {
+      "text": "PIN",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ab155d71",
+      "chunk_index": 12
+    },
+    {
+      "text": "IUN",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ab155d71",
+      "chunk_index": 12
+    },
+    {
+      "text": "x",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ab155d71",
+      "chunk_index": 12
+    },
+    {
+      "text": "xP",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ab155d71",
+      "chunk_index": 12
+    },
+    {
+      "text": "y",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ab155d71",
+      "chunk_index": 12
+    },
+    {
+      "text": "yP",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ab155d71",
+      "chunk_index": 12
+    },
+    {
+      "text": "KEK_VKO",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ab155d71",
+      "chunk_index": 12
+    },
+    {
+      "text": "block",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_ab155d71",
+      "chunk_index": 13
+    }
+  ]
+}

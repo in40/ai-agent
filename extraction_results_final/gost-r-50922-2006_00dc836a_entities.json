@@ -1,0 +1,78 @@
+{
+  "doc_name": "gost-r-50922-2006_00dc836a",
+  "chunks_processed": 10,
+  "pattern_count": 36,
+  "validated_count": 14,
+  "entities": [
+    {
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 50922-2006",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ФГУ «ГНИИПИ ПТСЗИ ФСТЭК России»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "27 декабря 2002 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "№ 184-ФЗ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "27 июля 2006 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "№ 98-ФЗ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "27 декабря 2006 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "№ 373-ст",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р\n50922-\n2006",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 50922—2006",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 1.0—2004",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 50922—2006",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 50922—2006",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

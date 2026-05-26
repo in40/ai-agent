@@ -1,0 +1,48 @@
+{
+  "doc_name": "r-1323565.1_e5fca2b3",
+  "chunks_processed": 10,
+  "pattern_count": 30,
+  "validated_count": 8,
+  "entities": [
+    {
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ПР-1323565.1.017-2018",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "Общество с ограниченной ответственностью «КРИПТО-ПРО»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Технический комитет по стандартизации ТК 26",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Приказ Федерального агентства по техническому регулированию и метрологии от 24 апреля 2018 г. № 206-ст",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "Федеральный закон от 29 июня 2015 г. № 162-ФЗ",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 34.12-2015",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 34.13-2015",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

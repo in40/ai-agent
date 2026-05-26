@@ -1,0 +1,38 @@
+{
+  "doc_name": "gost-r-57628-2017_850edf8c",
+  "chunks_processed": 10,
+  "pattern_count": 63,
+  "validated_count": 6,
+  "entities": [
+    {
+      "text": "Федеральное Агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "НАЦИОНАЛЬНЫЙ СТАНДАРТ РОССИЙСКОЙ ФЕДЕРАЦИИ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ISO/IEC TR 15446:2009",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "NEQ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Руководство по разработке профилей защиты и заданий по безопасности",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 57628—2017",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "doc_name": "r-1323565.1_98e6f026",
+  "chunks_processed": 10,
+  "pattern_count": 43,
+  "validated_count": 13,
+  "entities": [
+    {
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "P 132365.1.004-2017",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "Технический комитет по стандартизации",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Правила применения",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Предисловие",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Разработанный Центром защиты информации и специальной связи ФСБ России",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ОАО «Информационные технологии и коммуникационные системы»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Технический комитет по стандартизации ТК 26",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Приказом Федерального агентства по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Федеральный закон от 29 июня 2015 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "Национальные стандарты",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "www.gost.ru",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 34.10-2012",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

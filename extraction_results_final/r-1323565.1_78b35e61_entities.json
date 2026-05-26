@@ -1,0 +1,63 @@
+{
+  "doc_name": "r-1323565.1_78b35e61",
+  "chunks_processed": 10,
+  "pattern_count": 67,
+  "validated_count": 11,
+  "entities": [
+    {
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "text": "Российский институт стандартизации",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "2022",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "Общество с ограниченной ответственностью «Код Безопасности»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ООО «КИПТО-ПРО»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Федеральное государственное универсальное предприятие «Научно-технический центр «Атлас»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ФГУП «НТЦ «Атлас»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "АО «ИнфоТеКС»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "2015",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "162-ФЗ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "www.rst.gov.ru",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    }
+  ]
+}

@@ -3,8 +3,14 @@
     "allow": [
       "Bash(python3 *)",
       "Bash(ss *)",
-      "Bash(netstat *)"
+      "Bash(netstat *)",
+      "Bash(curl *)"
     ]
+  },
+  "mcpServers": {
+    "internet-search": {
+      "url": "http://127.0.0.1:8090"
+    }
   },
   "$version": 3
 }

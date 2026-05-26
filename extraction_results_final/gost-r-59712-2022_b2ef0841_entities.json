@@ -1,0 +1,58 @@
+{
+  "doc_name": "gost-r-59712-2022_b2ef0841",
+  "chunks_processed": 10,
+  "pattern_count": 35,
+  "validated_count": 10,
+  "entities": [
+    {
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "НАЦИОНАЛЬНЫЙ СТАНДРТ РОССИЙСКОЙ ФЕДЕРАЦИИ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 59712—2022",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "УПРАВЛЕНИЕ КОМПЬЮТЕРНЫМИ ИНЦИДЕНТАМИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Российский институт стандартизации",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "text": "2022",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "29 ноября 2022 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 59712—\n2022",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 59711—2022",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

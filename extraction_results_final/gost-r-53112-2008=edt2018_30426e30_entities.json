@@ -1,0 +1,68 @@
+{
+  "doc_name": "gost-r-53112-2008=edt2018_30426e30",
+  "chunks_processed": 10,
+  "pattern_count": 34,
+  "validated_count": 12,
+  "entities": [
+    {
+      "text": "ГОСТ Р 53112-2008",
+      "type": "STANDARD",
+      "source": "llm"
+    },
+    {
+      "text": "ФГУ \"32 ГНИИ МИНОБОРОНЫ РОССИИ\"",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ФГУ \"ГНИИ ПТЗИ ФСТЭК России\"",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "text": "2018",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "2008",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р\n53112-2008",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ 12.2",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "IEC 61010-1",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "IEC 60050-161",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 53112—2088",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 53112—2088",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

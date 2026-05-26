@@ -1,0 +1,617 @@
+{
+  "doc_name": "gost-r-34_51200256",
+  "formulas": [
+    {
+      "text": "R_1",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 1
+    },
+    {
+      "text": "Y_i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 1
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 1
+    },
+    {
+      "text": "P_q",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 1
+    },
+    {
+      "text": "R_1",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 1
+    },
+    {
+      "text": "Y_i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 1
+    },
+    {
+      "text": "P_i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 1
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 1
+    },
+    {
+      "text": "Y_q",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 1
+    },
+    {
+      "text": "P_q",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 1
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 5
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 5
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 5
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 5
+    },
+    {
+      "text": "llr",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 5
+    },
+    {
+      "text": "r",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 5
+    },
+    {
+      "text": "z",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 5
+    },
+    {
+      "text": "_i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 5
+    },
+    {
+      "text": "z",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 6
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 6
+    },
+    {
+      "text": "_s",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 6
+    },
+    {
+      "text": "d_K",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 6
+    },
+    {
+      "text": "C",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 7
+    },
+    {
+      "text": "R_1",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 7
+    },
+    {
+      "text": "Y_i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 7
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 7
+    },
+    {
+      "text": "P_q",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 7
+    },
+    {
+      "text": "P",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 7
+    },
+    {
+      "text": "m",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 8
+    },
+    {
+      "text": "P",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 9
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 9
+    },
+    {
+      "text": "R_1",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 9
+    },
+    {
+      "text": "C_i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 9
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 9
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 9
+    },
+    {
+      "text": "C_q",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 9
+    },
+    {
+      "text": "C",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 9
+    },
+    {
+      "text": "C",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 10
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 10
+    },
+    {
+      "text": "R_1",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 10
+    },
+    {
+      "text": "P_i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 10
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 10
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 10
+    },
+    {
+      "text": "P_q",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 10
+    },
+    {
+      "text": "P",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 10
+    },
+    {
+      "text": "m",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 12
+    },
+    {
+      "text": "P",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 12
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 12
+    },
+    {
+      "text": "C_0",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 13
+    },
+    {
+      "text": "C_i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 13
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 13
+    },
+    {
+      "text": "MAC",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 13
+    },
+    {
+      "text": "P_q",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 13
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 24
+    },
+    {
+      "text": "n",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 24
+    },
+    {
+      "text": "n",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 24
+    },
+    {
+      "text": "n",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 24
+    },
+    {
+      "text": "K",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 24
+    },
+    {
+      "text": "P_1",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 24
+    },
+    {
+      "text": "P_2",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 24
+    },
+    {
+      "text": "P_3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 24
+    },
+    {
+      "text": "P_4",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 24
+    },
+    {
+      "text": "s",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 24
+    },
+    {
+      "text": "n",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 24
+    },
+    {
+      "text": "IV",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 24
+    },
+    {
+      "text": "s",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 24
+    },
+    {
+      "text": "n",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 24
+    },
+    {
+      "text": "m",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 24
+    },
+    {
+      "text": "n",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 24
+    },
+    {
+      "text": "IV",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 24
+    },
+    {
+      "text": "m",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 24
+    },
+    {
+      "text": "n",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 24
+    },
+    {
+      "text": "IV",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 24
+    },
+    {
+      "text": "s",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 24
+    },
+    {
+      "text": "n",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 24
+    },
+    {
+      "text": "m",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 24
+    },
+    {
+      "text": "n",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 24
+    },
+    {
+      "text": "IV",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 24
+    },
+    {
+      "text": "n",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 24
+    },
+    {
+      "text": "K",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 24
+    },
+    {
+      "text": "P_1",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 24
+    },
+    {
+      "text": "P_2",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 24
+    },
+    {
+      "text": "P_3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 24
+    },
+    {
+      "text": "P_4",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 24
+    },
+    {
+      "text": "s",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 24
+    },
+    {
+      "text": "n",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 24
+    },
+    {
+      "text": "IV",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 24
+    },
+    {
+      "text": "s",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 24
+    },
+    {
+      "text": "n",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 24
+    },
+    {
+      "text": "m",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 24
+    },
+    {
+      "text": "n",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 24
+    },
+    {
+      "text": "IV",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 24
+    },
+    {
+      "text": "IV",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 24
+    },
+    {
+      "text": "m",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 24
+    },
+    {
+      "text": "n",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 24
+    },
+    {
+      "text": "IV",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 24
+    },
+    {
+      "text": "s",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 24
+    },
+    {
+      "text": "n",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 24
+    },
+    {
+      "text": "m",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 24
+    },
+    {
+      "text": "n",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 24
+    },
+    {
+      "text": "IV",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 24
+    },
+    {
+      "text": "MAC",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_51200256",
+      "chunk_index": 24
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "doc_name": "gost-34_bdb2abdc",
+  "chunks_processed": 10,
+  "pattern_count": 77,
+  "validated_count": 9,
+  "entities": [
+    {
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р ИСО/МЭК 27033-1—",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ISO/IEC 27033-1:2009",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "IDT",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "text": "Стандартинформ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "IEC 27033-1",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 1.0—2004",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "IEC 27033-1",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "doc_name": "r-1323565.1_84a0d6fb",
+  "chunks_processed": 10,
+  "pattern_count": 48,
+  "validated_count": 13,
+  "entities": [
+    {
+      "text": "РЕКОМЕНДАЦИИ ПО СТАНДАРТИЗАЦИИ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Информационная технология",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Криптографическая защита информации",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Общество с ограниченной ответственностью «Системы практической безопасности» (ООО «СПБ»)",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Открытый акционерное общество «Информационные технологии и коммуникационные системы» (АОО «ИнфоTeКС»)",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Общество с ограниченной ответственностью «КРИПТО-ПРО» (ООО «КРИПТО-ПРО»)",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Технический комитет по стандартизации ТК 26",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Стандартинформ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ФЗ «О стандартизации в Российской Федерации» (№ 162-ФЗ)",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Межбанковская система обработки данных (ЗОС)",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Область применения",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 34.11—2012",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

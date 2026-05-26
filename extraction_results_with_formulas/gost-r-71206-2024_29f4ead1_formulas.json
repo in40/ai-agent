@@ -1,0 +1,185 @@
+{
+  "doc_name": "gost-r-71206-2024_29f4ead1",
+  "formulas": [
+    {
+      "text": "std",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71206-2024_29f4ead1",
+      "chunk_index": 14
+    },
+    {
+      "text": "D_FORTIFY_SOURCE",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71206-2024_29f4ead1",
+      "chunk_index": 17
+    },
+    {
+      "text": "result",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71206-2024_29f4ead1",
+      "chunk_index": 18
+    },
+    {
+      "text": "c",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71206-2024_29f4ead1",
+      "chunk_index": 18
+    },
+    {
+      "text": "result",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71206-2024_29f4ead1",
+      "chunk_index": 18
+    },
+    {
+      "text": "x",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71206-2024_29f4ead1",
+      "chunk_index": 18
+    },
+    {
+      "text": "y",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71206-2024_29f4ead1",
+      "chunk_index": 18
+    },
+    {
+      "text": "argc",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71206-2024_29f4ead1",
+      "chunk_index": 19
+    },
+    {
+      "text": "argc",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71206-2024_29f4ead1",
+      "chunk_index": 19
+    },
+    {
+      "text": "n",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71206-2024_29f4ead1",
+      "chunk_index": 19
+    },
+    {
+      "text": "x",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71206-2024_29f4ead1",
+      "chunk_index": 19
+    },
+    {
+      "text": "y",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71206-2024_29f4ead1",
+      "chunk_index": 19
+    },
+    {
+      "text": "t",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71206-2024_29f4ead1",
+      "chunk_index": 19
+    },
+    {
+      "text": "x",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71206-2024_29f4ead1",
+      "chunk_index": 19
+    },
+    {
+      "text": "y",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71206-2024_29f4ead1",
+      "chunk_index": 19
+    },
+    {
+      "text": "t",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71206-2024_29f4ead1",
+      "chunk_index": 19
+    },
+    {
+      "text": "result",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71206-2024_29f4ead1",
+      "chunk_index": 20
+    },
+    {
+      "text": "c",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71206-2024_29f4ead1",
+      "chunk_index": 20
+    },
+    {
+      "text": "result",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71206-2024_29f4ead1",
+      "chunk_index": 20
+    },
+    {
+      "text": "x",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71206-2024_29f4ead1",
+      "chunk_index": 20
+    },
+    {
+      "text": "y",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71206-2024_29f4ead1",
+      "chunk_index": 20
+    },
+    {
+      "text": "argc",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71206-2024_29f4ead1",
+      "chunk_index": 21
+    },
+    {
+      "text": "argc",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71206-2024_29f4ead1",
+      "chunk_index": 21
+    },
+    {
+      "text": "n",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71206-2024_29f4ead1",
+      "chunk_index": 21
+    },
+    {
+      "text": "x",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71206-2024_29f4ead1",
+      "chunk_index": 21
+    },
+    {
+      "text": "y",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71206-2024_29f4ead1",
+      "chunk_index": 21
+    },
+    {
+      "text": "t",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71206-2024_29f4ead1",
+      "chunk_index": 21
+    },
+    {
+      "text": "x",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71206-2024_29f4ead1",
+      "chunk_index": 21
+    },
+    {
+      "text": "y",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71206-2024_29f4ead1",
+      "chunk_index": 21
+    },
+    {
+      "text": "t",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71206-2024_29f4ead1",
+      "chunk_index": 21
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "doc_name": "gost-r-59162-2020_115cf792",
+  "chunks_processed": 10,
+  "pattern_count": 60,
+  "validated_count": 10,
+  "entities": [
+    {
+      "text": "ГОСТ Р 59162—2020",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ФИЦ ИУ РАН",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ООО ИАВЦ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ТК 22",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ISO/IEC 27033-6:2016",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "NEQ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "10 ноября 2020 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "IEC 27033-6",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "IEC 27033-6",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

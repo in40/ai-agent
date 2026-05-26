@@ -1,0 +1,88 @@
+{
+  "doc_name": "gost-r-54583-2011_db7936db",
+  "chunks_processed": 10,
+  "pattern_count": 69,
+  "validated_count": 16,
+  "entities": [
+    {
+      "text": "Федеральное Агентство ПО Техническому Регулированию и Метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ P 54583-2011/ISO/IEC/TR 15443-3:2007",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Информационная технология",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "МЕТОДЫ И СРЕДСТВА ОБЕСПЕЧЕНИЯ БЕЗОПАСНОСТИ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Основы доверия к безопасности информационных технологий",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Часть 3",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Анализ методов доверия",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ISO/IEC TR 15443-3:2007",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ФГУ «ГНИИИ ПТЗИ ФСТЭК России»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ООО «ЦБИ»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Стандартизация в Российской Федерации. Основные положения",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Федеральный закон от 27 декабря 2002 г. № 184-ФЗ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 1.0—2004",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Приказом Федерального агентства по техническому регулированию и метрологии от 1 декабря 2011 г. № 691-ст",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Стандартинформ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 54583—2011",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

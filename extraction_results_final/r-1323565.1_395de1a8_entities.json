@@ -1,0 +1,33 @@
+{
+  "doc_name": "r-1323565.1_395de1a8",
+  "chunks_processed": 10,
+  "pattern_count": 84,
+  "validated_count": 5,
+  "entities": [
+    {
+      "text": "2018",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "Общество с ограниченной ответственностью «Системы практической безопасности»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Открытый акционерное общество «Информационные технологии и коммуникационные системы»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ООО «КРИПТО-ПРО»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    }
+  ]
+}

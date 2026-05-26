@@ -1,0 +1,68 @@
+{
+  "doc_name": "gost-r-53110-2008=edt2020_0608256d",
+  "chunks_processed": 10,
+  "pattern_count": 35,
+  "validated_count": 12,
+  "entities": [
+    {
+      "text": "ГОСТ Р 53110-2008",
+      "type": "STANDARD",
+      "source": "llm"
+    },
+    {
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "text": "Стандартинформ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "2020",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "ЗАО «Компания ТТК»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ОАО «Межрегиональный ТранзитТелеком»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ФГУП «ЦНИИС»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ФГУ «ГНИИИ ПТЗИ ФСТЭК России»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "18 декабря 2008 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 53110—2008",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 52448—2005",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

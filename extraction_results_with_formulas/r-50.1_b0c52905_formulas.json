@@ -1,0 +1,77 @@
+{
+  "doc_name": "r-50.1_b0c52905",
+  "formulas": [
+    {
+      "text": "K_M",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-50.1_b0c52905",
+      "chunk_index": 25
+    },
+    {
+      "text": "K",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-50.1_b0c52905",
+      "chunk_index": 25
+    },
+    {
+      "text": "I",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-50.1_b0c52905",
+      "chunk_index": 25
+    },
+    {
+      "text": "KeyValueMask",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-50.1_b0c52905",
+      "chunk_index": 25
+    },
+    {
+      "text": "PubKey",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-50.1_b0c52905",
+      "chunk_index": 25
+    },
+    {
+      "text": "k",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-50.1_b0c52905",
+      "chunk_index": 25
+    },
+    {
+      "text": "K_M",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-50.1_b0c52905",
+      "chunk_index": 25
+    },
+    {
+      "text": "K_M",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-50.1_b0c52905",
+      "chunk_index": 25
+    },
+    {
+      "text": "K",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-50.1_b0c52905",
+      "chunk_index": 25
+    },
+    {
+      "text": "nuljqr9wEMK5pMNjMa8upPRISmV8oZaw4ihq3Lt18hfQ",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-50.1_b0c52905",
+      "chunk_index": 31
+    },
+    {
+      "text": "uljqr9wEMK5pMNjMa8upPRISmV8oZaw4ihq3Lt18hfQ",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-50.1_b0c52905",
+      "chunk_index": 33
+    },
+    {
+      "text": "fgICB9A",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-50.1_b0c52905",
+      "chunk_index": 35
+    }
+  ]
+}

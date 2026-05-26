@@ -1,0 +1,190 @@
+{
+  "description": "30 natural test queries for GOST security standards documents",
+  "documents": [
+    "ГОСТ Р 52069.0-2013 - Система стандартов по защите информации (основные положения)",
+    "Р 1323565.1.043-2022 - Контрольные примеры TLS 1.3 с российскими криптоалгоритмами"
+  ],
+  "queries": [
+    {
+      "id": 1,
+      "query": "что такое система стандартов по защите информации",
+      "category": "general",
+      "expected_doc": "gost-r-52069"
+    },
+    {
+      "id": 2,
+      "query": "какие методы защиты информации не являются криптографическими",
+      "category": "general",
+      "expected_doc": "gost-r-52069"
+    },
+    {
+      "id": 3,
+      "query": "что такое техническая защита информации ТЗИ",
+      "category": "definitions",
+      "expected_doc": "gost-r-52069"
+    },
+    {
+      "id": 4,
+      "query": "как проверить правильность реализации TLS 1.3 с ГОСТ алгоритмами",
+      "category": "implementation",
+      "expected_doc": "r-1323565.1"
+    },
+    {
+      "id": 5,
+      "id": 5,
+      "query": "какие криптографические алгоритмы используются в российском TLS 1.3",
+      "category": "crypto",
+      "expected_doc": "r-1323565.1"
+    },
+    {
+      "id": 6,
+      "query": "что такое кузнечик и магма шифры",
+      "category": "crypto",
+      "expected_doc": "r-1323565.1"
+    },
+    {
+      "id": 7,
+      "query": "какие сценарии работы протокола TLS описаны в стандарте",
+      "category": "protocols",
+      "expected_doc": "r-1323565.1"
+    },
+    {
+      "id": 8,
+      "query": "что такое противодействие техническим разведкам",
+      "category": "definitions",
+      "expected_doc": "gost-r-52069"
+    },
+    {
+      "id": 9,
+      "query": "какие организации участвовали в разработке стандарта TLS с ГОСТ",
+      "category": "general",
+      "expected_doc": "r-1323565.1"
+    },
+    {
+      "id": 10,
+      "query": "что такое КСИИ и обеспечение безопасности информации",
+      "category": "definitions",
+      "expected_doc": "gost-r-52069"
+    },
+    {
+      "id": 11,
+      "query": "как работает аутентификация в TLS 1.3 с российскими алгоритмами",
+      "category": "implementation",
+      "expected_doc": "r-1323565.1"
+    },
+    {
+      "id": 12,
+      "query": "какие эллиптические кривые используются в ГОСТ криптографии",
+      "category": "crypto",
+      "expected_doc": "r-1323565.1"
+    },
+    {
+      "id": 13,
+      "query": "что входит в систему стандартов по защите информации",
+      "category": "general",
+      "expected_doc": "gost-r-52069"
+    },
+    {
+      "id": 14,
+      "query": "как проверить цифровую подпись ГОСТ Р 34.10-2012",
+      "category": "implementation",
+      "expected_doc": "r-1323565.1"
+    },
+    {
+      "id": 15,
+      "query": "какие основные задачи системы стандартов по защите информации",
+      "category": "general",
+      "expected_doc": "gost-r-52069"
+    },
+    {
+      "id": 16,
+      "query": "что такое хэндшейк в TLS протоколе",
+      "category": "protocols",
+      "expected_doc": "r-1323565.1"
+    },
+    {
+      "id": 17,
+      "query": "какие организации разработали ГОСТ Р 52069.0",
+      "category": "general",
+      "expected_doc": "gost-r-52069"
+    },
+    {
+      "id": 18,
+      "query": "как работает обмен ключами ECDHE в российском TLS",
+      "category": "implementation",
+      "expected_doc": "r-1323565.1"
+    },
+    {
+      "id": 19,
+      "query": "что такое объект защиты информации ОЗИ",
+      "category": "definitions",
+      "expected_doc": "gost-r-52069"
+    },
+    {
+      "id": 20,
+      "query": "какие криптонаборы поддерживаются в TLS ГOST",
+      "category": "crypto",
+      "expected_doc": "r-1323565.1"
+    },
+    {
+      "id": 21,
+      "query": "что такое средство защиты информации СЗИ",
+      "category": "definitions",
+      "expected_doc": "gost-r-52069"
+    },
+    {
+      "id": 22,
+      "query": "как проверить контрольные примеры TLS реализации",
+      "category": "implementation",
+      "expected_doc": "r-1323565.1"
+    },
+    {
+      "id": 23,
+      "query": "какие термины используются в стандартах защиты информации",
+      "category": "definitions",
+      "expected_doc": "gost-r-52069"
+    },
+    {
+      "id": 24,
+      "query": "что такое функция хеширования Transcript-Hash в TLS",
+      "category": "crypto",
+      "expected_doc": "r-1323565.1"
+    },
+    {
+      "id": 25,
+      "query": "какова область применения системы стандартов по ЗИ",
+      "category": "general",
+      "expected_doc": "gost-r-52069"
+    },
+    {
+      "id": 26,
+      "query": "что такое сессионное восстановление в TLS 1.3",
+      "category": "protocols",
+      "expected_doc": "r-1323565.1"
+    },
+    {
+      "id": 27,
+      "query": "какие параметры эллиптических кривых используются в ГОСТ",
+      "category": "crypto",
+      "expected_doc": "r-1323565.1"
+    },
+    {
+      "id": 28,
+      "query": "что такое технический комитет ТК 362 защита информации",
+      "category": "general",
+      "expected_doc": "gost-r-52069"
+    },
+    {
+      "id": 29,
+      "query": "как работает аутентифицированное шифрование MGM режим",
+      "category": "crypto",
+      "expected_doc": "r-1323565.1"
+    },
+    {
+      "id": 30,
+      "query": "какие принципы формирования системы стандартов по защите информации",
+      "category": "general",
+      "expected_doc": "gost-r-52069"
+    }
+  ]
+}

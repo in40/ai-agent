@@ -1,0 +1,63 @@
+{
+  "doc_name": "gost-r-58256-2018_4321085a",
+  "chunks_processed": 10,
+  "pattern_count": 72,
+  "validated_count": 11,
+  "entities": [
+    {
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "НАЦИОНАЛЬНЫЙ СТАНДАРТ РОССИЙСКОЙ ФЕДЕРАЦИИ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 58256-2018",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "УПРАВЛЕНИЕ ПОТОКАМИ ИНФОРМАЦИИ В ИНФОРМАЦИОННОЙ СИСТЕМЕ. ФОРМАТ КЛАССИФИКАЦИОННЫХ МЕТОК",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Издание официальное",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "26 октября 2018 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "№ 849-ст",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "29 июня 2015 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "www.gost.ru",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 58256—2018",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 53114—2008",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

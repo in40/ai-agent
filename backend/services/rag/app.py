@@ -12,6 +12,11 @@ import logging
 from datetime import datetime
 import time
 
+# Load environment variables from .env file
+from dotenv import load_dotenv
+env_path = Path(__file__).resolve().parent.parent.parent / '.env'
+load_dotenv(env_path)
+
 # Import RAG components
 from rag_component.main import RAGOrchestrator
 from config.settings import RESPONSE_LLM_PROVIDER, RESPONSE_LLM_MODEL
@@ -2274,7 +2279,20 @@ def smart_ingest(current_user_id):
                 # Apply chunking strategy
                 chunks = []
 
-                if chunking_strategy == 'smart_chunking' and llm and custom_prompt:
+                if chunking_strategy == 'recursive_semantic':
+                    # NEW: Use hybrid recursive semantic chunking
+                    from .smart_ingestion_enhanced import hybrid_chunk_document, validate_and_fix_chunks
+                    
+                    logger.info(f"[Job] Using recursive semantic chunking for {file.filename}")
+                    raw_chunks = hybrid_chunk_document(document_content, file.filename)
+                    
+                    # Post-process to fix size issues
+                    chunks_list = validate_and_fix_chunks(raw_chunks)
+                    
+                    chunks = [c.get('content', '') for c in chunks_list]
+                    logger.info(f"[Job] Recursive semantic generated {len(chunks)} chunks for {file.filename}")
+                    
+                elif chunking_strategy == 'smart_chunking' and llm and custom_prompt:
                     try:
                         # Qwen 3.5 35B has 262k context window - can handle most docs in single call
                         # Threshold: 800k chars ≈ 200k tokens (leaves room for prompt + output)
@@ -2535,6 +2553,7 @@ def smart_ingest_files(current_user_id):
         ingest_chunks = request.form.get('ingest_chunks', 'true').lower() == 'true'
         process_mode = request.form.get('process_mode', 'vector_db')
         custom_prompt = request.form.get('custom_prompt', '')
+        enable_regex = request.form.get('enable_regex_entities', 'false').lower() == 'true'
         
         if not custom_prompt:
             from .smart_ingestion_enhanced import DEFAULT_SMART_CHUNKING_PROMPT
@@ -2588,7 +2607,8 @@ def smart_ingest_files(current_user_id):
                 'ingest_chunks': ingest_chunks,
                 'process_mode': process_mode,
                 'prompt': custom_prompt,
-                'total_documents': len(saved_files)
+                'total_documents': len(saved_files),
+                'enable_regex_entities': enable_regex
             },
             ingestion_mode='files',
             processing_mode=process_mode,
@@ -2676,6 +2696,19 @@ def smart_ingest_files(current_user_id):
                         if process_mode == 'download_only':
                             logger.info(f"[Job {job_id}] Download-only mode - skipping chunking for {file_info['filename']}")
                             chunks = []
+                        elif chunking_strategy == 'recursive_semantic':
+                            # NEW: Use hybrid recursive semantic chunking
+                            from .smart_ingestion_enhanced import hybrid_chunk_document, validate_and_fix_chunks
+                            
+                            logger.info(f"[Job {job_id}] Using recursive semantic chunking for {file_info['filename']}")
+                            raw_chunks = hybrid_chunk_document(document_content, file_info['original_filename'])
+                            
+                            # Post-process to fix size issues
+                            chunks_list = validate_and_fix_chunks(raw_chunks)
+                            
+                            chunks = [c.get('content', '') for c in chunks_list]
+                            logger.info(f"[Job {job_id}] Recursive semantic generated {len(chunks)} chunks for {file_info['filename']}")
+                            
                         elif chunking_strategy == 'smart_chunking' and llm and prompt:
                             try:
                                 # Prepare full prompt
@@ -2946,6 +2979,7 @@ def smart_ingest_webpage(current_user_id):
         process_mode = data.get('process_mode', 'vector_db')
         custom_prompt = data.get('custom_prompt', '')
         document_urls = data.get('document_urls', [])  # Pre-scanned URLs
+        enable_regex = data.get('enable_regex_entities', False)
         
         # If no document_urls provided, scan the page now
         if not document_urls:
@@ -2980,7 +3014,8 @@ def smart_ingest_webpage(current_user_id):
                 'ingest_chunks': ingest_chunks,
                 'process_mode': process_mode,
                 'prompt': custom_prompt,
-                'total_documents': len(document_urls)
+                'total_documents': len(document_urls),
+                'enable_regex_entities': enable_regex
             },
             ingestion_mode='webpage',
             processing_mode=process_mode,
@@ -3395,6 +3430,7 @@ def smart_ingest_docstore(current_user_id):
         chunking_strategy = data.get('chunking_strategy', 'smart_chunking')
         ingest_chunks = data.get('ingest_chunks', True)
         process_mode = data.get('process_mode', 'vector_db')
+        enable_regex = data.get('enable_regex_entities', False)
 
         # Create background job with configuration tracking
         job = job_queue.create_job(
@@ -3405,7 +3441,8 @@ def smart_ingest_docstore(current_user_id):
                 'chunking_strategy': chunking_strategy,
                 'ingest_chunks': ingest_chunks,
                 'process_mode': process_mode,
-                'total_documents': len(documents)
+                'total_documents': len(documents),
+                'enable_regex_entities': enable_regex
             },
             ingestion_mode='docstore',
             processing_mode=process_mode,
@@ -4055,7 +4092,7 @@ def graph_visualize(current_user_id):
                 WHERE true {type_filter} {search_filter}
                 RETURN e.name as name, e.type as type, e.relevance as relevance,
                        e.updated_at as updated_at
-                ORDER BY e.relevance DESC
+                ORDER BY COALESCE(e.relevance, 0) DESC
                 LIMIT $limit
             """
 
@@ -4076,50 +4113,57 @@ def graph_visualize(current_user_id):
                 if r['updated_at']:
                     entity_timestamps[r['name']] = r['updated_at']
 
-            # Get relationships - including both direct and co-occurrence based
+            # Get relationships - include ALL connected entities, not just those in initial set
             links = []
+            connected_node_names = set(node_names)  # Track all nodes including connected ones
 
             if nodes:
-                # First: Get any existing Entity-Entity relationships
+                # Get ALL Entity-Entity relationships from the selected entities
+                # Include target entities even if they weren't in the initial result set
                 entity_rel_query = """
                     MATCH (source:Entity)-[r]-(target:Entity)
-                    WHERE source.name IN $names AND target.name IN $names
-                    RETURN source.name as source, target.name as target, type(r) as relationship
-                    LIMIT 1000
+                    WHERE source.name IN $names
+                    RETURN source.name as source, target.name as target, 
+                           target.type as target_type, type(r) as relationship
+                    LIMIT 5000
                 """
                 rel_result = session.run(entity_rel_query, names=list(node_names))
+                
                 for r in rel_result:
-                    links.append({
-                        'source': r['source'],
-                        'target': r['target'],
-                        'relationship': r['relationship']
-                    })
-
-                # Second: Create co-occurrence relationships based on timestamp proximity
-                # Entities created within 2 seconds of each other likely came from same document
-                cooccur_query = """
-                    MATCH (e1:Entity), (e2:Entity)
-                    WHERE e1.name IN $names AND e2.name IN $names
-                    AND e1.name < e2.name  // Avoid duplicates
-                    AND e1.type <> e2.type  // Different types more likely to be related
-                    AND e1.updated_at IS NOT NULL AND e2.updated_at IS NOT NULL
-                    AND abs(duration.between(e1.updated_at, e2.updated_at).seconds) < 2
-                    RETURN e1.name as source, e2.name as target, 'CO_OCCUR' as relationship
-                    LIMIT 1000
-                """
-                cooccur_result = session.run(cooccur_query, names=list(node_names))
-                for r in cooccur_result:
-                    # Avoid duplicate links
-                    link_exists = any(
-                        (l['source'] == r['source'] and l['target'] == r['target']) or
-                        (l['source'] == r['target'] and l['target'] == r['source'])
+                    # Avoid duplicate links (relationship can be bidirectional)
+                    link_key = tuple(sorted([r['source'], r['target']])) + (r['relationship'],)
+                    if not any(
+                        tuple(sorted([l['source'], l['target']])) + (l['relationship'],) == link_key
                         for l in links
-                    )
-                    if not link_exists:
+                    ):
                         links.append({
                             'source': r['source'],
                             'target': r['target'],
                             'relationship': r['relationship']
+                        })
+                        # Add target to connected nodes if not already present
+                        connected_node_names.add(r['target'])
+
+                # Add connected entities as nodes (if they weren't in the original set)
+                # This ensures all connected entities are visible in the graph
+                if len(connected_node_names) > len(node_names):
+                    additional_nodes_query = """
+                        MATCH (e:Entity)
+                        WHERE e.name IN $names AND NOT e.name IN $original_names
+                        RETURN e.name as name, e.type as type, e.relevance as relevance
+                        LIMIT 1000
+                    """
+                    additional_result = session.run(additional_nodes_query, 
+                                                   names=list(connected_node_names),
+                                                   original_names=list(node_names))
+                    
+                    for r in additional_result:
+                        nodes.append({
+                            'id': r['name'],
+                            'name': r['name'],
+                            'type': r['type'],
+                            'relevance': r['relevance'] or 0,
+                            'updated_at': ''
                         })
 
             # Count by type

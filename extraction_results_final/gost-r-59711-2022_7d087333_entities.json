@@ -1,0 +1,28 @@
+{
+  "doc_name": "gost-r-59711-2022_7d087333",
+  "chunks_processed": 10,
+  "pattern_count": 89,
+  "validated_count": 4,
+  "entities": [
+    {
+      "text": "ГОСТ Р 59711—2022",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Российский институт стандартизации",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "29 ноября 2022",
+      "type": "DATE",
+      "source": "llm"
+    }
+  ]
+}

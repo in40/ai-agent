@@ -133,10 +133,15 @@ class HybridRetriever:
     
     def _graph_search(self, query: str, top_k: int) -> List[Dict]:
         """
-        Perform graph-based entity search.
+        Perform graph-based entity search with Vector DB chunk retrieval.
+        
+        Reference-based architecture:
+        1. Query Neo4j for entities matching search terms
+        2. Get chunk UUIDs from entity.chunk_ids property
+        3. Fetch actual chunks from Vector DB using UUIDs
         
         Args:
-            query: Query text
+            query: User query
             top_k: Number of results
             
         Returns:
@@ -146,43 +151,82 @@ class HybridRetriever:
             return []
         
         # Extract key terms from query (simple approach)
-        query_terms = [word for word in query.split()[:5] if len(word) > 3]
+        # Keep short terms that might be abbreviations (ТК, ГОСТ, etc.)
+        # Filter very short terms (< 2 chars), strip punctuation, and limit to top terms
+        import re
+        query_terms = []
+        for word in query.split():
+            # Strip punctuation from word
+            clean_word = re.sub(r'[^\w\s]', '', word)
+            if len(clean_word) >= 2:
+                query_terms.append(clean_word)
+        query_terms = query_terms[:10]
         
         if not query_terms:
             return []
         
-        entities = []
-        per_term_limit = max(1, top_k // len(query_terms))
+        # Collect all chunk UUIDs and entity metadata
+        chunk_uuid_map = {}  # chunk_uuid -> entity info
+        all_chunk_uuids = set()
         
         for term in query_terms:
-            results = self.neo4j.query_entities_by_text(term, limit=per_term_limit)
-            entities.extend(results)
+            entities = self.neo4j.query_entities_by_text(term, limit=max(1, top_k // len(query_terms)))
+            
+            for entity in entities:
+                chunk_ids = entity.get('chunk_ids', [])
+                
+                # Handle relevance as string or number
+                relevance = entity.get('relevance', 0.0)
+                if isinstance(relevance, str):
+                    # Convert text relevance to numeric score
+                    relevance_map = {'high': 1.0, 'medium': 0.5, 'low': 0.25}
+                    relevance = relevance_map.get(relevance.lower(), 0.5)
+                else:
+                    relevance = float(relevance) / 100.0
+                
+                entity_info = {
+                    'entity_name': entity['name'],
+                    'entity_type': entity.get('type', 'CONCEPT'),
+                    'relevance': relevance
+                }
+                
+                for chunk_uuid in chunk_ids:
+                    all_chunk_uuids.add(chunk_uuid)
+                    # Keep first matching entity info (could be enhanced to track multiple)
+                    if chunk_uuid not in chunk_uuid_map:
+                        chunk_uuid_map[chunk_uuid] = entity_info
         
-        # Deduplicate and format
-        seen = set()
+        if not all_chunk_uuids:
+            return []
+        
+        # Fetch chunks from Vector DB by UUIDs
+        try:
+            vector_docs = self.vector_store_manager.similarity_search_by_ids(
+                list(all_chunk_uuids), top_k=top_k * 2
+            )
+        except Exception as e:
+            logger.warning(f"Vector DB UUID search failed: {e}")
+            return []
+        
+        # Format results with entity metadata
         formatted = []
-        
-        for entity in entities:
-            if entity['name'] not in seen:
-                seen.add(entity['name'])
-                
-                # Get chunks for this entity
-                chunks = self.neo4j.get_chunks_for_entity(entity['name'], limit=2)
-                
-                for chunk in chunks:
-                    formatted.append({
-                        'content': chunk.get('content', ''),
-                        'metadata': {
-                            'entity_name': entity['name'],
-                            'entity_type': entity['type'],
-                            'document': entity.get('document', ''),
-                            'chunk_id': chunk.get('chunk_id', ''),
-                            'upload_method': 'Graph RAG'
-                        },
-                        'vector_score': 0.0,
-                        'graph_score': float(entity.get('relevance', 0.0)) / 100.0,
-                        'source': 'graph'
-                    })
+        for doc in vector_docs:
+            # Try both chunk_uuid and chunk_id (for compatibility)
+            chunk_uuid = doc.metadata.get('chunk_uuid', doc.metadata.get('chunk_id', ''))
+            entity_info = chunk_uuid_map.get(chunk_uuid, {})
+            
+            formatted.append({
+                'content': doc.page_content,
+                'metadata': {
+                    'entity_name': entity_info.get('entity_name', ''),
+                    'entity_type': entity_info.get('entity_type', ''),
+                    'chunk_uuid': chunk_uuid,
+                    'upload_method': 'Graph RAG'
+                },
+                'vector_score': 0.0,
+                'graph_score': entity_info.get('relevance', 0.0),
+                'source': 'graph'
+            })
         
         return formatted
     

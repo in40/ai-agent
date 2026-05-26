@@ -1,0 +1,25 @@
+================================================================================
+FORMULA EXTRACTION - ALL DOCUMENTS
+================================================================================
+[4/112] r-1323565.1_523e31d7: 11 formulas
+[5/112] gost-r-59453_3b8321db: 13 formulas
+[40/112] r-1323565.1_78b35e61: 706 formulas
+[60/112] r-1323565.1_e5fca2b3: 48 formulas
+[80/112] r-50.1_15f58fa0: 189 formulas
+[100/112] gost-r-53113_9f37aa3e: 1 formulas
+
+================================================================================
+COMPLETE
+================================================================================
+Documents with formulas: 63
+Total formula instances: 4275
+Unique formulas: 652
+
+By type:
+  VARIABLE_ASSIGNMENT: 3407
+  KEY_MATERIAL: 594
+  CRYPTO_FUNCTION: 161
+  TRAFFIC_SECRET: 113
+
+Saved to: /root/qwen/ai_agent/extraction_results_with_formulas/
+================================================================================

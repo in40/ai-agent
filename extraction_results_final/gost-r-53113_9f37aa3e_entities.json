@@ -1,0 +1,48 @@
+{
+  "doc_name": "gost-r-53113_9f37aa3e",
+  "chunks_processed": 8,
+  "pattern_count": 288,
+  "validated_count": 8,
+  "entities": [
+    {
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "НАЦИОНАЛЬНЫЙ СТАНДАРТ РОССИЙСКОЙ ФЕДЕРАЦИИ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 53113.2—2009",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Информационная технология",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Часть 2",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Рекомендации по организации защиты информации, информационных технологий и автоматизированных систем от атак с использованием скрытых каналов",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "text": "Стандартинформ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    }
+  ]
+}

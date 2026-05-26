@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>ИИ ассистент – Диалоги с файлами</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            background: #f1f5f9;
+            margin: 0;
+            padding: 1rem;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .app-container {
+            display: flex;
+            gap: 1rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            height: 100%;
+        }
+        @media (max-width: 768px) {
+            body { padding: 0.5rem; overflow: auto; height: auto; }
+            .app-container { flex-direction: column; height: auto; }
+        }
+        .sidebar {
+            width: 280px;
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            flex-shrink: 0;
+            height: 100%;
+        }
+        @media (max-width: 768px) { .sidebar { width: 100%; height: auto; max-height: 40vh; } }
+        .sidebar-header {
+            padding: 1.2rem;
+            border-bottom: 1px solid #e2e8f0;
+            font-weight: 600;
+            font-size: 1.1rem;
+            background: #f8fafc;
+            flex-shrink: 0;
+        }
+        .new-chat-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 40px;
+            padding: 0.6rem 1rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            margin: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            flex-shrink: 0;
+        }
+        .dialog-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 0.5rem;
+        }
+        .dialog-item {
+            padding: 0.75rem;
+            margin: 0.25rem 0;
+            border-radius: 16px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8fafc;
+        }
+        .dialog-item.active { background: #eef2ff; border-left: 3px solid #3b82f6; }
+        .dialog-title { font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; }
+        .delete-dialog { background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 1.1rem; }
+        .chat-area {
+            flex: 1;
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            min-width: 0;
+            height: 100%;
+        }
+        .chat-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+            font-weight: 600;
+            background: #f8fafc;
+            flex-shrink: 0;
+        }
+        .messages-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+        .message { display: flex; flex-direction: column; max-width: 85%; }
+        @media (max-width: 768px) { .message { max-width: 92%; } }
+        .message.user { align-self: flex-end; }
+        .message.ai { align-self: flex-start; }
+        .message-bubble {
+            padding: 0.7rem 1rem;
+            border-radius: 20px;
+            background: #f1f5f9;
+            word-wrap: break-word;
+            white-space: normal;
+            font-size: 0.95rem;
+        }
+        .message.user .message-bubble { background: #3b82f6; color: white; }
+        .message.ai .message-bubble { background: #eef2ff; border-left: 3px solid #3b82f6; }
+        .message .sender-name { font-size: 0.7rem; margin-bottom: 0.2rem; color: #64748b; }
+        .message-bubble p { margin: 0.5em 0; }
+        .message-bubble ul, .message-bubble ol { margin: 0.5em 0; padding-left: 1.5em; }
+        .message-bubble li { margin: 0.2em 0; }
+        .message-bubble strong { font-weight: 700; color: #1e40af; }
+        .message-bubble a { color: #3b82f6; text-decoration: underline; word-break: break-all; }
+        .message.user .message-bubble a { color: #bfdbfe; }
+        .message-bubble h1, .message-bubble h2, .message-bubble h3 { margin: 0.5em 0; font-weight: 600; }
+        .message-bubble h1 { font-size: 1.3rem; }
+        .message-bubble h2 { font-size: 1.2rem; }
+        .message-bubble h3 { font-size: 1.1rem; }
+        .message-bubble hr { margin: 1em 0; border: 0; border-top: 1px solid #cbd5e1; }
+        .input-area {
+            padding: 1rem;
+            border-top: 1px solid #e2e8f0;
+            background: white;
+            flex-shrink: 0;
+        }
+        textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 20px;
+            font-family: inherit;
+            font-size: 1rem;
+            resize: vertical;
+        }
+        .file-area {
+            margin-top: 0.5rem;
+            background: #f8fafc;
+            border-radius: 20px;
+            padding: 0.5rem;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .file-label {
+            background: #e2e8f0;
+            padding: 0.3rem 0.8rem;
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        .file-list { font-size: 0.75rem; color: #334155; display: flex; flex-wrap: wrap; gap: 0.3rem; }
+        .file-item {
+            background: #eef2ff;
+            padding: 0.1rem 0.5rem;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.7rem;
+        }
+        .send-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 40px;
+            padding: 0.6rem 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 0.8rem;
+            width: 100%;
+        }
+        .status { font-size: 0.75rem; padding: 0.2rem 0.5rem; border-radius: 20px; display: inline-block; margin-bottom: 0.5rem; }
+        .debug-section { margin-top: 0.5rem; background: #f9fafb; border-radius: 16px; border: 1px solid #e5e7eb; }
+        .debug-summary { background: #f3f4f6; padding: 0.3rem 0.8rem; cursor: pointer; font-size: 0.8rem; border-radius: 16px; }
+        .debug-content { padding: 0.5rem; border-top: 1px solid #e5e7eb; font-size: 0.8rem; }
+        .toggle-group { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; margin-top: 0.3rem; }
+        input, select { padding: 0.2rem 0.5rem; border-radius: 20px; border: 1px solid #cbd5e1; }
+        @media (max-width: 480px) {
+            .sidebar-header, .chat-header { padding: 0.8rem; font-size: 1rem; }
+            .new-chat-btn { margin: 0.5rem; padding: 0.5rem; font-size: 0.8rem; }
+            .dialog-item { padding: 0.5rem; }
+            .message-bubble { padding: 0.5rem 0.8rem; font-size: 0.85rem; }
+            .toggle-group { gap: 0.5rem; flex-direction: column; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <div class="sidebar">
+        <div class="sidebar-header">📁 Диалоги</div>
+        <button class="new-chat-btn" id="newChatBtn">➕ Новый диалог</button>
+        <div class="dialog-list" id="dialogList"></div>
+    </div>
+    <div class="chat-area">
+        <div class="chat-header" id="chatHeader">Диалог</div>
+        <div class="messages-container" id="messagesContainer"></div>
+        <div class="input-area">
+            <textarea id="inputText" rows="2" placeholder="Введите сообщение..."></textarea>
+            <div class="file-area">
+                <label class="file-label" id="fileLabel">📎 Прикрепить файлы</label>
+                <input type="file" id="fileInput" multiple style="display:none">
+                <div id="fileList" class="file-list">Файлы не прикреплены</div>
+                <button id="clearFilesBtn" style="background:#ef4444; color:white; border:none; border-radius:20px; padding:0.2rem 0.6rem; font-size:0.7rem;">Очистить файлы</button>
+            </div>
+            <button id="sendBtn" class="send-btn">✨ Отправить</button>
+            <div id="statusMessage" class="status">Готов</div>
+            <details class="debug-section">
+                <summary class="debug-summary">🔧 Debug</summary>
+                <div class="debug-content">
+                    <div><label>ID сессии: <input type="text" id="sessionId" size="20"></label></div>
+                    <div class="toggle-group">
+                        <label><input type="checkbox" id="streamingCheckbox" checked> Потоковый режим</label>
+                        <label><input type="checkbox" id="rawOutputCheckbox"> Сырой вывод</label>
+                    </div>
+                </div>
+            </details>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ========== КОНФИГУРАЦИЯ ==========
+   const FLOW_ID = "2cdad6f8-7ab3-4146-b56a-984a028795f3";
+    const UPLOAD_URL = "/api/v2/files";
+    const RUN_URL_BASE = `/api/v1/run/${FLOW_ID}`;
+    const API_KEY = "sk-NkZbNEuGrWFH80uIAOfu_g_CZc2qyr0v62a7DUEcRQ0";
+    // ==================================
+
+    const sendBtn = document.getElementById('sendBtn');
+    const inputText = document.getElementById('inputText');
+    const sessionIdInput = document.getElementById('sessionId');
+    const fileInput = document.getElementById('fileInput');
+    const fileListDiv = document.getElementById('fileList');
+    const statusDiv = document.getElementById('statusMessage');
+    const messagesContainer = document.getElementById('messagesContainer');
+    const dialogListDiv = document.getElementById('dialogList');
+    const newChatBtn = document.getElementById('newChatBtn');
+    const clearFilesBtn = document.getElementById('clearFilesBtn');
+    const streamingCheckbox = document.getElementById('streamingCheckbox');
+    const rawOutputCheckbox = document.getElementById('rawOutputCheckbox');
+
+    document.getElementById('fileLabel').addEventListener('click', () => fileInput.click());
+
+    let dialogs = [];
+    let currentDialogId = null;
+
+    function generateRandomSessionId() {
+        return 'session_' + Date.now() + '_' + Math.random().toString(36).substring(2, 8);
+    }
+
+    function loadDialogs() {
+        const saved = localStorage.getItem('ai_assistant_dialogs');
+        if (saved) {
+            dialogs = JSON.parse(saved);
+        } else {
+            const defaultId = Date.now().toString();
+            dialogs = [{
+                id: defaultId,
+                sessionId: generateRandomSessionId(),
+                title: 'Новый диалог',
+                messages: [],
+                uploadedFiles: []
+            }];
+            currentDialogId = defaultId;
+        }
+        if (!currentDialogId && dialogs.length) currentDialogId = dialogs[0].id;
+        renderDialogList();
+        loadCurrentDialog();
+    }
+    function saveDialogs() {
+        localStorage.setItem('ai_assistant_dialogs', JSON.stringify(dialogs));
+    }
+    function createNewDialog() {
+        const newId = Date.now().toString();
+        dialogs.push({
+            id: newId,
+            sessionId: generateRandomSessionId(),
+            title: `Диалог ${dialogs.length+1}`,
+            messages: [],
+            uploadedFiles: []
+        });
+        currentDialogId = newId;
+        saveDialogs();
+        renderDialogList();
+        loadCurrentDialog();
+    }
+    function deleteDialog(id) {
+        if (dialogs.length === 1) { alert('Нельзя удалить последний диалог'); return; }
+        dialogs = dialogs.filter(d => d.id !== id);
+        if (currentDialogId === id) currentDialogId = dialogs[0].id;
+        saveDialogs();
+        renderDialogList();
+        loadCurrentDialog();
+    }
+    function renderDialogList() {
+        dialogListDiv.innerHTML = '';
+        dialogs.forEach(d => {
+            const div = document.createElement('div');
+            div.className = 'dialog-item' + (d.id === currentDialogId ? ' active' : '');
+            div.innerHTML = `<span class="dialog-title">${escapeHtml(d.title)}</span>
+                             <button class="delete-dialog" data-id="${d.id}">🗑️</button>`;
+            div.addEventListener('click', (e) => {
+                if (e.target.classList.contains('delete-dialog')) return;
+                currentDialogId = d.id;
+                renderDialogList();
+                loadCurrentDialog();
+            });
+            const delBtn = div.querySelector('.delete-dialog');
+            delBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                deleteDialog(d.id);
+            });
+            dialogListDiv.appendChild(div);
+        });
+    }
+    function loadCurrentDialog() {
+        const dialog = dialogs.find(d => d.id === currentDialogId);
+        if (!dialog) return;
+        sessionIdInput.value = dialog.sessionId;
+        document.getElementById('chatHeader').innerText = dialog.title;
+        messagesContainer.innerHTML = '';
+        for (const msg of dialog.messages) {
+            addMessageToUI(msg.role, msg.text);
+        }
+        updateDialogFilesUI(dialog);
+        scrollToBottom();
+    }
+    function updateDialogFilesUI(dialog) {
+        const files = dialog.uploadedFiles || [];
+        if (files.length === 0) {
+            fileListDiv.innerHTML = 'Файлы не прикреплены';
+        } else {
+            let html = '';
+            files.forEach((file, idx) => {
+                html += `<div class="file-item">📄 ${escapeHtml(file.name)} (${(file.size_kb || 0).toFixed(1)} КБ) <span class="remove-dialog-file" data-idx="${idx}" style="cursor:pointer;color:red">✖</span></div>`;
+            });
+            fileListDiv.innerHTML = html;
+            document.querySelectorAll('.remove-dialog-file').forEach(span => {
+                span.addEventListener('click', (e) => {
+                    const idx = parseInt(e.target.getAttribute('data-idx'));
+                    if (!isNaN(idx) && dialog.uploadedFiles) {
+                        dialog.uploadedFiles.splice(idx,1);
+                        saveDialogs();
+                        updateDialogFilesUI(dialog);
+                    }
+                });
+            });
+        }
+    }
+    function addMessageToUI(role, text, rawMode = false) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${role}`;
+        const sender = role === 'user' ? 'Вы' : '🤖 ИИ-Ассистент';
+        let formattedText = text;
+        if (role === 'assistant' && !rawMode) {
+            formattedText = formatMarkdown(text);
+        } else {
+            formattedText = escapeHtml(text);
+        }
+        messageDiv.innerHTML = `<div class="sender-name">${sender}</div><div class="message-bubble">${formattedText}</div>`;
+        messagesContainer.appendChild(messageDiv);
+        scrollToBottom();
+    }
+    function updateDialogTitleAfterFirstMessage() {
+        const dialog = dialogs.find(d => d.id === currentDialogId);
+        if (dialog && dialog.messages.length === 1 && dialog.title.startsWith('Диалог')) {
+            const firstUserMsg = dialog.messages[0].text;
+            const short = firstUserMsg.length > 30 ? firstUserMsg.substring(0,30)+'…' : firstUserMsg;
+            dialog.title = short;
+            saveDialogs();
+            renderDialogList();
+            document.getElementById('chatHeader').innerText = dialog.title;
+        }
+    }
+    function scrollToBottom() {
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    // --- ФАЙЛЫ ---
+    async function uploadNewFiles(files) {
+        const paths = [];
+        for (const file of files) {
+            const formData = new FormData();
+            formData.append('file', file);
+            const response = await fetch(UPLOAD_URL, {
+                method: 'POST',
+                headers: { 'x-api-key': API_KEY },
+                body: formData
+            });
+            if (!response.ok) throw new Error(`Upload failed: ${response.status}`);
+            const result = await response.json();
+            const filePath = result.file_path || result.path || result;
+            paths.push({ name: file.name, path: filePath, size_kb: file.size / 1024 });
+        }
+        return paths;
+    }
+    async function addFilesToDialog(files) {
+        const dialog = dialogs.find(d => d.id === currentDialogId);
+        if (!dialog) return;
+        const newUploaded = await uploadNewFiles(files);
+        dialog.uploadedFiles = dialog.uploadedFiles || [];
+        dialog.uploadedFiles.push(...newUploaded);
+        saveDialogs();
+        updateDialogFilesUI(dialog);
+        return dialog.uploadedFiles.map(f => f.path);
+    }
+    clearFilesBtn.addEventListener('click', () => {
+        const dialog = dialogs.find(d => d.id === currentDialogId);
+        if (dialog) {
+            dialog.uploadedFiles = [];
+            saveDialogs();
+            updateDialogFilesUI(dialog);
+        }
+    });
+    fileInput.addEventListener('change', async () => {
+        const newFiles = Array.from(fileInput.files);
+        if (newFiles.length) {
+            try {
+                statusDiv.innerHTML = '⏳ Загрузка файлов...';
+                await addFilesToDialog(newFiles);
+                statusDiv.innerHTML = '✅ Файлы загружены';
+            } catch (err) {
+                statusDiv.innerHTML = `❌ Ошибка загрузки: ${err.message}`;
+            }
+        }
+        fileInput.value = '';
+    });
+    function getCurrentDialogFilePaths() {
+        const dialog = dialogs.find(d => d.id === currentDialogId);
+        return (dialog?.uploadedFiles || []).map(f => f.path);
+    }
+
+    // --- УЛУЧШЕННОЕ ФОРМАТИРОВАНИЕ MARKDOWN С ПОДСВЕТКОЙ ССЫЛОК ---
+    function formatMarkdown(text) {
+        if (!text) return '';
+
+        // ========== 1. ИСПРАВЛЯЕМ ТИПИЧНЫЕ ОШИБКИ МОДЕЛИ ==========
+        let fixed = text;
+
+        // 1.1 Слипшиеся заголовки: "Краткий ответТекст" -> "Краткий ответ\n\nТекст"
+        fixed = fixed.replace(/(Краткий ответ)([^\s\n])/g, '$1\n\n$2');
+        fixed = fixed.replace(/(Детали)([^\s\n])/g, '$1\n\n$2');
+        fixed = fixed.replace(/(Источники)([^\s\n])/g, '$1\n\n$2');
+        
+        // 1.2 Если после заголовка нет перевода строки и сразу текст
+        fixed = fixed.replace(/(Краткий ответ)\s*\n?([^\n])/g, '$1\n\n$2');
+        fixed = fixed.replace(/(Детали)\s*\n?([^\n])/g, '$1\n\n$2');
+        fixed = fixed.replace(/(Источники)\s*\n?([^\n])/g, '$1\n\n$2');
+        
+        // 1.3 Исправляем "Детали- текст" -> "Детали\n\n- текст"
+        fixed = fixed.replace(/Детали\s*-/g, 'Детали\n\n-');
+        
+        // 1.4 Исправляем "Источники 1." -> "Источники\n\n1."
+        fixed = fixed.replace(/Источники\s*(\d+\.)/g, 'Источники\n\n$1');
+        
+        // 1.5 Добавляем заголовки ## если их нет
+        if (!fixed.includes('## Краткий ответ') && fixed.includes('Краткий ответ')) {
+            fixed = fixed.replace(/Краткий ответ/g, '## Краткий ответ');
+        }
+        if (!fixed.includes('## Детали') && fixed.includes('Детали')) {
+            fixed = fixed.replace(/Детали/g, '## Детали');
+        }
+        if (!fixed.includes('## Источники') && fixed.includes('Источники')) {
+            fixed = fixed.replace(/Источники/g, '## Источники');
+        }
+        
+        // 1.6 Убедимся, что после заголовков с ## есть два перевода строки
+        fixed = fixed.replace(/(## Краткий ответ)\s*\n+/g, '$1\n\n');
+        fixed = fixed.replace(/(## Детали)\s*\n+/g, '$1\n\n');
+        fixed = fixed.replace(/(## Источники)\s*\n+/g, '$1\n\n');
+
+        // ========== 2. ПРЕОБРАЗОВАНИЕ URL В КЛИКАБЕЛЬНЫЕ ССЫЛКИ ==========
+        // Регулярное выражение для поиска URL (http://, https://)
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+        fixed = fixed.replace(urlRegex, function(url) {
+            // Оборачиваем в <a>, но если уже внутри markdown-ссылки [текст](url) - пропускаем
+            // Проверим, не является ли URL уже частью markdown-ссылки
+            // Простая эвристика: если перед URL нет '](' и после нет ')'
+            return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
+        });
+
+        // ========== 3. СТАНДАРТНОЕ ПРЕОБРАЗОВАНИЕ В HTML ==========
+        let html = fixed
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+
+        // Жирный текст
+        html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        html = html.replace(/__(.*?)__/g, '<strong>$1</strong>');
+
+        // Markdown-ссылки [текст](url) - их нужно обработать до преобразования голых URL, чтобы не дублировать
+        // Но мы уже преобразовали голые URL, а markdown-ссылки останутся, их обработаем сейчас
+        html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+
+        // Заголовки ##
+        html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+
+        // Списки (цифровые и маркированные)
+        const lines = html.split(/\r?\n/);
+        const result = [];
+        let inList = false;
+        let listType = null; // 'ol' или 'ul'
+
+        for (let line of lines) {
+            const numListMatch = line.match(/^(\d+)\.\s+(.*)/);
+            const bulletListMatch = line.match(/^[\-\*]\s+(.*)/);
+            
+            if (numListMatch) {
+                if (!inList || listType !== 'ol') {
+                    if (inList) result.push(`</${listType}>`);
+                    result.push('<ol>');
+                    inList = true;
+                    listType = 'ol';
+                }
+                result.push(`<li>${numListMatch[2]}</li>`);
+            } else if (bulletListMatch) {
+                if (!inList || listType !== 'ul') {
+                    if (inList) result.push(`</${listType}>`);
+                    result.push('<ul>');
+                    inList = true;
+                    listType = 'ul';
+                }
+                result.push(`<li>${bulletListMatch[1]}</li>`);
+            } else {
+                if (inList) {
+                    result.push(`</${listType}>`);
+                    inList = false;
+                    listType = null;
+                }
+                if (line.trim() === '') {
+                    result.push('<br>');
+                } else {
+                    result.push(line);
+                }
+            }
+        }
+        if (inList) result.push(`</${listType}>`);
+        html = result.join('\n');
+
+        // Абзацы
+        const blocks = html.split(/\n\s*\n/);
+        html = blocks.map(block => {
+            block = block.trim();
+            if (!block) return '';
+            if (block.startsWith('<h') || block.startsWith('<ul') || block.startsWith('</ul') ||
+                block.startsWith('<ol') || block.startsWith('</ol') || block.startsWith('<hr')) {
+                return block;
+            }
+            return `<p>${block}</p>`;
+        }).join('\n');
+
+        // Переносы строк внутри абзацев
+        html = html.replace(/([^>])\n([^<])/g, '$1<br>$2');
+        
+        // Дополнительная защита: если ссылка уже была обёрнута в <a>, не оборачиваем повторно
+        // (это уже не требуется, так как мы сначала обработали голые URL, а затем маркдаун-ссылки)
+        
+        return html;
+    }
+
+    function escapeHtml(str) { 
+        if (!str) return '';
+        return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]); 
+    }
+
+    // --- ПОТОКОВАЯ ФУНКЦИЯ ---
+    async function runFlowWithStreaming(payload, rawMode) {
+        const url = `${RUN_URL_BASE}?stream=true`;
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY, 'Accept': 'text/event-stream' },
+            body: JSON.stringify(payload)
+        });
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Streaming error response:', errorText);
+            throw new Error(`HTTP ${response.status}: ${errorText.substring(0, 200)}`);
+        }
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '', fullMessage = '', receivedData = false, lastAddMessageText = '';
+        const tempDiv = document.createElement('div');
+        tempDiv.className = 'message ai';
+        tempDiv.innerHTML = `<div class="sender-name">🤖 ИИ-Ассистент</div><div class="message-bubble"></div>`;
+        const bubbleDiv = tempDiv.querySelector('.message-bubble');
+        messagesContainer.appendChild(tempDiv);
+        scrollToBottom();
+        const timeoutId = setTimeout(() => { if (!receivedData) reader.cancel(); }, 120000);
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            receivedData = true;
+            clearTimeout(timeoutId);
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split(/\r?\n/);
+            buffer = lines.pop();
+            for (const line of lines) {
+                if (!line.trim()) continue;
+                if (rawMode) {
+                    fullMessage += line + '\n';
+                    updateChatMessage(bubbleDiv, fullMessage, rawMode);
+                } else {
+                    try {
+                        const obj = JSON.parse(line);
+                        if (obj.event === 'token' && obj.data?.chunk) {
+                            fullMessage += obj.data.chunk;
+                            updateChatMessage(bubbleDiv, fullMessage, rawMode);
+                        } else if (obj.event === 'add_message') {
+                            const msg = obj.data?.data?.text || obj.data?.text;
+                            if (msg) lastAddMessageText = msg;
+                        }
+                    } catch(e) { 
+                        fullMessage += line; 
+                        updateChatMessage(bubbleDiv, fullMessage, rawMode);
+                    }
+                }
+            }
+        }
+        clearTimeout(timeoutId);
+        if (!fullMessage && lastAddMessageText) {
+            fullMessage = lastAddMessageText;
+            updateChatMessage(bubbleDiv, fullMessage, rawMode);
+        }
+        if (!fullMessage && !rawMode) throw new Error('Нет данных от сервера');
+        const dialog = dialogs.find(d => d.id === currentDialogId);
+        if (dialog) {
+            dialog.messages.push({ role: 'assistant', text: fullMessage });
+            saveDialogs();
+        }
+        return fullMessage;
+    }
+
+    // --- НЕ-ПОТОКОВАЯ ФУНКЦИЯ ---
+    async function runFlowWithoutStreaming(payload, rawMode) {
+        const url = `${RUN_URL_BASE}?stream=false`;
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY },
+            body: JSON.stringify(payload)
+        });
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Non-streaming error response:', errorText);
+            throw new Error(`HTTP ${response.status}: ${errorText.substring(0, 200)}`);
+        }
+        const rawText = await response.text();
+        if (rawMode) {
+            addMessageToUI('assistant', rawText, true);
+            const dialog = dialogs.find(d => d.id === currentDialogId);
+            if (dialog) dialog.messages.push({ role: 'assistant', text: rawText });
+            saveDialogs();
+            return rawText;
+        }
+        let jsonData;
+        try {
+            jsonData = JSON.parse(rawText);
+        } catch(e) {
+            throw new Error('Не удалось разобрать JSON ответа сервера');
+        }
+        const aiMessage = extractAIMessage(jsonData);
+        addMessageToUI('assistant', aiMessage, false);
+        const dialog = dialogs.find(d => d.id === currentDialogId);
+        if (dialog) dialog.messages.push({ role: 'assistant', text: aiMessage });
+        saveDialogs();
+        return aiMessage;
+    }
+    function extractAIMessage(data) {
+        try {
+            const outputs = data.outputs;
+            if (outputs && outputs[0]?.outputs?.[0]?.results?.message?.data?.text)
+                return outputs[0].outputs[0].results.message.data.text;
+            const m = JSON.stringify(data).match(/"text":"(.*?)"/);
+            return m ? m[1].replace(/\\n/g,'\n') : "Не удалось извлечь ответ";
+        } catch(e) { return "Ошибка извлечения"; }
+    }
+    
+    function updateChatMessage(element, text, rawMode) {
+        if (rawMode) element.innerHTML = escapeHtml(text);
+        else element.innerHTML = formatMarkdown(text);
+    }
+
+    // --- ОСНОВНАЯ ОТПРАВКА ---
+    sendBtn.addEventListener('click', async () => {
+        const userMsg = inputText.value.trim();
+        if (!userMsg) { statusDiv.innerHTML = '❌ Введите сообщение'; return; }
+        const useStreaming = streamingCheckbox.checked;
+        const rawMode = rawOutputCheckbox.checked;
+
+        const hasAda = userMsg.includes('@Ада');
+        const dialog = dialogs.find(d => d.id === currentDialogId);
+        const hasFile = (dialog?.uploadedFiles?.length > 0);
+
+        if (hasFile && hasAda) {
+            statusDiv.innerHTML = '⏳ Симуляция...';
+            addMessageToUI('user', userMsg, true);
+            if (dialog) dialog.messages.push({ role: 'user', text: userMsg });
+            const fakeMsg = "К сожалению, одновременно искать в интернете и анализировать документы пока нельзя.";
+            const tempDiv = document.createElement('div');
+            tempDiv.className = 'message ai';
+            tempDiv.innerHTML = '<div class="sender-name">🤖 ИИ-Ассистент</div><div class="message-bubble"></div>';
+            const bubbleDiv = tempDiv.querySelector('.message-bubble');
+            messagesContainer.appendChild(tempDiv);
+            let acc = '';
+            for (let ch of fakeMsg) { acc += ch; bubbleDiv.innerText = acc; await new Promise(r=>setTimeout(r,20)); }
+            if (dialog) dialog.messages.push({ role: 'assistant', text: fakeMsg });
+            saveDialogs();
+            statusDiv.innerHTML = '✅ Симуляция';
+            inputText.value = '';
+            scrollToBottom();
+            return;
+        }
+
+        addMessageToUI('user', userMsg, true);
+        if (dialog) dialog.messages.push({ role: 'user', text: userMsg });
+        saveDialogs();
+        updateDialogTitleAfterFirstMessage();
+
+        let sessionId = sessionIdInput.value.trim();
+        if (!sessionId) { sessionId = generateRandomSessionId(); sessionIdInput.value = sessionId; }
+
+        statusDiv.innerHTML = '⏳ Отправка...';
+        sendBtn.disabled = true;
+
+        try {
+            const filePaths = getCurrentDialogFilePaths();
+            const chatInputKey = "ChatInput-zK0k7";
+
+            let runPayload = {
+                output_type: "chat",
+                input_type: "chat",
+                session_id: sessionId,
+                tweaks: {}
+            };
+
+            if (filePaths.length > 0) {
+                runPayload.tweaks = {
+                    "File-8734F": { 
+                        path: filePaths, 
+                        storage_location: [{ name: "Local", icon: "hard-drive", chosen: false, selected: false }] 
+                    },
+                    [chatInputKey]: { input_value: userMsg }
+                };
+            } else {
+                runPayload.tweaks = {
+                    [chatInputKey]: { input_value: userMsg }
+                };
+            }
+
+            let aiResponse;
+            if (useStreaming) {
+                aiResponse = await runFlowWithStreaming(runPayload, rawMode);
+            } else {
+                aiResponse = await runFlowWithoutStreaming(runPayload, rawMode);
+            }
+            statusDiv.innerHTML = '✅ Готово';
+            inputText.value = '';
+        } catch (err) {
+            statusDiv.innerHTML = `❌ Ошибка: ${err.message}`;
+            console.error(err);
+        } finally {
+            sendBtn.disabled = false;
+        }
+        scrollToBottom();
+    });
+
+    newChatBtn.addEventListener('click', createNewDialog);
+    loadDialogs();
+</script>
+</body>
+</html>

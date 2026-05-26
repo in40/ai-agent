@@ -1,0 +1,63 @@
+{
+  "doc_name": "gost-r-72118-2025_4e3f6075",
+  "chunks_processed": 10,
+  "pattern_count": 38,
+  "validated_count": 11,
+  "entities": [
+    {
+      "text": "ГОСТ Р 72118-2025",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Российский институт стандартизации",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ФСТЭК России",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ФАУ ГИНИИ ПТЗИ ФСТЭК России",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "АО Лаборатория Касперского",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ИСП РАН",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Технический комитет по стандартизации ТК 362",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Федеральный закон от 29 июня 2015 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "Россия",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 72118—2025",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

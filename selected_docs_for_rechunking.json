@@ -1,0 +1,18 @@
+[
+  {
+    "doc_id": "gost-r-52069_2c53c42c",
+    "total_content_chars": 342128,
+    "chunks": 49,
+    "txt_exists": true,
+    "md_exists": true,
+    "chunk_file": "/root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_job_3ad1455bec52_rst_gov_ru:8443/documents/gost-r-52069_2c53c42c.chunks.json"
+  },
+  {
+    "doc_id": "r-1323565.1_78b35e61",
+    "total_content_chars": 250587,
+    "chunks": 145,
+    "txt_exists": true,
+    "md_exists": true,
+    "chunk_file": "/root/qwen/ai_agent/document-store-mcp-server/data/ingested/job_job_3ad1455bec52_rst_gov_ru:8443/documents/r-1323565.1_78b35e61.chunks.json"
+  }
+]

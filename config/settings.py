@@ -162,9 +162,9 @@ DEDICATED_MCP_LLM_PORT = os.getenv("DEDICATED_MCP_LLM_PORT", DEFAULT_LLM_PORT)
 DEDICATED_MCP_LLM_API_PATH = os.getenv("DEDICATED_MCP_LLM_API_PATH", DEFAULT_LLM_API_PATH)
 
 # Embedding Model Configuration (for RAG component)
-EMBEDDING_PROVIDER = os.getenv("EMBEDDING_PROVIDER", "huggingface")  # Options: huggingface, openai, gigachat, deepseek, ollama, etc.
-EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "all-MiniLM-L6-v2")
-EMBEDDING_HOSTNAME = os.getenv("EMBEDDING_HOSTNAME", "localhost")
+EMBEDDING_PROVIDER = os.getenv("EMBEDDING_PROVIDER", "lm studio")  # Options: huggingface, openai, gigachat, deepseek, ollama, etc.
+EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "bge-m3")
+EMBEDDING_HOSTNAME = os.getenv("EMBEDDING_HOSTNAME", "asus-tus")
 EMBEDDING_PORT = os.getenv("EMBEDDING_PORT", "1234")
 EMBEDDING_API_PATH = os.getenv("EMBEDDING_API_PATH", "/v1")
 

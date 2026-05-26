@@ -1,0 +1,48 @@
+{
+  "doc_name": "r-1323565.1_a57af51b",
+  "chunks_processed": 10,
+  "pattern_count": 63,
+  "validated_count": 8,
+  "entities": [
+    {
+      "text": "2018",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "2017",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "2015",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "ТК 26",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ИСПОЛЬЗОВАНИЕ АЛГОРИТМОВ БЛОЧНОГО ШИБРОВАНИЯ ПРИ ФОРМИРОВАНИИ ПРОВЕРЧНОГО ПАРАМЕТРА ПЛАТЕЖНОЙ КАРТЫ И ПРОВЕРЧНОГО ЗНАЧЕНИЯ PIN",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ПЛАТЕЖНАЯ КАРТА",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "PIN",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "www.gost.ru",
+      "type": "CONCEPT",
+      "source": "llm"
+    }
+  ]
+}

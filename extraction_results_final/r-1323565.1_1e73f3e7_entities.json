@@ -1,0 +1,63 @@
+{
+  "doc_name": "r-1323565.1_1e73f3e7",
+  "chunks_processed": 10,
+  "pattern_count": 54,
+  "validated_count": 11,
+  "entities": [
+    {
+      "text": "Сообщество с ограниченной ответственностью «Системы практической безопасности»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ООО «СПБ»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Открытый акционерное общество «Информационные технологии и коммуникационные системы»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ОАО «ИнфофоКС»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Общество с ограниченной ответственностью «КРИПТО-ПРО»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ООО «КРИПТО-ПРО»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Технический комитет по стандартизации ТК 26 «Криптографическая защита информации»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Приказ Федерального агентства по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Федеральный закон от 29 июня 2015 г. № 162-ФЗ «О стандартизации в Российской Федерации»",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Стандартинформ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    }
+  ]
+}

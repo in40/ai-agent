@@ -1,0 +1,48 @@
+{
+  "doc_name": "r-50.1_4bd380de",
+  "chunks_processed": 10,
+  "pattern_count": 16,
+  "validated_count": 8,
+  "entities": [
+    {
+      "text": "ГНИИПТЗИ ФСТЭК России",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Технический комитет по стандартизации ТК 362",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Публичная оферта 2006",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "text": "Стандартинформ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "2005",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "P 50.1.056-2005",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Приказом Федерального агентства по техническому регулированию и метрологии от 29 декабря 2005 г.",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "doc_name": "gost-r-53109-2008=edt2018_68ad1b8b",
+  "chunks_processed": 9,
+  "pattern_count": 69,
+  "validated_count": 9,
+  "entities": [
+    {
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "НАЦИОНАЛЬНЫЙ СТАНДАРТ РОССИЙСКОЙ ФЕДЕРАЦИИ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р53109-2008",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "СИСТЕМА ОБЕСПЕЧЕНИЯ ИНФОРМАЦИОННОЙ БЕЗОПАСНОСТИ СЕТИ СВЯЗИ ОБЩЕГО ПОЛЬЗОВАНИЯ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Паспорт организации связи по информационной безопасности",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Дата введения — 2009—10-01",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 53109-2008",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 53109—2008",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 53110—2008",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "doc_name": "gost-r-59453_18a844fc",
+  "formulas": [
+    {
+      "text": "E",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-59453_18a844fc",
+      "chunk_index": 6
+    },
+    {
+      "text": "C",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-59453_18a844fc",
+      "chunk_index": 6
+    },
+    {
+      "text": "RA",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-59453_18a844fc",
+      "chunk_index": 6
+    },
+    {
+      "text": "us",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-59453_18a844fc",
+      "chunk_index": 8
+    },
+    {
+      "text": "yc",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-59453_18a844fc",
+      "chunk_index": 9
+    },
+    {
+      "text": "yc",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-59453_18a844fc",
+      "chunk_index": 9
+    }
+  ]
+}

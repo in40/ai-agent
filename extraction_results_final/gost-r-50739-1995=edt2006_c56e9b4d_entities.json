@@ -1,0 +1,23 @@
+{
+  "doc_name": "gost-r-50739-1995=edt2006_c56e9b4d",
+  "chunks_processed": 10,
+  "pattern_count": 29,
+  "validated_count": 3,
+  "entities": [
+    {
+      "text": "ГОСТ Р 50739—95",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСУДАРСТВЕННЫЙ СТАНДАРТ РОССИЙСКОЙ ФЕДЕРАЦИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "1996—01—01",
+      "type": "DATE",
+      "source": "llm"
+    }
+  ]
+}

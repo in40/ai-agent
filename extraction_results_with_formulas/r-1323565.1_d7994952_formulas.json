@@ -1,0 +1,761 @@
+{
+  "doc_name": "r-1323565.1_d7994952",
+  "formulas": [
+    {
+      "text": "xsl",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 12
+    },
+    {
+      "text": "lang",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 12
+    },
+    {
+      "text": "version",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 12
+    },
+    {
+      "text": "name",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 12
+    },
+    {
+      "text": "name",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 12
+    },
+    {
+      "text": "type",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 12
+    },
+    {
+      "text": "name",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 12
+    },
+    {
+      "text": "ref",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 12
+    },
+    {
+      "text": "ref",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 12
+    },
+    {
+      "text": "ref",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 12
+    },
+    {
+      "text": "minOccurs",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 12
+    },
+    {
+      "text": "maxOccurs",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 12
+    },
+    {
+      "text": "ref",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 12
+    },
+    {
+      "text": "minOccurs",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 12
+    },
+    {
+      "text": "maxOccurs",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 12
+    },
+    {
+      "text": "name",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 13
+    },
+    {
+      "text": "type",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 13
+    },
+    {
+      "text": "name",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 13
+    },
+    {
+      "text": "name",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 13
+    },
+    {
+      "text": "minOccurs",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 13
+    },
+    {
+      "text": "type",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 13
+    },
+    {
+      "text": "namespace",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 13
+    },
+    {
+      "text": "minOccurs",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 13
+    },
+    {
+      "text": "maxOccurs",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 13
+    },
+    {
+      "text": "name",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 13
+    },
+    {
+      "text": "type",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 13
+    },
+    {
+      "text": "name",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 13
+    },
+    {
+      "text": "ref",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 13
+    },
+    {
+      "text": "minOccurs",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 13
+    },
+    {
+      "text": "ref",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 13
+    },
+    {
+      "text": "ref",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 13
+    },
+    {
+      "text": "name",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 14
+    },
+    {
+      "text": "type",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 14
+    },
+    {
+      "text": "name",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 14
+    },
+    {
+      "text": "name",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 14
+    },
+    {
+      "text": "type",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 14
+    },
+    {
+      "text": "use",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 14
+    },
+    {
+      "text": "name",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 14
+    },
+    {
+      "text": "type",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 14
+    },
+    {
+      "text": "name",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 14
+    },
+    {
+      "text": "namespace",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 14
+    },
+    {
+      "text": "processContents",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 14
+    },
+    {
+      "text": "minOccurs",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 14
+    },
+    {
+      "text": "maxOccurs",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 14
+    },
+    {
+      "text": "name",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 14
+    },
+    {
+      "text": "type",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 14
+    },
+    {
+      "text": "use",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 14
+    },
+    {
+      "text": "name",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 15
+    },
+    {
+      "text": "type",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 15
+    },
+    {
+      "text": "name",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 15
+    },
+    {
+      "text": "base",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 15
+    },
+    {
+      "text": "name",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 16
+    },
+    {
+      "text": "type",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 16
+    },
+    {
+      "text": "name",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 16
+    },
+    {
+      "text": "base",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 16
+    },
+    {
+      "text": "name",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 16
+    },
+    {
+      "text": "type",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 16
+    },
+    {
+      "text": "use",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 16
+    },
+    {
+      "text": "name",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 17
+    },
+    {
+      "text": "type",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 17
+    },
+    {
+      "text": "name",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 17
+    },
+    {
+      "text": "ref",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 17
+    },
+    {
+      "text": "ref",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 17
+    },
+    {
+      "text": "ref",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 17
+    },
+    {
+      "text": "ref",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 17
+    },
+    {
+      "text": "ref",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 17
+    },
+    {
+      "text": "namespace",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 17
+    },
+    {
+      "text": "processContents",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 17
+    },
+    {
+      "text": "name",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 17
+    },
+    {
+      "text": "type",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 17
+    },
+    {
+      "text": "name",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 17
+    },
+    {
+      "text": "ref",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 17
+    },
+    {
+      "text": "ref",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 17
+    },
+    {
+      "text": "ref",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 17
+    },
+    {
+      "text": "ref",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 17
+    },
+    {
+      "text": "ref",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 17
+    },
+    {
+      "text": "namespace",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 17
+    },
+    {
+      "text": "processContents",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 17
+    },
+    {
+      "text": "name",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 18
+    },
+    {
+      "text": "type",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 18
+    },
+    {
+      "text": "name",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 18
+    },
+    {
+      "text": "type",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 18
+    },
+    {
+      "text": "name",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 18
+    },
+    {
+      "text": "type",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 18
+    },
+    {
+      "text": "name",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 18
+    },
+    {
+      "text": "name",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 18
+    },
+    {
+      "text": "type",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 18
+    },
+    {
+      "text": "name",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 18
+    },
+    {
+      "text": "type",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 18
+    },
+    {
+      "text": "name",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 19
+    },
+    {
+      "text": "type",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 19
+    },
+    {
+      "text": "name",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 19
+    },
+    {
+      "text": "ref",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 19
+    },
+    {
+      "text": "minOccurs",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 19
+    },
+    {
+      "text": "name",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 21
+    },
+    {
+      "text": "type",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 21
+    },
+    {
+      "text": "name",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 21
+    },
+    {
+      "text": "maxOccurs",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 21
+    },
+    {
+      "text": "name",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 21
+    },
+    {
+      "text": "type",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 21
+    },
+    {
+      "text": "name",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 21
+    },
+    {
+      "text": "type",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 21
+    },
+    {
+      "text": "name",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 21
+    },
+    {
+      "text": "type",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 21
+    },
+    {
+      "text": "name",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 21
+    },
+    {
+      "text": "type",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 21
+    },
+    {
+      "text": "ref",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 21
+    },
+    {
+      "text": "namespace",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 21
+    },
+    {
+      "text": "processContents",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 21
+    },
+    {
+      "text": "targetNamespace",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 21
+    },
+    {
+      "text": "name",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 21
+    },
+    {
+      "text": "type",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 21
+    },
+    {
+      "text": "name",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 21
+    },
+    {
+      "text": "base",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 21
+    },
+    {
+      "text": "name",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 21
+    },
+    {
+      "text": "type",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 21
+    },
+    {
+      "text": "use",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 21
+    },
+    {
+      "text": "Algorithm",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 22
+    },
+    {
+      "text": "Algorithm",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 22
+    },
+    {
+      "text": "name",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 22
+    },
+    {
+      "text": "type",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 22
+    },
+    {
+      "text": "Algorithm",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 22
+    },
+    {
+      "text": "URI",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 22
+    },
+    {
+      "text": "Algorithm",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 23
+    },
+    {
+      "text": "Algorithm",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 24
+    },
+    {
+      "text": "Algorithm",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_d7994952",
+      "chunk_index": 25
+    }
+  ]
+}

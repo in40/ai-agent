@@ -62,7 +62,7 @@ class SmartIngestionJob:
     # Configuration tracking fields (optional for backward compatibility)
     ingestion_mode: str = 'files'  # 'files', 'webpage', 'docstore'
     processing_mode: str = 'vector_db'  # 'download_only', 'vector_db', 'hybrid'
-    chunking_strategy: str = 'smart_chunking'  # 'smart_chunking', 'naive_chunking', 'section_based'
+    chunking_strategy: str = 'smart_chunking'  # 'smart_chunking', 'naive_chunking', 'section_based', 'recursive_semantic'
     source_url: Optional[str] = None  # For web page mode
     document_urls: Optional[List[str]] = None  # List of document URLs to process
 

@@ -9,6 +9,7 @@ const RAGComponent = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [expandedDocIndex, setExpandedDocIndex] = useState(null); // Track which document is expanded
+  const [chunkingStrategy, setChunkingStrategy] = useState('recursive_semantic'); // Default to best option
 
   // Function to get API URL
   const getApiUrl = () => {
@@ -73,12 +74,15 @@ const RAGComponent = () => {
     try {
       const pathsArray = filePaths.split(',').map(path => path.trim()).filter(path => path);
       
-      const response = await fetch(`${getApiUrl()}/api/rag/ingest`, {
+          const response = await fetch(`${getApiUrl()}/api/rag/ingest`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ file_paths: pathsArray }),
+        body: JSON.stringify({ 
+          file_paths: pathsArray,
+          chunking_strategy: chunkingStrategy
+        }),
       });
 
       if (!response.ok) {
@@ -316,6 +320,21 @@ const RAGComponent = () => {
                 rows="3"
               />
             </div>
+            
+            <div className="input-group">
+              <label htmlFor="chunking-strategy">Chunking Strategy:</label>
+              <select
+                id="chunking-strategy"
+                value={chunkingStrategy}
+                onChange={(e) => setChunkingStrategy(e.target.value)}
+              >
+                <option value="recursive_semantic">Recursive Semantic (Recommended - Best for GOST)</option>
+                <option value="smart_chunking">Smart Chunking (LLM-based)</option>
+                <option value="section_based">Section-Based</option>
+                <option value="naive_chunking">Naive Chunking (Simple)</option>
+              </select>
+            </div>
+            
             <button onClick={handleIngest} disabled={loading}>
               {loading ? 'Processing...' : 'Ingest Documents'}
             </button>

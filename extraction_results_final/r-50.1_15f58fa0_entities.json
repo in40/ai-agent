@@ -1,0 +1,68 @@
+{
+  "doc_name": "r-50.1_15f58fa0",
+  "chunks_processed": 10,
+  "pattern_count": 37,
+  "validated_count": 12,
+  "entities": [
+    {
+      "text": "Федеральное Агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "П Р 50.1.115—2016",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "Технический комитет по стандартизации ТК 26",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Приказом Федерального агентства по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "28 ноября 2016 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "№ 1830-ст",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "29 января 2015 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "№ 162-ФЗ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Национальные стандарты",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "www.gost.ru",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 34.10—2012",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 34.11—2012",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

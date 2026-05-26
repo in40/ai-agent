@@ -1,0 +1,63 @@
+{
+  "doc_name": "gost-r-52863-2007=edt2020_17cabea1",
+  "chunks_processed": 10,
+  "pattern_count": 55,
+  "validated_count": 11,
+  "entities": [
+    {
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 52863—2007",
+      "type": "STANDARD",
+      "source": "llm"
+    },
+    {
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "text": "2020",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "СПБФ ФГУП «НТЦ «Атлас»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ФГУГ «ГНИИПИ ПТЗИ ФСТЭК России»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ФГУП «ВНИОФИ»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ЗАО «ЭМСКОТЕХ»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ФГУП НИИТИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ФГУП «Проектный институт» ФСБ России",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ЗАО «НПО «ФИД-Техника»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    }
+  ]
+}

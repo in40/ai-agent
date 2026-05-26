@@ -40,8 +40,9 @@ def create_smart_ingestion_tab():
 
         chunking_strategy = st.selectbox(
             "Chunking Strategy",
-            options=["smart_chunking", "naive_chunking", "section_based"],
-            help="Smart chunking uses LLM to preserve semantic units"
+            options=["recursive_semantic", "smart_chunking", "section_based", "naive_chunking"],
+            index=0,  # Default to recursive_semantic (best for GOST documents)
+            help="Recursive semantic: Best for structured docs (GOST, manuals). Splits by sections at optimal sizes (500-2000 chars). Smart chunking: Uses LLM but may create oversized chunks. Section-based: Splits by headings then uses LLM. Naive: Simple paragraph grouping (3000 char limit)."
         )
 
         ingest_chunks = st.checkbox("Ingest chunks into vector DB", value=True)

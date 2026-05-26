@@ -1,0 +1,63 @@
+{
+  "doc_name": "r-1323565.1_386f7d01",
+  "chunks_processed": 10,
+  "pattern_count": 18,
+  "validated_count": 11,
+  "entities": [
+    {
+      "text": "РЕКОМЕНДАЦИИ ПО СТАНДАРТИЗАЦИИ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТОРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 34.10—2012",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 34.11—2012",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "PKCS #10",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "X.509",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "text": "Российский институт стандартизации",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "2022",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "АО «ИнфофоКС»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ТК 26",
+      "type": "CONCEPT",
+      "source": "llm"
+    }
+  ]
+}

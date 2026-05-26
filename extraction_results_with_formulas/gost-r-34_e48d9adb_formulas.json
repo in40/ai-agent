@@ -1,0 +1,863 @@
+{
+  "doc_name": "gost-r-34_e48d9adb",
+  "formulas": [
+    {
+      "text": "j",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 12
+    },
+    {
+      "text": "Int_n",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 12
+    },
+    {
+      "text": "a",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 12
+    },
+    {
+      "text": "n",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 13
+    },
+    {
+      "text": "n",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 13
+    },
+    {
+      "text": "j",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 15
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 15
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 15
+    },
+    {
+      "text": "j",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 15
+    },
+    {
+      "text": "b",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 15
+    },
+    {
+      "text": "c",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 15
+    },
+    {
+      "text": "b_i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 15
+    },
+    {
+      "text": "b_i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 15
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 15
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 16
+    },
+    {
+      "text": "C_1",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 16
+    },
+    {
+      "text": "C_2",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 16
+    },
+    {
+      "text": "C_3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 17
+    },
+    {
+      "text": "C_4",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 17
+    },
+    {
+      "text": "C_5",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 18
+    },
+    {
+      "text": "C_6",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 18
+    },
+    {
+      "text": "C_7",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 19
+    },
+    {
+      "text": "C_8",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 19
+    },
+    {
+      "text": "C_9",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 20
+    },
+    {
+      "text": "C_10",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 20
+    },
+    {
+      "text": "C_11",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 21
+    },
+    {
+      "text": "C_12",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 21
+    },
+    {
+      "text": "a",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 22
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 22
+    },
+    {
+      "text": "a",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 22
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 22
+    },
+    {
+      "text": "a",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 22
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 22
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 23
+    },
+    {
+      "text": "K_1",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 23
+    },
+    {
+      "text": "K_i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 23
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 23
+    },
+    {
+      "text": "h",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "N",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "M",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "h",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "N",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "M",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "m",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "h",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "N",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "h",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "h",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "M_1",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "h",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "IV",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "N",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "m",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K_1",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "C_1",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K_2",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K_3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K_4",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K_5",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K_6",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K_7",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K_8",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K_9",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K_10",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K_11",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K_12",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K_13",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "h",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "N",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "h",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "h",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "h",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "IV",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "N",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "m",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K_1",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "C_1",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K_2",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K_3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K_4",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K_5",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K_6",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K_7",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K_8",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K_9",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K_10",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K_11",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K_12",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K_13",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "h",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "N",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "C_1",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K_2",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K_3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K_4",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K_5",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K_6",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K_7",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K_8",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K_9",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K_10",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K_11",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K_12",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K_13",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "h",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "N",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "m",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "h",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "N",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "h",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "h",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "h",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "IV",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "N",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "m",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K_1",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "C_1",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K_2",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K_3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K_4",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K_5",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K_6",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K_7",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K_8",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K_9",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K_10",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K_11",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K_12",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "K_13",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "h",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "N",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "m",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "h",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "N",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "h",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    },
+    {
+      "text": "h",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-34_e48d9adb",
+      "chunk_index": 24
+    }
+  ]
+}

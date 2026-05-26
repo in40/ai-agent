@@ -1,0 +1,28 @@
+{
+  "doc_name": "r-1323565.1_a670037e",
+  "chunks_processed": 10,
+  "pattern_count": 18,
+  "validated_count": 4,
+  "entities": [
+    {
+      "text": "Федеральное Агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "text": "2021",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "АО «Информационные технологии и коммуникационные системы» (АО «ИнфофекС»)",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    }
+  ]
+}

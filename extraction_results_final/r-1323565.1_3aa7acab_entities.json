@@ -1,0 +1,98 @@
+{
+  "doc_name": "r-1323565.1_3aa7acab",
+  "chunks_processed": 9,
+  "pattern_count": 224,
+  "validated_count": 18,
+  "entities": [
+    {
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ПР 1323565.010-2017",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Информационная технология",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "КРИПТОГРАФИЧЕСКАЯ ЗАЩИТА ИНФОРМАЦИИ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ДIVERSификации",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ПРОИЗВОДНЫЕ КЛУЧЕ ПЛАТЕЖНОГО ПРИЛОЖЕНИЯ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "text": "Стандартинформ 2018",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ООО «СПБ»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ОАО «ИнфофКС»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ООО «КРИПТО-ПРО»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Технический комитет по стандартизации ТК 26",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Приказом Федерального агентства по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "19 декабря 2017 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "№ 208-ст",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "Федеральный закон от 29 июня 2015 г.",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "162-ФЗ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "МИР",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    }
+  ]
+}

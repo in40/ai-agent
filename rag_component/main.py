@@ -3,6 +3,7 @@ Main RAG orchestrator module.
 Coordinates all RAG components and provides a unified interface.
 """
 import os
+import uuid
 from typing import List, Dict, Any, Optional
 from langchain_core.documents import Document as LCDocument
 from .document_loader import DocumentLoader
@@ -82,18 +83,18 @@ class RAGOrchestrator:
                     # Split documents into chunks
                     docs = self.text_splitter.split_documents(docs)
 
-                # Add source metadata to each document if not already present
+                # Add source metadata and unique UUID to each document if not already present
                 import os
                 for doc in docs:
                     if not doc.metadata.get("source"):
-                        # Use the original filename as the source, preserving full name with non-Latin characters
                         doc.metadata["source"] = os.path.basename(file_path)
                     if not doc.metadata.get("title"):
-                        # Use the original filename as the title
                         doc.metadata["title"] = os.path.basename(file_path)
-                    # Label the source as coming from local ingestion
                     if not doc.metadata.get("upload_method"):
                         doc.metadata["upload_method"] = "Local"
+                    # Generate unique chunk UUID for hybrid RAG reference-based architecture
+                    if not doc.metadata.get("chunk_uuid"):
+                        doc.metadata["chunk_uuid"] = str(uuid.uuid4())
 
                 all_docs.extend(docs)
 
@@ -152,16 +153,15 @@ class RAGOrchestrator:
 
                 # Add source metadata to each document using original filename
                 for doc in docs:
-                    # Use the original filename as both source and title for web uploads
                     doc.metadata["source"] = original_filename
                     doc.metadata["title"] = original_filename
-                    # Label the source as coming from web upload
                     doc.metadata["upload_method"] = "Web upload"
-                    # Add the stored file path for download capability
                     doc.metadata["stored_file_path"] = stored_file_path
-                    # Extract the unique ID from the stored file path (the directory name)
                     stored_dir = os.path.dirname(stored_file_path)
                     doc.metadata["file_id"] = os.path.basename(stored_dir)
+                    # Generate unique chunk UUID for hybrid RAG reference-based architecture
+                    if not doc.metadata.get("chunk_uuid"):
+                        doc.metadata["chunk_uuid"] = str(uuid.uuid4())
 
                 all_docs.extend(docs)
                 print(f"DEBUG: Total docs accumulated: {len(all_docs)}")
@@ -200,21 +200,21 @@ class RAGOrchestrator:
                 # Split documents into chunks
                 docs = self.text_splitter.split_documents(docs)
 
-            # Add source metadata to each document if not already present
-            import os
-            for doc in docs:
-                # Update source to use just the filename for consistency
-                if doc.metadata.get("source"):
-                    # Change source from full path to just the filename, preserving non-Latin characters
-                    doc.metadata["source"] = os.path.basename(doc.metadata["source"])
+           # Add source metadata and unique UUID to each document if not already present
+                import os
+                for doc in docs:
+                    if doc.metadata.get("source"):
+                        doc.metadata["source"] = os.path.basename(doc.metadata["source"])
 
-                # If title is not set but source is, use the source as title
-                if not doc.metadata.get("title") and doc.metadata.get("source"):
-                    doc.metadata["title"] = doc.metadata["source"]
+                    if not doc.metadata.get("title") and doc.metadata.get("source"):
+                        doc.metadata["title"] = doc.metadata["source"]
 
-                # Label the source as coming from local ingestion
-                if not doc.metadata.get("upload_method"):
-                    doc.metadata["upload_method"] = "Local"
+                    if not doc.metadata.get("upload_method"):
+                        doc.metadata["upload_method"] = "Local"
+                    
+                    # Generate unique chunk UUID for hybrid RAG reference-based architecture
+                    if not doc.metadata.get("chunk_uuid"):
+                        doc.metadata["chunk_uuid"] = str(uuid.uuid4())
 
             # Add documents to vector store
             self.vector_store_manager.add_documents(docs)

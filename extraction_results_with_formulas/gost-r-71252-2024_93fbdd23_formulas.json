@@ -1,0 +1,641 @@
+{
+  "doc_name": "gost-r-71252-2024_93fbdd23",
+  "formulas": [
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 18
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 18
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 18
+    },
+    {
+      "text": "l",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 18
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 18
+    },
+    {
+      "text": "X",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 18
+    },
+    {
+      "text": "ExternalKeyIdFlag",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 20
+    },
+    {
+      "text": "ExternalKeyIdFlag",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 20
+    },
+    {
+      "text": "Version",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 20
+    },
+    {
+      "text": "KeyId",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 22
+    },
+    {
+      "text": "ExternalKeyIdFlag",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "CS",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "s",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "CS",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "s",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "s",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "IV",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "s",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "K_MAC",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "K_ENC",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "K_j",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "Label",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "aL",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "SN",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "Node",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "cL",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "oL",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "s",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "s",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "K_MAC",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "K_i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "Label",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "aL",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "SN",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "Node",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "cL",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "OutputLength",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "oL",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "s",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "s",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "IV",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "s",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "K_j",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "Label",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "aL",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "SN",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "Node",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "cL",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "OutputLength",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "oL",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "CS",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "s",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "s",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "K_MAC",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "K_i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "Label",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "aL",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "SN",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "Node",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "cL",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "OutputLength",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "oL",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "CS",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "K",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "PayloadData",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "K_MAC",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "K_ENC",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "ICV",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "CS",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "ExternalKeyFlag",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "Version",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "CS",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "KeyId",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "SeqNum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "Sourceidentifier",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "K",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "PayloadData",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "K_MAC",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "ICV",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "CS",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "ExternalKeyFlag",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "Version",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "CS",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "KeyId",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "SeqNum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "Sourceidentifier",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "K",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "PayloadData",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "K_MAC",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "ICV",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "PayloadData",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "ICV",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "CS",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "ExternalKeyFlag",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "Version",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "CS",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "SeqNum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "SourceIdentifier",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "K",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "PayloadData",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    },
+    {
+      "text": "ICV",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-71252-2024_93fbdd23",
+      "chunk_index": 23
+    }
+  ]
+}

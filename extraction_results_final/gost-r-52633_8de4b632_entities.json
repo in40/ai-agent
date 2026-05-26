@@ -1,0 +1,53 @@
+{
+  "doc_name": "gost-r-52633_8de4b632",
+  "chunks_processed": 10,
+  "pattern_count": 55,
+  "validated_count": 9,
+  "entities": [
+    {
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 52633.0-2006",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Техника защиты информации",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Высоконадежная биометрическая аутентификация",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Стандарт",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р\n52633.0-\n2006",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 52633.0—2006",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ 34.311",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 52633.0—2006",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

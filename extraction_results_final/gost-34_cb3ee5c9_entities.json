@@ -1,0 +1,73 @@
+{
+  "doc_name": "gost-34_cb3ee5c9",
+  "chunks_processed": 10,
+  "pattern_count": 89,
+  "validated_count": 13,
+  "entities": [
+    {
+      "text": "МЕЖГОСУДАРСТВЕННЫЙ СОВЕТ ПО СТАНДАРТИЗАЦИИ, МЕТРОЛОГИИ И СЕРТИФИКАЦИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "МГС",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ 34.13—2018",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Межгосударственная система стандартизации",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "2018",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ 34.13",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ 34.13",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ 34.13—2018",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ 1.0",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ 1.0—2015",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ 1.2",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ 1.2—2015",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ 34.13",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "doc_name": "gost-r-70262_d3c5b513",
+  "chunks_processed": 10,
+  "pattern_count": 24,
+  "validated_count": 12,
+  "entities": [
+    {
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 70262.1—2022",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Дата введения — 2023—01—01",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "IEC 24760-2",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 58833—2020",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 54581—2011",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 58833—2020",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 54581—2011",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 58833—2020",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 53114—2008",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 58833—2020",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 54581—2011",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

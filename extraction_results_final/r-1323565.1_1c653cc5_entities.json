@@ -1,0 +1,28 @@
+{
+  "doc_name": "r-1323565.1_1c653cc5",
+  "chunks_processed": 10,
+  "pattern_count": 23,
+  "validated_count": 4,
+  "entities": [
+    {
+      "text": "Российский институт стандартизации",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "2024",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "10 октября 2024 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "162-ФЗ",
+      "type": "CONCEPT",
+      "source": "llm"
+    }
+  ]
+}

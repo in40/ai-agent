@@ -1,0 +1,43 @@
+{
+  "doc_name": "r-1323565.1_99b55685",
+  "chunks_processed": 10,
+  "pattern_count": 124,
+  "validated_count": 7,
+  "entities": [
+    {
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Р 1323565.1.030—2020",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "Общество с ограниченной ответственностью «КРИПТО-ПРО»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Технический комитет по стандартизации ТК 26",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "27 февраля 2020 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "162-ФЗ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Национальные стандарты",
+      "type": "CONCEPT",
+      "source": "llm"
+    }
+  ]
+}

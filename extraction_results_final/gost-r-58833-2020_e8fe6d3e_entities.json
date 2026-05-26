@@ -1,0 +1,68 @@
+{
+  "doc_name": "gost-r-58833-2020_e8fe6d3e",
+  "chunks_processed": 10,
+  "pattern_count": 49,
+  "validated_count": 12,
+  "entities": [
+    {
+      "text": "ГОСТ Р",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "58833—2020",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "ФСТЭК России",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ЗАО «Аладдин Р.Д.»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ООО «НПФ «КРИСТАЛЛ»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Технический комитет по стандартизации ТК 362",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Технический комитет по стандартизации ТК 26",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Приказом Федерального агентства по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "www.gost.ru",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 58833—2020",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 58833-2020",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

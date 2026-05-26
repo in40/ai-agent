@@ -3,8 +3,11 @@ Vector store manager module for the RAG component.
 Handles storage and retrieval of document embeddings.
 """
 import os
+import logging
 from typing import List, Optional
 from langchain_community.vectorstores import FAISS
+
+logger = logging.getLogger(__name__)
 
 # Conditional import for Chroma - only needed if using Chroma vector store
 if os.getenv("RAG_VECTOR_STORE_TYPE", "qdrant") == "chroma":
@@ -258,6 +261,78 @@ class VectorStoreManager:
                 query=query,
                 k=top_k
             )
+    
+    def similarity_search_by_ids(self, chunk_uuids: List[str], top_k: Optional[int] = None) -> List[LCDocument]:
+        """
+        Fetch documents by their chunk UUIDs from Vector DB.
+        
+        Used by hybrid RAG to retrieve chunks referenced by graph entities.
+        
+        Args:
+            chunk_uuids: List of chunk UUIDs to fetch
+            top_k: Maximum number of results (not used for ID-based lookup)
+            
+        Returns:
+            List of documents matching the UUIDs
+        """
+        if not chunk_uuids:
+            return []
+        
+        if self.store_type.lower() == "chroma":
+            # Chroma filter by metadata
+            try:
+                results = self.vector_store.similarity_search(
+                    query="",  # Empty - filtering by ID, not similarity
+                    k=len(chunk_uuids),
+                    filter={"chunk_uuid": {"$in": chunk_uuids}}
+                )
+                return results
+            except Exception as e:
+                logger.warning(f"Chroma UUID search failed: {e}")
+                return []
+        
+        elif self.store_type.lower() == "qdrant":
+            # Qdrant filter by metadata - use scroll instead of similarity_search
+            try:
+                from qdrant_client.http import models
+                
+                filter_condition = models.Filter(
+                    must=[
+                        models.FieldCondition(
+                            key="metadata.chunk_id",
+                            match=models.MatchAny(any=chunk_uuids)
+                        )
+                    ]
+                )
+                
+                # Use scroll to get points matching the filter (no embedding needed)
+                records, _ = self.vector_store.client.scroll(
+                    collection_name=self.collection_name,
+                    scroll_filter=filter_condition,
+                    limit=len(chunk_uuids),
+                    with_payload=True,
+                    with_vectors=False
+                )
+                
+                # Convert to LangChain documents
+                docs = []
+                for record in records:
+                    payload = record.payload or {}
+                    docs.append(LCDocument(
+                        page_content=payload.get('page_content', ''),
+                        metadata=payload.get('metadata', {})
+                    ))
+                return docs
+            except Exception as e:
+                logger.warning(f"Qdrant UUID search failed: {e}")
+                return []
+        
+        elif self.store_type.lower() == "faiss":
+            # FAISS doesn't support metadata filtering well
+            logger.warning("FAISS does not support ID-based search")
+            return []
+        
+        return []
     
     def max_marginal_relevance_search(
         self,

@@ -1,0 +1,23 @@
+{
+  "doc_name": "r-50.1_4cd22315",
+  "chunks_processed": 10,
+  "pattern_count": 61,
+  "validated_count": 3,
+  "entities": [
+    {
+      "text": "П 50.1.110-2016",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "МOSCВА",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "text": "СТАНДАРТНИФОРМ 2017",
+      "type": "CONCEPT",
+      "source": "llm"
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "doc_name": "r-1323565.1_2dad0d33",
+  "formulas": [
+    {
+      "text": "bigcup_i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_2dad0d33",
+      "chunk_index": 5
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_2dad0d33",
+      "chunk_index": 5
+    },
+    {
+      "text": "R",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_2dad0d33",
+      "chunk_index": 5
+    },
+    {
+      "text": "m",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_2dad0d33",
+      "chunk_index": 6
+    }
+  ]
+}

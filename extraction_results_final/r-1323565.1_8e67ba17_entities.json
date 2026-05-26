@@ -1,0 +1,33 @@
+{
+  "doc_name": "r-1323565.1_8e67ba17",
+  "chunks_processed": 10,
+  "pattern_count": 52,
+  "validated_count": 5,
+  "entities": [
+    {
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "2023",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "162-ФЗ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 34.12—2015",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 34.13—2015",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

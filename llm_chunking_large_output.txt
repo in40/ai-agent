@@ -1,0 +1,65 @@
+unstructured not available, using TextLoader for .md files
+Document loaded: 252872 characters
+First 500 chars:
+<!-- Page 1 -->
+
+ФЕДЕРАЛЬНОЕ АГЕНТСТВО
+ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ
+
+НАЦИОНАЛЬНЫЙ
+СТАНДАРТ
+РОССИЙСКОЙ
+ФЕДЕРАЦИИ
+
+ГОСТ Р ИСО/МЭК
+27033-1—
+2011
+
+Информационная технология
+МЕТОДЫ И СРЕДСТВА ОБЕСПЕЧЕНИЯ
+БЕЗОПАСНОСТИ
+Безопасность сетей
+Часть 1
+Обзор и концепции
+
+ISO/IEC 27033-1:2009
+Information technology — Security techniques — Network security —
+Part 1: Overview and concepts
+(IDT)
+
+Издание официальное
+
+Москва
+Стандартинформ
+2012
+
+<!-- Page 2 -->
+
+ГОСТ Р ИСО/МЭК 27033-1—2011
+
+# Предисл...
+
+=== Starting chunking with LLM ===
+Loaded 1 document parts
+Total content: 252873 characters
+Using LLM provider: LM Studio, model: qwen3.5-0.8b@bf16
+Traceback (most recent call last):
+  File "/root/qwen/ai_agent/backend/services/rag/smart_ingestion_enhanced.py", line 39, in <module>
+    import config.settings as settings
+ModuleNotFoundError: No module named 'config.settings'; 'config' is not a package
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/qwen/ai_agent/test_chunking_large.py", line 226, in <module>
+    main()
+    ~~~~^^
+  File "/root/qwen/ai_agent/test_chunking_large.py", line 141, in main
+    from backend.services.rag import smart_ingestion_enhanced
+  File "/root/qwen/ai_agent/backend/services/rag/smart_ingestion_enhanced.py", line 48, in <module>
+    spec.loader.exec_module(settings)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1022, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 1159, in get_code
+  File "<frozen importlib._bootstrap_external>", line 1217, in get_data
+FileNotFoundError: [Errno 2] No such file or directory: '/root/qwen/ai_agent/backend/services/config/settings.py'

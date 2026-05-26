@@ -1,0 +1,17 @@
+{
+  "doc_name": "gost-r-50739-1995=edt2006_c56e9b4d",
+  "formulas": [
+    {
+      "text": "align",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-50739-1995=edt2006_c56e9b4d",
+      "chunk_index": 1
+    },
+    {
+      "text": "align",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-50739-1995=edt2006_c56e9b4d",
+      "chunk_index": 1
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "doc_name": "r-1323565.1_2dad0d33",
+  "chunks_processed": 7,
+  "pattern_count": 40,
+  "validated_count": 4,
+  "entities": [
+    {
+      "text": "РФ",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "text": "2017",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "2018",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 34.11—2012",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "doc_name": "gost-r-59710-2022_11db7995",
+  "chunks_processed": 10,
+  "pattern_count": 32,
+  "validated_count": 14,
+  "entities": [
+    {
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 59710—2022",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "МЕТРОЛОГИИ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "РОССИЙСКОЙ ФЕДЕРАЦИИ",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "text": "Российский институт стандартизации",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "2022",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "Войсковая часть 43753",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Общество с ограниченной ответственностью \"Центр безопасности информации\"",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ООО \"ЦБИ\"",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Технический комитет по стандартизации ТК 362",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Статья 26 Федерального закона от 29 июня 2015 г.",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р\n59710—2022",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 59711-2022",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

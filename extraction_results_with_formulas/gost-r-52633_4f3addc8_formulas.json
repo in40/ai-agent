@@ -1,0 +1,611 @@
+{
+  "doc_name": "gost-r-52633_4f3addc8",
+  "formulas": [
+    {
+      "text": "_i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 6
+    },
+    {
+      "text": "step",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 9
+    },
+    {
+      "text": "fill",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 9
+    },
+    {
+      "text": "step",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 9
+    },
+    {
+      "text": "fill",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 9
+    },
+    {
+      "text": "anchor",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 9
+    },
+    {
+      "text": "step",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 9
+    },
+    {
+      "text": "fill",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 9
+    },
+    {
+      "text": "step",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 9
+    },
+    {
+      "text": "fill",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 9
+    },
+    {
+      "text": "anchor",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 9
+    },
+    {
+      "text": "step",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 10
+    },
+    {
+      "text": "fill",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 10
+    },
+    {
+      "text": "step",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 10
+    },
+    {
+      "text": "fill",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 10
+    },
+    {
+      "text": "anchor",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 10
+    },
+    {
+      "text": "step",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 10
+    },
+    {
+      "text": "fill",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 10
+    },
+    {
+      "text": "step",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 10
+    },
+    {
+      "text": "fill",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 10
+    },
+    {
+      "text": "anchor",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 10
+    },
+    {
+      "text": "step",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "fill",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "step",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "fill",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "anchor",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "step",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "fill",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "step",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "fill",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "anchor",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "step",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "fill",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "step",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "fill",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "anchor",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "step",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "fill",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "step",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "fill",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "anchor",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "step",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "fill",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "step",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "fill",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "anchor",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "step",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "fill",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "step",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "fill",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "anchor",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "step",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "fill",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "step",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "fill",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "anchor",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "step",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "fill",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "step",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "fill",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "anchor",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "step",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "fill",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "step",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "fill",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "anchor",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "step",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "fill",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "step",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "fill",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "anchor",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "step",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "fill",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "step",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "fill",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "anchor",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "step",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "fill",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "step",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "fill",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "anchor",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "step",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "fill",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "step",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "fill",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "anchor",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "step",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "fill",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "step",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "fill",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "anchor",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "step",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "fill",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "step",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "fill",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "anchor",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "step",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "fill",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "step",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "fill",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    },
+    {
+      "text": "anchor",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_4f3addc8",
+      "chunk_index": 11
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "doc_name": "gost-r-51275-2006=edt2018_62b9bb2c",
+  "chunks_processed": 5,
+  "pattern_count": 38,
+  "validated_count": 10,
+  "entities": [
+    {
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 51275—2006",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "text": "Стандартинформ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "2018",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "ФГУ «ГИНИИ ПТЗИ ФСТЭК России»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Федеральному государственному учреждению",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Федеральная служба по техническому и экспортному контролю",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 51275—99",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 51275-2006",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

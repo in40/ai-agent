@@ -1,0 +1,59 @@
+{
+  "doc_name": "gost-34_43a10467",
+  "formulas": [
+    {
+      "text": "n",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-34_43a10467",
+      "chunk_index": 3
+    },
+    {
+      "text": "n",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-34_43a10467",
+      "chunk_index": 3
+    },
+    {
+      "text": "_1",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-34_43a10467",
+      "chunk_index": 4
+    },
+    {
+      "text": "_1",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-34_43a10467",
+      "chunk_index": 4
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-34_43a10467",
+      "chunk_index": 9
+    },
+    {
+      "text": "z",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-34_43a10467",
+      "chunk_index": 9
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-34_43a10467",
+      "chunk_index": 9
+    },
+    {
+      "text": "Int_s",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-34_43a10467",
+      "chunk_index": 9
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-34_43a10467",
+      "chunk_index": 9
+    }
+  ]
+}

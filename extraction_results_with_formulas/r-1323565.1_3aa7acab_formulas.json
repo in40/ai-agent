@@ -1,0 +1,203 @@
+{
+  "doc_name": "r-1323565.1_3aa7acab",
+  "formulas": [
+    {
+      "text": "A",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_3aa7acab",
+      "chunk_index": 4
+    },
+    {
+      "text": "B",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_3aa7acab",
+      "chunk_index": 4
+    },
+    {
+      "text": "B",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_3aa7acab",
+      "chunk_index": 4
+    },
+    {
+      "text": "label",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_3aa7acab",
+      "chunk_index": 5
+    },
+    {
+      "text": "seed",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_3aa7acab",
+      "chunk_index": 6
+    },
+    {
+      "text": "R",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_3aa7acab",
+      "chunk_index": 6
+    },
+    {
+      "text": "SK_SMI",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_3aa7acab",
+      "chunk_index": 6
+    },
+    {
+      "text": "SK_SMC",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_3aa7acab",
+      "chunk_index": 6
+    },
+    {
+      "text": "SK_SMC",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_3aa7acab",
+      "chunk_index": 6
+    },
+    {
+      "text": "seed",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_3aa7acab",
+      "chunk_index": 7
+    },
+    {
+      "text": "seed",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_3aa7acab",
+      "chunk_index": 7
+    },
+    {
+      "text": "seed",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_3aa7acab",
+      "chunk_index": 7
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_3aa7acab",
+      "chunk_index": 8
+    },
+    {
+      "text": "PAN",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_3aa7acab",
+      "chunk_index": 8
+    },
+    {
+      "text": "PAN_Sequence_Number",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_3aa7acab",
+      "chunk_index": 8
+    },
+    {
+      "text": "ATC",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_3aa7acab",
+      "chunk_index": 8
+    },
+    {
+      "text": "AC",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_3aa7acab",
+      "chunk_index": 8
+    },
+    {
+      "text": "CSN",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_3aa7acab",
+      "chunk_index": 8
+    },
+    {
+      "text": "KMCID",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_3aa7acab",
+      "chunk_index": 8
+    },
+    {
+      "text": "KEYDATA",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_3aa7acab",
+      "chunk_index": 8
+    },
+    {
+      "text": "KMC",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_3aa7acab",
+      "chunk_index": 8
+    },
+    {
+      "text": "N",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_3aa7acab",
+      "chunk_index": 8
+    },
+    {
+      "text": "C",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_3aa7acab",
+      "chunk_index": 8
+    },
+    {
+      "text": "C",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_3aa7acab",
+      "chunk_index": 8
+    },
+    {
+      "text": "N",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_3aa7acab",
+      "chunk_index": 8
+    },
+    {
+      "text": "C",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_3aa7acab",
+      "chunk_index": 8
+    },
+    {
+      "text": "N",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_3aa7acab",
+      "chunk_index": 8
+    },
+    {
+      "text": "C",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_3aa7acab",
+      "chunk_index": 8
+    },
+    {
+      "text": "C",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_3aa7acab",
+      "chunk_index": 8
+    },
+    {
+      "text": "N",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_3aa7acab",
+      "chunk_index": 8
+    },
+    {
+      "text": "D",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_3aa7acab",
+      "chunk_index": 8
+    },
+    {
+      "text": "A",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_3aa7acab",
+      "chunk_index": 8
+    },
+    {
+      "text": "C",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_3aa7acab",
+      "chunk_index": 8
+    }
+  ]
+}

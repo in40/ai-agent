@@ -1,0 +1,23 @@
+{
+  "doc_name": "r-1323565.1_12ff4b7a",
+  "chunks_processed": 10,
+  "pattern_count": 76,
+  "validated_count": 3,
+  "entities": [
+    {
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "2018",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "Правил применения настоящих рекомендаций установлены в статье 26 Федерального закона от 29 июня 2015 г. № 162-ФЗ",
+      "type": "CONCEPT",
+      "source": "llm"
+    }
+  ]
+}

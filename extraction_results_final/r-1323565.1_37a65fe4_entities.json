@@ -1,0 +1,33 @@
+{
+  "doc_name": "r-1323565.1_37a65fe4",
+  "chunks_processed": 10,
+  "pattern_count": 52,
+  "validated_count": 5,
+  "entities": [
+    {
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "П 1323565.1.003-2017",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Москвы",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "text": "2017 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "СДТГ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    }
+  ]
+}

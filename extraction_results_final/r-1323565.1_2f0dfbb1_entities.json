@@ -1,0 +1,23 @@
+{
+  "doc_name": "r-1323565.1_2f0dfbb1",
+  "chunks_processed": 10,
+  "pattern_count": 50,
+  "validated_count": 3,
+  "entities": [
+    {
+      "text": "ПФРА",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 34.13-2015",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 34.13—2015",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

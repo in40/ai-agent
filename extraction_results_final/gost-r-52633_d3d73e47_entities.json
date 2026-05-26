@@ -1,0 +1,73 @@
+{
+  "doc_name": "gost-r-52633_d3d73e47",
+  "chunks_processed": 3,
+  "pattern_count": 54,
+  "validated_count": 13,
+  "entities": [
+    {
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАННИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "НАЦИОНАЛЬНЫЙ СТАНДАРТ РОССИЙСКОЙ ФЕДЕРАЦИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 52633.5—2011",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "ФГУП \"ГНИИПТЗИ ФСТЭК России\"",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ФГУП \"ПНИЗИ\"",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Техника защиты информации",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Автоматическое обучение нейросетевых преобразователей биометрия-код доступа",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 52633.0—2011",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 52633.0—2006",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 52633.3—2011",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 52633.5-2011",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 52633.0-2006",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

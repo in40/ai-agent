@@ -1,0 +1,215 @@
+{
+  "doc_name": "gost-r-53112-2008=edt2018_30426e30",
+  "formulas": [
+    {
+      "text": "P",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-53112-2008=edt2018_30426e30",
+      "chunk_index": 6
+    },
+    {
+      "text": "E",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-53112-2008=edt2018_30426e30",
+      "chunk_index": 7
+    },
+    {
+      "text": "Z",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-53112-2008=edt2018_30426e30",
+      "chunk_index": 16
+    },
+    {
+      "text": "M_2",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-53112-2008=edt2018_30426e30",
+      "chunk_index": 26
+    },
+    {
+      "text": "_M",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-53112-2008=edt2018_30426e30",
+      "chunk_index": 26
+    },
+    {
+      "text": "K_1",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-53112-2008=edt2018_30426e30",
+      "chunk_index": 27
+    },
+    {
+      "text": "_K",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-53112-2008=edt2018_30426e30",
+      "chunk_index": 27
+    },
+    {
+      "text": "K",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-53112-2008=edt2018_30426e30",
+      "chunk_index": 32
+    },
+    {
+      "text": "U_2",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-53112-2008=edt2018_30426e30",
+      "chunk_index": 32
+    },
+    {
+      "text": "S_1",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-53112-2008=edt2018_30426e30",
+      "chunk_index": 34
+    },
+    {
+      "text": "S_2",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-53112-2008=edt2018_30426e30",
+      "chunk_index": 35
+    },
+    {
+      "text": "F",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-53112-2008=edt2018_30426e30",
+      "chunk_index": 37
+    },
+    {
+      "text": "F",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-53112-2008=edt2018_30426e30",
+      "chunk_index": 37
+    },
+    {
+      "text": "F",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-53112-2008=edt2018_30426e30",
+      "chunk_index": 37
+    },
+    {
+      "text": "F",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-53112-2008=edt2018_30426e30",
+      "chunk_index": 37
+    },
+    {
+      "text": "F",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-53112-2008=edt2018_30426e30",
+      "chunk_index": 37
+    },
+    {
+      "text": "F",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-53112-2008=edt2018_30426e30",
+      "chunk_index": 37
+    },
+    {
+      "text": "F",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-53112-2008=edt2018_30426e30",
+      "chunk_index": 37
+    },
+    {
+      "text": "n",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-53112-2008=edt2018_30426e30",
+      "chunk_index": 37
+    },
+    {
+      "text": "F",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-53112-2008=edt2018_30426e30",
+      "chunk_index": 37
+    },
+    {
+      "text": "C",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-53112-2008=edt2018_30426e30",
+      "chunk_index": 46
+    },
+    {
+      "text": "t_H",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-53112-2008=edt2018_30426e30",
+      "chunk_index": 52
+    },
+    {
+      "text": "t",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-53112-2008=edt2018_30426e30",
+      "chunk_index": 52
+    },
+    {
+      "text": "_1",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-53112-2008=edt2018_30426e30",
+      "chunk_index": 52
+    },
+    {
+      "text": "t_H",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-53112-2008=edt2018_30426e30",
+      "chunk_index": 52
+    },
+    {
+      "text": "t",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-53112-2008=edt2018_30426e30",
+      "chunk_index": 52
+    },
+    {
+      "text": "t_H",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-53112-2008=edt2018_30426e30",
+      "chunk_index": 52
+    },
+    {
+      "text": "t_H",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-53112-2008=edt2018_30426e30",
+      "chunk_index": 52
+    },
+    {
+      "text": "t",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-53112-2008=edt2018_30426e30",
+      "chunk_index": 52
+    },
+    {
+      "text": "t",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-53112-2008=edt2018_30426e30",
+      "chunk_index": 52
+    },
+    {
+      "text": "_2",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-53112-2008=edt2018_30426e30",
+      "chunk_index": 52
+    },
+    {
+      "text": "t_H",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-53112-2008=edt2018_30426e30",
+      "chunk_index": 52
+    },
+    {
+      "text": "t_H",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-53112-2008=edt2018_30426e30",
+      "chunk_index": 52
+    },
+    {
+      "text": "t_H",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-53112-2008=edt2018_30426e30",
+      "chunk_index": 52
+    },
+    {
+      "text": "t",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-53112-2008=edt2018_30426e30",
+      "chunk_index": 52
+    }
+  ]
+}

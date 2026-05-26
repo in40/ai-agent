@@ -1,0 +1,38 @@
+{
+  "doc_name": "gost-r-59547-2021_c84a5a4d",
+  "chunks_processed": 10,
+  "pattern_count": 36,
+  "validated_count": 6,
+  "entities": [
+    {
+      "text": "Федеральное Агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 59547—2021",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Российский институт стандартизации",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ФСТЭК России",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Центр безопасности информации",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 59547-2021",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

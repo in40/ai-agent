@@ -287,6 +287,426 @@ If you submit JSON without the "content" field in any chunk:
 # Prompts storage directory
 PROMPTS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'data', 'smart_ingestion_prompts')
 
+
+# ============================================================================
+# HYBRID RECURSIVE CHUNKING - NEW STRATEGY
+# ============================================================================
+
+def split_by_markdown_headings(text: str) -> List[Tuple[str, str]]:
+    """
+    Split text by markdown headings (#, ##, ###).
+    
+    Returns:
+        List of (heading, content) tuples
+    """
+    import re
+    
+    lines = text.split('\n')
+    sections = []
+    current_heading = "Introduction"
+    current_lines = []
+    
+    for line in lines:
+        # Match markdown headings (# through ######)
+        heading_match = re.match(r'^(#{1,6})\s+(.+)$', line.strip())
+        
+        if heading_match:
+            # Save previous section
+            if current_lines:
+                sections.append((current_heading, '\n'.join(current_lines)))
+            
+            # Start new section
+            current_heading = heading_match.group(2).strip()
+            current_lines = [line.strip()]
+        else:
+            current_lines.append(line.strip())
+    
+    # Add final section
+    if current_lines:
+        sections.append((current_heading, '\n'.join(current_lines)))
+    
+    return sections
+
+
+def split_at_subsection_headings(text: str) -> List[Tuple[str, str]]:
+    """Split text at subsection headings (##, ###)."""
+    import re
+    
+    pattern = r'^#{2,6}\s+.+$'
+    lines = text.split('\n')
+    
+    sections = []
+    current_heading = "Content"
+    current_lines = []
+    
+    for line in lines:
+        if re.match(pattern, line.strip()):
+            if current_lines:
+                sections.append((current_heading, '\n'.join(current_lines)))
+            
+            current_heading = line.strip()[line.strip().find('#'):].lstrip('# ').strip()
+            current_lines = [line.strip()]
+        else:
+            current_lines.append(line.strip())
+    
+    if current_lines:
+        sections.append((current_heading, '\n'.join(current_lines)))
+    
+    return sections
+
+
+def split_at_sentences(text: str) -> List[str]:
+    """Split text at sentence boundaries."""
+    import re
+    
+    # Split at . ! ? followed by space or end of string
+    sentences = re.split(r'(?<=[.!?])\s+', text)
+    return [s.strip() for s in sentences if s.strip()]
+
+
+def hard_split_words(text: str, max_size: int) -> List[Dict]:
+    """
+    Last resort: Split at word boundaries to respect max_size.
+    """
+    chunks = []
+    words = text.split()
+    current_chunk = ""
+    
+    for word in words:
+        if len(current_chunk) + len(word) + 1 <= max_size:
+            current_chunk += word + " "
+        else:
+            if current_chunk.strip():
+                chunks.append({'content': current_chunk.strip()})
+            current_chunk = word + " "
+    
+    if current_chunk.strip():
+        chunks.append({'content': current_chunk.strip()})
+    
+    return chunks
+
+
+def recursive_semantic_split(
+    text: str,
+    target_size: int = 1500,
+    max_size: int = 2000,
+    min_size: int = 500
+) -> List[Dict]:
+    """
+    Recursively split text at semantic boundaries.
+    
+    Splitting priority:
+    1. Subsection headings (##, ###)
+    2. Paragraph breaks (\n\n)
+    3. Sentence boundaries (. ! ?)
+    4. Word boundaries (last resort)
+    
+    Args:
+        text: Text to split
+        target_size: Target chunk size in characters (~375 tokens)
+        max_size: Maximum chunk size (~500 tokens)
+        min_size: Minimum chunk size (~125 tokens)
+    
+    Returns:
+        List of chunk dicts with 'content' field
+    """
+    
+    # If text is within target range, return as-is
+    if len(text) <= max_size and len(text) >= min_size:
+        return [{'content': text}]
+    
+    # If too small, return anyway (don't create tiny fragments)
+    if len(text) < min_size:
+        return [{'content': text}]
+    
+    # Try splitting at subsection headings
+    sub_sections = split_at_subsection_headings(text)
+    if len(sub_sections) > 1:
+        chunks = []
+        for sub_heading, sub_content in sub_sections:
+            chunks.extend(recursive_semantic_split(
+                sub_content, target_size, max_size, min_size
+            ))
+        return chunks
+    
+    # Try splitting at paragraph breaks
+    paragraphs = [p.strip() for p in text.split('\n\n') if p.strip()]
+    if len(paragraphs) > 1:
+        chunks = []
+        current_chunk = ""
+        
+        for para in paragraphs:
+            if len(current_chunk) + len(para) + 2 <= max_size:  # +2 for \n\n
+                current_chunk += para + "\n\n"
+            else:
+                if current_chunk.strip():
+                    chunks.append({'content': current_chunk.strip()})
+                current_chunk = para + "\n\n"
+        
+        if current_chunk.strip():
+            chunks.append({'content': current_chunk.strip()})
+        
+        # If we created multiple chunks, return them
+        if len(chunks) > 1:
+            return chunks
+    
+    # If still too large and no natural breaks, force split at character boundary
+    if len(text) > max_size:
+        chunks = []
+        start = 0
+        
+        while start < len(text):
+            end = min(start + max_size, len(text))
+            
+            # Try to break at word boundary
+            if end < len(text):
+                space_pos = text.rfind(' ', start, end)
+                if space_pos > start + max_size * 0.5:  # Don't split in first half
+                    end = space_pos
+            
+            chunk_text = text[start:end].strip()
+            if chunk_text:
+                chunks.append({'content': chunk_text})
+            
+            start = end + 1 if end < len(text) else len(text)
+        
+        if len(chunks) > 1:
+            return chunks
+    
+    # Try splitting at sentence boundaries
+    sentences = split_at_sentences(text)
+    if len(sentences) > 1:
+        chunks = []
+        current_chunk = ""
+        
+        for sentence in sentences:
+            if len(current_chunk) + len(sentence) <= max_size:
+                current_chunk += sentence + " "
+            else:
+                if current_chunk.strip():
+                    chunks.append({'content': current_chunk.strip()})
+                current_chunk = sentence + " "
+        
+        if current_chunk.strip():
+            chunks.append({'content': current_chunk.strip()})
+        
+        if len(chunks) > 1:
+            return chunks
+    
+    # LAST RESORT: Hard character split (preserving word boundaries)
+    return hard_split_words(text, max_size)
+
+
+def hybrid_chunk_document(
+    document_content: str,
+    filename: str = ""
+) -> List[Dict]:
+    """
+    Hybrid chunking: Structure-aware + size-controlled.
+    
+    Stage 1: Split by document structure (sections)
+    Stage 2: Apply recursive splitting to oversized sections
+    
+    Args:
+        document_content: Full document text
+        filename: Original filename for metadata
+    
+    Returns:
+        List of chunk dicts with content and metadata
+    """
+    
+    # STAGE 1: Structure-based splitting
+    sections = split_by_markdown_headings(document_content)
+    
+    all_chunks = []
+    chunk_counter = 0
+    
+    for section_heading, section_content in sections:
+        if not section_content.strip():
+            continue
+        
+        # Check if section is too large
+        if len(section_content) > 2000:
+            # STAGE 2: Recursive splitting with semantic boundaries
+            sub_chunks_raw = recursive_semantic_split(
+                section_content,
+                target_size=1500,
+                max_size=2000,
+                min_size=500
+            )
+            
+            # Post-process to ensure all chunks are within size limits
+            sub_chunks_list = []
+            for sc in sub_chunks_raw:
+                if len(sc['content']) > 2500:
+                    # Force split oversized chunks
+                    force_splits = recursive_semantic_split(
+                        sc['content'],
+                        target_size=1500,
+                        max_size=2000,
+                        min_size=500
+                    )
+                    sub_chunks_list.extend(force_splits)
+                else:
+                    sub_chunks_list.append(sc)
+            
+            sub_chunks = sub_chunks_list
+        else:
+            sub_chunks = [{'content': section_content}]
+        
+        # Add metadata to each chunk
+        for sub_chunk in sub_chunks:
+            chunk_counter += 1
+            all_chunks.append({
+                'chunk_id': f"{filename}_chunk_{chunk_counter:04d}" if filename else f"chunk_{chunk_counter:04d}",
+                'chunk_index': chunk_counter - 1,
+                'content': sub_chunk['content'],
+                'section': section_heading,
+                'title': section_heading,
+                'chunk_type': 'text',
+                'content_length': len(sub_chunk['content']),
+                'token_count': len(sub_chunk['content']) // 4,
+            })
+    
+    logger.info(f"[HYBRID CHUNKING] Created {len(all_chunks)} chunks from {len(sections)} sections")
+    
+    # Log chunk size statistics
+    if all_chunks:
+        sizes = [c['content_length'] for c in all_chunks]
+        logger.info(f"[HYBRID CHUNKING] Chunk sizes: min={min(sizes)}, max={max(sizes)}, avg={sum(sizes)/len(sizes):.0f}")
+    
+    return all_chunks
+
+
+def force_split_oversized(chunks: List[Dict], hard_limit: int = 5000) -> List[Dict]:
+    """
+    Final safety net: word-boundary split for any chunk exceeding hard_limit.
+    This runs AFTER all semantic splitting to catch any remaining oversized chunks.
+    """
+    result = []
+    for chunk in chunks:
+        content = chunk.get('content', '')
+        if len(content) <= hard_limit:
+            result.append(chunk)
+            continue
+        words = content.split()
+        current = []
+        current_len = 0
+        for word in words:
+            if current_len + len(word) + 1 <= hard_limit:
+                current.append(word)
+                current_len += len(word) + 1
+            else:
+                new_chunk = chunk.copy()
+                new_chunk['content'] = ' '.join(current)
+                new_chunk['content_length'] = len(new_chunk['content'])
+                new_chunk['token_count'] = len(new_chunk['content']) // 4
+                result.append(new_chunk)
+                current = [word]
+                current_len = len(word)
+        if current:
+            new_chunk = chunk.copy()
+            new_chunk['content'] = ' '.join(current)
+            new_chunk['content_length'] = len(new_chunk['content'])
+            new_chunk['token_count'] = len(new_chunk['content']) // 4
+            result.append(new_chunk)
+    return result
+
+
+def validate_and_fix_chunks(chunks: List[Dict], max_size: int = 2500, min_size: int = 400) -> List[Dict]:
+    """
+    Post-process chunks to fix size issues.
+    
+    - Split chunks > max_size chars
+    - Merge chunks < min_size chars with neighbors
+    
+    Args:
+        chunks: List of chunk dicts
+        max_size: Maximum allowed chunk size
+        min_size: Minimum desired chunk size
+    
+    Returns:
+        Fixed list of chunks
+    """
+    if not chunks:
+        return chunks
+    
+    fixed_chunks = []
+    merge_buffer = ""
+    merge_metadata = None
+    
+    for chunk in chunks:
+        content = chunk.get('content', '')
+        metadata = chunk.copy()
+        
+        # Handle undersized chunks - buffer for merging
+        if len(content) < min_size:
+            if merge_buffer:
+                merge_buffer += "\n\n" + content
+            else:
+                merge_buffer = content
+                merge_metadata = metadata
+            continue
+        
+        # If we have buffered content, try to merge
+        if merge_buffer:
+            combined = merge_buffer + "\n\n" + content
+            if len(combined) <= max_size:
+                # Merge successful
+                merged_chunk = merge_metadata.copy()
+                merged_chunk['content'] = combined
+                merged_chunk['content_length'] = len(combined)
+                merged_chunk['token_count'] = len(combined) // 4
+                fixed_chunks.append(merged_chunk)
+                merge_buffer = ""
+                merge_metadata = None
+            else:
+                # Can't merge, output buffer as-is
+                if merge_buffer.strip():
+                    buffer_chunk = merge_metadata.copy()
+                    buffer_chunk['content'] = merge_buffer
+                    buffer_chunk['content_length'] = len(merge_buffer)
+                    buffer_chunk['token_count'] = len(merge_buffer) // 4
+                    fixed_chunks.append(buffer_chunk)
+                merge_buffer = ""
+                merge_metadata = None
+        
+        # Split oversized chunks
+        if len(content) > max_size:
+            sub_chunks = recursive_semantic_split(content, max_size=max_size, min_size=min_size)
+            for i, sub in enumerate(sub_chunks):
+                fixed_chunk = chunk.copy()
+                fixed_chunk['content'] = sub['content']
+                fixed_chunk['content_length'] = len(sub['content'])
+                fixed_chunk['token_count'] = len(sub['content']) // 4
+                fixed_chunk['chunk_id'] = f"{chunk.get('chunk_id', '')}_split_{i}"
+                fixed_chunks.append(fixed_chunk)
+        else:
+            fixed_chunks.append(chunk)
+    
+    # Handle remaining buffer
+    if merge_buffer.strip():
+        buffer_chunk = merge_metadata.copy()
+        buffer_chunk['content'] = merge_buffer
+        buffer_chunk['content_length'] = len(merge_buffer)
+        buffer_chunk['token_count'] = len(merge_buffer) // 4
+        fixed_chunks.append(buffer_chunk)
+    
+    # Re-index chunks
+    for i, chunk in enumerate(fixed_chunks):
+        chunk['chunk_index'] = i
+    
+    # Final safety net: force-split any chunk still exceeding hard limit
+    fixed_chunks = force_split_oversized(fixed_chunks, hard_limit=5000)
+    
+    # Re-index again after force split
+    for i, chunk in enumerate(fixed_chunks):
+        chunk['chunk_index'] = i
+    
+    logger.info(f"[VALIDATION] Fixed chunks: {len(chunks)} → {len(fixed_chunks)}")
+    
+    return fixed_chunks
+
 def ensure_prompts_dir():
     """Ensure the prompts directory exists"""
     if not os.path.exists(PROMPTS_DIR):
@@ -1601,16 +2021,14 @@ Return ONLY valid JSON:
                 chunk_copy['entities'] = entities_by_chunk.get(chunk_id, [])
                 chunks_with_entities.append(chunk_copy)
 
-            # Store chunks with relationships
-            chunks_stored = neo4j.store_chunks_batch(doc_id, chunks_with_entities)
-
-            # Create knowledge graph from chunks (will use pre-extracted entities)
+            # Create knowledge graph with entity-to-chunk-UUID references only
+            # (chunks are stored in Vector DB, Neo4j stores only UUID references)
             graph_stats = neo4j.create_knowledge_graph(chunks_with_entities)
 
             result['graph_store']['success'] = True
-            result['graph_store']['nodes_created'] = chunks_stored + graph_stats['entities']
-            result['graph_store']['relationships_created'] = graph_stats['relationships']
-            logger.info(f"[HYBRID] Stored in Neo4j: {chunks_stored} chunks, {graph_stats['entities']} entities, {graph_stats['relationships']} relationships")
+            result['graph_store']['nodes_created'] = graph_stats['entities']
+            result['graph_store']['chunk_refs'] = graph_stats.get('chunk_refs', 0)
+            logger.info(f"[HYBRID] Neo4j entities: {graph_stats['entities']}, chunk UUID refs: {graph_stats.get('chunk_refs', 0)}")
         else:
             logger.warning("[HYBRID] Neo4j not connected - skipping graph storage")
             result['graph_store']['error'] = 'Neo4j connection failed'

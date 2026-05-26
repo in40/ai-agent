@@ -1,0 +1,101 @@
+{
+  "doc_name": "r-1323565.1_29d67cd9",
+  "formulas": [
+    {
+      "text": "s",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_29d67cd9",
+      "chunk_index": 4
+    },
+    {
+      "text": "b",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_29d67cd9",
+      "chunk_index": 4
+    },
+    {
+      "text": "n",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_29d67cd9",
+      "chunk_index": 4
+    },
+    {
+      "text": "b",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_29d67cd9",
+      "chunk_index": 4
+    },
+    {
+      "text": "K_in",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_29d67cd9",
+      "chunk_index": 16
+    },
+    {
+      "text": "label",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_29d67cd9",
+      "chunk_index": 16
+    },
+    {
+      "text": "seed",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_29d67cd9",
+      "chunk_index": 16
+    },
+    {
+      "text": "R",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_29d67cd9",
+      "chunk_index": 16
+    },
+    {
+      "text": "K_in",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_29d67cd9",
+      "chunk_index": 17
+    },
+    {
+      "text": "label",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_29d67cd9",
+      "chunk_index": 17
+    },
+    {
+      "text": "seed",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_29d67cd9",
+      "chunk_index": 17
+    },
+    {
+      "text": "R",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_29d67cd9",
+      "chunk_index": 17
+    },
+    {
+      "text": "P_E",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_29d67cd9",
+      "chunk_index": 18
+    },
+    {
+      "text": "P",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_29d67cd9",
+      "chunk_index": 18
+    },
+    {
+      "text": "KEK_t",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_29d67cd9",
+      "chunk_index": 18
+    },
+    {
+      "text": "KEK_t",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_29d67cd9",
+      "chunk_index": 18
+    }
+  ]
+}

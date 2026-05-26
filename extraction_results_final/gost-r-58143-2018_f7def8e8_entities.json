@@ -1,0 +1,53 @@
+{
+  "doc_name": "gost-r-58143-2018_f7def8e8",
+  "chunks_processed": 10,
+  "pattern_count": 48,
+  "validated_count": 9,
+  "entities": [
+    {
+      "text": "ГОСТ Р 58143—2018",
+      "type": "STANDARD",
+      "source": "llm"
+    },
+    {
+      "text": "ISO/IEC TR 20004:2015",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "IEC 15408",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "IEC 18045",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "IEC 15408",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "IEC 18045",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 56545—2015",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 56546—2015",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 58142—2018",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

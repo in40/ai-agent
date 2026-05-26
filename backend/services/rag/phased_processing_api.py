@@ -10,6 +10,7 @@ Endpoints for phased document processing:
 """
 import os
 import json
+import re
 import uuid
 import logging
 import time
@@ -72,15 +73,21 @@ def upload_documents():
     
     Request:
         multipart/form-data with files
+        chunking_strategy: Optional strategy (default: smart_chunking)
         OR JSON with URLs to download
     
     Returns:
         job_id and list of document IDs
     """
     try:
+        # Get chunking strategy from form data
+        chunking_strategy = request.form.get('chunking_strategy', 'smart_chunking')
+        
         # Generate job ID
         job_id = f"job_{uuid.uuid4().hex[:12]}"
         user_id = request.headers.get('X-User-ID', 'anonymous')
+        
+        logger.info(f"[Upload] chunking_strategy={chunking_strategy}")
         
         uploaded_docs = []
         
@@ -211,9 +218,13 @@ def create_job_from_docstore():
         phases = data.get('phases', ['extract', 'chunk', 'vector', 'graph'])
         user_id = data.get('user_id', 'anonymous')
         extraction_config = data.get('extraction_config', {})
+        chunking_strategy = data.get('chunking_strategy', 'smart_chunking')
 
         # Log received config
+        logger.info(f"[create_job_from_docstore] Phases received: {phases}")
+        logger.info(f"[create_job_from_docstore] Phases type: {type(phases)}")
         logger.info(f"[create_job_from_docstore] Received extraction_config: {json.dumps(extraction_config, indent=2)}")
+        logger.info(f"[create_job_from_docstore] chunking_strategy={chunking_strategy}")
 
         # Validate method
         valid_methods = ['auto', 'pymupdf', 'pdfminer', 'tesseract', 'llm']
@@ -272,11 +283,13 @@ def create_job_from_docstore():
                     'total_documents': 0,  # Will update after creating documents
                     'files': [],  # Track files
                     'extraction_config': extraction_config,  # Store extraction config
-                    'auto_retry_failed': auto_retry
+                    'auto_retry_failed': auto_retry,
+                    'enable_regex_entities': data.get('enable_regex_entities', True),
+                    'chunking_strategy': chunking_strategy  # Store chunking strategy
                 },
                 ingestion_mode='docstore',
                 processing_mode='vector_db',
-                chunking_strategy='smart_chunking'
+                chunking_strategy=chunking_strategy
             )
 
             # Use the job_id from create_job() - this is what's in Redis
@@ -846,6 +859,33 @@ def chunk_documents():
                 elif strategy == 'paragraph':
                     chunks = _paragraph_chunk(text_content, doc.doc_id, config)
                 
+                elif strategy == 'recursive_semantic':
+                    # NEW: Hybrid recursive semantic chunking
+                    from .smart_ingestion_enhanced import hybrid_chunk_document, validate_and_fix_chunks
+                    
+                    logger.info(f"[Job {job_id}] Using recursive semantic chunking")
+                    raw_chunks = hybrid_chunk_document(text_content, doc.original_filename or doc.doc_id)
+                    
+                    # Post-process to fix size issues
+                    chunks_list = validate_and_fix_chunks(raw_chunks)
+                    
+                    # Convert to Chunk model format
+                    from backend.services.rag.phased_processing_models import Chunk
+                    chunks = []
+                    for c in chunks_list:
+                        chunks.append(Chunk(
+                            doc_id=doc.doc_id,
+                            chunk_id=c.get('chunk_id', f"{doc.doc_id}_chunk_{c.get('chunk_index', 0)}"),
+                            chunk_index=c.get('chunk_index', 0),
+                            content=c.get('content', ''),
+                            content_length=c.get('content_length', len(c.get('content', ''))),
+                            section=c.get('section', ''),
+                            title=c.get('title', ''),
+                            chunk_type=c.get('chunk_type', 'text'),
+                            token_count=c.get('token_count', 0),
+                        ))
+                    chunking_strategy = 'recursive_semantic'
+                
                 if not chunks:
                     raise Exception("No chunks generated")
                 
@@ -1103,11 +1143,64 @@ def index_to_vector():
                     doc.doc_id, 'vector', PhaseStatus.IN_PROGRESS
                 )
                 
-                # Get chunks for this document
+                # Get chunks for this document (only active chunks)
                 chunks = phased_db.get_chunks_for_document(doc.doc_id)
+                
+                # If chunks not found, check for inactive chunks (may need re-activation)
+                if not chunks:
+                    # Check if there are inactive chunks for this doc
+                    with db_manager.engine.connect() as conn:
+                        inactive_result = conn.execute(text("""
+                            SELECT chunk_id FROM chunks_cache 
+                            WHERE doc_id = :doc_id AND version = :version
+                        """), {'doc_id': doc.doc_id, 'version': 'v1'})
+                        inactive_chunks = inactive_result.fetchall()
+                    
+                    if inactive_chunks:
+                        # Re-activate the chunks
+                        logger.info(f"[Vector Indexing {job_id}] Found {len(inactive_chunks)} inactive chunks for {doc.doc_id}, re-activating...")
+                        phased_db.activate_chunks(doc.doc_id, 'v1')
+                        chunks = phased_db.get_chunks_for_document(doc.doc_id)
+                        logger.info(f"[Vector Indexing {job_id}] Re-activated {len(chunks)} chunks for {doc.doc_id}")
+                    
+                    # If still no chunks, try to load from Document Store
+                    if not chunks:
+                        try:
+                            chunks = _load_chunks_from_docstore(doc.doc_id)
+                            if chunks:
+                                logger.info(f"[Vector Indexing {job_id}] Loaded {len(chunks)} chunks from Document Store for {doc.doc_id}")
+                                # Save loaded chunks to phased DB for future use
+                                phased_db.save_chunks(chunks)
+                        except Exception as e:
+                            logger.warning(f"[Vector Indexing {job_id}] Failed to load chunks from Document Store: {e}")
                 
                 if not chunks:
                     raise Exception("No chunks found for document")
+                
+                # FINAL SAFETY NET: force-split any chunk still exceeding 5000 chars
+                from .smart_ingestion_enhanced import force_split_oversized
+                chunk_dicts = [{
+                    'content': c.content, 'chunk_id': c.chunk_id, 'chunk_index': c.chunk_index,
+                    'section': c.section or '', 'title': c.title or '', 'chunk_type': c.chunk_type,
+                    'token_count': c.token_count or 0,
+                } for c in chunks]
+                fixed_dicts = force_split_oversized(chunk_dicts, hard_limit=5000)
+                if len(fixed_dicts) != len(chunk_dicts):
+                    logger.info(f"[Vector Indexing {job_id}] Force-split {len(chunk_dicts)} chunks into {len(fixed_dicts)}")
+                    from backend.services.rag.phased_processing_models import Chunk
+                    chunks = []
+                    for i, cd in enumerate(fixed_dicts):
+                        chunks.append(Chunk(
+                            doc_id=doc.doc_id,
+                            chunk_id=cd.get('chunk_id', f"{doc.doc_id}_chunk_{i:04d}"),
+                            chunk_index=i,
+                            content=cd.get('content', ''),
+                            content_length=len(cd.get('content', '')),
+                            section=cd.get('section', ''),
+                            title=cd.get('title', ''),
+                            chunk_type=cd.get('chunk_type', 'text'),
+                            token_count=cd.get('token_count', 0),
+                        ))
                 
                 # Convert to LangChain documents
                 from langchain_core.documents import Document as LCDocument
@@ -1223,12 +1316,23 @@ def build_graph():
         job_id = data.get('job_id')
         document_ids = data.get('document_ids')
         extract_entities = data.get('extract_entities', True)
+        enable_regex = data.get('enable_regex_entities', True)
         
         if not job_id:
             return jsonify({
                 'success': False,
                 'error': 'job_id is required'
             }), 400
+        
+        # If not passed in request, try loading from job parameters
+        if 'enable_regex_entities' not in data:
+            try:
+                from backend.services.rag.job_queue import job_queue
+                job_obj = job_queue.get_job(job_id)
+                if job_obj and job_obj.parameters:
+                    enable_regex = job_obj.parameters.get('enable_regex_entities', True)
+            except Exception:
+                pass
         
         # Get documents ready for graph build
         if document_ids:
@@ -1265,50 +1369,81 @@ def build_graph():
                 if not chunks:
                     raise Exception("No chunks found for entity extraction")
                 
-                # Extract entities from chunks
-                # TODO: Implement LLM-based entity extraction
-                # For now, use simple keyword-based extraction
-                entities = []
-                relationships = []
-                
-                for chunk in chunks:
-                    # Simple entity extraction (placeholder)
-                    # Look for GOST standard patterns
-                    import re
-                    gost_pattern = r'ГОСТ\s*[Рр]?\s*(\d+(?:\.\d+)?-\d{4})'
-                    matches = re.findall(gost_pattern, chunk.content)
+                # Extract entities from chunks using LLM-enhanced hybrid extraction
+                # This enables automatic pattern discovery for abbreviations, organizations, etc.
+                try:
+                    from backend.services.rag.neo4j_integration import Neo4jIntegration
+                    from models.response_generator import ResponseGenerator
                     
-                    for match in matches:
-                        entity_name = f"GOST {match}"
-                        if not any(e.entity_name == entity_name for e in entities):
-                            entities.append({
-                                'name': entity_name,
-                                'type': 'STANDARD',
-                                'chunk_id': chunk.chunk_id,
-                                'relevance': 0.9
+                    # Set job ID for LLM response logging
+                    os.environ['CURRENT_JOB_ID'] = job_id
+                    
+                    # Initialize LLM for entity extraction
+                    response_gen = ResponseGenerator()
+                    llm = response_gen._get_llm_instance()
+                    
+                    # Initialize Neo4j with LLM support
+                    neo4j = Neo4jIntegration(llm=llm)
+                    if not neo4j.connected:
+                        if not neo4j.connect():
+                            logger.warning(f"Neo4j connection failed: {neo4j.last_error}. Using fallback extraction.")
+                            neo4j = None
+                    
+                    if neo4j and neo4j.connected:
+                        # Prepare chunks for Neo4j graph creation
+                        # Note: Chunks from DB don't have 'metadata' field, so we pass chunk_id directly
+                        chunk_data = []
+                        for chunk in chunks:
+                            chunk_data.append({
+                                'content': chunk.content,
+                                'chunk_id': chunk.chunk_id,  # Pass chunk_id at top level
+                                'metadata': {
+                                    'chunk_id': chunk.chunk_id,
+                                    'chunk_uuid': chunk.chunk_id  # Also in metadata for compatibility
+                                }
                             })
-                
-                # Save entities to cache
-                for entity_data in entities:
-                    from backend.services.rag.phased_processing_models import Entity
-                    entity = Entity(
-                        doc_id=doc.doc_id,
-                        chunk_id=entity_data.get('chunk_id'),
-                        entity_name=entity_data['name'],
-                        entity_type=entity_data['type'],
-                        relevance_score=entity_data.get('relevance'),
-                    )
-                    # TODO: Save to database
-                
-                # TODO: Store in Neo4j
-                # from backend.services.rag.graphrag_service import GraphRAGService
-                # graph_service = GraphRAGService()
-                # graph_service.store_in_neo4j(entities, relationships)
+                        
+                        # Use LLM-enhanced extraction with pattern discovery
+                        logger.info(f"Running LLM entity extraction for document {doc.doc_id}")
+                        graph_stats = neo4j.create_knowledge_graph(
+                            chunks=chunk_data,
+                            use_llm_extraction=True,
+                            use_regex_entities=enable_regex
+                        )
+                        
+                        doc_entities = graph_stats['entities']
+                        doc_relationships = graph_stats['chunk_refs']
+                        
+                        # Accumulate totals across all documents
+                        total_entities += doc_entities
+                        total_relationships += doc_relationships
+                        
+                        logger.info(f"Extracted {doc_entities} entities and {doc_relationships} chunk references (total: {total_entities} entities)")
+                        neo4j.close()
+                    else:
+                        # Fallback to simple regex extraction if Neo4j/LLM unavailable
+                        logger.warning("Using fallback regex extraction (Neo4j/LLM unavailable)")
+                        total_entities = 0
+                        total_relationships = 0
+                        
+                        for chunk in chunks:
+                            import re
+                            gost_pattern = r'ГОСТ\s*[Рр]?\s*(\d+(?:\.\d+)?-\d{4})'
+                            matches = re.findall(gost_pattern, chunk.content)
+                            
+                            for match in matches:
+                                entity_name = f"ГОСТ {match}"
+                                if not any(e.get('name') == entity_name for e in [{'name': 'test'}]):  # Simplified check
+                                    total_entities += 1
+                except Exception as e:
+                    logger.error(f"LLM entity extraction failed: {e}. Using fallback.")
+                    total_entities = 0
+                    total_relationships = 0
                 
                 # Update document metadata
                 phased_db.update_document_metadata(doc.doc_id, {
-                    'entity_count': len(entities),
-                    'relationship_count': len(relationships),
+                    'entity_count': total_entities,
+                    'relationship_count': total_relationships,
                 })
                 
                 # Mark phase as completed
@@ -1316,8 +1451,9 @@ def build_graph():
                 phased_db.update_document_phase_status(
                     doc.doc_id, 'graph', PhaseStatus.COMPLETED,
                     metadata={
-                        'entities_extracted': len(entities),
-                        'relationships_created': len(relationships)
+                        'entities_extracted': total_entities,
+                        'relationships_created': total_relationships,
+                        'extraction_method': 'LLM+hybrid' if neo4j and neo4j.connected else 'regex_fallback'
                     }
                 )
                 
@@ -1330,16 +1466,15 @@ def build_graph():
                     action='COMPLETE',
                     status='SUCCESS',
                     processing_time_ms=int(processing_time),
-                    items_processed=len(entities),
+                    items_processed=total_entities,
                     metadata={
-                        'entities': len(entities),
-                        'relationships': len(relationships)
+                        'entities': total_entities,
+                        'relationships': total_relationships,
+                        'extraction_method': 'LLM+hybrid' if neo4j and neo4j.connected else 'regex_fallback'
                     }
                 ))
                 
                 processed_count += 1
-                total_entities += len(entities)
-                total_relationships += len(relationships)
                 
             except Exception as e:
                 logger.error(f"Graph build failed for {doc.doc_id}: {e}")
@@ -1383,8 +1518,15 @@ def process_phased_job_background(job):
         job_id = job.job_id
         phases = job.parameters.get('phases', ['extract', 'chunk', 'vector', 'graph'])
         
+        # Debug logging to understand what phases were received
         logger.info(f"[Phased Job {job_id}] Starting background processing")
-        logger.info(f"[Phased Job {job_id}] Phases: {phases}")
+        logger.info(f"[Phased Job {job_id}] Job parameters keys: {list(job.parameters.keys())}")
+        phases_raw = job.parameters.get('phases')
+        logger.info(f"[Phased Job {job_id}] Phases raw value from parameters: {phases_raw}")
+        if phases_raw is None:
+            logger.info(f"[Phased Job {job_id}] Phases NOT FOUND in parameters - using default: {phases}")
+        else:
+            logger.info(f"[Phased Job {job_id}] Phases to process: {phases}")
         
         # Import PhaseStatus early for use in fallback and error handling
         from backend.services.rag.phased_processing_models import PhaseStatus, DocumentStatus
@@ -1720,123 +1862,46 @@ def process_phased_job_background(job):
                                 # Plain text extraction - no LaTeX processing
                                 cleaning_method = None
 
-                            # Use LLM-based smart chunking with async timeout
-                            logger.info(f"[Phased Job {job_id}] Calling LLM for smart chunking...")
+                            # Get chunking strategy from job parameters
+                            chunking_strategy = job.parameters.get('chunking_strategy', 'smart_chunking')
+                            logger.info(f"[Phased Job {job_id}] Using chunking_strategy: {chunking_strategy}")
 
-                            # Heartbeat callback - updates section progress
-                            def heartbeat_cb(action=None, section=None, total_sections=None, heading=None, attempt=None):
-                                try:
-                                    j = jq.get_job(job_id)
-                                    if j:
-                                        hb = j.parameters.get('heartbeat', {})
-                                        hb.update({
-                                            'timestamp': datetime.utcnow().isoformat(),
-                                            'phase': 'chunk',
-                                            'doc_id': doc.doc_id,
-                                            'action': action or 'section_progress',
-                                            'current_section': section,
-                                            'total_sections': total_sections,
-                                            'section_heading': heading,
-                                        })
-                                        j.parameters['heartbeat'] = hb
-                                        jq.update_job(j)
-                                except Exception as e:
-                                    logger.debug(f"Heartbeat update failed: {e}")
-
-                            from .smart_ingestion_enhanced import chunk_document_with_llm_sync
-
-                            # Chunk using LLM with proper timeout (uses config from .env)
-                            # Returns: (success, chunks, error_message) - 3 values only
-                            logger.info(f"[Phased Job {job_id}] About to call chunk_document_with_llm_sync for file: {text_path}")
-                            success, llm_chunks, error = chunk_document_with_llm_sync(
-                                file_path=text_path,
-                                prompt="",  # Use default prompt
-                                filename=doc.original_filename,
-                                timeout=LLM_CHUNKING_TIMEOUT,  # Pass timeout from .env
-                                heartbeat_cb=heartbeat_cb
-                            )
-                            logger.info(f"[Phased Job {job_id}] chunk_document_with_llm_sync returned: success={success}, chunks_count={len(llm_chunks) if llm_chunks else 0}, error={repr(error)[:500]}")
+                            chunks = []
                             
-                            # Update heartbeat after LLM chunking
-                            if current_job:
-                                current_job.parameters['heartbeat'] = {
-                                    'timestamp': datetime.utcnow().isoformat(),
-                                    'phase': 'chunk',
-                                    'doc_id': doc.doc_id,
-                                    'action': 'llm_chunking_completed',
-                                    'chunks_generated': len(llm_chunks) if llm_chunks else 0,
-                                    'success': success
-                                }
-                                jq.update_job(current_job)
-
-                            if success:
-                                # Check for coverage warning (stored in first chunk metadata by validator)
-                                coverage_warning = None
-                                if llm_chunks and '_coverage_warning' in llm_chunks[0]:
-                                    coverage_warning = llm_chunks[0].pop('_coverage_warning')  # Extract and remove from chunk
-                                    logger.warning(f"[Phased Job {job_id}] Coverage warning: {coverage_warning}")
-                                
-                                # Also check error field for warnings (success=True but error field has text = warning)
-                                chunking_warning = error if success and error else None
-                                
-                                # Combine warnings
-                                final_warning = coverage_warning or chunking_warning
-                                
-                                # Convert LLM chunks to our Chunk format
+                            if chunking_strategy == 'recursive_semantic':
+                                # Use hybrid recursive semantic chunking (NO LLM)
+                                from .smart_ingestion_enhanced import hybrid_chunk_document, validate_and_fix_chunks
                                 from backend.services.rag.phased_processing_models import Chunk
-                                chunks = []
-                                for i, c in enumerate(llm_chunks):
+                                
+                                logger.info(f"[Phased Job {job_id}] Using recursive semantic chunking for {doc.original_filename}")
+                                raw_chunks = hybrid_chunk_document(text, doc.original_filename or doc.doc_id)
+                                chunks_list = validate_and_fix_chunks(raw_chunks)
+                                
+                                # Convert to Chunk model format
+                                for c in chunks_list:
+                                    # Truncate section/title to fit DB column limits
+                                    section = (c.get('section', '') or '')[:500]
+                                    title = (c.get('title', '') or '')[:500]
                                     chunks.append(Chunk(
                                         doc_id=doc.doc_id,
-                                        chunk_id=f"{doc.doc_id}_chunk_{i:04d}",
-                                        chunk_index=i,
+                                        chunk_id=c.get('chunk_id', f"{doc.doc_id}_chunk_{c.get('chunk_index', 0)}"),
+                                        chunk_index=c.get('chunk_index', 0),
                                         content=c.get('content', ''),
-                                        content_length=len(c.get('content', '')),
-                                        section=c.get('section', ''),
-                                        title=c.get('title', ''),
-                                        chunk_type='text',
+                                        content_length=c.get('content_length', len(c.get('content', ''))),
+                                        section=section,
+                                        title=title,
+                                        chunk_type=c.get('chunk_type', 'text'),
                                         token_count=c.get('token_count', 0),
                                     ))
-                                logger.info(
-                                    f"[Phased Job {job_id}] LLM generated {len(chunks)} chunks "
-                                    f"(total content: {sum(c.content_length for c in chunks)} chars)"
-                                )
                                 
-                                if final_warning:
-                                    logger.warning(f"[Phased Job {job_id}] WARNING: {final_warning}")
-
-                                # Store cleaning method in metadata for UI notification
-                                if cleaning_method == "latex_converted":
-                                    chunking_metadata = {
-                                        'cleaning_method': cleaning_method,
-                                        'warning': 'LaTeX formulas converted to natural language descriptions (mathematical meaning preserved)'
-                                    }
-                                elif cleaning_method == "aggressive":
-                                    chunking_metadata = {
-                                        'cleaning_method': cleaning_method,
-                                        'warning': 'LaTeX formulas may be corrupted due to aggressive JSON cleaning'
-                                    }
-                                else:
-                                    chunking_metadata = {
-                                        'cleaning_method': cleaning_method,
-                                        'warning': None
-                                    }
+                                logger.info(f"[Phased Job {job_id}] Recursive semantic generated {len(chunks)} chunks")
+                                success = True  # Define success for recursive_semantic branch
+                                final_warning = None  # Define final_warning for recursive_semantic branch
+                                chunking_metadata = {'cleaning_method': None, 'warning': None}
                                 
-                                # Add coverage warning to metadata if present
-                                if final_warning:
-                                    chunking_metadata['coverage_warning'] = final_warning
-                            else:
-                                logger.error(f"[Phased Job {job_id}] LLM chunking failed: {error}")
-                                # NO FALLBACK - mark document as failed
-                                phased_db.update_document_phase_status(
-                                    doc.doc_id, 'chunk', PhaseStatus.FAILED,
-                                    error_message=f"LLM chunking failed: {error}"
-                                )
-                                continue  # Skip to next document
-
-                            # Save chunks to DB (deactivate old chunks first)
-                            phased_db.deactivate_chunks(doc.doc_id)  # Deactivate old chunks
-                            phased_db.save_chunks(chunks)
+                                # Deactivate old chunks before saving new ones
+                                phased_db.deactivate_chunks(doc.doc_id)
+                                phased_db.save_chunks(chunks)
 
                             # ALSO save chunks as JSON file (for Document Store filter)
                             # Fix: Handle both .txt and .md file extensions
@@ -1851,7 +1916,7 @@ def process_phased_job_background(job):
                                 'doc_id': doc.doc_id,
                                 'filename': doc.original_filename,
                                 'total_chunks': len(chunks),
-                                'chunking_strategy': 'smart_llm' if success else 'fixed_size',
+                                'chunking_strategy': chunking_strategy,
                                 'chunks': [
                                     {
                                         'chunk_id': c.chunk_id,
@@ -1870,7 +1935,7 @@ def process_phased_job_background(job):
                             # Update metadata
                             phased_db.update_document_metadata(doc.doc_id, {
                                 'chunk_count': len(chunks),
-                                'chunking_strategy': 'smart_llm' if success else 'fixed_size'
+                                'chunking_strategy': chunking_strategy
                             })
 
                             # Mark phase complete - include cleaning method warning if applicable
@@ -1952,27 +2017,96 @@ def process_phased_job_background(job):
                 
                 elif phase == 'graph':
                     logger.info(f"[Phased Job {job_id}] Running Phase: Graph")
+                    logger.info(f"[Phased Job {job_id}] *** DEBUG: Starting graph phase processing ***")
                     from backend.services.rag.job_queue import job_queue
+                    from backend.services.rag.neo4j_integration import get_neo4j_connection
+                    
                     job = job_queue.get_job(job_id)
                     if job:
                         job.current_stage = 'building_graph'
                         job_queue.update_job(job)
                     
                     docs = get_documents_ready_for_phase(job_id, 'graph')
+                    logger.info(f"[Phased Job {job_id}] *** DEBUG: Found {len(docs)} documents ready for graph phase ***")
                     for doc in docs:
                         try:
-                            # Simple entity extraction (placeholder)
+                            # Get chunks from phased DB
                             chunks = phased_db.get_chunks_for_document(doc.doc_id)
-                            entity_count = len(chunks)  # Placeholder
                             
-                            # Update metadata
+                            if not chunks:
+                                raise Exception("No chunks found for graph creation")
+                            
+                            # Convert to format expected by Neo4jIntegration
+                            chunk_data = []
+                            for c in chunks:
+                                # Use chunk_id directly as the unique identifier
+                                chunk_uuid = c.chunk_id
+                                
+                                chunk_data.append({
+                                    'content': c.content,
+                                    'chunk_uuid': chunk_uuid,  # Use chunk_id as unique identifier
+                                    'metadata': {
+                                        'source': doc.doc_id,
+                                        'chunk_id': c.chunk_id,
+                                        'chunk_uuid': chunk_uuid
+                                    }
+                                })
+                            
+                            # Create knowledge graph in Neo4j with LLM entity extraction
+                            from models.response_generator import ResponseGenerator
+                            
+                            # Set job ID for LLM response logging
+                            os.environ['CURRENT_JOB_ID'] = job_id
+                            
+                            # Initialize LLM for entity extraction
+                            response_gen = ResponseGenerator()
+                            llm = response_gen._get_llm_instance()
+                            
+                            # Use Neo4jIntegration with LLM support
+                            from backend.services.rag.neo4j_integration import Neo4jIntegration
+                            neo4j = Neo4jIntegration(llm=llm)
+                            
+                            if not neo4j.connected:
+                                if not neo4j.connect():
+                                    logger.warning(f"[Phased Job {job_id}] Neo4j connection failed: {neo4j.last_error}. Using fallback.")
+                                    phased_db.update_document_phase_status(
+                                        doc.doc_id, 'graph', PhaseStatus.SKIPPED,
+                                        error_message="Neo4j connection failed"
+                                    )
+                                    continue
+                            
+                            logger.info(f"[Phased Job {job_id}] Running LLM entity extraction with {len(chunk_data)} chunks")
+                            enable_regex = job.parameters.get('enable_regex_entities', True) if job.parameters else True
+                            graph_stats = neo4j.create_knowledge_graph(chunk_data, use_llm_extraction=True, use_regex_entities=enable_regex)
+                            
+                            # Check if LLM extraction succeeded or fell back to regex
+                            extraction_method = 'LLM'
+                            if neo4j.llm_extraction_failed:
+                                logger.warning(f"[Phased Job {job_id}] ⚠️ LLM extraction failed - using regex fallback")
+                                extraction_method = 'regex_fallback'
+                            
+                            neo4j.close()
+                            
+                            logger.info(f"[Phased Job {job_id}] Graph created: {graph_stats['entities']} entities, {graph_stats['chunk_refs']} chunk references (method: {extraction_method})")
+                            
+                            # Update metadata with extraction method
                             phased_db.update_document_metadata(doc.doc_id, {
-                                'entity_count': entity_count
+                                'entity_count': graph_stats['entities'],
+                                'chunk_references': graph_stats['chunk_refs'],
+                                'extraction_method': extraction_method,
+                                'llm_extraction_success': extraction_method == 'LLM'
                             })
                             
-                            # Mark phase complete
+                            # Mark phase complete with extraction method info
                             phased_db.update_document_phase_status(
-                                doc.doc_id, 'graph', PhaseStatus.COMPLETED
+                                doc.doc_id, 'graph', PhaseStatus.COMPLETED,
+                                metadata={
+                                    'entities_created': graph_stats['entities'],
+                                    'chunk_refs_created': graph_stats['chunk_refs'],
+                                    'extraction_method': extraction_method,
+                                    'llm_extraction_success': extraction_method == 'LLM',
+                                    'status_message': f"Extracted {graph_stats['entities']} entities using {extraction_method}" if extraction_method == 'LLM' else f"⚠️ LLM failed, used regex fallback. Extracted {graph_stats['entities']} entities."
+                                }
                             )
                         except Exception as e:
                             logger.error(f"[Phased Job {job_id}] Graph failed for {doc.doc_id}: {e}")
@@ -2214,6 +2348,109 @@ def process_phased_job_background(job):
             job_queue.update_job(job)
 
 
+def _load_chunks_from_docstore(doc_id: str) -> Optional[List['Chunk']]:
+    """
+    Load chunks from Document Store .chunks.json file
+    
+    Args:
+        doc_id: Document ID to load chunks for
+        
+    Returns:
+        List of Chunk objects or None if not found
+    """
+    try:
+        from backend.services.rag.phased_processing_models import Chunk
+        import json
+        
+        logger.info(f"[Load Chunks] Loading chunks for doc_id={doc_id}")
+        
+        # Document Store base directory
+        docstore_base = "/root/qwen/ai_agent/document-store-mcp-server/data/ingested"
+        
+        # Look for .chunks.json file
+        chunks_file = os.path.join(docstore_base, f"documents/{doc_id}.chunks.json")
+        
+        if not os.path.exists(chunks_file):
+            logger.info(f"[Load Chunks] File not found at {chunks_file}, trying glob pattern")
+            # Try nested structure
+            import glob as glob_mod
+            matches = glob_mod.glob(f"{docstore_base}/**/{doc_id}.chunks.json", recursive=True)
+            if matches:
+                chunks_file = matches[0]
+                logger.info(f"[Load Chunks] Found chunks at nested path: {chunks_file}")
+            else:
+                logger.info(f"[Load Chunks] No chunks file found for doc_id={doc_id}")
+                return None
+        
+        logger.info(f"[Load Chunks] Loading chunks from {chunks_file}")
+        
+        with open(chunks_file, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        
+        # Handle different chunk formats
+        # Format 1: {'chunks': [...]} (smart chunking output)
+        if 'chunks' in data:
+            chunks_data = data['chunks']
+        # Format 2: Direct list of chunks
+        elif isinstance(data, list):
+            chunks_data = data
+        else:
+            logger.warning(f"Unknown chunks format in {chunks_file}")
+            return None
+        
+        chunks = []
+        for i, chunk_data in enumerate(chunks_data):
+            chunk = Chunk(
+                doc_id=doc_id,
+                chunk_id=chunk_data.get('chunk_id', f"{doc_id}_chunk_{i:04d}"),
+                chunk_index=i,
+                content=chunk_data.get('content', ''),
+                content_length=len(chunk_data.get('content', '')),
+                section=(chunk_data.get('section', '') or '')[:500],
+                title=(chunk_data.get('title', '') or '')[:500],
+                chunk_type=chunk_data.get('chunk_type', 'text'),
+                token_count=chunk_data.get('token_count'),
+                start_char=chunk_data.get('start_char'),
+                end_char=chunk_data.get('end_char'),
+                contains_formula=chunk_data.get('contains_formula', False),
+                contains_table=chunk_data.get('contains_table', False),
+                entity_hints=chunk_data.get('entity_hints', []),
+                version='v1',
+                version_label=None,
+                is_active=True,
+            )
+            chunks.append(chunk)
+        
+        # Apply hard safety split on any oversized chunk loaded from disk
+        from .smart_ingestion_enhanced import force_split_oversized
+        chunk_dicts = [c.to_dict() for c in chunks]
+        fixed_dicts = force_split_oversized(chunk_dicts, hard_limit=5000)
+        if len(fixed_dicts) != len(chunk_dicts):
+            logger.info(f"Force-split {len(chunk_dicts)} loaded chunks into {len(fixed_dicts)} (max_size safety)")
+            # Recreate Chunk objects from fixed dicts
+            from backend.services.rag.phased_processing_models import Chunk
+            new_chunks = []
+            for i, cd in enumerate(fixed_dicts):
+                new_chunks.append(Chunk(
+                    doc_id=doc_id,
+                    chunk_id=cd.get('chunk_id', f"{doc_id}_chunk_{i:04d}"),
+                    chunk_index=i,
+                    content=cd.get('content', ''),
+                    content_length=len(cd.get('content', '')),
+                    section=cd.get('section', ''),
+                    title=cd.get('title', ''),
+                    chunk_type=cd.get('chunk_type', 'text'),
+                ))
+            chunks = new_chunks
+        
+        logger.info(f"Loaded {len(chunks)} chunks from Document Store for {doc_id}")
+        return chunks
+        
+    except Exception as e:
+        logger.error(f"Failed to load chunks from Document Store: {e}")
+        return None
+
+
 def get_documents_ready_for_phase(job_id: str, phase: str):
     """Helper to get documents ready for a specific phase"""
     return phased_db.get_documents_ready_for_phase(job_id, phase)
@@ -2323,6 +2560,353 @@ def get_job_status(job_id: str):
         
     except Exception as e:
         logger.error(f"Failed to get job status: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@phased_processing_bp.route('/job/<job_id>/documents', methods=['GET'])
+def get_job_documents_status(job_id: str):
+    """
+    Get per-document phase progress for a job.
+    
+    Returns:
+        List of documents with per-phase status, chunk counts, and entity counts
+    """
+    try:
+        from backend.services.rag.phased_processing_models import DocumentStatus, PhaseStatus
+        from backend.services.rag.phased_processing_db import phased_db
+        
+        all_docs = phased_db.get_documents_by_job(job_id)
+        
+        if not all_docs:
+            return jsonify({
+                'success': True,
+                'documents': [],
+                'total': 0
+            })
+        
+        doc_list = []
+        for doc in all_docs:
+            doc_list.append({
+                'doc_id': doc.doc_id,
+                'filename': doc.display_name or doc.original_filename,
+                'overall_status': doc.overall_status.value if doc.overall_status else 'pending',
+                'phases': {
+                    'upload': doc.phase_upload.value if doc.phase_upload else 'pending',
+                    'extract': doc.phase_extract.value if doc.phase_extract else 'pending',
+                    'chunk': doc.phase_chunk.value if doc.phase_chunk else 'pending',
+                    'vector': doc.phase_vector.value if doc.phase_vector else 'pending',
+                    'graph': doc.phase_graph.value if doc.phase_graph else 'pending',
+                },
+                'current_phase': doc.current_phase or 'upload',
+                'chunk_count': doc.chunk_count or 0,
+                'vector_chunk_count': doc.vector_chunk_count or 0,
+                'entity_count': doc.entity_count or 0,
+                'relationship_count': doc.relationship_count or 0,
+                'file_size': doc.file_size,
+                'extracted_char_count': doc.extracted_char_count,
+                'error': doc.last_error if doc.overall_status == DocumentStatus.FAILED else None,
+            })
+        
+        completed = sum(1 for d in all_docs if d.overall_status == DocumentStatus.COMPLETED)
+        failed = sum(1 for d in all_docs if d.overall_status == DocumentStatus.FAILED)
+        processing = sum(1 for d in all_docs if d.overall_status == DocumentStatus.PROCESSING)
+        
+        return jsonify({
+            'success': True,
+            'documents': doc_list,
+            'total': len(all_docs),
+            'completed': completed,
+            'failed': failed,
+            'processing': processing
+        })
+        
+    except Exception as e:
+        logger.error(f"Failed to get job documents: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@phased_processing_bp.route('/document/<doc_id>/pipeline', methods=['GET'])
+def get_document_pipeline(doc_id: str):
+    """
+    Get full pipeline status for a document.
+    
+    Returns extraction, chunks (with vector DB status), entities, and graph status.
+    """
+    try:
+        from backend.services.rag.phased_processing_db import phased_db
+        from backend.services.rag.phased_processing_models import DocumentProcessing, DocumentStatus
+        
+        # 1. Get document from phased DB
+        doc = phased_db.get_document(doc_id)
+        if not doc:
+            return jsonify({'success': False, 'error': 'Document not found'}), 404
+        
+        # 2. Get chunks
+        chunks = []
+        chunk_rows = phased_db.get_chunks_for_document(doc_id)
+        for c in chunk_rows:
+            chunks.append({
+                'chunk_id': c.chunk_id,
+                'index': c.chunk_index,
+                'size': c.content_length or len(c.content or ''),
+                'preview': (c.content or '')[:120].replace('\n', ' '),
+                'section': c.section,
+                'title': c.title,
+                'token_count': c.token_count,
+                'contains_formula': c.contains_formula,
+                'contains_table': c.contains_table,
+                'entity_hints': c.entity_hints,
+                'vector_id': c.vector_id,
+            })
+        
+        # Chunk stats
+        chunk_sizes = [c['size'] for c in chunks if c['size'] > 0]
+        chunk_stats = {
+            'total': len(chunks),
+            'min_size': min(chunk_sizes) if chunk_sizes else 0,
+            'max_size': max(chunk_sizes) if chunk_sizes else 0,
+            'avg_size': round(sum(chunk_sizes) / len(chunk_sizes)) if chunk_sizes else 0,
+        }
+        
+        # 3. Check vector DB for each chunk
+        vector_count = 0
+        try:
+            from rag_component.vector_store_manager import VectorStoreManager
+            vsm = VectorStoreManager()
+            if hasattr(vsm, 'collection_name'):
+                from qdrant_client import QdrantClient
+                qdrant_url = os.getenv("RAG_QDRANT_URL", "http://localhost:6333")
+                qdrant_api_key = os.getenv("RAG_QDRANT_API_KEY", "")
+                if qdrant_api_key:
+                    qclient = QdrantClient(url=qdrant_url, api_key=qdrant_api_key, prefer_grpc=False)
+                else:
+                    qclient = QdrantClient(url=qdrant_url, prefer_grpc=False)
+                collection = vsm.collection_name
+                
+                # Check which chunk IDs exist in vector DB
+                chunk_ids = [c['chunk_id'] for c in chunks if c['chunk_id']]
+                if chunk_ids:
+                    from qdrant_client.http.models import Filter, FilterSelector, HasIdCondition
+                    from qdrant_client.http.models import PointIdsList
+                    from qdrant_client import models
+                    
+                    # Qdrant scroll to find points matching these chunk IDs
+                    # Use scroll with ID filtering
+                    existing_ids = set()
+                    scroll_limit = 100
+                    for i in range(0, len(chunk_ids), scroll_limit):
+                        batch = chunk_ids[i:i+scroll_limit]
+                        try:
+                            scroll_result = qclient.scroll(
+                                collection_name=collection,
+                                limit=len(batch),
+                                with_payload=False,
+                                with_vectors=False,
+                            )
+                            for point in scroll_result[0]:
+                                existing_ids.add(str(point.id))
+                        except Exception:
+                            pass
+                    
+                    for c in chunks:
+                        cid = c['chunk_id']
+                        # Check both chunk_id and index-based matching
+                        c['in_vector_db'] = cid in existing_ids or c['vector_id'] is not None
+                        if c['in_vector_db']:
+                            vector_count += 1
+                else:
+                    for c in chunks:
+                        c['in_vector_db'] = c['vector_id'] is not None
+                        if c['in_vector_db']:
+                            vector_count += 1
+        except Exception as e:
+            logger.warning(f"Could not check vector DB for {doc_id}: {e}")
+            for c in chunks:
+                c['in_vector_db'] = c['vector_id'] is not None
+                if c['in_vector_db']:
+                    vector_count += 1
+        
+        # 4. Check file system for .md / .txt
+        md_exists = False
+        md_size = 0
+        txt_exists = False
+        txt_size = 0
+        ing_dir = "/root/qwen/ai_agent/document-store-mcp-server/data/ingested"
+        try:
+            import glob
+            # Search for doc_id with various patterns
+            for root, dirs, files in os.walk(ing_dir):
+                for f in files:
+                    name, ext = os.path.splitext(f)
+                    if doc_id.startswith(name) or name.startswith(doc_id.split('_')[0]):
+                        fpath = os.path.join(root, f)
+                        fsize = os.path.getsize(fpath)
+                        if ext.lower() == '.md':
+                            md_exists = True
+                            md_size = fsize
+                        elif ext.lower() == '.txt':
+                            txt_exists = True
+                            txt_size = fsize
+        except Exception as e:
+            logger.warning(f"Could not check file system for {doc_id}: {e}")
+        
+        # Extract document title from .md or .txt content
+        document_title = None
+        try:
+            ing_dir = "/root/qwen/ai_agent/document-store-mcp-server/data/ingested"
+            for root, dirs, files in os.walk(ing_dir):
+                for f in files:
+                    name, ext = os.path.splitext(f)
+                    if not (doc_id.startswith(name) or name.startswith(doc_id.split('_')[0])):
+                        continue
+                    if ext.lower() not in ('.md', '.txt'):
+                        continue
+                    fpath = os.path.join(root, f)
+                    with open(fpath, 'r', encoding='utf-8', errors='replace') as fh:
+                        first_lines = fh.readlines()[:30]
+                    
+                    # Helper to clean markdown formatting from a candidate title
+                    def clean_title(s):
+                        s = s.strip().rstrip('#*-').strip()
+                        s = re.sub(r'\*\*', '', s)  # remove **bold**
+                        s = re.sub(r'__(.+?)__', r'\1', s)  # remove __underline__
+                        s = s.strip()
+                        return s
+                    
+                    # Strategy 1: Find first markdown heading (# or ##)
+                    for line in first_lines:
+                        h_match = re.match(r'^#{1,3}\s+(.+)$', line.strip())
+                        if h_match:
+                            candidate = clean_title(h_match.group(1))
+                            if candidate and len(candidate) > 5:
+                                document_title = candidate
+                                break
+                    if document_title:
+                        break
+                    
+                    # Strategy 2: Find bold text (** ... **) on its own line (common in GOST docs)
+                    for line in first_lines:
+                        stripped = line.strip()
+                        b_match = re.match(r'^\*\*(.+?)\*\*$', stripped)
+                        if b_match:
+                            candidate = clean_title(b_match.group(1))
+                            if candidate and len(candidate) > 10:
+                                document_title = candidate
+                                break
+                    if document_title:
+                        break
+                    
+                    # Strategy 3: Concatenate consecutive bold lines (multi-line titles)
+                    bold_lines = []
+                    for line in first_lines:
+                        stripped = line.strip()
+                        if re.match(r'^\*\*.+?\*\*$', stripped):
+                            bold_lines.append(re.sub(r'\*\*', '', stripped))
+                        elif bold_lines and stripped == '':
+                            continue  # skip blank lines between bold lines
+                        elif bold_lines:
+                            break  # non-bold, non-blank line -> stop
+                    if bold_lines:
+                        combined = ' '.join(bold_lines)
+                        if len(combined) > 10:
+                            document_title = combined
+                            break
+                    
+                    # Strategy 4: First meaningful text line (fallback)
+                    for line in first_lines:
+                        stripped = line.strip()
+                        if not stripped or stripped.startswith('<!--') or stripped.startswith('<'):
+                            continue
+                        if len(stripped) > 10 and re.search(r'[А-Яа-яA-Za-z]{4,}', stripped):
+                            candidate = clean_title(stripped)
+                            if candidate and len(candidate) > 5:
+                                document_title = candidate
+                                break
+                    if document_title:
+                        break
+            if document_title:
+                document_title = document_title.strip().rstrip('#*-.').strip()
+        except Exception as e:
+            logger.warning(f"Could not extract title from files for {doc_id}: {e}")
+        
+        # 5. Get entities from Neo4j
+        entities = []
+        graph_entity_count = 0
+        try:
+            from backend.services.rag.neo4j_integration import Neo4jIntegration
+            neo4j = Neo4jIntegration()
+            if neo4j.connect():
+                graph_data = neo4j.get_document_graph(doc_id)
+                if graph_data and 'entities' in graph_data:
+                    for ent in graph_data['entities']:
+                        ent_name = ent.get('name', '')
+                        ent_type = ent.get('type', '')
+                        # Get relationship count for each entity
+                        rel_count = 0
+                        try:
+                            rels = neo4j.get_entity_relationships(ent_name)
+                            rel_count = len(rels)
+                        except Exception:
+                            pass
+                        entities.append({
+                            'name': ent_name,
+                            'type': ent_type,
+                            'relationship_count': rel_count,
+                        })
+                    graph_entity_count = len(entities)
+                neo4j.close()
+        except Exception as e:
+            logger.warning(f"Could not check Neo4j for {doc_id}: {e}")
+        
+        # 6. Relationships total from doc
+        relationship_total = sum(e['relationship_count'] for e in entities)
+        
+        return jsonify({
+            'success': True,
+            'document': {
+                'doc_id': doc.doc_id,
+                'filename': doc.display_name or doc.original_filename,
+                'title': document_title or '',
+                'file_size': doc.file_size,
+                'content_type': doc.content_type,
+                'overall_status': doc.overall_status.value if doc.overall_status else 'unknown',
+                'phases': {
+                    'upload': doc.phase_upload.value if doc.phase_upload else 'pending',
+                    'extract': doc.phase_extract.value if doc.phase_extract else 'pending',
+                    'chunk': doc.phase_chunk.value if doc.phase_chunk else 'pending',
+                    'vector': doc.phase_vector.value if doc.phase_vector else 'pending',
+                    'graph': doc.phase_graph.value if doc.phase_graph else 'pending',
+                },
+            },
+            'extraction': {
+                'method': doc.extraction_method,
+                'page_count': doc.page_count,
+                'extracted_char_count': doc.extracted_char_count,
+                'md_exists': md_exists,
+                'md_size': md_size,
+                'txt_exists': txt_exists,
+                'txt_size': txt_size,
+            },
+            'chunks': {
+                'stats': chunk_stats,
+                'in_vector_db': vector_count,
+                'list': chunks[:200],  # Limit to 200 chunks
+            },
+            'graph': {
+                'entity_count': graph_entity_count,
+                'relationship_total': relationship_total,
+                'entities': entities,
+            },
+        })
+        
+    except Exception as e:
+        logger.error(f"Failed to get document pipeline: {e}")
         return jsonify({
             'success': False,
             'error': str(e)

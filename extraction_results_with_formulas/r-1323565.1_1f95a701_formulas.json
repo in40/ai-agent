@@ -1,0 +1,23 @@
+{
+  "doc_name": "r-1323565.1_1f95a701",
+  "formulas": [
+    {
+      "text": "chunk",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_1f95a701",
+      "chunk_index": 0
+    },
+    {
+      "text": "leftmargin",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_1f95a701",
+      "chunk_index": 21
+    },
+    {
+      "text": "itemsep",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_1f95a701",
+      "chunk_index": 21
+    }
+  ]
+}

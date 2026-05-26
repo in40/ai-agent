@@ -1,0 +1,233 @@
+{
+  "doc_name": "r-1323565.1_395de1a8",
+  "formulas": [
+    {
+      "text": "A",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_395de1a8",
+      "chunk_index": 3
+    },
+    {
+      "text": "B",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_395de1a8",
+      "chunk_index": 3
+    },
+    {
+      "text": "B",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_395de1a8",
+      "chunk_index": 3
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_395de1a8",
+      "chunk_index": 12
+    },
+    {
+      "text": "ATC",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_395de1a8",
+      "chunk_index": 13
+    },
+    {
+      "text": "MK_IDN",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_395de1a8",
+      "chunk_index": 13
+    },
+    {
+      "text": "S_icc",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_395de1a8",
+      "chunk_index": 13
+    },
+    {
+      "text": "P_icc",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_395de1a8",
+      "chunk_index": 13
+    },
+    {
+      "text": "IDN",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_395de1a8",
+      "chunk_index": 13
+    },
+    {
+      "text": "Data",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_395de1a8",
+      "chunk_index": 14
+    },
+    {
+      "text": "HashData",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_395de1a8",
+      "chunk_index": 14
+    },
+    {
+      "text": "k",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_395de1a8",
+      "chunk_index": 14
+    },
+    {
+      "text": "Sign",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_395de1a8",
+      "chunk_index": 14
+    },
+    {
+      "text": "Data",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_395de1a8",
+      "chunk_index": 14
+    },
+    {
+      "text": "Data",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_395de1a8",
+      "chunk_index": 15
+    },
+    {
+      "text": "IDN",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_395de1a8",
+      "chunk_index": 16
+    },
+    {
+      "text": "Data",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_395de1a8",
+      "chunk_index": 17
+    },
+    {
+      "text": "HashData",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_395de1a8",
+      "chunk_index": 17
+    },
+    {
+      "text": "k",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_395de1a8",
+      "chunk_index": 17
+    },
+    {
+      "text": "Sign",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_395de1a8",
+      "chunk_index": 17
+    },
+    {
+      "text": "Data",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_395de1a8",
+      "chunk_index": 17
+    },
+    {
+      "text": "Data",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_395de1a8",
+      "chunk_index": 18
+    },
+    {
+      "text": "HashData",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_395de1a8",
+      "chunk_index": 18
+    },
+    {
+      "text": "k",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_395de1a8",
+      "chunk_index": 18
+    },
+    {
+      "text": "Sign",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_395de1a8",
+      "chunk_index": 18
+    },
+    {
+      "text": "Data",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_395de1a8",
+      "chunk_index": 18
+    },
+    {
+      "text": "ATC",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_395de1a8",
+      "chunk_index": 19
+    },
+    {
+      "text": "IDN",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_395de1a8",
+      "chunk_index": 19
+    },
+    {
+      "text": "Data",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_395de1a8",
+      "chunk_index": 20
+    },
+    {
+      "text": "HashData",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_395de1a8",
+      "chunk_index": 20
+    },
+    {
+      "text": "k",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_395de1a8",
+      "chunk_index": 20
+    },
+    {
+      "text": "Sign",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_395de1a8",
+      "chunk_index": 20
+    },
+    {
+      "text": "Data",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_395de1a8",
+      "chunk_index": 20
+    },
+    {
+      "text": "Data",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_395de1a8",
+      "chunk_index": 21
+    },
+    {
+      "text": "HashData",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_395de1a8",
+      "chunk_index": 21
+    },
+    {
+      "text": "k",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_395de1a8",
+      "chunk_index": 21
+    },
+    {
+      "text": "Sign",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_395de1a8",
+      "chunk_index": 21
+    },
+    {
+      "text": "Data",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_395de1a8",
+      "chunk_index": 21
+    }
+  ]
+}

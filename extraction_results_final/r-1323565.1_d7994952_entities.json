@@ -1,0 +1,68 @@
+{
+  "doc_name": "r-1323565.1_d7994952",
+  "chunks_processed": 10,
+  "pattern_count": 52,
+  "validated_count": 12,
+  "entities": [
+    {
+      "text": "ПФТРМ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "1323565.1.033—2020",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "КРИПТО-ПРО",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ТК 26",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "17 ноября 2020",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "162-ФЗ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "29 июня 2015",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 34.10—2012",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 34.10—2001",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 34.10—2012",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 34.10—2001",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 34.11—2012",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

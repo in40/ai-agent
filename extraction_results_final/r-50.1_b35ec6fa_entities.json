@@ -1,0 +1,73 @@
+{
+  "doc_name": "r-50.1_b35ec6fa",
+  "chunks_processed": 10,
+  "pattern_count": 46,
+  "validated_count": 13,
+  "entities": [
+    {
+      "text": "ГОСТ Р 1.0—92",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 1.2—92",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ПР 50.1.053—2005",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ТК 362",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Приказ Федерального агентства по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 1.0—92",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 1.2—92",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Стандартинформ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "2005",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ 1.1",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ 1.1—2002",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ 34.003",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 51898—2002",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

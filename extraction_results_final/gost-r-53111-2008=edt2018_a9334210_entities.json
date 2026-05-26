@@ -1,0 +1,33 @@
+{
+  "doc_name": "gost-r-53111-2008=edt2018_a9334210",
+  "chunks_processed": 10,
+  "pattern_count": 28,
+  "validated_count": 5,
+  "entities": [
+    {
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 53111—2008",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ 30804.4",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "IEC 61000-4",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

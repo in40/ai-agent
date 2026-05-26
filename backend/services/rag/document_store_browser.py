@@ -6,6 +6,7 @@ for phased processing.
 """
 import os
 import json
+import re
 import logging
 from datetime import datetime
 from typing import List, Dict, Any, Optional
@@ -98,6 +99,41 @@ def list_documents():
                             except:
                                 pass
                     
+                    # Extract document title from .md or .txt file content
+                    document_title = ''
+                    if file_ext in ('.md', '.txt'):
+                        try:
+                            with open(file_path, 'r', encoding='utf-8', errors='replace') as fh:
+                                first_lines = fh.readlines()[:30]
+                            # Try markdown heading first
+                            for line in first_lines:
+                                h_match = re.match(r'^#{1,3}\s+(.+)$', line.strip())
+                                if h_match:
+                                    candidate = h_match.group(1).strip()
+                                    if candidate and len(candidate) > 5:
+                                        document_title = re.sub(r'\*\*', '', candidate).strip()
+                                        break
+                            if not document_title:
+                                # Try bold text on its own line
+                                for line in first_lines:
+                                    b_match = re.match(r'^\*\*(.+?)\*\*$', line.strip())
+                                    if b_match:
+                                        candidate = b_match.group(1).strip()
+                                        if candidate and len(candidate) > 10:
+                                            document_title = candidate
+                                            break
+                            if not document_title:
+                                # Fallback: first meaningful line
+                                for line in first_lines:
+                                    stripped = line.strip()
+                                    if not stripped or stripped.startswith('<!--') or stripped.startswith('<'):
+                                        continue
+                                    if len(stripped) > 10 and re.search(r'[А-Яа-яA-Za-z]{4,}', stripped):
+                                        document_title = re.sub(r'\*\*', '', stripped)[:200].strip()
+                                        break
+                        except Exception:
+                            pass
+                    
                     # Group documents by full doc_id (WITH hex suffix) for uniqueness
                     # This ensures r-1323565.1_395de1a8 and r-1323565.1_881b0329 are treated as SEPARATE documents
                     # We also extract group_base_id for display grouping in UI
@@ -134,8 +170,12 @@ def list_documents():
                             'group_base_id': group_base_id, # For display: "r-1323565.1"
                             'base_name': full_doc_id,
                             'files': [],
-                            'metadata': metadata if file_ext == '.pdf' else {}
+                            'metadata': metadata if file_ext == '.pdf' else {},
+                            'doc_title': ''
                         }
+                    # Save best title at group level (prefer longer, more specific)
+                    if document_title and len(document_title) > len(doc_groups[full_doc_id].get('doc_title', '')):
+                        doc_groups[full_doc_id]['doc_title'] = document_title
 
                     doc_groups[full_doc_id]['files'].append({
                         'filename': filename,
@@ -145,7 +185,8 @@ def list_documents():
                         'file_size': file_size,
                         'job_id': job_dir.replace('job_', ''),
                         'source_website': metadata.get('source_website', ''),
-                        'metadata': metadata if file_ext == '.pdf' else {}
+                        'metadata': metadata if file_ext == '.pdf' else {},
+                        'title': document_title or ''
                     })
         
         # Convert doc_groups to flat list of files for backward compatibility
@@ -164,6 +205,7 @@ def list_documents():
                     'job_id': file_info['job_id'],
                     'source_website': file_info.get('source_website', ''),
                     'metadata': file_info.get('metadata', {}),
+                    'title': file_info.get('title', '') or group_data.get('doc_title', ''),
                     'group_base_id': group_data['group_base_id'],  # For UI grouping display
                     'group_files': [f['file_type'] for f in group_data['files']],
                     'group_files_info': group_data['files']

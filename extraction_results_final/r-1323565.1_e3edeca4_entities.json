@@ -1,0 +1,28 @@
+{
+  "doc_name": "r-1323565.1_e3edeca4",
+  "chunks_processed": 10,
+  "pattern_count": 179,
+  "validated_count": 4,
+  "entities": [
+    {
+      "text": "Правила применения",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Стандарты",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 34.10—2012",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 34.11—2012",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

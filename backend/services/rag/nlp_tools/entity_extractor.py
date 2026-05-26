@@ -256,10 +256,15 @@ class EntityExtractor:
             List of standard entities
         """
         patterns = {
-            # GOST formats (including split across lines)
-            "GOST_R": r'ГОСТ\s*Р\s*\d+\s*[-–—]\s*\d{4}',
-            "GOST_R_ALT": r'ГОСТ\s*\d+\s*[-–—]\s*\d{4}',
-            "GOST": r'GOST\s*R?\s*\d+\s*[-–—]\s*\d{4}',
+            # GOST formats - Enhanced for actual document formats
+            "GOST_R_WITH_DECIMAL": r'ГОСТ\s+Р\s+\d+\.\d+[\s\-–—]+\d{4}',  # ГОСТ Р 52069.0-2013
+            "GOST_R": r'ГОСТ\s+Р\s+\d+[\s\-–—]+\d{4}',                    # ГОСТ Р 52633-2014
+            "GOST_WITH_DECIMAL": r'ГОСТ\s+\d+\.\d+(?!\d)',                 # ГОСТ 1.1 (no year)
+            "GOST_WITH_DECIMAL_YEAR": r'ГОСТ\s+\d+\.\d+[\s\-–—]+\d{4}',    # ГОСТ 52069.0-2013
+            "GOST_SIMPLE": r'ГОСТ\s+\d+[\s\-–—]\s*\d{4}',                  # ГОСТ 50922-2006
+            # GOST English format
+            "GOST_EN_R": r'GOST\s+R\s+\d+[\s\-–—]+\d{4}',
+            "GOST_EN": r'GOST\s+\d+[\s\-–—]+\d{4}',
             # ISO formats
             "ISO": r'ISO\s*\d+(-\d+)?',
             # IEC formats
@@ -268,8 +273,6 @@ class EntityExtractor:
             "RFC": r'RFC\s*\d+',
             # NIST formats
             "NIST": r'NIST\s*(SP|FIPS)\s*\d+(-\d+)?',
-            # Generic standard with year
-            "STANDARD_YEAR": r'\d{4,5}\s*[-–—]\s*\d{4}',
         }
         
         entities = []

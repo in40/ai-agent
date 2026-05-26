@@ -1,0 +1,38 @@
+{
+  "doc_name": "r-1323565.1_7cc8c08f",
+  "chunks_processed": 10,
+  "pattern_count": 58,
+  "validated_count": 6,
+  "entities": [
+    {
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "П1323565.1.061—2024",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "АО «ИнфофКС»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Технический комитет по стандартизации ТК 26",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Москва",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "text": "Российский институт стандартизации",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    }
+  ]
+}

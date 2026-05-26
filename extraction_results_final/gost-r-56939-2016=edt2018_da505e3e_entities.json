@@ -1,0 +1,93 @@
+{
+  "doc_name": "gost-r-56939-2016=edt2018_da505e3e",
+  "chunks_processed": 10,
+  "pattern_count": 44,
+  "validated_count": 17,
+  "entities": [
+    {
+      "text": "Федеральное агентство по техническому регулированию и метрологии",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 56939—2016",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "Технический комитет по стандартизации ТК 362",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Закрытым акционерным обществом «Научно‑производственное объединение «Эшелон»», ЗАО «НПО «Эшелон»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "1 июня 2016 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "№ 458‑ст",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "Октябрь 2018 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "Федеральный закон от 29 июня 2015 г. № 162‑ФЗ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "www.gost.ru",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р\n56939—\n2016",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ 2.001",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ 19.101",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ 19.201",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ 19.402",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ 19.404",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 50922—2006",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 51904—2002",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

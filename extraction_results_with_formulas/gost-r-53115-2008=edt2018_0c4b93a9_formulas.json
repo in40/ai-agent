@@ -1,0 +1,11 @@
+{
+  "doc_name": "gost-r-53115-2008=edt2018_0c4b93a9",
+  "formulas": [
+    {
+      "text": "scale",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-53115-2008=edt2018_0c4b93a9",
+      "chunk_index": 3
+    }
+  ]
+}

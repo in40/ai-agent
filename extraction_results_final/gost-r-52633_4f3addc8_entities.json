@@ -1,0 +1,58 @@
+{
+  "doc_name": "gost-r-52633_4f3addc8",
+  "chunks_processed": 10,
+  "pattern_count": 45,
+  "validated_count": 10,
+  "entities": [
+    {
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "НАЦИОНАЛЬНЫЙ СТАНДАРТ РОССИЙСКОЙ ФЕДЕРАЦИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 52633.6—2012",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ФГУП «ПНИЭИ»",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ТК 362",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "Приказом Федерального агентства по техническому регулированию и метрологии от 13 сентября 2012 г. № 294-ст",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "13 сентября 2012",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "29 июня 2015",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 52633.5 — 2011",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 52633.0—2006",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

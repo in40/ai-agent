@@ -1,0 +1,48 @@
+{
+  "doc_name": "gost-r-54582-2011=edt2019_c6add81e",
+  "chunks_processed": 10,
+  "pattern_count": 60,
+  "validated_count": 8,
+  "entities": [
+    {
+      "text": "ГОСТ Р 54582-2011",
+      "type": "STANDARD",
+      "source": "llm"
+    },
+    {
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 54582-2011",
+      "type": "STANDARD",
+      "source": "llm"
+    },
+    {
+      "text": "Россия",
+      "type": "LOCATION",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 71002-1997",
+      "type": "STANDARD",
+      "source": "llm"
+    },
+    {
+      "text": "ГОСТ Р 54582—2011",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 54582—2011",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    },
+    {
+      "text": "ГОСТ Р 54581—2011",
+      "type": "STANDARD",
+      "source": "pattern_fallback"
+    }
+  ]
+}

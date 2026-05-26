@@ -388,6 +388,15 @@ class EmbeddingManager:
             # For most embedding models, a common dimension is 384 or 768
             # We'll return a small default vector as a fallback
             return [0.0] * 10  # Small default vector, adjust as needed
+
+        # Truncate to fit embedding model context (8192 tokens ≈ 24576 chars)
+        MAX_CHARS = 24000
+        if len(text) > MAX_CHARS:
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.warning(f"Truncated query text from {len(text)} to {MAX_CHARS} chars to fit embedding model context")
+            text = text[:MAX_CHARS]
+
         return self._embeddings.embed_query(text)
 
     def embed_texts(self, texts: List[str]) -> List[List[float]]:
@@ -405,7 +414,16 @@ class EmbeddingManager:
         if not filtered_texts:
             # Return empty list if all texts were empty
             return []
-        return self._embeddings.embed_documents(filtered_texts)
+
+        # Truncate each text to fit within embedding model context (8192 tokens ≈ 24576 chars)
+        MAX_CHARS = 24000
+        truncated_texts = [t[:MAX_CHARS] if len(t) > MAX_CHARS else t for t in filtered_texts]
+        if any(len(t) != len(ft) for t, ft in zip(truncated_texts, filtered_texts)):
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.warning(f"Truncated {sum(1 for t, ft in zip(truncated_texts, filtered_texts) if len(t) != len(ft))} texts to {MAX_CHARS} chars to fit embedding model context")
+
+        return self._embeddings.embed_documents(truncated_texts)
 
     @property
     def embeddings(self):

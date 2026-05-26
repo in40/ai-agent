@@ -1,0 +1,35 @@
+{
+  "doc_name": "gost-r-52633_d3d73e47",
+  "formulas": [
+    {
+      "text": "_I",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_d3d73e47",
+      "chunk_index": 2
+    },
+    {
+      "text": "P_1",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_d3d73e47",
+      "chunk_index": 2
+    },
+    {
+      "text": "_i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_d3d73e47",
+      "chunk_index": 2
+    },
+    {
+      "text": "i",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_d3d73e47",
+      "chunk_index": 2
+    },
+    {
+      "text": "width",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "gost-r-52633_d3d73e47",
+      "chunk_index": 2
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "qwen_0.8b": {
+    "model": "qwen_0.8b",
+    "success": false,
+    "chunks": 0,
+    "with_content": 0,
+    "elapsed": 0.9984917084376017,
+    "error": "LLM call failed: Error code: 400 - {'error': 'Model reloaded.'}"
+  },
+  "mistral_119b": {
+    "model": "mistral_119b",
+    "success": false,
+    "chunks": 0,
+    "with_content": 0,
+    "elapsed": 1.0109579205513,
+    "error": "LLM call failed: Error code: 400 - {'error': 'Model reloaded.'}"
+  }
+}

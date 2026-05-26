@@ -1,0 +1,4241 @@
+{
+  "doc_name": "r-1323565.1_78b35e61",
+  "formulas": [
+    {
+      "text": "Transcript-Hash",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 9
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 9
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 9
+    },
+    {
+      "text": "Transcript-Hash",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 10
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 10
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 10
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 10
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 10
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 10
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 10
+    },
+    {
+      "text": "Transcript-Hash",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 11
+    },
+    {
+      "text": "HMFinished",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 11
+    },
+    {
+      "text": "HM2",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 11
+    },
+    {
+      "text": "HM3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 11
+    },
+    {
+      "text": "HM3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 11
+    },
+    {
+      "text": "HM3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 11
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 11
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 11
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 11
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 11
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 11
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 11
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 11
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 11
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 11
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 11
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 11
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 11
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 11
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 11
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 11
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 11
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 11
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 11
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 11
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 11
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 11
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 11
+    },
+    {
+      "text": "HM3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "HM3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "HM3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "HM3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "HM3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "HM3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "HM3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "HM3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "HM3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "HM3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "HM3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "HM3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "HM3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "HM3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "HM3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "HM3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "HM3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "HM3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "HM3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "HM3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "HM3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "HM3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "HM3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "HM3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "HM3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "HM3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "HM3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "HM3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "HM3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "HM3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "HM3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "HM3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "HM3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "HM3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "HM3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "HM3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 12
+    },
+    {
+      "text": "Transcript-Hash",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 13
+    },
+    {
+      "text": "Transcript-Hash",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 13
+    },
+    {
+      "text": "HM3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 13
+    },
+    {
+      "text": "HMFinishedClient",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 13
+    },
+    {
+      "text": "HM1",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 13
+    },
+    {
+      "text": "HMFinished",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 13
+    },
+    {
+      "text": "HM2",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 13
+    },
+    {
+      "text": "HM3",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 13
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 13
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 13
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 13
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 13
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 13
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 13
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 13
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 13
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 13
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 13
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 13
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 13
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 13
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 13
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 13
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 13
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 13
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 13
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 13
+    },
+    {
+      "text": "Transcript-Hash",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 14
+    },
+    {
+      "text": "HM1",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 14
+    },
+    {
+      "text": "HMCertificateVerifyServer",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 14
+    },
+    {
+      "text": "HMFinishedServer",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 14
+    },
+    {
+      "text": "HM2",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 14
+    },
+    {
+      "text": "HMCertificateVerifyClient",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 14
+    },
+    {
+      "text": "HMFinishedClient",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 14
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 14
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 14
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 14
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 14
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 14
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 14
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 14
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 14
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 14
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 14
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 14
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 14
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 14
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 14
+    },
+    {
+      "text": "HKDF-Extract",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 15
+    },
+    {
+      "text": "Derive-Secret",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 15
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 15
+    },
+    {
+      "text": "Transcript-Hash",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 15
+    },
+    {
+      "text": "HKDF-Extract",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 15
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 15
+    },
+    {
+      "text": "Transcript-Hash",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 15
+    },
+    {
+      "text": "HKDF-Extract",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 15
+    },
+    {
+      "text": "EarlySecret",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 15
+    },
+    {
+      "text": "HandshakeSecret",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 15
+    },
+    {
+      "text": "MasterSecret",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 15
+    },
+    {
+      "text": "HandshakeSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 15
+    },
+    {
+      "text": "MasterSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 15
+    },
+    {
+      "text": "EarlySecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 15
+    },
+    {
+      "text": "EarlySecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 15
+    },
+    {
+      "text": "EarlySecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 15
+    },
+    {
+      "text": "HandshakeSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 15
+    },
+    {
+      "text": "HandshakeSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 15
+    },
+    {
+      "text": "MasterSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 15
+    },
+    {
+      "text": "HandshakeSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 15
+    },
+    {
+      "text": "MasterSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 15
+    },
+    {
+      "text": "Derive-Secret",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 16
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 16
+    },
+    {
+      "text": "Transcript-Hash",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 16
+    },
+    {
+      "text": "Derive-Secret",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 16
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 16
+    },
+    {
+      "text": "Transcript-Hash",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 16
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 16
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 16
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 16
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 16
+    },
+    {
+      "text": "CTHS",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 16
+    },
+    {
+      "text": "SHTS",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 16
+    },
+    {
+      "text": "client_write_key_hs",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 16
+    },
+    {
+      "text": "client_write_iv_hs",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 16
+    },
+    {
+      "text": "server_write_key_hs",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 16
+    },
+    {
+      "text": "server_write_iv_hs",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 16
+    },
+    {
+      "text": "HandshakeSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 16
+    },
+    {
+      "text": "HandshakeSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 16
+    },
+    {
+      "text": "HandshakeSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 16
+    },
+    {
+      "text": "HandshakeSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 16
+    },
+    {
+      "text": "HandshakeSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 16
+    },
+    {
+      "text": "CHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 16
+    },
+    {
+      "text": "SHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 16
+    },
+    {
+      "text": "SHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 16
+    },
+    {
+      "text": "SHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 16
+    },
+    {
+      "text": "SHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 16
+    },
+    {
+      "text": "SHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 16
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 17
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 17
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 17
+    },
+    {
+      "text": "Derive-Secret",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 17
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 17
+    },
+    {
+      "text": "Transcript-Hash",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 17
+    },
+    {
+      "text": "Derive-Secret",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 17
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 17
+    },
+    {
+      "text": "Transcript-Hash",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 17
+    },
+    {
+      "text": "server_write_iv_hs",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 17
+    },
+    {
+      "text": "client_finished_key",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 17
+    },
+    {
+      "text": "server_finished_key",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 17
+    },
+    {
+      "text": "CATS",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 17
+    },
+    {
+      "text": "SATS",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 17
+    },
+    {
+      "text": "MasterSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 17
+    },
+    {
+      "text": "MasterSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 17
+    },
+    {
+      "text": "MasterSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 17
+    },
+    {
+      "text": "MasterSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 17
+    },
+    {
+      "text": "MasterSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 17
+    },
+    {
+      "text": "SHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 17
+    },
+    {
+      "text": "CHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 17
+    },
+    {
+      "text": "CHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 17
+    },
+    {
+      "text": "SHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 17
+    },
+    {
+      "text": "SHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 17
+    },
+    {
+      "text": "CATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 17
+    },
+    {
+      "text": "CATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 17
+    },
+    {
+      "text": "SATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 17
+    },
+    {
+      "text": "SATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 17
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 18
+    },
+    {
+      "text": "Transcript-Hash",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 18
+    },
+    {
+      "text": "Derive-Secret",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 18
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 18
+    },
+    {
+      "text": "Transcript-Hash",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 18
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 18
+    },
+    {
+      "text": "RMS",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 18
+    },
+    {
+      "text": "Nonce",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 18
+    },
+    {
+      "text": "iPSK",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 18
+    },
+    {
+      "text": "MasterSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 18
+    },
+    {
+      "text": "MasterSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 18
+    },
+    {
+      "text": "MasterSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 18
+    },
+    {
+      "text": "MasterSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 18
+    },
+    {
+      "text": "CATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 18
+    },
+    {
+      "text": "CATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 18
+    },
+    {
+      "text": "CATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 18
+    },
+    {
+      "text": "CATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 19
+    },
+    {
+      "text": "SATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 19
+    },
+    {
+      "text": "SATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 19
+    },
+    {
+      "text": "SATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 19
+    },
+    {
+      "text": "Derive-Secret",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 20
+    },
+    {
+      "text": "Derive-Secret",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 20
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 20
+    },
+    {
+      "text": "Transcript-Hash",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 20
+    },
+    {
+      "text": "HKDF-Extract",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 20
+    },
+    {
+      "text": "MasterSecret",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 20
+    },
+    {
+      "text": "EarlySecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 20
+    },
+    {
+      "text": "HandshakeSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 20
+    },
+    {
+      "text": "EarlySecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 20
+    },
+    {
+      "text": "EarlySecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 20
+    },
+    {
+      "text": "HandshakeSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 20
+    },
+    {
+      "text": "MasterSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 20
+    },
+    {
+      "text": "HandshakeSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 20
+    },
+    {
+      "text": "HandshakeSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 20
+    },
+    {
+      "text": "HandshakeSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 20
+    },
+    {
+      "text": "MasterSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 20
+    },
+    {
+      "text": "HKDF-Extract",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 21
+    },
+    {
+      "text": "Derive-Secret",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 21
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 21
+    },
+    {
+      "text": "Transcript-Hash",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 21
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 21
+    },
+    {
+      "text": "Derive-Secret",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 21
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 21
+    },
+    {
+      "text": "Transcript-Hash",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 21
+    },
+    {
+      "text": "Derive-Secret",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 21
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 21
+    },
+    {
+      "text": "Transcript-Hash",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 21
+    },
+    {
+      "text": "MasterSecret",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 21
+    },
+    {
+      "text": "BS",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 21
+    },
+    {
+      "text": "HMAC_binder_key",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 21
+    },
+    {
+      "text": "CHTS",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 21
+    },
+    {
+      "text": "SHTS",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 21
+    },
+    {
+      "text": "MasterSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 21
+    },
+    {
+      "text": "EarlySecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 21
+    },
+    {
+      "text": "EarlySecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 21
+    },
+    {
+      "text": "EarlySecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 21
+    },
+    {
+      "text": "HandshakeSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 21
+    },
+    {
+      "text": "HandshakeSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 21
+    },
+    {
+      "text": "HandshakeSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 21
+    },
+    {
+      "text": "HandshakeSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 21
+    },
+    {
+      "text": "HandshakeSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 21
+    },
+    {
+      "text": "CHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 21
+    },
+    {
+      "text": "CHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 21
+    },
+    {
+      "text": "SHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 21
+    },
+    {
+      "text": "SHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 21
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 22
+    },
+    {
+      "text": "Transcript-Hash",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 22
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 22
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 22
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 22
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 22
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 22
+    },
+    {
+      "text": "client_write_key_hs",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 22
+    },
+    {
+      "text": "client_write_iv_hs",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 22
+    },
+    {
+      "text": "server_write_key_hs",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 22
+    },
+    {
+      "text": "client_finished_key",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 22
+    },
+    {
+      "text": "server_finished_key",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 22
+    },
+    {
+      "text": "HandshakeSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 22
+    },
+    {
+      "text": "CHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 22
+    },
+    {
+      "text": "CHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 22
+    },
+    {
+      "text": "CHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 22
+    },
+    {
+      "text": "SHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 22
+    },
+    {
+      "text": "SHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 22
+    },
+    {
+      "text": "CHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 22
+    },
+    {
+      "text": "CHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 22
+    },
+    {
+      "text": "SHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 22
+    },
+    {
+      "text": "SHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 22
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 23
+    },
+    {
+      "text": "Derive-Secret",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 23
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 23
+    },
+    {
+      "text": "Transcript-Hash",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 23
+    },
+    {
+      "text": "Derive-Secret",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 23
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 23
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 23
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 23
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 23
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 23
+    },
+    {
+      "text": "server_finished_key",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 23
+    },
+    {
+      "text": "CATS",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 23
+    },
+    {
+      "text": "SATS",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 23
+    },
+    {
+      "text": "client_write_key_ap",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 23
+    },
+    {
+      "text": "client_write_iv_ap",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 23
+    },
+    {
+      "text": "server_write_key_ap",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 23
+    },
+    {
+      "text": "server_write_iv_ap",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 23
+    },
+    {
+      "text": "MasterSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 23
+    },
+    {
+      "text": "MasterSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 23
+    },
+    {
+      "text": "MasterSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 23
+    },
+    {
+      "text": "MasterSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 23
+    },
+    {
+      "text": "MasterSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 23
+    },
+    {
+      "text": "SHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 23
+    },
+    {
+      "text": "SHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 23
+    },
+    {
+      "text": "CATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 23
+    },
+    {
+      "text": "CATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 23
+    },
+    {
+      "text": "SATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 23
+    },
+    {
+      "text": "SATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 23
+    },
+    {
+      "text": "CATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 23
+    },
+    {
+      "text": "CATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 23
+    },
+    {
+      "text": "CATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 23
+    },
+    {
+      "text": "SATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 23
+    },
+    {
+      "text": "SATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 23
+    },
+    {
+      "text": "SATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 23
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 24
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 24
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 24
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 24
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 24
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 24
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 24
+    },
+    {
+      "text": "CATS2",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 24
+    },
+    {
+      "text": "SATS2",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 24
+    },
+    {
+      "text": "client_finished_key",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 24
+    },
+    {
+      "text": "client_write_key_ap2",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 24
+    },
+    {
+      "text": "client_write_iv_ap2",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 24
+    },
+    {
+      "text": "server_write_key_ap2",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 24
+    },
+    {
+      "text": "server_write_iv_ap2",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 24
+    },
+    {
+      "text": "CATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 24
+    },
+    {
+      "text": "CATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 24
+    },
+    {
+      "text": "CATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 24
+    },
+    {
+      "text": "SATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 24
+    },
+    {
+      "text": "SATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 24
+    },
+    {
+      "text": "SATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 24
+    },
+    {
+      "text": "CATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 24
+    },
+    {
+      "text": "CATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 24
+    },
+    {
+      "text": "CATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 24
+    },
+    {
+      "text": "CATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 24
+    },
+    {
+      "text": "CATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 24
+    },
+    {
+      "text": "CATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 24
+    },
+    {
+      "text": "SATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 24
+    },
+    {
+      "text": "SATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 24
+    },
+    {
+      "text": "SATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 24
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 25
+    },
+    {
+      "text": "HKDF-Extract",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 25
+    },
+    {
+      "text": "Derive-Secret",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 25
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 25
+    },
+    {
+      "text": "Transcript-Hash",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 25
+    },
+    {
+      "text": "HKDF-Extract",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 25
+    },
+    {
+      "text": "Derive-Secret",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 25
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 25
+    },
+    {
+      "text": "Transcript-Hash",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 25
+    },
+    {
+      "text": "HKDF-Extract",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 25
+    },
+    {
+      "text": "server_write_iv_ap2",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 25
+    },
+    {
+      "text": "ePSK",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 25
+    },
+    {
+      "text": "EarlySecret",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 25
+    },
+    {
+      "text": "HandshakeSecret",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 25
+    },
+    {
+      "text": "MasterSecret",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 25
+    },
+    {
+      "text": "EarlySecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 25
+    },
+    {
+      "text": "HandshakeSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 25
+    },
+    {
+      "text": "MasterSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 25
+    },
+    {
+      "text": "EarlySecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 25
+    },
+    {
+      "text": "EarlySecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 25
+    },
+    {
+      "text": "EarlySecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 25
+    },
+    {
+      "text": "HandshakeSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 25
+    },
+    {
+      "text": "MasterSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 25
+    },
+    {
+      "text": "HandshakeSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 25
+    },
+    {
+      "text": "HandshakeSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 25
+    },
+    {
+      "text": "HandshakeSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 25
+    },
+    {
+      "text": "MasterSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 25
+    },
+    {
+      "text": "SATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 25
+    },
+    {
+      "text": "HKDF-Extract",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 26
+    },
+    {
+      "text": "Derive-Secret",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 26
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 26
+    },
+    {
+      "text": "Transcript-Hash",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 26
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 26
+    },
+    {
+      "text": "Derive-Secret",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 26
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 26
+    },
+    {
+      "text": "Transcript-Hash",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 26
+    },
+    {
+      "text": "Derive-Secret",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 26
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 26
+    },
+    {
+      "text": "Transcript-Hash",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 26
+    },
+    {
+      "text": "MasterSecret",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 26
+    },
+    {
+      "text": "BS",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 26
+    },
+    {
+      "text": "HMAC_binder_key",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 26
+    },
+    {
+      "text": "CHTS",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 26
+    },
+    {
+      "text": "SHTS",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 26
+    },
+    {
+      "text": "MasterSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 26
+    },
+    {
+      "text": "EarlySecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 26
+    },
+    {
+      "text": "EarlySecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 26
+    },
+    {
+      "text": "EarlySecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 26
+    },
+    {
+      "text": "HandshakeSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 26
+    },
+    {
+      "text": "HandshakeSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 26
+    },
+    {
+      "text": "HandshakeSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 26
+    },
+    {
+      "text": "HandshakeSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 26
+    },
+    {
+      "text": "CHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 26
+    },
+    {
+      "text": "CHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 26
+    },
+    {
+      "text": "CHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 26
+    },
+    {
+      "text": "SHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 26
+    },
+    {
+      "text": "SHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 26
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 27
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 27
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 27
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 27
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 27
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 27
+    },
+    {
+      "text": "MasterSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 27
+    },
+    {
+      "text": "CHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 27
+    },
+    {
+      "text": "CHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 27
+    },
+    {
+      "text": "CHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 27
+    },
+    {
+      "text": "SHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 27
+    },
+    {
+      "text": "SHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 27
+    },
+    {
+      "text": "SHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 27
+    },
+    {
+      "text": "CHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 27
+    },
+    {
+      "text": "CHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 27
+    },
+    {
+      "text": "SHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 27
+    },
+    {
+      "text": "SHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 27
+    },
+    {
+      "text": "Derive-Secret",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 28
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 28
+    },
+    {
+      "text": "Derive-Secret",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 28
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 28
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 28
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 28
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 28
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 28
+    },
+    {
+      "text": "HKDF-Extract",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 28
+    },
+    {
+      "text": "CATS",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 28
+    },
+    {
+      "text": "SATS",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 28
+    },
+    {
+      "text": "client_write_iv_ap",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 28
+    },
+    {
+      "text": "server_write_key_ap",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 28
+    },
+    {
+      "text": "server_write_iv_ap",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 28
+    },
+    {
+      "text": "EarlySecret",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 28
+    },
+    {
+      "text": "MasterSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 28
+    },
+    {
+      "text": "MasterSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 28
+    },
+    {
+      "text": "MasterSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 28
+    },
+    {
+      "text": "HandshakeSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 28
+    },
+    {
+      "text": "MasterSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 28
+    },
+    {
+      "text": "EarlySecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 28
+    },
+    {
+      "text": "CATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 28
+    },
+    {
+      "text": "CATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 28
+    },
+    {
+      "text": "SATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 28
+    },
+    {
+      "text": "SATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 28
+    },
+    {
+      "text": "CATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 28
+    },
+    {
+      "text": "CATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 28
+    },
+    {
+      "text": "CATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 28
+    },
+    {
+      "text": "SATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 28
+    },
+    {
+      "text": "SATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 28
+    },
+    {
+      "text": "HKDF-Extract",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 29
+    },
+    {
+      "text": "Derive-Secret",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 29
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 29
+    },
+    {
+      "text": "Transcript-Hash",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 29
+    },
+    {
+      "text": "HKDF-Extract",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 29
+    },
+    {
+      "text": "Derive-Secret",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 29
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 29
+    },
+    {
+      "text": "Transcript-Hash",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 29
+    },
+    {
+      "text": "HKDF-Extract",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 29
+    },
+    {
+      "text": "Derive-Secret",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 29
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 29
+    },
+    {
+      "text": "Transcript-Hash",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 29
+    },
+    {
+      "text": "Derive-Secret",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 29
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 29
+    },
+    {
+      "text": "Transcript-Hash",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 29
+    },
+    {
+      "text": "EarlySecret",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 29
+    },
+    {
+      "text": "HandshakeSecret",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 29
+    },
+    {
+      "text": "MasterSecret",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 29
+    },
+    {
+      "text": "CHTS",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 29
+    },
+    {
+      "text": "SHTS",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 29
+    },
+    {
+      "text": "EarlySecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 29
+    },
+    {
+      "text": "EarlySecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 29
+    },
+    {
+      "text": "EarlySecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 29
+    },
+    {
+      "text": "HandshakeSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 29
+    },
+    {
+      "text": "MasterSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 29
+    },
+    {
+      "text": "HandshakeSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 29
+    },
+    {
+      "text": "HandshakeSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 29
+    },
+    {
+      "text": "HandshakeSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 29
+    },
+    {
+      "text": "MasterSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 29
+    },
+    {
+      "text": "HandshakeSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 29
+    },
+    {
+      "text": "HandshakeSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 29
+    },
+    {
+      "text": "HandshakeSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 29
+    },
+    {
+      "text": "HandshakeSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 29
+    },
+    {
+      "text": "HandshakeSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 29
+    },
+    {
+      "text": "CHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 29
+    },
+    {
+      "text": "CHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 29
+    },
+    {
+      "text": "SHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 29
+    },
+    {
+      "text": "SHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 29
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 30
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 30
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 30
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 30
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 30
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 30
+    },
+    {
+      "text": "client_finished_key",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 30
+    },
+    {
+      "text": "server_finished_key",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 30
+    },
+    {
+      "text": "CHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 30
+    },
+    {
+      "text": "CHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 30
+    },
+    {
+      "text": "CHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 30
+    },
+    {
+      "text": "SHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 30
+    },
+    {
+      "text": "SHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 30
+    },
+    {
+      "text": "SHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 30
+    },
+    {
+      "text": "CHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 30
+    },
+    {
+      "text": "CHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 30
+    },
+    {
+      "text": "SHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 30
+    },
+    {
+      "text": "SHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 30
+    },
+    {
+      "text": "Derive-Secret",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 31
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 31
+    },
+    {
+      "text": "Derive-Secret",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 31
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 31
+    },
+    {
+      "text": "HKDF-Expand-Label",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 31
+    },
+    {
+      "text": "CATS",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 31
+    },
+    {
+      "text": "SATS",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 31
+    },
+    {
+      "text": "client_write_key_ap",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 31
+    },
+    {
+      "text": "MasterSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 31
+    },
+    {
+      "text": "MasterSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 31
+    },
+    {
+      "text": "MasterSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 31
+    },
+    {
+      "text": "MasterSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 31
+    },
+    {
+      "text": "MasterSecret",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 31
+    },
+    {
+      "text": "SHTS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 31
+    },
+    {
+      "text": "CATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 31
+    },
+    {
+      "text": "CATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 31
+    },
+    {
+      "text": "SATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 31
+    },
+    {
+      "text": "SATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 31
+    },
+    {
+      "text": "CATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 31
+    },
+    {
+      "text": "CATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 31
+    },
+    {
+      "text": "server_write_key_ap",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 32
+    },
+    {
+      "text": "server_write_key_ap",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 32
+    },
+    {
+      "text": "client_write_key_hs",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 32
+    },
+    {
+      "text": "server_write_key_hs",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 32
+    },
+    {
+      "text": "client_write_key_ap",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 32
+    },
+    {
+      "text": "server_write_key_ap",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 32
+    },
+    {
+      "text": "client_write_key_hs",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 32
+    },
+    {
+      "text": "server_write_key_hs",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 32
+    },
+    {
+      "text": "client_write_key_ap",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 32
+    },
+    {
+      "text": "server_write_key_ap",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 32
+    },
+    {
+      "text": "client_write_key_hs",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 32
+    },
+    {
+      "text": "server_write_key_hs",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 32
+    },
+    {
+      "text": "client_write_key_ap",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 32
+    },
+    {
+      "text": "server_write_key_ap",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 32
+    },
+    {
+      "text": "server_write_key_ap",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 32
+    },
+    {
+      "text": "client_write_key_hs",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 32
+    },
+    {
+      "text": "server_write_key_hs",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 32
+    },
+    {
+      "text": "client_write_key_ap",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 32
+    },
+    {
+      "text": "server_write_key_ap",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 32
+    },
+    {
+      "text": "CATS",
+      "type": "TRAFFIC_SECRET",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 32
+    },
+    {
+      "text": "seqnum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 34
+    },
+    {
+      "text": "seqnum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 35
+    },
+    {
+      "text": "seqnum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 38
+    },
+    {
+      "text": "seqnum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 39
+    },
+    {
+      "text": "seqnum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 41
+    },
+    {
+      "text": "seqnum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 43
+    },
+    {
+      "text": "seqnum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 45
+    },
+    {
+      "text": "seqnum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 47
+    },
+    {
+      "text": "seqnum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 48
+    },
+    {
+      "text": "seqnum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 50
+    },
+    {
+      "text": "seqnum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 51
+    },
+    {
+      "text": "seqnum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 51
+    },
+    {
+      "text": "seqnum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 52
+    },
+    {
+      "text": "seqnum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 53
+    },
+    {
+      "text": "seqnum",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 54
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 58
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 59
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 59
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 59
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 60
+    },
+    {
+      "text": "ECDHE",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 61
+    },
+    {
+      "text": "Transcript-Hash",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 69
+    },
+    {
+      "text": "FinishedHash",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 69
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 75
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 75
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 75
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 76
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 76
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 76
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 79
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 79
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 79
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 79
+    },
+    {
+      "text": "Transcript-Hash",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 80
+    },
+    {
+      "text": "FinishedHash",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 80
+    },
+    {
+      "text": "length",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 82
+    },
+    {
+      "text": "length",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 83
+    },
+    {
+      "text": "Transcript-Hash",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 92
+    },
+    {
+      "text": "FinishedHash",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 92
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 93
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 93
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 93
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 94
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 94
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 94
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 95
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 95
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 95
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 96
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 96
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 96
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 96
+    },
+    {
+      "text": "BinderMsg",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 97
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 97
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 97
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 97
+    },
+    {
+      "text": "sg",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 98
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 98
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 98
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 98
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 98
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 98
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 98
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 99
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 99
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 99
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 99
+    },
+    {
+      "text": "Transcript-Hash",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 100
+    },
+    {
+      "text": "FinishedHash",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 100
+    },
+    {
+      "text": "Transcript-Hash",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 101
+    },
+    {
+      "text": "FinishedHash",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 101
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 107
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 107
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 107
+    },
+    {
+      "text": "ClientHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 108
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 108
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 108
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 108
+    },
+    {
+      "text": "ServerHello",
+      "type": "KEY_MATERIAL",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 109
+    },
+    {
+      "text": "ECDHE",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 110
+    },
+    {
+      "text": "Transcript-Hash",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 116
+    },
+    {
+      "text": "FinishedHash",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 116
+    },
+    {
+      "text": "Transcript-Hash",
+      "type": "CRYPTO_FUNCTION",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 123
+    },
+    {
+      "text": "FinishedHash",
+      "type": "VARIABLE_ASSIGNMENT",
+      "doc_name": "r-1323565.1_78b35e61",
+      "chunk_index": 123
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "doc_name": "r-50.1_9cdb3670",
+  "chunks_processed": 4,
+  "pattern_count": 273,
+  "validated_count": 5,
+  "entities": [
+    {
+      "text": "ФЕДЕРАЛЬНОЕ АГЕНТСТВО ПО ТЕХНИЧЕСКОМУ РЕГУЛИРОВАНИЮ И МЕТРОЛОГИИ",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    },
+    {
+      "text": "П 50.1.114-2016",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "28 ноября 2016 г.",
+      "type": "DATE",
+      "source": "llm"
+    },
+    {
+      "text": "162-ФЗ",
+      "type": "CONCEPT",
+      "source": "llm"
+    },
+    {
+      "text": "ТК 26",
+      "type": "ORGANIZATION",
+      "source": "llm"
+    }
+  ]
+}
